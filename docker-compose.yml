@@ -1,0 +1,63 @@
+name: salalibre
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-salalibre}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-salalibre}
+      POSTGRES_DB: ${POSTGRES_DB:-salalibre}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./src/api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      BUSINESS_TZ: ${BUSINESS_TZ:-America/Tegucigalpa}
+      BUSINESS_OPEN_TIME: ${BUSINESS_OPEN_TIME:-07:00}
+      BUSINESS_CLOSE_TIME: ${BUSINESS_CLOSE_TIME:-20:00}
+      BOOKING_SLOT_MINUTES: ${BOOKING_SLOT_MINUTES:-15}
+      BOOKING_MIN_MINUTES: ${BOOKING_MIN_MINUTES:-15}
+      BOOKING_MAX_MINUTES: ${BOOKING_MAX_MINUTES:-240}
+      BOOKING_MAX_DAYS_AHEAD: ${BOOKING_MAX_DAYS_AHEAD:-30}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Admin12345}
+      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-Empleado12345}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  web:
+    build:
+      context: ./src/web
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  db-data:

@@ -5,6 +5,7 @@ node_modules/
 dist/
 build/
 coverage/
+*.tsbuildinfo
 
 # Variables de entorno locales (el compose tiene valores por defecto)
 .env

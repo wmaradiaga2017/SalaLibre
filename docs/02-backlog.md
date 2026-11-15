@@ -56,7 +56,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 ## Resumen
 | Orden | ID | Título | Dep. | Est. | Recortable | Estado | Doc |
 |---|---|---|---|---|---|---|---|
-| 1 | T01 | Esqueleto del monorepo y compose (db, api Nest con health, web nginx con proxy) | — | M | No | Pendiente | |
+| 1 | T01 | Esqueleto del monorepo y compose (db, api Nest con health, web nginx con proxy) | — | M | No | En revisión | [T01](tareas/T01.md) |
 | 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs` inmutable) y seed | T01 | M | No | Pendiente | |
 | 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | Pendiente | |
 | 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Pendiente | |
@@ -100,7 +100,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | Dependencias | — |
 | Estimación | M |
 | Seguridad / auditoría | Roles: público (`/api/health`). Auditoría: no aplica. OWASP A05: `api` corre sin root, solo se publica el 8080, sin secretos reales en el repositorio |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `docker-compose.yml` (servicios `db`, `api`, `web` según spec §10: healthchecks, `depends_on: service_healthy`, todas las variables con `${VAR:-valor}`), `.gitattributes` (`* text=auto eol=lf`), `.gitignore`, `.dockerignore`.
