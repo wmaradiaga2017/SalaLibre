@@ -138,3 +138,22 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   (`docker compose exec -T api node -`), fuera del repositorio y con la salida pegada en `docs/tareas/Txx.md`.
 - **Swagger en `/api/docs`** lo sirve Express fuera del router de Nest, así que el guard global no lo cubre. Por decisión
   de la persona (D-33), **solo se monta fuera de producción** (`NODE_ENV !== 'production'`); en el compose responde 404 (T03, CA8).
+
+### Autenticación fijada en T03 (ver `docs/tareas/T03.md` §6 y §7)
+- **`@nestjs/jwt` sin passport** (no agregar `@nestjs/passport`, `passport` ni `passport-jwt`). JWT HS256 con
+  `JWT_SECRET`, payload solo `sub` y `role`, duración `JWT_EXPIRES_IN` sin renovación. La cookie `access_token` lleva
+  `Expires` igual al vencimiento del JWT.
+- **`JwtAuthGuard` y `RolesGuard` viven en `common/auth/`** y se registran como `APP_GUARD` en `AuthModule` (primero sesión,
+  luego rol). El guard de sesión depende de la interfaz `SessionResolver` (token `SESSION_RESOLVER`, en
+  `common/auth/session.ts`), que implementa `AuthService`; `common/` nunca importa archivos de `modules/`.
+- **En cada petición se relee el usuario** (RN-14); `@Roles()` usa el rol **releído de la base**, no el del token.
+  `req.user` es un `SessionUser` y se obtiene con `@CurrentUser()`.
+- **Login:** mismo 401 `INVALID_CREDENTIALS` para clave incorrecta, correo inexistente o usuario inactivo, con comparación
+  bcrypt de relleno cuando el correo no existe. Se loguea `event: login` con `result` (y `userId` si es correcto), nunca
+  el correo, la contraseña ni el token.
+- **Módulo `users`:** dominio en `domain/` (`PublicUser`, `UserWithCredentials`, `toPublicUser`, `normalizeEmail`),
+  interfaz `UsersRepository` con token `USERS_REPOSITORY` y `PrismaUsersRepository` en `infrastructure/`. Otros módulos
+  usan solo `UsersService`.
+- **Pruebas de auth** con un repositorio en memoria (`test/support/in-memory-users.repository.ts`, vía
+  `overrideProvider(USERS_REPOSITORY)`) y controladores de prueba en `test/support/`, sin base de datos.
+- **Commits del agente:** agregar los archivos por ruta, nunca `git add -A` (B-54: se coló un `.bak` del editor).
