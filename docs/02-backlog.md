@@ -58,7 +58,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 |---|---|---|---|---|---|---|---|
 | 1 | T01 | Esqueleto del monorepo y compose (db, api Nest con health, web nginx con proxy) | — | M | No | Hecha | [T01](tareas/T01.md) |
 | 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs` inmutable) y seed | T01 | M | No | Hecha | [T02](tareas/T02.md) |
-| 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | En revisión | [T02a](tareas/T02a.md) |
+| 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | Hecha | [T02a](tareas/T02a.md) |
 | 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Pendiente | |
 | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Pendiente | |
 | 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Pendiente | |
@@ -208,7 +208,7 @@ curl -s localhost:8080/api/health
 | Dependencias | T02 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: público. Auditoría: no aplica (`TransactionRunner` queda listo para T06a). OWASP A05: helmet y sin stack traces; A09: logs sin secretos; A03: `ValidationPipe` con `whitelist` |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/common/`: middleware o interceptor de request ID (header `X-Request-Id`), `http-exception.filter.ts` (formato `{ error: { code, message, requestId } }`), `AppError` base con `code` y estado HTTP, `TransactionRunner` (`run(ctx => …)` sobre `prisma.$transaction`, con helper `advisoryLock(key)` que ejecuta `pg_advisory_xact_lock`).
