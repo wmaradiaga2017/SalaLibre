@@ -285,7 +285,7 @@ npm --prefix src/api test -- auth
 npm --prefix src/api run lint
 ```
 
-**Notas para el agente:** No agregues límite de intentos (throttler) ni el código 429: no están en el spec (§8 lista 400, 401, 403, 404, 409, 422 y 500). `logout` no está en `CLAUDE.md` pero se justifica en S-01. Swagger (`/api/docs`) solo se sirve fuera de producción: lo decidió la persona tras T02a, porque `CLAUDE.md` solo permite como públicas `POST /auth/login` y `GET /health`. El caso 200 de CA8 se prueba en `src/api/test/` con `NODE_ENV` distinto de `production`.
+**Notas para el agente:** No agregues límite de intentos (throttler) ni el código 429: no están en el spec (§8 lista 400, 401, 403, 404, 409, 422 y 500). `logout` no está en `CLAUDE.md` pero se justifica en S-01. Swagger (`/api/docs`) solo se sirve fuera de producción (D-33): lo decidió la persona tras T02a, porque `CLAUDE.md` solo permite como públicas `POST /auth/login` y `GET /health`. El caso 200 de CA8 se prueba en `src/api/test/` con `NODE_ENV` distinto de `production`.
 
 ---
 
