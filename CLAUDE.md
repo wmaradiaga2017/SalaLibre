@@ -119,3 +119,22 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Jest:** `moduleNameMapper` `^(\.{1,2}/.*)\.js$ → $1` para resolver los imports `.js` del cliente generado.
 - **Restricciones SQL propias en la migración `init`:** índice único `lower(name)`, CHECK de capacidad, asistentes,
   `end_at > start_at`, `email = lower(email)` y `rooms.equipment NOT NULL`.
+
+### Plataforma transversal fijada en T02a (ver `docs/tareas/T02a.md` §6 y §7)
+- **Dependencias agregadas:** `pino`, `pino-http`, `nestjs-pino`, `helmet`, `cookie-parser`, `@nestjs/swagger`,
+  `class-validator`, `class-transformer` (y `@types/cookie-parser` en dev). No agregar otras para lo mismo.
+- **Errores de negocio:** siempre `throw new AppError('<CODIGO>', '<mensaje en español>')` con un código de
+  `common/errors/error-codes.ts` (spec §8); el estado HTTP sale del código. `AppError` no depende de Nest y se puede usar
+  en el dominio. Nunca construir el JSON de error a mano: lo arma `HttpExceptionFilter`.
+- **`configureApp()`** (`common/configure-app.ts`) monta request ID, helmet, `cookie-parser`, prefijo `/api` y Swagger;
+  lo usan `main.ts` y las pruebas HTTP. `CommonModule.forRoot({ logStream })` acepta un destino de logs solo para pruebas.
+- **`X-Request-Id`:** se respeta el del cliente solo si cumple `^[A-Za-z0-9._-]{1,64}$`; si no, se genera un UUID.
+- **Transacciones:** los services inyectan `@Inject(TRANSACTION_RUNNER) TransactionRunner`; los repositorios Prisma
+  obtienen el cliente con `prismaTx(ctx)`. Claves de `ctx.advisoryLock(key)` con prefijo: `date:<YYYY-MM-DD>` (reservas
+  y cierres) y `user:<uuid>` (reservas y desactivación de usuario).
+- **Pruebas HTTP con el `fetch` nativo de Node 24** (sin `supertest`), levantando la app en `127.0.0.1` y puerto 0.
+  Las pruebas de plataforma viven en `src/api/test/` con controladores de prueba fuera del código de producción.
+- **Pruebas contra PostgreSQL real** antes de T06: con un script de un solo uso ejecutado en el contenedor
+  (`docker compose exec -T api node -`), fuera del repositorio y con la salida pegada en `docs/tareas/Txx.md`.
+- **Swagger en `/api/docs`** lo sirve Express fuera del router de Nest: el guard global de T03 no lo cubre (pendiente
+  de decisión en T03).
