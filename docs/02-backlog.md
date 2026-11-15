@@ -57,7 +57,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | Orden | ID | Título | Dep. | Est. | Recortable | Estado | Doc |
 |---|---|---|---|---|---|---|---|
 | 1 | T01 | Esqueleto del monorepo y compose (db, api Nest con health, web nginx con proxy) | — | M | No | Hecha | [T01](tareas/T01.md) |
-| 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs` inmutable) y seed | T01 | M | No | En revisión | [T02](tareas/T02.md) |
+| 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs` inmutable) y seed | T01 | M | No | Hecha | [T02](tareas/T02.md) |
 | 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | Pendiente | |
 | 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Pendiente | |
 | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Pendiente | |
@@ -145,7 +145,7 @@ cat .gitattributes                                   # * text=auto eol=lf
 | Dependencias | T01 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: ninguno (solo base de datos). Auditoría: crea la tabla `audit_logs` y su trigger de inmutabilidad; las filas las escribe T06a. OWASP A02: contraseñas con bcryptjs; A08: migraciones SQL propias que nunca se regeneran |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/api/prisma/schema.prisma`: modelos `PascalCase` con `@@map` a `snake_case` y los enums `Role`, `Equipment`, `BookingStatus`, `AuditAction` (spec §7). IDs `uuid` con default de la base.
