@@ -1,48 +1,7 @@
 import type { INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Test } from '@nestjs/testing';
-import { Writable } from 'node:stream';
-import { CommonModule } from '../src/common/common.module';
-import { configureApp } from '../src/common/configure-app';
-import { AuthModule } from '../src/modules/auth/auth.module';
-import { USERS_REPOSITORY } from '../src/modules/users/domain/users.repository';
-import { AuthTestController } from './support/auth-test.controller';
+import { createApp, json, sessionCookie } from './support/auth-app';
 import { InMemoryUsersRepository, TEST_PASSWORD } from './support/in-memory-users.repository';
-
-interface ErrorResponse {
-  error: { code: string; message: string; requestId: string };
-}
-
-async function json<T = ErrorResponse>(res: Response): Promise<T> {
-  return (await res.json()) as T;
-}
-
-const silent = () =>
-  new Writable({
-    write(_chunk, _encoding, callback) {
-      callback();
-    },
-  });
-
-async function createApp(repo: InMemoryUsersRepository) {
-  const moduleRef = await Test.createTestingModule({
-    imports: [CommonModule.forRoot({ logStream: silent() }), AuthModule],
-    controllers: [AuthTestController],
-  })
-    .overrideProvider(USERS_REPOSITORY)
-    .useValue(repo)
-    .compile();
-  const app = moduleRef.createNestApplication({ bufferLogs: true });
-  configureApp(app);
-  await app.listen(0, '127.0.0.1');
-  return { app, baseUrl: `${await app.getUrl()}/api`, jwt: moduleRef.get(JwtService) };
-}
-
-/** Devuelve el valor `access_token=<jwt>` de un Set-Cookie. */
-function sessionCookie(res: Response): string {
-  const header = res.headers.getSetCookie().find((c) => c.startsWith('access_token='));
-  return header?.split(';')[0] ?? '';
-}
 
 describe('Auth (T03)', () => {
   let app: INestApplication;

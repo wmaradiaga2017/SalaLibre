@@ -1,4 +1,5 @@
 import { hashSync } from 'bcryptjs';
+import type { TransactionContext, TransactionRunner } from '../../src/common/transaction/transaction-runner';
 import type { UserWithCredentials } from '../../src/modules/users/domain/user';
 import type { UsersRepository } from '../../src/modules/users/domain/users.repository';
 
@@ -44,5 +45,29 @@ export class InMemoryUsersRepository implements UsersRepository {
 
   async findById(id: string): Promise<UserWithCredentials | null> {
     return this.users.find((u) => u.id === id) ?? null;
+  }
+
+  async updatePasswordHash(ctx: TransactionContext, id: string, passwordHash: string): Promise<void> {
+    if (!(ctx instanceof InMemoryTransactionContext)) {
+      throw new Error('updatePasswordHash fuera de una transacción');
+    }
+    const user = this.users.find((u) => u.id === id);
+    if (user) {
+      user.passwordHash = passwordHash;
+    }
+  }
+}
+
+class InMemoryTransactionContext implements TransactionContext {
+  async advisoryLock(): Promise<void> {}
+}
+
+/** Runner sin base: ejecuta el trabajo con un contexto propio y cuenta las transacciones. */
+export class InMemoryTransactionRunner implements TransactionRunner {
+  runs = 0;
+
+  run<T>(work: (ctx: TransactionContext) => Promise<T>): Promise<T> {
+    this.runs += 1;
+    return work(new InMemoryTransactionContext());
   }
 }

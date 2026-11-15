@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare, hashSync } from 'bcryptjs';
+import { compare, hash, hashSync } from 'bcryptjs';
 import { PinoLogger } from 'nestjs-pino';
 import type { SessionResolver, SessionRole, SessionUser } from '../../common/auth/session';
 import { AppError } from '../../common/errors/app-error';
+import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
 import { toPublicUser, type PublicUser } from '../users/domain/user';
 import { UsersService } from '../users/users.service';
 
@@ -19,6 +20,9 @@ const DUMMY_HASH = hashSync('salalibre-dummy-password', 10);
 
 const INVALID_CREDENTIALS_MESSAGE = 'Correo o contraseña incorrectos.';
 
+/** Costo de bcryptjs para los hashes nuevos; el mismo que usa el seed. */
+const BCRYPT_ROUNDS = 10;
+
 export interface LoginResult {
   user: PublicUser;
   token: string;
@@ -32,6 +36,7 @@ export class AuthService implements SessionResolver {
     private readonly users: UsersService,
     private readonly jwt: JwtService,
     private readonly logger: PinoLogger,
+    @Inject(TRANSACTION_RUNNER) private readonly tx: TransactionRunner,
   ) {
     this.logger.setContext(AuthService.name);
   }
@@ -52,6 +57,26 @@ export class AuthService implements SessionResolver {
     this.logger.info({ event: 'login', result: 'ok', userId: user.id }, 'login correcto');
 
     return { user: toPublicUser(user), token, expiresAt: new Date(exp * 1000) };
+  }
+
+  /**
+   * RN-18 y F-09: cambia la contraseña propia si la actual es correcta. No invalida las sesiones abiertas
+   * (T03a, notas: el spec no lo pide). Nunca loguea contraseñas ni hashes (CA5).
+   */
+  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+    await this.tx.run(async (ctx) => {
+      const user = await this.users.findById(userId);
+      if (!user || !user.isActive) {
+        throw new AppError('UNAUTHENTICATED', 'Necesitas iniciar sesión.');
+      }
+      if (!(await compare(currentPassword, user.passwordHash))) {
+        this.logger.info({ event: 'password_change', result: 'failed', userId }, 'cambio de contraseña rechazado');
+        throw new AppError('INVALID_CURRENT_PASSWORD', 'La contraseña actual no es correcta.');
+      }
+      await this.users.updatePasswordHash(ctx, user.id, await hash(newPassword, BCRYPT_ROUNDS));
+      // T06a agrega aquí la auditoría USER_PASSWORD_CHANGED, dentro de la misma transacción.
+    });
+    this.logger.info({ event: 'password_change', result: 'ok', userId }, 'contraseña cambiada');
   }
 
   /** Valida el JWT y relee el usuario en cada petición (RN-14, RN-19). */

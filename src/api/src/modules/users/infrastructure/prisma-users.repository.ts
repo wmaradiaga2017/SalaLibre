@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { prismaTx } from '../../../common/transaction/prisma-transaction-runner';
+import type { TransactionContext } from '../../../common/transaction/transaction-runner';
 import { PrismaService } from '../../../prisma/prisma.service';
 import type { UserWithCredentials } from '../domain/user';
 import type { UsersRepository } from '../domain/users.repository';
@@ -18,6 +20,10 @@ export class PrismaUsersRepository implements UsersRepository {
       return null; // evita un error de Postgres por un `sub` que no es uuid
     }
     return this.prisma.user.findUnique({ where: { id }, select: SELECT });
+  }
+
+  async updatePasswordHash(ctx: TransactionContext, id: string, passwordHash: string): Promise<void> {
+    await prismaTx(ctx).user.update({ where: { id }, data: { passwordHash }, select: { id: true } });
   }
 }
 

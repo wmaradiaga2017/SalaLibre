@@ -1,9 +1,10 @@
-import { Body, Controller, Get, HttpCode, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Patch, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import type { CookieOptions, Response } from 'express';
 import { CurrentUser, Public } from '../../common/auth/decorators';
 import { SESSION_COOKIE, type SessionUser } from '../../common/auth/session';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 
 /** Atributos de la cookie de sesión (CLAUDE.md, D-03). Sin `Secure`: solo corre en local por HTTP (D-02). */
@@ -33,5 +34,12 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: SessionUser): SessionUser {
     return user;
+  }
+
+  /** F-09 · RN-18: cambio de la contraseña propia. Requiere sesión. */
+  @Patch('password')
+  @HttpCode(204)
+  async changePassword(@CurrentUser() user: SessionUser, @Body() body: ChangePasswordDto): Promise<void> {
+    await this.auth.changePassword(user.id, body.currentPassword, body.newPassword);
   }
 }

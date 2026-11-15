@@ -60,7 +60,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs` inmutable) y seed | T01 | M | No | Hecha | [T02](tareas/T02.md) |
 | 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | Hecha | [T02a](tareas/T02a.md) |
 | 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Hecha | [T03](tareas/T03.md) |
-| 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Pendiente | |
+| 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | En revisión | [T03a](tareas/T03a.md) |
 | 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Pendiente | |
 | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Pendiente | |
 | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | Pendiente | |
@@ -297,7 +297,7 @@ npm --prefix src/api run lint
 | Dependencias | T03 |
 | Estimación | S |
 | Seguridad / auditoría | Roles: autenticado. Auditoría: `USER_PASSWORD_CHANGED`, que se conecta en T06a. OWASP A07: exige la contraseña actual, hash bcryptjs, nunca se loguea |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/auth/` (endpoint `PATCH /auth/password`, `ChangePasswordDto`) y `UsersRepository.updatePasswordHash`. La escritura va dentro de `TransactionRunner` para que T06a solo agregue la llamada de auditoría.
