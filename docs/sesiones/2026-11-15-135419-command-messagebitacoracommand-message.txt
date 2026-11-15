@@ -1,0 +1,2541 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+> /bitacora DECISIÓN, DoR definida por mí (el enunciado no la define)           
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+       8  | B-04 | 2026-11-14 21:00 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, CLAUDE.md (sección Frontend) amplía las f
+          eatures permitidas con users, closures y audit | Estructura: fe
+          atures/auth\|bookings\|rooms\|users\|closures\|audit + shared/ 
+          | CLAUDE.md, spec §13 S-06 |
+       9  | B-05 | 2026-11-14 21:00 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se quitó el supuesto S-06 de 01-spec 
+          §13 y las notas "# ver S-06" de §10, porque CLAUDE.md ya permit
+          e las features users, closures y audit | Spec coherente con CLA
+          UDE.md; los demás supuestos conservan su ID | docs/01-spec.md §
+          10, §13; B-04 |
+      10  | B-06 | 2026-11-14 21:03 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, se movió la exportación de la sesión a do
+          cs/sesiones/, nuevo destino de las sesiones exportadas | Archiv
+          o en docs/sesiones/2026-11-14-210128-command-messagespeccommand
+          -message.txt | docs/sesiones/ |
+      11 +| B-07 | 2026-11-15 12:03 | Yo | 2-Planificar | DECISIÓN | DoR 
+         +definida por mí (el enunciado no la define) | — | — |          
+
+● Agregué esta fila al final de docs/03-bitacora.md:
+
+  | B-07 | 2026-11-15 12:03 | Yo | 2-Planificar | DECISIÓN | DoR definida por mí
+  (el enunciado no la define) | — | — |
+
+  Esta decisión no menciona ninguna D-xx, así que falta registrarla en
+  docs/00-decisiones.md. No la creé porque no lo pediste.
+
+✻ Worked for 12s · done 12:04
+
+> /bitacora MANUAL, Se trabajo en la configuracion del diseño haciendo uso de   
+la herramienta stich de google y se ajusta docs/diseño/DESIGN.md quedando de    
+uso de guía visual (colores, tipografía, formas y componentes base) y el spec   
+manda en funcionalidad.                                                         
+
+● No agregué la fila porque, para el tipo MANUAL, el motivo es obligatorio y el
+  texto no lo trae.
+
+  El texto dice qué se hizo (configuraste el diseño en Stitch y ajustaste
+  docs/diseño/DESIGN.md) y cómo quedó (DESIGN.md sirve de guía visual y el spec
+  manda en funcionalidad). Falta decir por qué se hizo a mano y no lo hizo el 
+  agente. Por ejemplo: "Stitch es una herramienta externa que el agente no puede
+  usar" o "las decisiones visuales las quería tomar yo".
+
+  ¿Cuál es el motivo? Con tu respuesta escribo la fila así:
+  - Qué pasó: Diseño configurado con Stitch de Google y ajuste de
+    docs/diseño/DESIGN.md (motivo: …)
+  - Resultado: DESIGN.md queda como guía visual (colores, tipografía, formas y
+    componentes base); el spec manda en funcionalidad
+  - Ref.: docs/diseño/DESIGN.md
+
+✻ Worked for 7s · done 12:43
+
+> Stitch es externa y el agente no puede usarla                                 
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+       9  | B-05 | 2026-11-14 21:00 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se quitó el supuesto S-06 de 01-spec 
+          §13 y las notas "# ver S-06" de §10, porque CLAUDE.md ya permit
+          e las features users, closures y audit | Spec coherente con CLA
+          UDE.md; los demás supuestos conservan su ID | docs/01-spec.md §
+          10, §13; B-04 |
+      10  | B-06 | 2026-11-14 21:03 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, se movió la exportación de la sesión a do
+          cs/sesiones/, nuevo destino de las sesiones exportadas | Archiv
+          o en docs/sesiones/2026-11-14-210128-command-messagespeccommand
+          -message.txt | docs/sesiones/ |
+      11  | B-07 | 2026-11-15 12:03 | Yo | 2-Planificar | DECISIÓN | DoR 
+          definida por mí (el enunciado no la define) | — | — |
+      12 +| B-08 | 2026-11-15 12:43 | Yo | 2-Planificar | MANUAL | Diseño
+         + configurado con Stitch de Google y ajuste de `docs/diseño/DESI
+         +GN.md` (motivo: Stitch es externa y el agente no puede usarla) 
+         +| DESIGN.md queda como guía visual (colores, tipografía, formas
+         + y componentes base); el spec manda en funcionalidad | docs/dis
+         +eño/DESIGN.md |                                                
+
+● Agregué esta fila al final de docs/03-bitacora.md:
+
+  | B-08 | 2026-11-15 12:43 | Yo | 2-Planificar | MANUAL | Diseño configurado 
+  con Stitch de Google y ajuste de docs/diseño/DESIGN.md (motivo: Stitch es 
+  externa y el agente no puede usarla) | DESIGN.md queda como guía visual 
+  (colores, tipografía, formas y componentes base); el spec manda en 
+  funcionalidad | docs/diseño/DESIGN.md |
+
+  CLAUDE.md tiene una contradicción. La tabla de documentos ya apunta a
+  docs/diseño/DESIGN.md, pero la sección Frontend todavía dice que se lea
+  docs/05-diseno.md. No la cambié porque /bitacora solo permite tocar la
+  bitácora.
+
+✻ Worked for 10s · done 12:43
+
+> corrige la referencia a 05-diseno.md en CLAUDE.md y agrega la regla           
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+● Update(CLAUDE.md)
+  ⎿  Added 4 lines, removed 1 line
+      85  - Estructura por features (`features/auth|bookings|rooms|users|
+          closures|audit`) + `shared/`.
+      86  - **TanStack Query** para los datos del servidor; **React Hook 
+          Form + Zod** para los formularios.
+      87  - **Un único `apiClient`:** maneja el 401 (lleva a `/login`) y 
+          el 409, y muestra el `requestId` en los errores.
+      88 -- Antes de cualquier tarea de UI, leer `docs/05-diseno.md` y la
+         - imagen de la pantalla.                                        
+      88 +- Antes de cualquier tarea de UI, leer `docs/diseño/DESIGN.md` 
+         +y la imagen de la pantalla.                                    
+      89 +- `docs/diseño/DESIGN.md` es solo guía visual (colores, tipogra
+         +fía, formas y componentes base). En funcionalidad              
+      90 +  (pantallas, estados, permisos, flujos) manda `docs/01-spec.md
+         +`; si el diseño de Stitch muestra algo que el spec no          
+      91 +  contempla, no se implementa.                                 
+      92  - El HTML de Stitch se reescribe como componentes React; nunca 
+          se copia como página estática.
+      93  - Solo se usan los tokens del diseño, sin colores sueltos.
+      94  
+
+● Update(CLAUDE.md)
+  ⎿  Added 1 line, removed 1 line
+      12  |---|---|---|
+      13  | `docs/01-spec.md` | Reglas de negocio, permisos, arquitectura
+          , datos y API | 1 (manda) |
+      14  | `docs/00-decisiones.md` | El porqué de cada decisión (las ree
+          mplazadas no aplican) | 2 |
+      15 -| `docs/diseño/DESIGN.md` | Pantallas, estados, tokens | 3 |   
+      15 +| `docs/diseño/DESIGN.md` | Guía visual: colores, tipografía, f
+         +ormas y componentes base | 3 |                                 
+      16  | `docs/diseño/stitch/*.png` / `*.html` | Referencia visual y d
+          e estructura | 4 |
+      17  | `docs/02-backlog.md` | Qué hacer y en qué orden | — |
+      18  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      10  | B-06 | 2026-11-14 21:03 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, se movió la exportación de la sesión a do
+          cs/sesiones/, nuevo destino de las sesiones exportadas | Archiv
+          o en docs/sesiones/2026-11-14-210128-command-messagespeccommand
+          -message.txt | docs/sesiones/ |
+      11  | B-07 | 2026-11-15 12:03 | Yo | 2-Planificar | DECISIÓN | DoR 
+          definida por mí (el enunciado no la define) | — | — |
+      12  | B-08 | 2026-11-15 12:43 | Yo | 2-Planificar | MANUAL | Diseño
+           configurado con Stitch de Google y ajuste de `docs/diseño/DESI
+          GN.md` (motivo: Stitch es externa y el agente no puede usarla) 
+          | DESIGN.md queda como guía visual (colores, tipografía, formas
+           y componentes base); el spec manda en funcionalidad | docs/dis
+          eño/DESIGN.md |
+      13 +| B-09 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+         +pedido de la persona, CLAUDE.md (Frontend) cambia la referencia
+         + `docs/05-diseno.md` por `docs/diseño/DESIGN.md` y agrega la re
+         +gla: DESIGN.md es solo guía visual y el spec manda en funcional
+         +idad; la tabla de documentos se ajusta a esa descripción | CLAU
+         +DE.md coherente con B-08 | CLAUDE.md, B-08 |                   
+
+● Corregí la referencia y agregué la regla en CLAUDE.md. En la sección Frontend:
+
+  - Referencia corregida: docs/05-diseno.md pasa a ser docs/diseño/DESIGN.md.
+  - Regla nueva: docs/diseño/DESIGN.md es solo guía visual (colores, tipografía,
+    formas y componentes base). En funcionalidad (pantallas, estados, permisos,
+    flujos) manda docs/01-spec.md. Si el diseño de Stitch muestra algo que el
+    spec no contempla, no se implementa.
+
+  Hice dos cambios más que no pediste:
+
+  - Tabla de documentos: describía DESIGN.md como "Pantallas, estados, tokens",
+    lo que contradecía la regla nueva. Ahora dice "Guía visual: colores,
+    tipografía, formas y componentes base". Si no lo quieres, lo revierto.
+  - Bitácora: agregué la fila B-09 (AGENTE) al final de docs/03-bitacora.md para
+    registrar estos cambios en CLAUDE.md, como se hizo con B-04.
+
+  Interpreté "la regla" como la de B-08 (DESIGN.md como guía visual y el spec
+  manda en funcionalidad). Si te referías a otra, dime cuál.
+
+  No hice commit.
+
+✻ Cooked for 20s · done 12:44
+
+> /bitacora DECISIÓN, DESIGN.md solo guía visual; el spec manda                 
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      11  | B-07 | 2026-11-15 12:03 | Yo | 2-Planificar | DECISIÓN | DoR 
+          definida por mí (el enunciado no la define) | — | — |
+      12  | B-08 | 2026-11-15 12:43 | Yo | 2-Planificar | MANUAL | Diseño
+           configurado con Stitch de Google y ajuste de `docs/diseño/DESI
+          GN.md` (motivo: Stitch es externa y el agente no puede usarla) 
+          | DESIGN.md queda como guía visual (colores, tipografía, formas
+           y componentes base); el spec manda en funcionalidad | docs/dis
+          eño/DESIGN.md |
+      13  | B-09 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, CLAUDE.md (Frontend) cambia la referencia
+           `docs/05-diseno.md` por `docs/diseño/DESIGN.md` y agrega la re
+          gla: DESIGN.md es solo guía visual y el spec manda en funcional
+          idad; la tabla de documentos se ajusta a esa descripción | CLAU
+          DE.md coherente con B-08 | CLAUDE.md, B-08 |
+      14 +| B-10 | 2026-11-15 12:44 | Yo | 2-Planificar | DECISIÓN | DESI
+         +GN.md solo guía visual; el spec manda | — | — |                
+
+● Agregué esta fila al final de docs/03-bitacora.md:
+
+  | B-10 | 2026-11-15 12:44 | Yo | 2-Planificar | DECISIÓN | DESIGN.md solo guía
+  visual; el spec manda | — | — |
+
+  Esta decisión no menciona ninguna D-xx, así que falta registrarla en
+  docs/00-decisiones.md. No la creé porque no lo pediste.
+
+✻ Crunched for 7s · done 12:44
+
+> registra la decisión en docs/00-decisiones.md                                 
+  Read 1 file (ctrl+o to expand)
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 8 lines
+      246  - **Costo/riesgo:** Contraseñas por defecto conocidas; aceptab
+           le porque solo corre en local.
+      247  - **Afecta a:** spec §3, §10
+      248  
+      249 +## D-28 · Diseño visual de SalaLibre                          
+      250 +- **Duda:** ¿Qué papel tiene el diseño hecho en Stitch (`docs/
+          +diseño/DESIGN.md`) frente al spec?                            
+      251 +- **Opciones:** —                                             
+      252 +- **Decisión:** "DESIGN.md solo guía visual; el spec manda." D
+          +ESIGN.md define colores, tipografía, formas y componentes base
+          +. En funcionalidad (pantallas, estados, permisos, flujos) mand
+          +a `docs/01-spec.md`; lo que muestre el diseño y el spec no con
+          +temple no se implementa.                                      
+      253 +- **Por qué:** Elección de la persona.                        
+      254 +- **Costo/riesgo:** —                                         
+      255 +- **Afecta a:** CLAUDE.md (Documentos, Frontend), `docs/diseño
+          +/DESIGN.md`, spec §9                                          
+      256 +                                                              
+      257  ## D-27 · DoR definida por mí (el enunciado no la define) y Do
+           D
+      258  - **Duda:** ¿Qué conjunto de criterios debe tener una historia
+            de usuario o elemento del backlog antes de comenzar a trabaja
+           r?
+      259  - **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logi
+           ca de aplicacion B) Solo MVP.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      12  | B-08 | 2026-11-15 12:43 | Yo | 2-Planificar | MANUAL | Diseño
+           configurado con Stitch de Google y ajuste de `docs/diseño/DESI
+          GN.md` (motivo: Stitch es externa y el agente no puede usarla) 
+          | DESIGN.md queda como guía visual (colores, tipografía, formas
+           y componentes base); el spec manda en funcionalidad | docs/dis
+          eño/DESIGN.md |
+      13  | B-09 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, CLAUDE.md (Frontend) cambia la referencia
+           `docs/05-diseno.md` por `docs/diseño/DESIGN.md` y agrega la re
+          gla: DESIGN.md es solo guía visual y el spec manda en funcional
+          idad; la tabla de documentos se ajusta a esa descripción | CLAU
+          DE.md coherente con B-08 | CLAUDE.md, B-08 |
+      14  | B-10 | 2026-11-15 12:44 | Yo | 2-Planificar | DECISIÓN | DESI
+          GN.md solo guía visual; el spec manda | — | — |
+      15 +| B-11 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+         +pedido de la persona, se registró en 00-decisiones.md la decisi
+         +ón de B-10 en la entrada D-28, que estaba en el índice sin desa
+         +rrollar | D-28 completa: DESIGN.md solo guía visual; el spec ma
+         +nda en funcionalidad | docs/00-decisiones.md D-28, B-10 |      
+
+● Registré la decisión como D-28 · Diseño visual de SalaLibre en
+  docs/00-decisiones.md. Esa entrada ya existía en el índice pero no tenía
+  texto, así que la completé en vez de crear una D-29.
+
+  - Duda: qué papel tiene el diseño de Stitch (docs/diseño/DESIGN.md) frente al
+    spec.
+  - Decisión: "DESIGN.md solo guía visual; el spec manda."
+    - DESIGN.md define colores, tipografía, formas y componentes base.
+    - En funcionalidad (pantallas, estados, permisos, flujos) manda
+      docs/01-spec.md.
+    - Lo que muestre el diseño y el spec no contemple no se implementa.
+  - Por qué: "Elección de la persona", porque no me diste un motivo y no quise
+    inventarlo.
+  - Opciones y Costo/riesgo: quedan en — por la misma razón.
+  - Afecta a: CLAUDE.md, docs/diseño/DESIGN.md y spec §9. Puse §9 porque es la
+    sección de pantallas que citan las otras decisiones de UI; no la verifiqué
+    en el spec.
+
+  Si quieres agregar el motivo o las opciones que consideraste, dímelos y
+  completo esos campos.
+
+  También agregué la fila B-11 (AGENTE) al final de docs/03-bitacora.md para
+  registrar este cambio. No hice commit.
+
+✻ Churned for 18s · done 12:45
+
+> actualiza la decision D-27 con los spec que afecta                            
+
+  Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 1 line, removed 1 line
+      260  - **Decisión:** A) "Debe cumplir con el MVP, cada funcionalida
+           d con cobertura de preubas unitarias, validacion de seguridad 
+           cubriendo las principas fallas de seguridad OWASP Top 10 y deb
+           e cumplir con cada RN."
+      261  - **Por qué:** Metodologia de trabajo propia.
+      262  - **Costo/riesgo:** Se pueden empezar y finalizar tareas incom
+           pletas, con fallas o riesgos de seguridad
+      263 -- **Afecta a:** spec §3, §10                                  
+      263   No newline at end of file
+      264 +- **Afecta a:** spec §4 (alcance del MVP), §5 (reglas de negoc
+          +io RN), §11 (requisitos no funcionales: seguridad), §12 (estra
+          +tegia de pruebas), §14 (trazabilidad regla → prueba); `docs/02
+          +-backlog.md` (DoR y DoD)                                      
+      265   No newline at end of file
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      13  | B-09 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, CLAUDE.md (Frontend) cambia la referencia
+           `docs/05-diseno.md` por `docs/diseño/DESIGN.md` y agrega la re
+          gla: DESIGN.md es solo guía visual y el spec manda en funcional
+          idad; la tabla de documentos se ajusta a esa descripción | CLAU
+          DE.md coherente con B-08 | CLAUDE.md, B-08 |
+      14  | B-10 | 2026-11-15 12:44 | Yo | 2-Planificar | DECISIÓN | DESI
+          GN.md solo guía visual; el spec manda | — | — |
+      15  | B-11 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, se registró en 00-decisiones.md la decisi
+          ón de B-10 en la entrada D-28, que estaba en el índice sin desa
+          rrollar | D-28 completa: DESIGN.md solo guía visual; el spec ma
+          nda en funcionalidad | docs/00-decisiones.md D-28, B-10 |
+      16 +| B-12 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+         +| A pedido de la persona, se actualizó "Afecta a" de D-27 con l
+         +as secciones del spec que toca cada criterio de la DoR; se reem
+         +plazaron §3 y §10 | D-27 afecta a spec §4, §5, §11, §12, §14 y 
+         +a docs/02-backlog.md | docs/00-decisiones.md D-27, B-07 |      
+
+● Actualicé el campo "Afecta a" de la D-27 en docs/00-decisiones.md. Ahora
+  apunta a las secciones del spec que corresponden a cada criterio de la DoR:
+
+  ┌───────────────────────────────────┬─────────────────────────────────────┐
+  │        Criterio de la DoR         │          Sección del spec           │
+  ├───────────────────────────────────┼─────────────────────────────────────┤
+  │ Cumplir el MVP                    │ §4 Alcance del MVP                  │
+  ├───────────────────────────────────┼─────────────────────────────────────┤
+  │ Cumplir cada RN                   │ §5 Reglas de negocio                │
+  ├───────────────────────────────────┼─────────────────────────────────────┤
+  │ Validación de seguridad (OWASP    │ §11 Requisitos no funcionales       │
+  │ Top 10)                           │ (Seguridad)                         │
+  ├───────────────────────────────────┼─────────────────────────────────────┤
+  │ Cobertura de pruebas unitarias    │ §12 Estrategia de pruebas           │
+  ├───────────────────────────────────┼─────────────────────────────────────┤
+  │ Enlace entre regla y prueba       │ §14 Trazabilidad                    │
+  └───────────────────────────────────┴─────────────────────────────────────┘
+
+  También agregué docs/02-backlog.md, donde están la DoR y la DoD.
+
+  Quité §3 (Usuarios y roles) y §10 (Arquitectura), que estaban antes, porque
+  ninguno de los criterios de la DoR los toca. Si los querías mantener, los
+  vuelvo a poner.
+
+  Agregué la fila B-12 (CORRECCIÓN) al final de docs/03-bitacora.md.
+
+  Encontré dos referencias desactualizadas que no corregí:
+  - docs/02-backlog.md:9 dice "Esta es la mía (D-25)", pero la decisión de la
+    DoR es la D-27. La D-25 es la de equipamiento.
+  - docs/01-spec.md:437 (§11, Accesibilidad) todavía nombra docs/05-diseno.md en
+    lugar de docs/diseño/DESIGN.md.
+
+  ¿Quieres que las corrija?
+
+✻ Cooked for 19s · done 12:46
+
+> sí, corrige ambas referencias                                                 
+
+  Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+       6  > referencias que ya existían en decisiones, diseño y bitácora 
+          sigan siendo válidas (D-41).
+       7  
+       8  ## Definition of Ready (DoR)
+       9 -> El PDF de la prueba exige la DoR pero no la define. Esta es l
+         -a mía (D-25).                                                  
+       9 +> El PDF de la prueba exige la DoR pero no la define. Esta es l
+         +a mía (D-27).                                                  
+      10  
+      11  Una tarea está **lista para el agente** cuando tiene:
+      12  - [ ] **ID y objetivo** en una frase (qué valor entrega).
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      10  
+      11  Una tarea está **lista para el agente** cuando tiene:
+      12  - [ ] **ID y objetivo** en una frase (qué valor entrega).
+      13 -- [ ] **Trazabilidad:** las RN-xx, D-xx y secciones del spec (o
+         - de `05-diseno.md`) que implementa.                            
+      13 +- [ ] **Trazabilidad:** las RN-xx, D-xx y secciones del spec (o
+         + de `docs/diseño/DESIGN.md`) que implementa.                   
+      14  - [ ] **Dependencias** cerradas (las tareas previas ya están en
+           estado Hecha).
+      15  - [ ] **Alcance:** qué archivos o módulos toca, respetando la e
+          structura del spec §5.4.
+      16  - [ ] **Fuera de alcance:** qué NO debe hacer el agente en esta
+           tarea.
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      434  - **Concurrencia:** RN-01 la garantiza `bookings_no_overlap`, 
+           no una consulta previa. Crear cierre (RN-16) y crear reserva t
+           oman `pg_advisory_xact_lock` sobre la fecha afectada dentro de
+            su transacción. Desactivar usuario (RN-15) y crear reserva to
+           man `pg_advisory_xact_lock` sobre el `userId`.
+      435  - **Seguridad:** según `CLAUDE.md` (D-03): `JwtAuthGuard` glob
+           al, `RolesGuard`, `ValidationPipe` con `whitelist` y `forbidNo
+           nWhitelisted`, bcryptjs, sin stack traces. El JWT lleva solo `
+           sub` y `role`; en cada petición se relee el usuario para aplic
+           ar RN-14.
+      436  - **Rendimiento:** con 80 usuarios y 5 salas, cada endpoint re
+           sponde en menos de 300 ms en local con el seed cargado.
+      437 -- **Accesibilidad mínima:** formularios con `label` asociado, 
+          -foco visible, navegación por teclado en la agenda y contraste 
+          -AA con los tokens de `docs/05-diseno.md`.                     
+      437 +- **Accesibilidad mínima:** formularios con `label` asociado, 
+          +foco visible, navegación por teclado en la agenda y contraste 
+          +AA con los tokens de `docs/diseño/DESIGN.md`.                 
+      438  - **Observabilidad:** logs JSON con pino incluyendo `requestId
+           `, método, ruta, estado y duración. Nunca se loguean contraseñ
+           as, hashes, cookies ni tokens.
+      439  
+      440  ## 12. Estrategia de pruebas
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      357  
+      358  ## 9. Pantallas
+      359  
+      360 -La guía visual vendrá en `docs/05-diseno.md` y `docs/diseno/st
+          -itch/`. Este spec fija contenido y rutas.                     
+      360 +La guía visual está en `docs/diseño/DESIGN.md` y `docs/diseño/
+          +stitch/` (solo visual, D-28). Este spec fija contenido y rutas
+          +.                                                             
+      361  
+      362  | Pantalla | Ruta | Rol | Contenido |
+      363  |----------|------|-----|-----------|
+
+  Searched for 1 pattern, ran 2 shell commands (ctrl+o to expand)
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      357  
+      358  ## 9. Pantallas
+      359  
+      360 -La guía visual está en `docs/diseño/DESIGN.md` y `docs/diseño/
+          -stitch/` (solo visual, D-28). Este spec fija contenido y rutas
+          -.                                                             
+      360 +La guía visual está en `docs/diseño/DESIGN.md` (solo visual, D
+          +-28); las pantallas de Stitch irán en `docs/diseño/stitch/`. E
+          +ste spec fija contenido y rutas.                              
+      361  
+      362  | Pantalla | Ruta | Rol | Contenido |
+      363  |----------|------|-----|-----------|
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      14  | B-10 | 2026-11-15 12:44 | Yo | 2-Planificar | DECISIÓN | DESI
+          GN.md solo guía visual; el spec manda | — | — |
+      15  | B-11 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, se registró en 00-decisiones.md la decisi
+          ón de B-10 en la entrada D-28, que estaba en el índice sin desa
+          rrollar | D-28 completa: DESIGN.md solo guía visual; el spec ma
+          nda en funcionalidad | docs/00-decisiones.md D-28, B-10 |
+      16  | B-12 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se actualizó "Afecta a" de D-27 con l
+          as secciones del spec que toca cada criterio de la DoR; se reem
+          plazaron §3 y §10 | D-27 afecta a spec §4, §5, §11, §12, §14 y 
+          a docs/02-backlog.md | docs/00-decisiones.md D-27, B-07 |
+      17 +| B-13 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+         +| A pedido de la persona, se corrigieron referencias desactuali
+         +zadas: la DoR del backlog citaba D-25 (es D-27) y spec §9, §11 
+         +y la DoR del backlog citaban `docs/05-diseno.md` (ahora `docs/d
+         +iseño/DESIGN.md`) | Referencias coherentes con D-27 y D-28 | do
+         +cs/02-backlog.md, docs/01-spec.md §9 §11, B-12 |               
+
+● Corregí las dos referencias:
+
+  - docs/02-backlog.md:9: la DoR ahora cita la D-27 en lugar de la D-25.
+  - docs/01-spec.md:437 (§11, Accesibilidad): ahora apunta a los tokens de
+    docs/diseño/DESIGN.md.
+
+  Al buscar encontré la misma ruta vieja en dos lugares más y también los
+  corregí:
+
+  - docs/02-backlog.md:13 (criterio de Trazabilidad de la DoR): ahora apunta a
+    docs/diseño/DESIGN.md.
+  - docs/01-spec.md:360 (§9, Pantallas): ahora dice que la guía visual está en
+    docs/diseño/DESIGN.md (solo visual, D-28).
+
+  Agregué la fila B-13 (CORRECCIÓN) al final de docs/03-bitacora.md. No hice
+  commit.
+
+  Todavía no existe la carpeta docs/diseño/stitch/. CLAUDE.md la nombra como
+  referencia visual (prioridad 4), pero no hay PNG ni HTML de Stitch en ninguna
+  parte de docs/. Por eso en el spec escribí que las pantallas de Stitch "irán"
+  ahí, sin decir que ya están. Habrá que exportarlas antes de las tareas de UI.
+
+✻ Cogitated for 29s · done 12:47
+
+> /bitacora MANUAL, exporté las pantallas de Stitch a docs/diseño/stitch        
+
+● No agregué la fila porque, para el tipo MANUAL, el motivo es obligatorio y el
+  texto no lo trae.
+
+  ¿Uso el mismo motivo de B-08 ("Stitch es externa y el agente no puede usarla")
+  o es otro? Con tu respuesta escribo:
+  - Qué pasó: Exporté las pantallas de Stitch a docs/diseño/stitch (motivo: …)
+  - Resultado: —
+  - Ref.: docs/diseño/stitch
+✻ Sautéed for 3s · done 12:47
+
+> el mismo motivo de B-08                                                       
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      15  | B-11 | 2026-11-15 12:44 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, se registró en 00-decisiones.md la decisi
+          ón de B-10 en la entrada D-28, que estaba en el índice sin desa
+          rrollar | D-28 completa: DESIGN.md solo guía visual; el spec ma
+          nda en funcionalidad | docs/00-decisiones.md D-28, B-10 |
+      16  | B-12 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se actualizó "Afecta a" de D-27 con l
+          as secciones del spec que toca cada criterio de la DoR; se reem
+          plazaron §3 y §10 | D-27 afecta a spec §4, §5, §11, §12, §14 y 
+          a docs/02-backlog.md | docs/00-decisiones.md D-27, B-07 |
+      17  | B-13 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se corrigieron referencias desactuali
+          zadas: la DoR del backlog citaba D-25 (es D-27) y spec §9, §11 
+          y la DoR del backlog citaban `docs/05-diseno.md` (ahora `docs/d
+          iseño/DESIGN.md`) | Referencias coherentes con D-27 y D-28 | do
+          cs/02-backlog.md, docs/01-spec.md §9 §11, B-12 |
+      18 +| B-14 | 2026-11-15 12:47 | Yo | 2-Planificar | MANUAL | Export
+         +é las pantallas de Stitch a `docs/diseño/stitch` (motivo: Stitc
+         +h es externa y el agente no puede usarla) | — | docs/diseño/sti
+         +tch |                                                          
+
+● Agregué esta fila al final de docs/03-bitacora.md:
+
+  | B-14 | 2026-11-15 12:47 | Yo | 2-Planificar | MANUAL | Exporté las pantallas
+  de Stitch a docs/diseño/stitch (motivo: Stitch es externa y el agente no 
+  puede usarla) | — | docs/diseño/stitch |
+
+✻ Cogitated for 7s · done 12:47
+
+> /bitacora MANUAL, A partir de docs/01-spec.md, docs/00-decisiones.md y        
+docs/diseño/DESIGN.md, redacte el detalle de cada tarea de docs/02-backlog.md.  
+
+● No agregué la fila porque, para el tipo MANUAL, el motivo es obligatorio y el
+  texto no lo trae.
+
+  El motivo de B-08 y B-14 no sirve aquí, porque redactar el backlog no requiere
+  Stitch. ¿Por qué redactaste tú el detalle de las tareas en vez de pedírselo
+  al agente? Por ejemplo: "quería decidir yo el alcance y el orden de cada
+  tarea".
+
+  Con tu respuesta escribo:
+  - Qué pasó: A partir de docs/01-spec.md, docs/00-decisiones.md y
+    docs/diseño/DESIGN.md, redacté el detalle de cada tarea de
+    docs/02-backlog.md (motivo: …)
+  - Resultado: —
+  - Ref.: docs/02-backlog.md
+
+✻ Brewed for 4s · done 13:33
+
+> quería decidir yo el alcance y el orden de cada tarea                         
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      16  | B-12 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se actualizó "Afecta a" de D-27 con l
+          as secciones del spec que toca cada criterio de la DoR; se reem
+          plazaron §3 y §10 | D-27 afecta a spec §4, §5, §11, §12, §14 y 
+          a docs/02-backlog.md | docs/00-decisiones.md D-27, B-07 |
+      17  | B-13 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se corrigieron referencias desactuali
+          zadas: la DoR del backlog citaba D-25 (es D-27) y spec §9, §11 
+          y la DoR del backlog citaban `docs/05-diseno.md` (ahora `docs/d
+          iseño/DESIGN.md`) | Referencias coherentes con D-27 y D-28 | do
+          cs/02-backlog.md, docs/01-spec.md §9 §11, B-12 |
+      18  | B-14 | 2026-11-15 12:47 | Yo | 2-Planificar | MANUAL | Export
+          é las pantallas de Stitch a `docs/diseño/stitch` (motivo: Stitc
+          h es externa y el agente no puede usarla) | — | docs/diseño/sti
+          tch |
+      19 +| B-15 | 2026-11-15 13:34 | Yo | 2-Planificar | MANUAL | A part
+         +ir de `docs/01-spec.md`, `docs/00-decisiones.md` y `docs/diseño
+         +/DESIGN.md`, redacté el detalle de cada tarea de `docs/02-backl
+         +og.md` (motivo: quería decidir yo el alcance y el orden de cada
+         + tarea) | — | docs/02-backlog.md |                             
+
+● Agregué esta fila al final de docs/03-bitacora.md:
+
+  | B-15 | 2026-11-15 13:34 | Yo | 2-Planificar | MANUAL | A partir de 
+  docs/01-spec.md, docs/00-decisiones.mdydocs/diseño/DESIGN.md, redacté el 
+  detalle de cada tarea de docs/02-backlog.md (motivo: quería decidir yo el 
+  alcance y el orden de cada tarea) | — | docs/02-backlog.md |
+
+✻ Worked for 8s · done 13:34
+
+> A partir de docs/01-spec.md, docs/00-decisiones.md y docs/05-diseno.md,       
+  redacta el detalle de cada tarea de docs/02-backlog.md siguiendo la plantilla 
+  y la DoR. No modifiques el spec ni las decisiones; si encuentras vacíos,      
+  lístalos al final.                                                            
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● No toqué docs/02-backlog.md. Las 23 tareas del resumen (T01 a T11) ya tienen
+  todo su detalle, en el formato de la plantilla del propio backlog y con todos
+  los campos de la DoR. Es lo que registraste en B-15 como trabajo tuyo hecho a
+  mano para decidir el alcance y el orden. Si las vuelvo a redactar, sobrescribo
+  esas decisiones.
+
+  docs/05-diseno.md no existe; la referencia de diseño vigente es
+  docs/diseño/DESIGN.md (D-28).
+
+  Revisé el backlog contra el spec, las decisiones, CLAUDE.md y el disco. Estos
+  son los vacíos y contradicciones que encontré:
+
+  Choca con CLAUDE.md
+  1. Ubicación del código. CLAUDE.md pide crear src/ con el frontend y el
+     backend en carpetas separadas dentro. Todo el backlog usa api/ y web/ en la
+     raíz, y el spec §10 probablemente también. Esto afecta a casi todas las
+     tareas, así que hay que decidir cuál manda antes de T01.
+
+  Decisiones que no existen
+  2. El encabezado del backlog cita D-41 (IDs con sufijo) y "Por qué este orden"
+  cita D-29. En 00-decisiones.md solo llegan hasta D-28.
+
+  Archivos o carpetas que no existen
+  3. docs/tareas/_plantilla-tarea.md. CLAUDE.md exige usarla para escribir
+  docs/tareas/Txx.md al cerrar cada tarea.
+  4. web-assets/. T07a toma de ahí el logo y el favicon.
+  5. T09 nombra el prototipo mis_reservas_check_in_con_liberaci_n_autom_tica,
+  pero la carpeta exportada se llama …_autom_tic (sin la "a" final).
+
+  Puntos que el backlog ya marca como pendientes de tu decisión
+  6. T03: el throttler y el código 429 no están en el spec (§8).
+  7. T07c: el spec §9 describe el login con el botón "Entrar" y sin personajes,
+  pero la tarea pide "Iniciar sesión" y personajes animados. Falta registrar la
+  decisión o actualizar el spec.
+  8. T05b: el spec no fija el código de error al eliminar un cierre de hoy o
+  pasado. La tarea propone 422 CLOSURE_IN_PAST.
+  9. T05: el spec no fija en qué orden se evalúan los errores 422.
+  10. Spec §14: la columna "Tarea" de la trazabilidad está pendiente de que la
+  copies desde el backlog.
+
+  Menor
+  11. La DoR dice que una tarea no está lista si dura más de L. T07c es L y es
+  recortable, así que está bien. Pero el total de "4 L + 16 M + 3 S" no cuadra:
+  en el resumen cuento 5 L (T05, T06, T07c, T08 y T01… no, T01 es M). Si
+  quieres, verifico ese conteo.
+
+  ¿Cómo sigo? Puedo:
+  - (a) dejar el backlog como está y corregir solo los puntos 2 a 5 y 11, que
+    son referencias;
+  - (b) reescribir alguna tarea concreta que me indiques;
+  - (c) esperar a que decidas el punto 1 (src/ o api/ + web/), porque cambia el
+    alcance de todas las tareas.
+
+✻ Baked for 26s · done 13:35
+
+> corrige los puntos 2 a 5 y 11. Con el punto 1. Ubicacion del codigo definelo  
+  asi: src/api, src/web. Punto 3: ya guarde el archivo. Punto 4: Actualiza la   
+  ruta a @docs/diseño/img Punto 6. Sino esta ene el spec quitalo.               
+  ⎿  Listed directory docs\diseño\img\
+
+  Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+● Corrijo el backlog. Primero quito el throttler y las referencias rotas con
+  ediciones puntuales; después cambio las rutas a src/api y src/web con un
+  reemplazo global.
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      3  > Las tareas se ejecutan **en el orden de la tabla**. Ninguna em
+         pieza si no cumple la **DoR**, y ninguna se
+      4  > cierra si no cumple la **DoD por tarea**.
+      5  > **Los IDs nunca se renumeran.** Las tareas agregadas después u
+         san sufijo (T02a, T03a, T05a, T05b, T06a, T07a, T07b, T07c, T08a
+         , T10a, T10b, T10c) para que las
+      6 -> referencias que ya existían en decisiones, diseño y bitácora s
+        -igan siendo válidas (D-41).                                     
+      6 +> referencias que ya existían en decisiones, diseño y bitácora s
+        +igan siendo válidas.                                            
+      7  
+      8  ## Definition of Ready (DoR)
+      9  > El PDF de la prueba exige la DoR pero no la define. Esta es la
+          mía (D-27).
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      82  
+      83  **Esfuerzo total estimado:** 4 L + 16 M + 3 S ≈ 12,75 h de ejec
+          ución del agente, sin contar la revisión. Si se recortan T06a y
+           T10c se ahorra ≈ 1 h, pero se pierde O4 (auditoría), P-12, P-1
+          5, F-08 y parte de D-05: habría que declararlo en `04-cierre.md
+          `. Recortar T07c ahorra ≈ 1 h más y solo afecta a lo visual: el
+           login funcional queda en T07.
+      84  
+      85 -**Por qué este orden (D-29):**                                 
+      85 +**Por qué este orden:**                                        
+      86  - **T01:** primero, que el sistema levante.
+      87  - **T02a:** lo transversal, construido una sola vez para que to
+          dos los módulos lo usen.
+      88  - **T03 a T05b:** el núcleo de la API: seguridad, reservas y ad
+          ministración. Los módulos de usuarios y cierres van después de 
+          reservas porque desactivar un usuario y crear un cierre cancela
+          n reservas (RN-15, RN-16) y comparten los locks de §11.
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      59  | 1 | T01 | Esqueleto del monorepo y compose (db, api Nest con 
+          health, web nginx con proxy) | — | M | No | Pendiente | |
+      60  | 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs
+          ` inmutable) y seed | T01 | M | No | Pendiente | |
+      61  | 3 | T02a | Plataforma transversal de la API: request ID, logg
+          er, filtro de errores, ValidationPipe, helmet, Swagger, Transac
+          tionRunner | T02 | M | No | Pendiente | |
+      62 -| 4 | T03 | Auth: login y logout con cookie, `/me`, guard globa
+         -l (denegación por defecto), `RolesGuard`, throttler | T02a | M 
+         -| No | Pendiente | |                                           
+      62 +| 4 | T03 | Auth: login y logout con cookie, `/me`, guard globa
+         +l (denegación por defecto), `RolesGuard` | T02a | M | No | Pend
+         +iente | |                                                      
+      63  | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password
+          `) | T03 | S | No | Pendiente | |
+      64  | 6 | T04 | Módulo de salas (repositorio + service + controller
+          , solo ADMIN para escritura) | T03 | M | No | Pendiente | |
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Pen
+          diente | |
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      250  | Trazabilidad | RN-14, RN-19, RN-21 · D-03, D-16, D-19, S-01,
+            S-02 · spec §5, §8 (`/auth/*`), §11, F-01 · P-10 (parcial), P
+           -14 (parcial; matriz completa en T06) |
+      251  | Dependencias | T02a |
+      252  | Estimación | M |
+      253 -| Seguridad / auditoría | Roles: público (`login`, `health`); 
+          -autenticado (`logout`, `me`). Auditoría: no aplica (el login q
+          -ueda en logs de pino, S-02). OWASP A07: mensaje genérico, bcry
+          -ptjs, cookie `httpOnly` + `SameSite=Strict` + `Path=/api`, lím
+          -ite de intentos; A01: denegación por defecto |                
+      253 +| Seguridad / auditoría | Roles: público (`login`, `health`); 
+          +autenticado (`logout`, `me`). Auditoría: no aplica (el login q
+          +ueda en logs de pino, S-02). OWASP A07: mensaje genérico, bcry
+          +ptjs, cookie `httpOnly` + `SameSite=Strict` + `Path=/api`; A01
+          +: denegación por defecto |                                    
+      254  | Estado | Pendiente |
+      255  
+      256  **Alcance (archivos o módulos):**
+
+● Update(docs\02-backlog.md)
+  ⎿  Removed 1 line
+      256  **Alcance (archivos o módulos):**
+      257  - `api/src/modules/auth/**` (controller, service, dto, estrate
+           gia JWT) y `api/src/modules/users/` mínimo: `UsersRepository` 
+           (interfaz) + implementación Prisma con `findByEmail` y `findBy
+           Id`.
+      258  - `api/src/common/`: `JwtAuthGuard` global (`APP_GUARD`), `Rol
+           esGuard`, decoradores `@Public()`, `@Roles()`, `@CurrentUser()
+           `.
+      259 -- Throttler solo en `POST /auth/login`, con el límite configur
+          -able por variable de entorno (default 10 intentos por minuto p
+          -or IP).                                                       
+      259  
+      260  **Fuera de alcance:**
+      261  - Cambio de contraseña (T03a), CRUD de usuarios (T05a), escrit
+           ura de auditoría, frontend.
+
+● Update(docs\02-backlog.md)
+  ⎿  Removed 1 line
+      268  - **CA5** · Dada una cookie con JWT vencido o firma inválida, 
+           cuando llama a cualquier ruta, entonces 401 `UNAUTHENTICATED`.
+            El JWT dura `JWT_EXPIRES_IN` (8 h), no se renueva (RN-19) y s
+           u payload solo lleva `sub` y `role`.
+      269  - **CA6** · Dada una sesión, cuando `POST /api/auth/logout`, e
+           ntonces 204 y la cookie queda borrada.
+      270  - **CA7** · Dada una ruta nueva sin `@Public()`, cuando se lla
+           ma sin sesión, entonces 401; dada una ruta con `@Roles('ADMIN'
+           )`, cuando la llama un `EMPLOYEE`, entonces 403 `FORBIDDEN`.
+      271 -- **CA8** · Dados más intentos de login que el límite configur
+          -ado en un minuto, cuando llega otro, entonces la API responde 
+          -429 con el formato de error único.                            
+      271  
+      272  **Verificación:**
+      273  ```bash
+● Update(docs\02-backlog.md)
+  ⎿  Removed 1 line
+      278  curl -s $BASE/auth/me                                         
+                      # 401 UNAUTHENTICATED
+      279  curl -s -H "$H" -d '{"email":"empleado1@salalibre.local","pass
+           word":"mala"}' $BASE/auth/login   # 401 INVALID_CREDENTIALS
+      280  curl -s -o /dev/null -w "%{http_code}\n" -b /tmp/emp1.txt -X P
+           OST $BASE/auth/logout            # 204
+      281 -for i in $(seq 1 12); do curl -s -o /dev/null -w "%{http_code}
+          - " -H "$H" -d '{"email":"x@x.com","password":"mala"}' $BASE/au
+          -th/login; done; echo   # termina en 429                       
+      281  npm --prefix api test -- auth
+      282  npm --prefix api run lint
+      283  ```
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      282  npm --prefix api run lint
+      283  ```
+      284  
+      285 -**Notas para el agente:** ⚠ El throttler y el código 429 no fi
+          -guran en el spec (§8 lista 400, 401, 403, 404, 409, 422 y 500)
+          -. Se incluyen por D-27 (OWASP) y por el título de esta tarea; 
+          -antes de pasarla a "Lista", la persona decide si lo registra e
+          -n el spec o lo retira. El límite debe poder subirse por variab
+          -le de entorno para que las pruebas de T06 no lo activen. `logo
+          -ut` no está en `CLAUDE.md` pero se justifica en S-01.         
+      285 +**Notas para el agente:** No agregues límite de intentos (thro
+          +ttler) ni el código 429: no están en el spec (§8 lista 400, 40
+          +1, 403, 404, 409, 422 y 500). `logout` no está en `CLAUDE.md` 
+          +pero se justifica en S-01.                                    
+      286  
+      287  ---
+      288  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      558  grep -rn "it('RN-01" api/test | head -3
+      559  ```
+      560  
+      561 -**Notas para el agente:** El throttler de T03 no debe afectar 
+          -a la suite: súbelo por variable de entorno en `api-test`. Las 
+          -fechas de las pruebas se calculan a partir de "ahora" (próximo
+          - día hábil), nunca fijas. Para la concurrencia usa peticiones 
+          -HTTP reales con `Promise.all` y verifica que el pool de conexi
+          -ones permita 20 simultáneas.                                  
+      561 +**Notas para el agente:** Las fechas de las pruebas se calcula
+          +n a partir de "ahora" (próximo día hábil), nunca fijas. Para l
+          +a concurrencia usa peticiones HTTP reales con `Promise.all` y 
+          +verifica que el pool de conexiones permita 20 simultáneas.    
+      562  
+      563  ---
+      564  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      689  #  5) contraseña incorrecta → "Correo o contraseña incorrectos
+           "; correo inválido o contraseña vacía → error junto al campo, 
+           sin petición
+      690  ```
+      691  
+      692 -**Notas para el agente:** Aquí el login es funcional y sencill
+          -o, con los componentes de T07a; la composición de dos columnas
+          - y los personajes son T07c (imagen en `docs/diseño/stitch/logi
+          -n`). La autenticación es la real del API, no una simulación. E
+          -l frontend nunca maneja tokens: la cookie es `httpOnly` (D-03)
+          -. Un 429 (si T03 mantiene el throttler) se muestra con un mens
+          -aje claro.                                                    
+      692 +**Notas para el agente:** Aquí el login es funcional y sencill
+          +o, con los componentes de T07a; la composición de dos columnas
+          + y los personajes son T07c (imagen en `docs/diseño/stitch/logi
+          +n`). La autenticación es la real del API, no una simulación. E
+          +l frontend nunca maneja tokens: la cookie es `httpOnly` (D-03)
+          +.                                                             
+      693  
+      694  ---
+      695  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      785  #  9) consola del navegador sin errores propios de la app
+      786  ```
+      787  
+      788 -**Notas para el agente:** La imagen de `docs/diseño/stitch/log
+          -in` es la autoridad visual; sus colores orientativos están en 
+          -`DESIGN.md` («Login»). Si algún texto de la imagen no se lee, 
+          -usa uno breve y coherente en español, sin inventar funciones. 
+          -No pidas código de referencia: constrúyelo desde la imagen y e
+          -sta tarea. Mantén `characterState.ts` como función pura (el sp
+          -ec no pide pruebas de frontend, S-09, pero así queda lista par
+          -a probarse). Si T03 mantiene el throttler, trata un 429 con un
+          - mensaje claro y sin animación de éxito. ⚠ El spec §9 describe
+          - el login con el botón "Entrar" y sin personajes animados: la 
+          -persona registra la decisión de adoptar el diseño de la imagen
+          - y, si quiere, actualiza el spec. **Recortable:** si falta tie
+          -mpo, se mantiene el login funcional de T07 y se omite esta tar
+          -ea.                                                           
+      788 +**Notas para el agente:** La imagen de `docs/diseño/stitch/log
+          +in` es la autoridad visual; sus colores orientativos están en 
+          +`DESIGN.md` («Login»). Si algún texto de la imagen no se lee, 
+          +usa uno breve y coherente en español, sin inventar funciones. 
+          +No pidas código de referencia: constrúyelo desde la imagen y e
+          +sta tarea. Mantén `characterState.ts` como función pura (el sp
+          +ec no pide pruebas de frontend, S-09, pero así queda lista par
+          +a probarse). ⚠ El spec §9 describe el login con el botón "Entr
+          +ar" y sin personajes animados: la persona registra la decisión
+          + de adoptar el diseño de la imagen y, si quiere, actualiza el 
+          +spec. **Recortable:** si falta tiempo, se mantiene el login fu
+          +ncional de T07 y se omite esta tarea.                         
+      789  
+      790  ---
+      791  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      619  - `web/tailwind.config.*` y estilos globales con los tokens de
+            `DESIGN.md` (colores, radios, espaciado, tipografía, utilidad
+            de cifras tabulares).
+      620  - Inter e iconos empaquetados como dependencias locales (regis
+           trar paquete y motivo).
+      621  - `web/src/shared/ui/`: `Button` (primario, secundario, peligr
+           o, cargando), `Input`, `Select`, `Field` (label asociado y err
+           or), `CheckboxGroup` o `MultiSelect` (equipamiento), `Badge` o
+            píldora de estado, `Modal` (480 y 640 px), `ConfirmDialog`, `
+           Table`, `Spinner` y `Skeleton`, `EmptyState`, `ErrorState` (me
+           nsaje, `requestId` y "Reintentar"), `Toast`, `Avatar` con inic
+           iales, `Banner`.
+      622 -- Logo y favicon locales en `web/public/` (desde `web-assets/`
+          -).                                                            
+      622 +- Logo y favicon locales en `web/public/`, copiados de `docs/d
+          +iseño/img/` (`logo.svg` y `logo-icon.svg`).                   
+      623  
+      624  **Fuera de alcance:**
+      625  - Pantallas, `apiClient`, rutas y datos reales. No dejes una p
+           ágina de demostración permanente.
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      880  | Campo | Valor |
+      881  |---|---|
+      882  | Objetivo | Que cada persona vea sus reservas y las cancele, 
+           y que ADMIN cancele reservas ajenas desde la agenda |
+      883 -| Trazabilidad | RN-11, RN-12, RN-13 · D-12, D-13 · spec §6 (F
+          --03, F-04), §9 (Mis reservas) · diseño: prototipo `mis_reserva
+          -s_check_in_con_liberaci_n_autom_tica`; Componentes 2, 6 y 7 | 
+      883 +| Trazabilidad | RN-11, RN-12, RN-13 · D-12, D-13 · spec §6 (F
+          +-03, F-04), §9 (Mis reservas) · diseño: prototipo `mis_reserva
+          +s_check_in_con_liberaci_n_autom_tic`; Componentes 2, 6 y 7 |  
+      884  | Dependencias | T08a |
+      885  | Estimación | M |
+      886  | Seguridad / auditoría | Roles: autenticado (propias); ADMIN 
+           cancela ajenas desde `/agenda`. Auditoría: la genera la API (`
+           BOOKING_CANCELLED`, T06a). OWASP A01: ocultar el botón no sust
+           ituye al 403 de la API |
+
+● Ahora el reemplazo global de rutas (api/ → src/api/, web/ → src/web/, sin
+  tocar las URL como /api/health):
+
+● Bash(cd "/e/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cp
+      docs/02-backlog.md "$TMPDIR/backlog.bak" 2>/dev/null || cp
+      docs/02-backlog.md /c/Users/WALTER~1.MA…)
+  ⎿  81
+     --- restos sin src/ ---
+     --- throttler/429/D-29/D-41/web-assets ---
+     … +6 lines (ctrl+o to expand)
+  ⎿  1 file changed (binary, mode only or too large to show)
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      17  | B-13 | 2026-11-15 12:46 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, se corrigieron referencias desactuali
+          zadas: la DoR del backlog citaba D-25 (es D-27) y spec §9, §11 
+          y la DoR del backlog citaban `docs/05-diseno.md` (ahora `docs/d
+          iseño/DESIGN.md`) | Referencias coherentes con D-27 y D-28 | do
+          cs/02-backlog.md, docs/01-spec.md §9 §11, B-12 |
+      18  | B-14 | 2026-11-15 12:47 | Yo | 2-Planificar | MANUAL | Export
+          é las pantallas de Stitch a `docs/diseño/stitch` (motivo: Stitc
+          h es externa y el agente no puede usarla) | — | docs/diseño/sti
+          tch |
+      19  | B-15 | 2026-11-15 13:34 | Yo | 2-Planificar | MANUAL | A part
+          ir de `docs/01-spec.md`, `docs/00-decisiones.md` y `docs/diseño
+          /DESIGN.md`, redacté el detalle de cada tarea de `docs/02-backl
+          og.md` (motivo: quería decidir yo el alcance y el orden de cada
+           tarea) | — | docs/02-backlog.md |
+      20 +| B-16 | 2026-11-15 13:44 | Agente | 2-Planificar | CORRECCIÓN 
+         +| A pedido de la persona, en 02-backlog.md: rutas `api/` y `web
+         +/` pasan a `src/api/` y `src/web/` (incluidos los `--prefix` de
+         + los comandos); se quitan las citas a D-29 y D-41, que no exist
+         +en; se retiran el throttler y el 429 de T03 y sus menciones en 
+         +T06, T07 y T07c por no estar en el spec; logo y favicon se toma
+         +n de `docs/diseño/img/`; se corrige el nombre de la carpeta del
+         + prototipo de Mis reservas | Backlog sin referencias rotas; spe
+         +c §10 aún describe `api/` y `web/` en la raíz | docs/02-backlog
+         +.md, CLAUDE.md (Ubicación de código), B-15 |                   
+
+● Corregí docs/02-backlog.md con lo que indicaste, salvo el punto 11, que estaba
+  mal en mi lista y no requiere cambios.
+
+  1. Ubicación del código: las 81 rutas del backlog ahora usan src/api/ y
+     src/web/, también en los comandos (npm --prefix src/api, grep … 
+     src/web/src). Las URL como /api/health o localhost:8080/api/... no
+     cambiaron.
+  2. D-29 y D-41: quité las dos citas, en el encabezado y en "Por qué este
+     orden".
+  3. Plantilla: confirmé que docs/tareas/_plantilla-tarea.md existe.
+  4. Logo y favicon: T07a ahora los toma de docs/diseño/img/ (logo.svg y
+     logo-icon.svg) y los copia a src/web/public/.
+  5. Prototipo de Mis reservas: T09 ahora apunta a la carpeta real,
+     mis_reservas_check_in_con_liberaci_n_autom_tic.
+  6. Throttler y 429: los quité de T03 (título del resumen, seguridad, alcance,
+     CA8 y el comando de verificación). También quité sus menciones en las notas
+     de T06, T07 y T07c. La nota de T03 ahora dice que no se agregue límite de
+     intentos porque el spec no lo incluye.
+  7. Conteo de estimaciones: el total de "4 L + 16 M + 3 S ≈ 12,75 h" es
+     correcto (las L son T05, T06, T07c y T08). Mi observación anterior estaba
+     mal y no cambié nada.
+
+  Agregué la fila B-16 (CORRECCIÓN) al final de docs/03-bitacora.md. No hice
+  commit.
+
+  Queda una contradicción. El spec §10 todavía pone api/ y web/ en la raíz,
+  tanto en la tabla de servicios del compose como en la estructura de carpetas.
+  Como el spec manda sobre el backlog, el agente de T01 podría seguir esa
+  estructura. No lo modifiqué porque pediste no tocar el spec. ¿Actualizo el
+  spec §10 a src/api y src/web y registro la decisión como D-29 en
+  00-decisiones.md?
+
+✻ Brewed for 1m 21s · done 13:44
+
+> sí, actualiza el spec §10 y registra la D-29                                  
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      389  | Servicio | Imagen | Puerto | Healthcheck | Depende de |
+      390  |----------|--------|--------|-------------|------------|
+      391  | `db` | `postgres:16-alpine` | interno 5432 | `pg_isready -U 
+           $POSTGRES_USER` | — |
+      392 -| `api` | build `api/Dockerfile` desde `node:24-alpine`, multi
+          --stage, usuario no root | interno 3000 | `GET http://localhost
+          -:3000/api/health` | `db` (`service_healthy`) |                
+      392 +| `api` | build `src/api/Dockerfile` desde `node:24-alpine`, m
+          +ulti-stage, usuario no root | interno 3000 | `GET http://local
+          +host:3000/api/health` | `db` (`service_healthy`) |            
+      393  | `web` | build `web/Dockerfile`: etapa `node:24-alpine` compi
+           la Vite, etapa final nginx sirve estáticos y proxy | **8080** 
+           publicado | `GET http://localhost:8080/` | `api` (`service_hea
+           lthy`) |
+      394  
+      395  Arranque de `api`: `prisma migrate deploy` → seed → `node dist
+           /main.js` (D-02). Todas las variables tienen default con `${VA
+           R:-valor}` en el compose. `.gitattributes` con `* text=auto eo
+           l=lf`.
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      390  |----------|--------|--------|-------------|------------|
+      391  | `db` | `postgres:16-alpine` | interno 5432 | `pg_isready -U 
+           $POSTGRES_USER` | — |
+      392  | `api` | build `src/api/Dockerfile` desde `node:24-alpine`, m
+           ulti-stage, usuario no root | interno 3000 | `GET http://local
+           host:3000/api/health` | `db` (`service_healthy`) |
+      393 -| `web` | build `web/Dockerfile`: etapa `node:24-alpine` compi
+          -la Vite, etapa final nginx sirve estáticos y proxy | **8080** 
+          -publicado | `GET http://localhost:8080/` | `api` (`service_hea
+          -lthy`) |                                                      
+      393 +| `web` | build `src/web/Dockerfile`: etapa `node:24-alpine` c
+          +ompila Vite, etapa final nginx sirve estáticos y proxy | **808
+          +0** publicado | `GET http://localhost:8080/` | `api` (`service
+          +_healthy`) |                                                  
+      394  
+      395  Arranque de `api`: `prisma migrate deploy` → seed → `node dist
+           /main.js` (D-02). Todas las variables tienen default con `${VA
+           R:-valor}` en el compose. `.gitattributes` con `* text=auto eo
+           l=lf`.
+      396  
+
+● Update(docs\01-spec.md)
+  ⎿  Added 22 lines, removed 21 lines
+      394  
+      395  Arranque de `api`: `prisma migrate deploy` → seed → `node dist
+           /main.js` (D-02). Todas las variables tienen default con `${VA
+           R:-valor}` en el compose. `.gitattributes` con `* text=auto eo
+           l=lf`.
+      396  
+      397 -### Estructura de carpetas                                    
+      397 +### Estructura de carpetas (D-29)                             
+      398  ```
+      399 -api/                                                          
+      400 -  prisma/schema.prisma                                        
+      401 -  prisma/migrations/            # incluye las dos migraciones 
+          -SQL propias (§7)                                              
+      402 -  prisma/seed.ts                                              
+      403 -  src/common/                   # request ID, filtro de errore
+          -s, guards, decoradores, TransactionRunner                     
+      404 -  src/modules/auth/                                           
+      405 -  src/modules/users/                                          
+      406 -  src/modules/rooms/                                          
+      407 -  src/modules/bookings/         # domain/ con BookingPolicy y 
+          -reglas RN-02..RN-12                                           
+      408 -  src/modules/closures/                                       
+      409 -  src/modules/audit/                                          
+      410 -  test/                                                       
+      411 -web/                                                          
+      412 -  src/features/auth/                                          
+      413 -  src/features/bookings/                                      
+      414 -  src/features/rooms/                                         
+      415 -  src/features/users/                                         
+      416 -  src/features/closures/                                      
+      417 -  src/features/audit/                                         
+      418 -  src/shared/                   # apiClient, layout, component
+          -es base                                                       
+      399 +src/                                                          
+      400 +  api/                                                        
+      401 +    prisma/schema.prisma                                      
+      402 +    prisma/migrations/          # incluye las dos migraciones 
+          +SQL propias (§7)                                              
+      403 +    prisma/seed.ts                                            
+      404 +    src/common/                 # request ID, filtro de errore
+          +s, guards, decoradores, TransactionRunner                     
+      405 +    src/modules/auth/                                         
+      406 +    src/modules/users/                                        
+      407 +    src/modules/rooms/                                        
+      408 +    src/modules/bookings/       # domain/ con BookingPolicy y 
+          +reglas RN-02..RN-12                                           
+      409 +    src/modules/closures/                                     
+      410 +    src/modules/audit/                                        
+      411 +    test/                                                     
+      412 +  web/                                                        
+      413 +    src/features/auth/                                        
+      414 +    src/features/bookings/                                    
+      415 +    src/features/rooms/                                       
+      416 +    src/features/users/                                       
+      417 +    src/features/closures/                                    
+      418 +    src/features/audit/                                       
+      419 +    src/shared/                 # apiClient, layout, component
+          +es base                                                       
+      420  docker-compose.yml
+      421  .gitattributes
+      422  ```
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 1 line
+      34  | D-26 | Seed: 1 ADMIN + 3 EMPLOYEE + 5 salas; ADMIN también re
+          serva |
+      35  | D-27 | DoR definida por mí (el enunciado no la define) y DoD 
+          |
+      36  | D-28 | Diseño visual de SalaLibre |
+      37 +| D-29 | Código en `src/api` y `src/web` |                     
+      38  
+      39  ---
+      40  
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 8 lines
+      255  - **Costo/riesgo:** —
+      256  - **Afecta a:** CLAUDE.md (Documentos, Frontend), `docs/diseño
+           /DESIGN.md`, spec §9
+      257  
+      258 +## D-29 · Código en `src/api` y `src/web`                     
+      259 +- **Duda:** ¿Dónde vive el código del backend y del frontend d
+          +entro del repositorio?                                        
+      260 +- **Opciones:** A) `api/` y `web/` en la raíz (estructura orig
+          +inal del spec §10). B) `src/api` y `src/web`.                 
+      261 +- **Decisión:** B) "src/api, src/web". El backend vive en `src
+          +/api/` y el frontend en `src/web/`; `docker-compose.yml` y `.g
+          +itattributes` quedan en la raíz.                              
+      262 +- **Por qué:** Regla de la persona en `CLAUDE.md` (Ubicación d
+          +e código): frontend y backend en carpetas separadas dentro de 
+          +`src/`.                                                       
+      263 +- **Costo/riesgo:** —                                         
+      264 +- **Afecta a:** spec §10 (servicios y estructura de carpetas),
+          + `docs/02-backlog.md` (rutas y comandos de todas las tareas), 
+          +CLAUDE.md                                                     
+      265 +                                                              
+      266  ## D-27 · DoR definida por mí (el enunciado no la define) y Do
+           D
+      267  - **Duda:** ¿Qué conjunto de criterios debe tener una historia
+            de usuario o elemento del backlog antes de comenzar a trabaja
+           r?
+      268  - **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logi
+           ca de aplicacion B) Solo MVP.
+
+● Verifico que no queden rutas viejas en el resto del spec y registro el cambio
+  en la bitácora.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "/e/Proyectos/Personal/Ingenieria Digital/SalaLibre" && perl -CSD -i
+      -pe 's/`api\/prisma\/migrations\//`src\/api\/prisma\/migrations\//g'
+      docs/01-spec.md &&…)
+  ⎿  Restricción anti-choque (RN-01, D-04), en migración SQL propia `src/ap
+     i/prisma/migrations/<timestamp>_bookings_no_overlap/migration.sql`:
+     Inmutabilidad (D-05), en migración SQL propia `src/api/prisma/migratio
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated docs\01-spec.md (+2 -2)
+      224  
+      225  Índices: `(room_id, start_at)` y `(user_id, start_at)`.
+      226  
+      227 -Restricción anti-choque (RN-01, D-04), en migración SQL propia
+          - `api/prisma/migrations/<timestamp>_bookings_no_overlap/migrat
+          -ion.sql`:                                                     
+      227 +Restricción anti-choque (RN-01, D-04), en migración SQL propia
+          + `src/api/prisma/migrations/<timestamp>_bookings_no_overlap/mi
+          +gration.sql`:                                                 
+      228  
+      229  ```sql
+      230  CREATE EXTENSION IF NOT EXISTS btree_gist;
+     ...
+      262  
+      263  `AuditAction`: `BOOKING_CREATED`, `BOOKING_CANCELLED`, `ROOM_C
+           REATED`, `ROOM_UPDATED`, `USER_CREATED`, `USER_UPDATED`, `USER
+           _PASSWORD_RESET`, `USER_PASSWORD_CHANGED`, `CLOSURE_CREATED`, 
+           `CLOSURE_DELETED`.
+      264  
+      265 -Inmutabilidad (D-05), en migración SQL propia `api/prisma/migr
+          -ations/<timestamp>_audit_logs_immutable/migration.sql`: un tri
+          -gger `BEFORE UPDATE OR DELETE ON audit_logs` que lanza una exc
+          -epción.                                                       
+      265 +Inmutabilidad (D-05), en migración SQL propia `src/api/prisma/
+          +migrations/<timestamp>_audit_logs_immutable/migration.sql`: un
+          + trigger `BEFORE UPDATE OR DELETE ON audit_logs` que lanza una
+          + excepción.                                                   
+      266  
+      267  ## 8. Contrato de la API
+      268  
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 1 line, removed 1 line
+      261  - **Decisión:** B) "src/api, src/web". El backend vive en `src
+           /api/` y el frontend en `src/web/`; `docker-compose.yml` y `.g
+           itattributes` quedan en la raíz.
+      262  - **Por qué:** Regla de la persona en `CLAUDE.md` (Ubicación d
+           e código): frontend y backend en carpetas separadas dentro de 
+           `src/`.
+      263  - **Costo/riesgo:** —
+      264 -- **Afecta a:** spec §10 (servicios y estructura de carpetas),
+          - `docs/02-backlog.md` (rutas y comandos de todas las tareas), 
+          -CLAUDE.md                                                     
+      264 +- **Afecta a:** spec §7 (rutas de las migraciones SQL propias)
+          +, §10 (servicios y estructura de carpetas), `docs/02-backlog.m
+          +d` (rutas y comandos de todas las tareas), CLAUDE.md          
+      265  
+      266  ## D-27 · DoR definida por mí (el enunciado no la define) y Do
+           D
+      267  - **Duda:** ¿Qué conjunto de criterios debe tener una historia
+            de usuario o elemento del backlog antes de comenzar a trabaja
+           r?
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      18  | B-14 | 2026-11-15 12:47 | Yo | 2-Planificar | MANUAL | Export
+          é las pantallas de Stitch a `docs/diseño/stitch` (motivo: Stitc
+          h es externa y el agente no puede usarla) | — | docs/diseño/sti
+          tch |
+      19  | B-15 | 2026-11-15 13:34 | Yo | 2-Planificar | MANUAL | A part
+          ir de `docs/01-spec.md`, `docs/00-decisiones.md` y `docs/diseño
+          /DESIGN.md`, redacté el detalle de cada tarea de `docs/02-backl
+          og.md` (motivo: quería decidir yo el alcance y el orden de cada
+           tarea) | — | docs/02-backlog.md |
+      20  | B-16 | 2026-11-15 13:44 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, en 02-backlog.md: rutas `api/` y `web
+          /` pasan a `src/api/` y `src/web/` (incluidos los `--prefix` de
+           los comandos); se quitan las citas a D-29 y D-41, que no exist
+          en; se retiran el throttler y el 429 de T03 y sus menciones en 
+          T06, T07 y T07c por no estar en el spec; logo y favicon se toma
+          n de `docs/diseño/img/`; se corrige el nombre de la carpeta del
+           prototipo de Mis reservas | Backlog sin referencias rotas; spe
+          c §10 aún describe `api/` y `web/` en la raíz | docs/02-backlog
+          .md, CLAUDE.md (Ubicación de código), B-15 |
+      21 +| B-17 | 2026-11-15 13:45 | Agente | 2-Planificar | DECISIÓN | 
+         +A pedido de la persona, se registró D-29 (código en `src/api` y
+         + `src/web`) y se actualizó el spec: §10 (Dockerfiles de la tabl
+         +a de servicios y estructura de carpetas) y §7 (rutas de las dos
+         + migraciones SQL propias) | Spec, backlog y CLAUDE.md coherente
+         +s con `src/api` y `src/web` | docs/00-decisiones.md D-29, docs/
+         +01-spec.md §7 §10, B-16 |                                      
+
+● Actualicé el spec y registré la D-29. Ahora el spec, el backlog y CLAUDE.md
+  coinciden en src/api y src/web.
+
+  Spec (docs/01-spec.md)
+  - §10, tabla de servicios: los Dockerfiles ahora son src/api/Dockerfile y
+    src/web/Dockerfile.
+  - §10, estructura de carpetas: el título dice "(D-29)" y el árbol tiene
+    src/api/ y src/web/ dentro de src/. docker-compose.yml y .gitattributes
+    siguen en la raíz.
+  - §7: al revisar el resto del spec encontré dos rutas más y también las
+    corregí. Son las de las dos migraciones SQL propias, que ahora están en
+    src/api/prisma/migrations/....
+
+  Decisión D-29 · Código en src/api y src/web (docs/00-decisiones.md)
+  - La agregué al índice y escribí su detalle.
+  - Opciones: A) api/ y web/ en la raíz, como estaba el spec; B) src/api y
+    src/web. Se eligió la B.
+  - Por qué: es la regla de "Ubicación de código" que pusiste en CLAUDE.md.
+  - Costo/riesgo: queda en — porque no me diste uno.
+  - Afecta a: spec §7 y §10, el backlog y CLAUDE.md.
+
+  Agregué la fila B-17 al final de docs/03-bitacora.md. No hice commit.
+
+✻ Cogitated for 31s · done 13:45
+
+> haz el commit de los cambios de planificación                                 
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      19  | B-15 | 2026-11-15 13:34 | Yo | 2-Planificar | MANUAL | A part
+          ir de `docs/01-spec.md`, `docs/00-decisiones.md` y `docs/diseño
+          /DESIGN.md`, redacté el detalle de cada tarea de `docs/02-backl
+          og.md` (motivo: quería decidir yo el alcance y el orden de cada
+           tarea) | — | docs/02-backlog.md |
+      20  | B-16 | 2026-11-15 13:44 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, en 02-backlog.md: rutas `api/` y `web
+          /` pasan a `src/api/` y `src/web/` (incluidos los `--prefix` de
+           los comandos); se quitan las citas a D-29 y D-41, que no exist
+          en; se retiran el throttler y el 429 de T03 y sus menciones en 
+          T06, T07 y T07c por no estar en el spec; logo y favicon se toma
+          n de `docs/diseño/img/`; se corrige el nombre de la carpeta del
+           prototipo de Mis reservas | Backlog sin referencias rotas; spe
+          c §10 aún describe `api/` y `web/` en la raíz | docs/02-backlog
+          .md, CLAUDE.md (Ubicación de código), B-15 |
+      21  | B-17 | 2026-11-15 13:45 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-29 (código en `src/api` y
+           `src/web`) y se actualizó el spec: §10 (Dockerfiles de la tabl
+          a de servicios y estructura de carpetas) y §7 (rutas de las dos
+           migraciones SQL propias) | Spec, backlog y CLAUDE.md coherente
+          s con `src/api` y `src/web` | docs/00-decisiones.md D-29, docs/
+          01-spec.md §7 §10, B-16 |
+      22 +| B-18 | 2026-11-15 13:46 | Agente | 2-Planificar | AGENTE | A 
+         +pedido de la persona, primer commit del repositorio con la plan
+         +ificación: CLAUDE.md, comandos y skills de `.claude/`, spec, de
+         +cisiones D-01..D-29, backlog, bitácora, diseño (DESIGN.md, logo
+         +s y prototipos de Stitch), plantilla de tarea y sesión exportad
+         +a | Commit "Planificación: spec, decisiones, backlog y diseño" 
+         +en `master` | B-01..B-17 |                                     
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hice el commit b364376 en master con el mensaje "Planificación: spec,
+  decisiones, backlog y diseño". Es el primer commit del repositorio e incluye
+  28 archivos. No hice push.
+
+  - Configuración del proyecto: CLAUDE.md y los comandos y skills de .claude/.
+  - Documentos: el spec, las decisiones D-01 a D-29, el backlog (T01 a T11) y la
+    bitácora.
+  - Diseño: docs/diseño/ con DESIGN.md, los logos y los 7 prototipos de Stitch.
+  - Otros: la plantilla de tarea y la sesión exportada en docs/sesiones/.
+
+  Antes del commit agregué la fila B-18 (AGENTE) a la bitácora para que quedara
+  incluida. Revisé que los archivos no tuvieran secretos y no encontré ninguno.
+
+  Git avisó que convertirá los saltos de línea a CRLF en tu copia local, porque
+  tu configuración tiene core.autocrlf activado. En el repositorio se guardaron
+  con LF, así que por ahora no rompe nada. Esto se resuelve en T01, que crea
+  .gitattributes con * text=auto eol=lf. Esa regla está en CLAUDE.md porque un
+  .sh con CRLF rompe el contenedor.
+
+✻ Churned for 24s · done 13:46
+
+> agrega a bitacora las actividades actualizadas                                
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 2 lines
+      20  | B-16 | 2026-11-15 13:44 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona, en 02-backlog.md: rutas `api/` y `web
+          /` pasan a `src/api/` y `src/web/` (incluidos los `--prefix` de
+           los comandos); se quitan las citas a D-29 y D-41, que no exist
+          en; se retiran el throttler y el 429 de T03 y sus menciones en 
+          T06, T07 y T07c por no estar en el spec; logo y favicon se toma
+          n de `docs/diseño/img/`; se corrige el nombre de la carpeta del
+           prototipo de Mis reservas | Backlog sin referencias rotas; spe
+          c §10 aún describe `api/` y `web/` en la raíz | docs/02-backlog
+          .md, CLAUDE.md (Ubicación de código), B-15 |
+      21  | B-17 | 2026-11-15 13:45 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-29 (código en `src/api` y
+           `src/web`) y se actualizó el spec: §10 (Dockerfiles de la tabl
+          a de servicios y estructura de carpetas) y §7 (rutas de las dos
+           migraciones SQL propias) | Spec, backlog y CLAUDE.md coherente
+          s con `src/api` y `src/web` | docs/00-decisiones.md D-29, docs/
+          01-spec.md §7 §10, B-16 |
+      22  | B-18 | 2026-11-15 13:46 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, primer commit del repositorio con la plan
+          ificación: CLAUDE.md, comandos y skills de `.claude/`, spec, de
+          cisiones D-01..D-29, backlog, bitácora, diseño (DESIGN.md, logo
+          s y prototipos de Stitch), plantilla de tarea y sesión exportad
+          a | Commit "Planificación: spec, decisiones, backlog y diseño" 
+          en `master` | B-01..B-17 |
+      23 +| B-19 | 2026-11-15 13:47 | Agente | 2-Planificar | REVISIÓN | 
+         +Registro tardío (ocurrió antes de B-16): se pidió al agente red
+         +actar el detalle del backlog; no lo reescribió porque la person
+         +a ya lo había redactado (B-15). En su lugar revisó el backlog c
+         +ontra spec, decisiones, CLAUDE.md y el disco, y listó 11 puntos
+         +: ubicación del código, D-29 y D-41 inexistentes, plantilla de 
+         +tarea y `web-assets/` ausentes, carpeta de prototipo mal nombra
+         +da, throttler/429 fuera del spec, botón "Entrar" vs. login con 
+         +personajes (T07c), error al borrar cierre pasado, orden de los 
+         +422, columna "Tarea" de §14 y conteo de estimaciones | La perso
+         +na decidió los puntos 1 a 6 (aplicados en B-16 y B-17). El punt
+         +o 11 fue un error del agente: el conteo 4 L + 16 M + 3 S era co
+         +rrecto. Siguen abiertos los puntos 7 a 10 | docs/02-backlog.md,
+         + B-15, B-16, B-17 |                                            
+      24 +| B-20 | 2026-11-15 13:47 | Agente | 2-Planificar | HITO | Prim
+         +er commit del repositorio creado: `b364376` "Planificación: spe
+         +c, decisiones, backlog y diseño", 28 archivos. Git avisó que `c
+         +ore.autocrlf` convierte a CRLF la copia local | Planificación v
+         +ersionada en `master`, sin push. Los archivos quedan con LF en 
+         +el repositorio; `.gitattributes` con `eol=lf` llega en T01 | co
+         +mmit b364376, B-18 |                                           
+
+● Agregué dos filas al final de docs/03-bitacora.md. Las demás actividades ya
+  estaban registradas en B-16 a B-18.
+
+  - B-19 (REVISIÓN): la revisión del backlog que hice cuando me pediste
+    redactarlo. Ocurrió antes de B-16, así que la marqué como "registro tardío";
+    la hora es la real de ahora. Incluye:
+    - los 11 puntos que encontré;
+    - que decidiste los puntos 1 a 6 (aplicados en B-16 y B-17);
+    - que el punto 11 fue un error mío, porque el conteo de estimaciones era
+      correcto;
+    - que siguen abiertos los puntos 7 a 10.
+  - B-20 (HITO): el commit b364376 con sus 28 archivos y el aviso de Git sobre
+    CRLF, que se resuelve en T01 con .gitattributes.
+
+  Estas dos filas no están en el commit; entrarán en el siguiente. Siguen
+  abiertos estos puntos:
+  - 7: el login de T07c con personajes frente al botón "Entrar" del spec §9.
+  - 8: el código de error al borrar un cierre pasado.
+  - 9: el orden de los errores 422.
+  - 10: la columna "Tarea" del spec §14.
+
+✻ Churned for 19s · done 13:47
+
+> Usa Iniciar sesión y personajes en T07c, actualiza el spec §9                 
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      361  
+      362  | Pantalla | Ruta | Rol | Contenido |
+      363  |----------|------|-----|-----------|
+      364 -| Login | `/login` | Público | Correo, contraseña, botón "Entr
+          -ar". |                                                        
+      364 +| Login | `/login` | Público | Correo, contraseña (con botón p
+          +ara mostrarla u ocultarla) y botón "Iniciar sesión". Composici
+          +ón del prototipo `docs/diseño/stitch/login`: en escritorio, do
+          +s columnas con cuatro personajes animados (SVG y CSS propios) 
+          +que reaccionan al foco, a la contraseña visible y al resultado
+          + del envío, sin recibir nunca el valor de la contraseña; en mó
+          +vil, cabecera compacta y formulario debajo; con `prefers-reduc
+          +ed-motion`, sin animación. Enlace "¿Olvidaste tu contraseña?" 
+          +que solo muestra un aviso: RR. HH. restablece la contraseña (D
+          +-19). Sin "Recordarme", acceso con Google ni registro (D-08). 
+          +|                                                             
+      365  | Agenda | `/agenda` (inicio tras login) | Autenticado | Selec
+           tor de día (hoy … hoy + 30, solo L–V). Columnas = salas activa
+           s filtradas. Filas = bloques de 15 min de 07:00 a 20:00. Filtr
+           os: capacidad mínima y equipamiento. Reserva propia con título
+           ; ajena con "Ocupado" + nombre (`EMPLOYEE`) o título + nombre 
+           (`ADMIN`). Clic en hueco libre abre el formulario de reserva. 
+           Día cerrado: banner con el motivo y sin huecos clicables. |
+      366  | Formulario de reserva | Modal sobre `/agenda` | Autenticado 
+           | Sala, inicio, fin (selectores de 15 min), título, asistentes
+           . Muestra capacidad de la sala. |
+      367  | Mis reservas | `/my-bookings` | Autenticado | Lista de reser
+           vas propias con estado y botón "Cancelar" solo si `CONFIRMED` 
+           y futura. |
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      785  #  9) consola del navegador sin errores propios de la app
+      786  ```
+      787  
+      788 -**Notas para el agente:** La imagen de `docs/diseño/stitch/log
+          -in` es la autoridad visual; sus colores orientativos están en 
+          -`DESIGN.md` («Login»). Si algún texto de la imagen no se lee, 
+          -usa uno breve y coherente en español, sin inventar funciones. 
+          -No pidas código de referencia: constrúyelo desde la imagen y e
+          -sta tarea. Mantén `characterState.ts` como función pura (el sp
+          -ec no pide pruebas de frontend, S-09, pero así queda lista par
+          -a probarse). ⚠ El spec §9 describe el login con el botón "Entr
+          -ar" y sin personajes animados: la persona registra la decisión
+          - de adoptar el diseño de la imagen y, si quiere, actualiza el 
+          -spec. **Recortable:** si falta tiempo, se mantiene el login fu
+          -ncional de T07 y se omite esta tarea.                         
+      788 +**Notas para el agente:** La imagen de `docs/diseño/stitch/log
+          +in` es la autoridad visual; sus colores orientativos están en 
+          +`DESIGN.md` («Login»). Si algún texto de la imagen no se lee, 
+          +usa uno breve y coherente en español, sin inventar funciones. 
+          +No pidas código de referencia: constrúyelo desde la imagen y e
+          +sta tarea. Mantén `characterState.ts` como función pura (el sp
+          +ec no pide pruebas de frontend, S-09, pero así queda lista par
+          +a probarse). El spec §9 ya describe el login con "Iniciar sesi
+          +ón" y los personajes animados. **Recortable:** si falta tiempo
+          +, se mantiene el login funcional de T07 y se omite esta tarea.
+      789  
+      790  ---
+      791  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      22  | B-18 | 2026-11-15 13:46 | Agente | 2-Planificar | AGENTE | A 
+          pedido de la persona, primer commit del repositorio con la plan
+          ificación: CLAUDE.md, comandos y skills de `.claude/`, spec, de
+          cisiones D-01..D-29, backlog, bitácora, diseño (DESIGN.md, logo
+          s y prototipos de Stitch), plantilla de tarea y sesión exportad
+          a | Commit "Planificación: spec, decisiones, backlog y diseño" 
+          en `master` | B-01..B-17 |
+      23  | B-19 | 2026-11-15 13:47 | Agente | 2-Planificar | REVISIÓN | 
+          Registro tardío (ocurrió antes de B-16): se pidió al agente red
+          actar el detalle del backlog; no lo reescribió porque la person
+          a ya lo había redactado (B-15). En su lugar revisó el backlog c
+          ontra spec, decisiones, CLAUDE.md y el disco, y listó 11 puntos
+          : ubicación del código, D-29 y D-41 inexistentes, plantilla de 
+          tarea y `web-assets/` ausentes, carpeta de prototipo mal nombra
+          da, throttler/429 fuera del spec, botón "Entrar" vs. login con 
+          personajes (T07c), error al borrar cierre pasado, orden de los 
+          422, columna "Tarea" de §14 y conteo de estimaciones | La perso
+          na decidió los puntos 1 a 6 (aplicados en B-16 y B-17). El punt
+          o 11 fue un error del agente: el conteo 4 L + 16 M + 3 S era co
+          rrecto. Siguen abiertos los puntos 7 a 10 | docs/02-backlog.md,
+           B-15, B-16, B-17 |
+      24  | B-20 | 2026-11-15 13:47 | Agente | 2-Planificar | HITO | Prim
+          er commit del repositorio creado: `b364376` "Planificación: spe
+          c, decisiones, backlog y diseño", 28 archivos. Git avisó que `c
+          ore.autocrlf` convierte a CRLF la copia local | Planificación v
+          ersionada en `master`, sin push. Los archivos quedan con LF en 
+          el repositorio; `.gitattributes` con `eol=lf` llega en T01 | co
+          mmit b364376, B-18 |
+      25 +| B-21 | 2026-11-15 13:47 | Agente | 2-Planificar | CORRECCIÓN 
+         +| A pedido de la persona (punto 7 de B-19), spec §9 Login pasa 
+         +del botón "Entrar" a "Iniciar sesión" con los personajes animad
+         +os del prototipo de login, el enlace "¿Olvidaste tu contraseña?
+         +" solo informativo y sin Recordarme, Google ni registro; se qui
+         +ta el aviso ⚠ de las notas de T07c | Spec §9 y T07c coherentes.
+         + Decisión aún sin D-xx en 00-decisiones.md | docs/01-spec.md §9
+         +, docs/02-backlog.md T07c, B-19 |                              
+
+● Actualicé el spec §9. La fila de Login (docs/01-spec.md:364) ahora dice:
+
+  - Botón "Iniciar sesión" en lugar de "Entrar", y botón para mostrar u ocultar
+    la contraseña.
+  - Composición del prototipo docs/diseño/stitch/login:
+    - Escritorio: dos columnas con los cuatro personajes animados, hechos con
+      SVG y CSS propios. Reaccionan al foco, a la contraseña visible y al
+      resultado del envío, y nunca reciben el valor de la contraseña.
+    - Móvil: cabecera compacta y el formulario debajo.
+    - Con prefers-reduced-motion: sin animación.
+  - Agregué tres elementos que pediste solo indirectamente. Ya estaban en T07c,
+    y si el spec no los nombraba volvía a contradecirla:
+    - el enlace "¿Olvidaste tu contraseña?", que solo muestra un aviso de que
+      RR. HH. restablece la contraseña (D-19);
+    - la exclusión explícita de "Recordarme", acceso con Google y registro
+      (D-08).
+
+  En el backlog quité de las notas de T07c el aviso ⚠ sobre "Entrar". Ahora la
+  nota dice que el spec §9 ya describe el login con personajes.
+
+  Agregué la fila B-21 (CORRECCIÓN) al final de docs/03-bitacora.md. No hice
+  commit.
+
+  Esta decisión todavía no tiene una D-xx en docs/00-decisiones.md. ¿La registro
+  como D-30?
+
+✻ Cooked for 21s · done 13:47
+
+> sí, regístrala como D-30                                                      
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 1 line
+      35  | D-27 | DoR definida por mí (el enunciado no la define) y DoD 
+          |
+      36  | D-28 | Diseño visual de SalaLibre |
+      37  | D-29 | Código en `src/api` y `src/web` |
+      38 +| D-30 | Login con "Iniciar sesión" y personajes animados |    
+      39  
+      40  ---
+      41  
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 8 lines
+      264  - **Costo/riesgo:** —
+      265  - **Afecta a:** spec §7 (rutas de las migraciones SQL propias)
+           , §10 (servicios y estructura de carpetas), `docs/02-backlog.m
+           d` (rutas y comandos de todas las tareas), CLAUDE.md
+      266  
+      267 +## D-30 · Login con "Iniciar sesión" y personajes animados    
+      268 +- **Duda:** ¿La pantalla de login sigue el spec §9 original (b
+          +otón "Entrar", sin personajes) o el prototipo de Stitch?      
+      269 +- **Opciones:** A) Spec original: correo, contraseña y botón "
+          +Entrar". B) Prototipo `docs/diseño/stitch/login`: botón "Inici
+          +ar sesión" y personajes animados.                             
+      270 +- **Decisión:** B) "Usa Iniciar sesión y personajes en T07c, a
+          +ctualiza el spec §9." Los personajes son SVG y CSS propios, re
+          +accionan al foco, a la contraseña visible y al resultado del e
+          +nvío, y nunca reciben el valor de la contraseña. "¿Olvidaste t
+          +u contraseña?" solo muestra un aviso (D-19). Sin "Recordarme",
+          + acceso con Google ni registro (D-08).                        
+      271 +- **Por qué:** Elección de la persona.                        
+      272 +- **Costo/riesgo:** T07c es L. Es recortable: si se recorta, q
+          +ueda el login funcional de T07 con "Iniciar sesión" y sin pers
+          +onajes.                                                       
+      273 +- **Afecta a:** spec §9 (Login), `docs/02-backlog.md` (T07, T0
+          +7c)                                                           
+      274 +                                                              
+      275  ## D-27 · DoR definida por mí (el enunciado no la define) y Do
+           D
+      276  - **Duda:** ¿Qué conjunto de criterios debe tener una historia
+            de usuario o elemento del backlog antes de comenzar a trabaja
+           r?
+      277  - **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logi
+           ca de aplicacion B) Solo MVP.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      730  | Campo | Valor |
+      731  |---|---|
+      732  | Objetivo | Dejar la pantalla `/login` fiel a la imagen de di
+           seño, con los cuatro personajes que reaccionan al foco, a la v
+           isibilidad de la contraseña y al envío |
+      733 -| Trazabilidad | D-28 (diseño solo guía visual; el spec manda)
+          - · D-03, D-08, D-19 · RN-14, RN-19 · spec §6 (F-01), §8 (`/aut
+          -h/login`), §9 (Login), §11 (accesibilidad) · diseño: `docs/dis
+          -eño/stitch/login` y la sección «Login» de `DESIGN.md` |       
+      733 +| Trazabilidad | D-28 (diseño solo guía visual; el spec manda)
+          + · D-30 (login con personajes) · D-03, D-08, D-19 · RN-14, RN-
+          +19 · spec §6 (F-01), §8 (`/auth/login`), §9 (Login), §11 (acce
+          +sibilidad) · diseño: `docs/diseño/stitch/login` y la sección «
+          +Login» de `DESIGN.md` |                                       
+      734  | Dependencias | T07a, T07 |
+      735  | Estimación | L |
+      736  | Seguridad / auditoría | Roles: público. Auditoría: no aplica
+            (S-02). OWASP A07: la contraseña no se guarda ni se loguea y 
+           no llega a los personajes; mensaje de error genérico; sin enví
+           os duplicados |
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      361  
+      362  | Pantalla | Ruta | Rol | Contenido |
+      363  |----------|------|-----|-----------|
+      364 -| Login | `/login` | Público | Correo, contraseña (con botón p
+          -ara mostrarla u ocultarla) y botón "Iniciar sesión". Composici
+          -ón del prototipo `docs/diseño/stitch/login`: en escritorio, do
+          -s columnas con cuatro personajes animados (SVG y CSS propios) 
+          -que reaccionan al foco, a la contraseña visible y al resultado
+          - del envío, sin recibir nunca el valor de la contraseña; en mó
+          -vil, cabecera compacta y formulario debajo; con `prefers-reduc
+          -ed-motion`, sin animación. Enlace "¿Olvidaste tu contraseña?" 
+          -que solo muestra un aviso: RR. HH. restablece la contraseña (D
+          --19). Sin "Recordarme", acceso con Google ni registro (D-08). 
+          -|                                                             
+      364 +| Login | `/login` | Público | (D-30) Correo, contraseña (con 
+          +botón para mostrarla u ocultarla) y botón "Iniciar sesión". Co
+          +mposición del prototipo `docs/diseño/stitch/login`: en escrito
+          +rio, dos columnas con cuatro personajes animados (SVG y CSS pr
+          +opios) que reaccionan al foco, a la contraseña visible y al re
+          +sultado del envío, sin recibir nunca el valor de la contraseña
+          +; en móvil, cabecera compacta y formulario debajo; con `prefer
+          +s-reduced-motion`, sin animación. Enlace "¿Olvidaste tu contra
+          +seña?" que solo muestra un aviso: RR. HH. restablece la contra
+          +seña (D-19). Sin "Recordarme", acceso con Google ni registro (
+          +D-08). |                                                      
+      365  | Agenda | `/agenda` (inicio tras login) | Autenticado | Selec
+           tor de día (hoy … hoy + 30, solo L–V). Columnas = salas activa
+           s filtradas. Filas = bloques de 15 min de 07:00 a 20:00. Filtr
+           os: capacidad mínima y equipamiento. Reserva propia con título
+           ; ajena con "Ocupado" + nombre (`EMPLOYEE`) o título + nombre 
+           (`ADMIN`). Clic en hueco libre abre el formulario de reserva. 
+           Día cerrado: banner con el motivo y sin huecos clicables. |
+      366  | Formulario de reserva | Modal sobre `/agenda` | Autenticado 
+           | Sala, inicio, fin (selectores de 15 min), título, asistentes
+           . Muestra capacidad de la sala. |
+      367  | Mis reservas | `/my-bookings` | Autenticado | Lista de reser
+           vas propias con estado y botón "Cancelar" solo si `CONFIRMED` 
+           y futura. |
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      23  | B-19 | 2026-11-15 13:47 | Agente | 2-Planificar | REVISIÓN | 
+          Registro tardío (ocurrió antes de B-16): se pidió al agente red
+          actar el detalle del backlog; no lo reescribió porque la person
+          a ya lo había redactado (B-15). En su lugar revisó el backlog c
+          ontra spec, decisiones, CLAUDE.md y el disco, y listó 11 puntos
+          : ubicación del código, D-29 y D-41 inexistentes, plantilla de 
+          tarea y `web-assets/` ausentes, carpeta de prototipo mal nombra
+          da, throttler/429 fuera del spec, botón "Entrar" vs. login con 
+          personajes (T07c), error al borrar cierre pasado, orden de los 
+          422, columna "Tarea" de §14 y conteo de estimaciones | La perso
+          na decidió los puntos 1 a 6 (aplicados en B-16 y B-17). El punt
+          o 11 fue un error del agente: el conteo 4 L + 16 M + 3 S era co
+          rrecto. Siguen abiertos los puntos 7 a 10 | docs/02-backlog.md,
+           B-15, B-16, B-17 |
+      24  | B-20 | 2026-11-15 13:47 | Agente | 2-Planificar | HITO | Prim
+          er commit del repositorio creado: `b364376` "Planificación: spe
+          c, decisiones, backlog y diseño", 28 archivos. Git avisó que `c
+          ore.autocrlf` convierte a CRLF la copia local | Planificación v
+          ersionada en `master`, sin push. Los archivos quedan con LF en 
+          el repositorio; `.gitattributes` con `eol=lf` llega en T01 | co
+          mmit b364376, B-18 |
+      25  | B-21 | 2026-11-15 13:47 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 7 de B-19), spec §9 Login pasa 
+          del botón "Entrar" a "Iniciar sesión" con los personajes animad
+          os del prototipo de login, el enlace "¿Olvidaste tu contraseña?
+          " solo informativo y sin Recordarme, Google ni registro; se qui
+          ta el aviso ⚠ de las notas de T07c | Spec §9 y T07c coherentes.
+           Decisión aún sin D-xx en 00-decisiones.md | docs/01-spec.md §9
+          , docs/02-backlog.md T07c, B-19 |
+      26 +| B-22 | 2026-11-15 13:48 | Agente | 2-Planificar | DECISIÓN | 
+         +A pedido de la persona, se registró D-30 (login con "Iniciar se
+         +sión" y personajes animados) y se citó en spec §9 (Login) y en 
+         +la trazabilidad de T07c | Decisión de B-21 registrada | docs/00
+         +-decisiones.md D-30, docs/01-spec.md §9, docs/02-backlog.md T07
+         +c, B-21 |                                                      
+
+● Registré la decisión como D-30 · Login con "Iniciar sesión" y personajes 
+  animados en docs/00-decisiones.md, en el índice y con su detalle:
+
+  - Opciones: A) el spec original, con el botón "Entrar" y sin personajes; B) el
+    prototipo de Stitch, con "Iniciar sesión" y personajes animados. Se eligió
+    la B.
+  - Decisión: tu frase textual, más los límites de la pantalla:
+    - personajes en SVG y CSS propios, que nunca reciben la contraseña;
+    - "¿Olvidaste tu contraseña?" que solo muestra un aviso;
+    - sin "Recordarme", acceso con Google ni registro.
+  - Por qué: "Elección de la persona".
+  - Costo/riesgo: T07c es L y recortable; si se recorta, queda el login de T07
+    con "Iniciar sesión" y sin personajes.
+  - Afecta a: spec §9 y T07 y T07c del backlog.
+
+  También cité la D-30 en la fila de Login del spec §9 y en la trazabilidad de
+  T07c. Agregué la fila B-22 (DECISIÓN) al final de la bitácora.
+
+  Siguen abiertos los puntos 8 (código de error al borrar un cierre pasado), 9
+  (orden de los errores 422) y 10 (columna "Tarea" del spec §14). Los cambios de
+  B-19 en adelante no tienen commit todavía.
+
+✻ Cogitated for 20s · done 13:48
+
+> Para el punto 8 usa 422 CLOSURE_IN_PAST y actualiza el spec                   
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+       97  | RN-21 | Solo `ADMIN` gestiona salas, usuarios, cierres y aud
+           itoría. | 403 `FORBIDDEN` | D-08, D-14, D-23, D-24 |
+       98  | RN-22 | `room.name` es único (sin distinguir mayúsculas) con
+            1–60 caracteres. `capacity` es entero entre 1 y 100. `equipme
+           nt` es un subconjunto sin repetidos de `PROJECTOR`, `VIDEOCONF
+           `, `WHITEBOARD`, `TV`. | 409 `ROOM_NAME_TAKEN` · 400 `VALIDATI
+           ON_ERROR` | D-14, D-25 |
+       99  | RN-23 | `user.email` es único y se guarda en minúsculas. | 4
+           09 `EMAIL_TAKEN` | D-08 |
+      100 -| RN-24 | Solo se crea un cierre para una fecha posterior a ho
+          -y y no repetida. | 422 `CLOSURE_IN_PAST` · 409 `CLOSURE_EXISTS
+          -` | D-23, S-04 |                                              
+      100 +| RN-24 | Solo se crea un cierre para una fecha posterior a ho
+          +y y no repetida. Solo se elimina un cierre con fecha posterior
+          + a hoy. | 422 `CLOSURE_IN_PAST` (crear o eliminar) · 409 `CLOS
+          +URE_EXISTS` | D-23, S-04, S-05 |                              
+      101  | RN-25 | La auditoría se devuelve ordenada por `createdAt` de
+           sc. `pageSize` por defecto 20, máximo 100. `page` empieza en 1
+           . | 400 `VALIDATION_ERROR` | D-24 |
+      102  | RN-26 | Un `ADMIN` no puede desactivarse a sí mismo. | 422 `
+           CANNOT_DEACTIVATE_SELF` | S-03 |
+      103  
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      302  | `POST /api/bookings/:id/cancel` | Dueño o ADMIN | 200 con `B
+           ooking`. |
+      303  | `GET /api/closures` | Autenticado | Cierres con `date` ≥ hoy
+           , ordenados por fecha. 200 con `Closure[]`. |
+      304  | `POST /api/closures` | ADMIN | Body `{ date, reason }`. 201 
+           con `Closure` y `cancelledBookings` (número). |
+      305 -| `DELETE /api/closures/:id` | ADMIN | Solo cierres con `date`
+          - > hoy. 204. No restaura reservas canceladas (S-05). |        
+      305 +| `DELETE /api/closures/:id` | ADMIN | Solo cierres con `date`
+          + > hoy. 204. Cierre de hoy o pasado → 422 `CLOSURE_IN_PAST`; i
+          +d inexistente → 404. No restaura reservas canceladas (S-05). |
+      306  | `GET /api/users` | ADMIN | 200 con `User[]` ordenado por `na
+           me`. |
+      307  | `POST /api/users` | ADMIN | Body `{ name, email, password, r
+           ole }`. 201 con `User`. |
+      308  | `PATCH /api/users/:id` | ADMIN | Body parcial `{ name?, role
+           ?, isActive? }`. 200 con `User`. |
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+      462  | P-08 | Integración | RN-07, RN-09, RN-10 · Asistentes > capa
+           cidad, sala inactiva y día cerrado → 422 con su código. |
+      463  | P-09 | Unitaria + integración | RN-11, RN-12 · `BookingPolic
+           y`: dueño cancela futura; otro EMPLOYEE → 403; ADMIN → 200; ya
+            empezada → 422. |
+      464  | P-10 | Integración | RN-14, RN-15 · Desactivar usuario cance
+           la sus reservas futuras; su cookie vigente pasa a 401. |
+      465 -| P-11 | Integración | RN-16, RN-24 · Crear cierre cancela las
+          - reservas del día; repetido → 409; hoy → 422. |               
+      465 +| P-11 | Integración | RN-16, RN-24 · Crear cierre cancela las
+          + reservas del día; repetido → 409; hoy → 422; eliminar un cier
+          +re de hoy o pasado → 422. |                                   
+      466  | P-12 | Integración | D-05 · Cada escritura deja una fila en 
+           `audit_logs` con `requestId`; `UPDATE` o `DELETE` sobre `audit
+           _logs` falla. |
+      467  | P-13 | Integración | RN-17 · `EMPLOYEE` recibe `title: null`
+            en reservas ajenas; `ADMIN` recibe el título. |
+      468  | P-14 | Integración | RN-21 · `EMPLOYEE` recibe 403 en `/api/
+           rooms` (POST/PATCH), `/api/users`, `/api/closures` (POST/DELET
+           E) y `/api/audit-logs/search`. Sin cookie → 401 en todas salvo
+            las dos públicas. |
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      516  npm --prefix src/api test -- closures && npm --prefix src/api 
+           run lint
+      517  ```
+      518  
+      519 -**Notas para el agente:** El spec no define el código de error
+          - al eliminar un cierre de hoy o pasado (solo dice que `DELETE`
+          - aplica a cierres con `date > hoy`). Usa 422 `CLOSURE_IN_PAST`
+          - y déjalo anotado en `docs/tareas/T05b.md` para que la persona
+          - lo confirme. La fecha de cierre es una fecha del calendario e
+          -n `BUSINESS_TZ`, no un instante UTC.                          
+      519 +**Notas para el agente:** Eliminar un cierre de hoy o pasado r
+          +esponde 422 `CLOSURE_IN_PAST` (spec RN-24 y §8). La fecha de c
+          +ierre es una fecha del calendario en `BUSINESS_TZ`, no un inst
+          +ante UTC.                                                     
+      520  
+      521  ---
+      522  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      498  - **CA2** · Dado un ADMIN y una fecha posterior a hoy con k re
+           servas `CONFIRMED` (de cualquier sala), cuando `POST /api/clos
+           ures` con `{ date, reason }`, entonces 201 con el `Closure` y 
+           `cancelledBookings: k`, y esas reservas quedan `CANCELLED` en 
+           la misma transacción, con lock sobre la fecha.
+      499  - **CA3** · Dada una fecha de hoy o pasada, cuando se crea, en
+           tonces 422 `CLOSURE_IN_PAST`; dada una fecha ya cerrada, 409 `
+           CLOSURE_EXISTS`; con `reason` vacío o de más de 100 caracteres
+            o fecha mal formada, 400 `VALIDATION_ERROR`.
+      500  - **CA4** · Dado un día cerrado, cuando alguien crea una reser
+           va en esa fecha, entonces 422 `DAY_CLOSED`.
+      501 -- **CA5** · Dado un cierre con fecha posterior a hoy, cuando u
+          -n ADMIN hace `DELETE /api/closures/:id`, entonces 204 y las re
+          -servas ya canceladas no se restauran.                         
+      501 +- **CA5** · Dado un cierre con fecha posterior a hoy, cuando u
+          +n ADMIN hace `DELETE /api/closures/:id`, entonces 204 y las re
+          +servas ya canceladas no se restauran; dado un cierre de hoy o 
+          +pasado, entonces 422 `CLOSURE_IN_PAST`.                       
+      502  - **CA6** · Dado un `EMPLOYEE`, cuando hace `POST` o `DELETE` 
+           en `/api/closures`, entonces 403 `FORBIDDEN`.
+      503  - **CA7** · Dado un id inexistente, cuando se elimina, entonce
+           s 404 `NOT_FOUND`.
+      504  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      24  | B-20 | 2026-11-15 13:47 | Agente | 2-Planificar | HITO | Prim
+          er commit del repositorio creado: `b364376` "Planificación: spe
+          c, decisiones, backlog y diseño", 28 archivos. Git avisó que `c
+          ore.autocrlf` convierte a CRLF la copia local | Planificación v
+          ersionada en `master`, sin push. Los archivos quedan con LF en 
+          el repositorio; `.gitattributes` con `eol=lf` llega en T01 | co
+          mmit b364376, B-18 |
+      25  | B-21 | 2026-11-15 13:47 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 7 de B-19), spec §9 Login pasa 
+          del botón "Entrar" a "Iniciar sesión" con los personajes animad
+          os del prototipo de login, el enlace "¿Olvidaste tu contraseña?
+          " solo informativo y sin Recordarme, Google ni registro; se qui
+          ta el aviso ⚠ de las notas de T07c | Spec §9 y T07c coherentes.
+           Decisión aún sin D-xx en 00-decisiones.md | docs/01-spec.md §9
+          , docs/02-backlog.md T07c, B-19 |
+      26  | B-22 | 2026-11-15 13:48 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-30 (login con "Iniciar se
+          sión" y personajes animados) y se citó en spec §9 (Login) y en 
+          la trazabilidad de T07c | Decisión de B-21 registrada | docs/00
+          -decisiones.md D-30, docs/01-spec.md §9, docs/02-backlog.md T07
+          c, B-21 |
+      27 +| B-23 | 2026-11-15 13:49 | Agente | 2-Planificar | CORRECCIÓN 
+         +| A pedido de la persona (punto 8 de B-19), eliminar un cierre 
+         +de hoy o pasado responde 422 `CLOSURE_IN_PAST`: se actualizó el
+         + spec (RN-24 en §5, `DELETE /api/closures/:id` en §8, P-11 en §
+         +12) y en T05b se agregó al CA5 y se quitó la nota que pedía con
+         +firmarlo | Spec y T05b coherentes. Decisión sin D-xx en 00-deci
+         +siones.md | docs/01-spec.md §5 §8 §12, docs/02-backlog.md T05b,
+         + B-19 |                                                        
+
+● Actualicé el spec para que eliminar un cierre de hoy o pasado responda 422 
+  CLOSURE_IN_PAST:
+
+  - §5, RN-24: agregué "Solo se elimina un cierre con fecha posterior a hoy". La
+    columna de error ahora dice CLOSURE_IN_PAST (crear o eliminar) y la
+    referencia suma S-05.
+  - §8, DELETE /api/closures/:id: un cierre de hoy o pasado responde 422
+    CLOSURE_IN_PAST. También agregué que un id inexistente responde 404, que ya
+    estaba en T05b (CA7) pero no en el spec.
+  - §12, P-11: la prueba incluye eliminar un cierre de hoy o pasado y
+    esperar 422.
+
+  En la tarea T05b del backlog:
+  - CA5: ahora incluye el caso del 422.
+  - Notas para el agente: quité la que pedía que confirmaras el código.
+
+  Agregué la fila B-23 (CORRECCIÓN) al final de la bitácora. No hice commit.
+
+  Esta decisión no tiene D-xx en docs/00-decisiones.md. ¿La registro como D-31?
+
+  Siguen abiertos el punto 9 (orden de los errores 422) y el 10 (columna "Tarea"
+  del spec §14).
+
+✻ Brewed for 23s · done 13:49
+
+> sí, regístrala como D-31                                                      
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 1 line
+      36  | D-28 | Diseño visual de SalaLibre |
+      37  | D-29 | Código en `src/api` y `src/web` |
+      38  | D-30 | Login con "Iniciar sesión" y personajes animados |
+      39 +| D-31 | Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PA
+         +ST` |                                                          
+      40  
+      41  ---
+      42  
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 8 lines
+      273  - **Costo/riesgo:** T07c es L. Es recortable: si se recorta, q
+           ueda el login funcional de T07 con "Iniciar sesión" y sin pers
+           onajes.
+      274  - **Afecta a:** spec §9 (Login), `docs/02-backlog.md` (T07, T0
+           7c)
+      275  
+      276 +## D-31 · Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_
+          +PAST`                                                         
+      277 +- **Duda:** ¿Qué responde `DELETE /api/closures/:id` si el cie
+          +rre es de hoy o de una fecha pasada? El spec solo decía que se
+          + eliminan cierres con `date` > hoy.                           
+      278 +- **Opciones:** —                                             
+      279 +- **Decisión:** "Usa 422 CLOSURE_IN_PAST." Es el mismo código 
+          +que al crear un cierre de hoy o pasado (RN-24).               
+      280 +- **Por qué:** Elección de la persona.                        
+      281 +- **Costo/riesgo:** —                                         
+      282 +- **Afecta a:** spec §5 (RN-24), §8 (`DELETE /api/closures/:id
+          +`), §12 (P-11), `docs/02-backlog.md` (T05b)                   
+      283 +                                                              
+      284  ## D-27 · DoR definida por mí (el enunciado no la define) y Do
+           D
+      285  - **Duda:** ¿Qué conjunto de criterios debe tener una historia
+            de usuario o elemento del backlog antes de comenzar a trabaja
+           r?
+      286  - **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logi
+           ca de aplicacion B) Solo MVP.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\01-spec.md)
+  ⎿  Added 1 line, removed 1 line
+       97  | RN-21 | Solo `ADMIN` gestiona salas, usuarios, cierres y aud
+           itoría. | 403 `FORBIDDEN` | D-08, D-14, D-23, D-24 |
+       98  | RN-22 | `room.name` es único (sin distinguir mayúsculas) con
+            1–60 caracteres. `capacity` es entero entre 1 y 100. `equipme
+           nt` es un subconjunto sin repetidos de `PROJECTOR`, `VIDEOCONF
+           `, `WHITEBOARD`, `TV`. | 409 `ROOM_NAME_TAKEN` · 400 `VALIDATI
+           ON_ERROR` | D-14, D-25 |
+       99  | RN-23 | `user.email` es único y se guarda en minúsculas. | 4
+           09 `EMAIL_TAKEN` | D-08 |
+      100 -| RN-24 | Solo se crea un cierre para una fecha posterior a ho
+          -y y no repetida. Solo se elimina un cierre con fecha posterior
+          - a hoy. | 422 `CLOSURE_IN_PAST` (crear o eliminar) · 409 `CLOS
+          -URE_EXISTS` | D-23, S-04, S-05 |                              
+      100 +| RN-24 | Solo se crea un cierre para una fecha posterior a ho
+          +y y no repetida. Solo se elimina un cierre con fecha posterior
+          + a hoy. | 422 `CLOSURE_IN_PAST` (crear o eliminar) · 409 `CLOS
+          +URE_EXISTS` | D-23, D-31, S-04, S-05 |                        
+      101  | RN-25 | La auditoría se devuelve ordenada por `createdAt` de
+           sc. `pageSize` por defecto 20, máximo 100. `page` empieza en 1
+           . | 400 `VALIDATION_ERROR` | D-24 |
+      102  | RN-26 | Un `ADMIN` no puede desactivarse a sí mismo. | 422 `
+           CANNOT_DEACTIVATE_SELF` | S-03 |
+      103  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      479  | Campo | Valor |
+      480  |---|---|
+      481  | Objetivo | Que RR. HH. registre y elimine días cerrados; cre
+           ar uno cancela las reservas de esa fecha |
+      482 -| Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, S-04, S-05
+          - · spec §7 (`closures`), §8 (`/closures`), §11 (lock por fecha
+          -), F-07 · P-11 (integración en T06) |                         
+      482 +| Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, D-31, S-04
+          +, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lock por
+          + fecha), F-07 · P-11 (integración en T06) |                   
+      483  | Dependencias | T05 |
+      484  | Estimación | M |
+      485  | Seguridad / auditoría | Roles: `GET` autenticado; `POST` y `
+           DELETE` solo ADMIN. Auditoría: `CLOSURE_CREATED`, `CLOSURE_DEL
+           ETED` y `BOOKING_CANCELLED` por cada reserva cancelada, que se
+            conectan en T06a. OWASP A01; A04: lock por fecha |
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      25  | B-21 | 2026-11-15 13:47 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 7 de B-19), spec §9 Login pasa 
+          del botón "Entrar" a "Iniciar sesión" con los personajes animad
+          os del prototipo de login, el enlace "¿Olvidaste tu contraseña?
+          " solo informativo y sin Recordarme, Google ni registro; se qui
+          ta el aviso ⚠ de las notas de T07c | Spec §9 y T07c coherentes.
+           Decisión aún sin D-xx en 00-decisiones.md | docs/01-spec.md §9
+          , docs/02-backlog.md T07c, B-19 |
+      26  | B-22 | 2026-11-15 13:48 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-30 (login con "Iniciar se
+          sión" y personajes animados) y se citó en spec §9 (Login) y en 
+          la trazabilidad de T07c | Decisión de B-21 registrada | docs/00
+          -decisiones.md D-30, docs/01-spec.md §9, docs/02-backlog.md T07
+          c, B-21 |
+      27  | B-23 | 2026-11-15 13:49 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 8 de B-19), eliminar un cierre 
+          de hoy o pasado responde 422 `CLOSURE_IN_PAST`: se actualizó el
+           spec (RN-24 en §5, `DELETE /api/closures/:id` en §8, P-11 en §
+          12) y en T05b se agregó al CA5 y se quitó la nota que pedía con
+          firmarlo | Spec y T05b coherentes. Decisión sin D-xx en 00-deci
+          siones.md | docs/01-spec.md §5 §8 §12, docs/02-backlog.md T05b,
+           B-19 |
+      28 +| B-24 | 2026-11-15 13:49 | Agente | 2-Planificar | DECISIÓN | 
+         +A pedido de la persona, se registró D-31 (eliminar un cierre de
+         + hoy o pasado: 422 `CLOSURE_IN_PAST`) y se citó en RN-24 del sp
+         +ec y en la trazabilidad de T05b | Decisión de B-23 registrada |
+         + docs/00-decisiones.md D-31, docs/01-spec.md §5, docs/02-backlo
+         +g.md T05b, B-23 |                                              
+
+● Registré la decisión como D-31 · Eliminar un cierre de hoy o pasado: 422 
+  CLOSURE_IN_PAST en docs/00-decisiones.md, en el índice y con su detalle.
+
+  - Duda: qué responde DELETE /api/closures/:id con un cierre de hoy o pasado,
+    porque el spec no lo decía.
+  - Decisión: "Usa 422 CLOSURE_IN_PAST", el mismo código que al crear un cierre
+    de hoy o pasado.
+  - Por qué: "Elección de la persona".
+  - Opciones y Costo/riesgo: quedan en — porque no me diste esos datos.
+  - Afecta a: spec §5 (RN-24), §8 y §12 (P-11), y la tarea T05b.
+
+  También cité la D-31 en la RN-24 del spec y en la trazabilidad de T05b.
+  Agregué la fila B-24 (DECISIÓN) al final de la bitácora. No hice commit.
+
+  Siguen abiertos el punto 9 (orden de los errores 422) y el 10 (columna "Tarea"
+  del spec §14).
+
+✻ Cooked for 18s · done 13:50
+> Para el punto 9 define tú el orden de los 422                                 
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(docs\01-spec.md)
+  ⎿  Added 12 lines
+      285  
+      286  Toda respuesta lleva el header `X-Request-Id`.
+      287  
+      288 +### Orden de validación (D-32)                                
+      289 +Cada petición responde con el **primer** error que encuentra, 
+          +en este orden: 401 (sesión) → 403 (rol, RN-21) → 400 (formato 
+          +del body) → 404 (recurso inexistente) → reglas de negocio de l
+          +a operación. Dentro de cada operación, las reglas se evalúan a
+          +sí:                                                           
+      290 +                                                              
+      291 +| Operación | Orden |                                         
+      292 +|-----------|-------|                                         
+      293 +| `POST /api/bookings` | Sala inexistente → 404. Luego 422, pr
+          +imero las reglas de tiempo (sin consultar la base) y después l
+          +as de datos: `INVALID_SLOT` (RN-02) → `INVALID_DURATION` (RN-0
+          +3) → `OUTSIDE_BUSINESS_HOURS` (RN-04) → `BOOKING_IN_PAST` (RN-
+          +05) → `TOO_FAR_AHEAD` (RN-06) → `ROOM_INACTIVE` (RN-09) → `CAP
+          +ACITY_EXCEEDED` (RN-07) → `DAY_CLOSED` (RN-10, dentro de la tr
+          +ansacción y con el lock por fecha). Por último, el `INSERT` pu
+          +ede dar 409 `BOOKING_CONFLICT` (RN-01). |                     
+      294 +| `POST /api/bookings/:id/cancel` | 404 → 403 `FORBIDDEN` (RN-
+          +11) → 422 `BOOKING_ALREADY_CANCELLED` → 422 `BOOKING_ALREADY_S
+          +TARTED` (RN-12). |                                            
+      295 +| `POST /api/closures` | 422 `CLOSURE_IN_PAST` → 409 `CLOSURE_
+          +EXISTS` (RN-24). |                                            
+      296 +| `DELETE /api/closures/:id` | 404 → 422 `CLOSURE_IN_PAST` (RN
+          +-24, D-31). |                                                 
+      297 +| `PATCH /api/users/:id` | 404 → 422 `CANNOT_DEACTIVATE_SELF` 
+          +(RN-26). |                                                    
+      298 +| `PATCH /api/auth/password` | 422 `INVALID_CURRENT_PASSWORD` 
+          +(RN-18). |                                                    
+      299 +                                                              
+      300  ### Endpoints
+      301  | Método y ruta | Rol | Descripción |
+      302  |---------------|-----|-------------|
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      421  curl -s -b /tmp/emp1.txt -X POST $BASE/bookings/$B/cancel | jq
+            -r .status                      # CANCELLED
+      422  ```
+      423  
+      424 -**Notas para el agente:** La restricción `EXCLUDE` ya existe (
+          -T02); no la dupliques en código. Valida en el dominio para dar
+          - un mensaje claro, pero confía en la base para la concurrencia
+          -. Prisma no tiene un código propio para `23P01`: puede llegar 
+          -como `PrismaClientUnknownRequestError` o dentro de `meta`; con
+          -firma la forma real contra la base (la prueba P-01 de T06 la e
+          -jercita) y déjala escrita en `docs/tareas/T05.md`. Para la zon
+          -a horaria usa `Intl` o una librería de zonas (no fijes UTC-6 a
+          - mano) y regístrala si es dependencia nueva (D-01). Documenta 
+          -en `T05.md` el orden en que validas los errores 422, porque el
+          - spec no lo fija.                                             
+      424 +**Notas para el agente:** La restricción `EXCLUDE` ya existe (
+          +T02); no la dupliques en código. Valida en el dominio para dar
+          + un mensaje claro, pero confía en la base para la concurrencia
+          +. Prisma no tiene un código propio para `23P01`: puede llegar 
+          +como `PrismaClientUnknownRequestError` o dentro de `meta`; con
+          +firma la forma real contra la base (la prueba P-01 de T06 la e
+          +jercita) y déjala escrita en `docs/tareas/T05.md`. Para la zon
+          +a horaria usa `Intl` o una librería de zonas (no fijes UTC-6 a
+          + mano) y regístrala si es dependencia nueva (D-01). El orden d
+          +e los errores lo fija spec §8 «Orden de validación» (D-32); re
+          +spétalo en el dominio y en el servicio.                       
+      425  
+      426  ---
+      427  
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line
+      403  - **CA13** · Dada la creación de una reserva, cuando se ejecut
+           a el servicio, entonces toma `pg_advisory_xact_lock` sobre la 
+           fecha y sobre el `userId` dentro de la misma transacción (prue
+           ba unitaria con repositorio simulado).
+      404  - **CA14** · Dado el código del módulo de reservas, cuando rev
+           iso sus imports, entonces `bookings.controller.ts` no importa 
+           Prisma y `domain/` no importa nada de `@nestjs/*` ni de `@pris
+           ma/*`.
+      405  - **CA15** · Dado el módulo de reservas, cuando llamo `PATCH`,
+            `PUT` o `DELETE` sobre `/api/bookings/:id`, entonces responde
+            404 porque no existe endpoint de edición ni de borrado (RN-13
+           ).
+      406 +- **CA16** · Dada una reserva que incumple varias reglas a la 
+          +vez (p. ej. sábado a las 10:10 en una sala inactiva), cuando s
+          +e crea, entonces la API responde el primer error según spec §8
+          + «Orden de validación» (aquí 422 `INVALID_SLOT`); y dada una r
+          +eserva ya cancelada cuyo inicio ya pasó, cuando se cancela, en
+          +tonces 422 `BOOKING_ALREADY_CANCELLED` (prueba unitaria).     
+      407  
+      408  **Verificación:**
+      409  ```bash
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      371  | Campo | Valor |
+      372  |---|---|
+      373  | Objetivo | Crear, listar y cancelar reservas garantizando qu
+           e no haya choques, con todas las reglas de horario, duración y
+            permisos |
+      374 -| Trazabilidad | O1 · RN-01 a RN-13, RN-17, RN-20 · D-04, D-06
+          -, D-07, D-09 a D-13, D-15, D-17, D-20, D-23 · spec §5, §7, §8,
+          - §11 (concurrencia), F-02, F-03, F-04 · P-05, P-06, P-07, P-09
+          - (unitarias; la integración va en T06) |                      
+      374 +| Trazabilidad | O1 · RN-01 a RN-13, RN-17, RN-20 · D-04, D-06
+          +, D-07, D-09 a D-13, D-15, D-17, D-20, D-23, D-32 · spec §5, §
+          +7, §8, §11 (concurrencia), F-02, F-03, F-04 · P-05, P-06, P-07
+          +, P-09 (unitarias; la integración va en T06) |                
+      375  | Dependencias | T04 |
+      376  | Estimación | L |
+      377  | Seguridad / auditoría | Roles: autenticado; cancelar solo du
+           eño o ADMIN (`BookingPolicy`). Auditoría: `BOOKING_CREATED` y 
+           `BOOKING_CANCELLED`, que se conectan en T06a. OWASP A01: sin I
+           DOR (`/mine` solo propias, cancelar ajenas solo ADMIN), RN-17 
+           aplicada en la API; A04: la concurrencia la resuelve la base |
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 1 line
+      37  | D-29 | Código en `src/api` y `src/web` |
+      38  | D-30 | Login con "Iniciar sesión" y personajes animados |
+      39  | D-31 | Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PA
+          ST` |
+      40 +| D-32 | Orden de validación de los errores |                  
+      41  
+      42  ---
+      43  
+
+● Update(docs\00-decisiones.md)
+  ⎿  Added 8 lines
+      282  - **Costo/riesgo:** —
+      283  - **Afecta a:** spec §5 (RN-24), §8 (`DELETE /api/closures/:id
+           `), §12 (P-11), `docs/02-backlog.md` (T05b)
+      284  
+      285 +## D-32 · Orden de validación de los errores                  
+      286 +- **Duda:** Cuando una petición incumple varias reglas a la ve
+          +z, ¿qué error responde? El spec no fijaba el orden de los 422.
+      287 +- **Opciones:** —                                             
+      288 +- **Decisión:** La persona delegó la definición al agente ("de
+          +fine tú el orden de los 422"). Se responde el primer error en 
+          +este orden: 401 → 403 → 400 → 404 → reglas de negocio. En `POS
+          +T /api/bookings`: `INVALID_SLOT` → `INVALID_DURATION` → `OUTSI
+          +DE_BUSINESS_HOURS` → `BOOKING_IN_PAST` → `TOO_FAR_AHEAD` → `RO
+          +OM_INACTIVE` → `CAPACITY_EXCEEDED` → `DAY_CLOSED` → 409 `BOOKI
+          +NG_CONFLICT`. Al cancelar: 404 → 403 → `BOOKING_ALREADY_CANCEL
+          +LED` → `BOOKING_ALREADY_STARTED`. El detalle por operación est
+          +á en spec §8 «Orden de validación».                           
+      289 +- **Por qué:** Propuesta del agente. Primero lo que no necesit
+          +a la base (forma y tiempo, en el orden de las RN), luego lo qu
+          +e necesita leer la sala, y al final lo que depende de la trans
+          +acción con lock (cierres y choque), para no abrir transaccione
+          +s con peticiones ya inválidas. Al cancelar, "ya cancelada" es 
+          +más informativo que "ya empezó".                              
+      290 +- **Costo/riesgo:** Fija un contrato: cambiar el orden después
+          + cambia qué error ve el usuario y obliga a tocar pruebas.     
+      291 +- **Afecta a:** spec §8 (Orden de validación), `docs/02-backlo
+          +g.md` (T05: CA16 y notas)                                     
+      292 +                                                              
+      293  ## D-27 · DoR definida por mí (el enunciado no la define) y Do
+           D
+      294  - **Duda:** ¿Qué conjunto de criterios debe tener una historia
+            de usuario o elemento del backlog antes de comenzar a trabaja
+           r?
+      295  - **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logi
+           ca de aplicacion B) Solo MVP.
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      26  | B-22 | 2026-11-15 13:48 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-30 (login con "Iniciar se
+          sión" y personajes animados) y se citó en spec §9 (Login) y en 
+          la trazabilidad de T07c | Decisión de B-21 registrada | docs/00
+          -decisiones.md D-30, docs/01-spec.md §9, docs/02-backlog.md T07
+          c, B-21 |
+      27  | B-23 | 2026-11-15 13:49 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 8 de B-19), eliminar un cierre 
+          de hoy o pasado responde 422 `CLOSURE_IN_PAST`: se actualizó el
+           spec (RN-24 en §5, `DELETE /api/closures/:id` en §8, P-11 en §
+          12) y en T05b se agregó al CA5 y se quitó la nota que pedía con
+          firmarlo | Spec y T05b coherentes. Decisión sin D-xx en 00-deci
+          siones.md | docs/01-spec.md §5 §8 §12, docs/02-backlog.md T05b,
+           B-19 |
+      28  | B-24 | 2026-11-15 13:49 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-31 (eliminar un cierre de
+           hoy o pasado: 422 `CLOSURE_IN_PAST`) y se citó en RN-24 del sp
+          ec y en la trazabilidad de T05b | Decisión de B-23 registrada |
+           docs/00-decisiones.md D-31, docs/01-spec.md §5, docs/02-backlo
+          g.md T05b, B-23 |
+      29 +| B-25 | 2026-11-15 13:51 | Agente | 2-Planificar | DECISIÓN | 
+         +A pedido de la persona (punto 9 de B-19), el agente definió el 
+         +orden de validación de los errores: se agregó la subsección «Or
+         +den de validación» en spec §8, se registró D-32 y en T05 se agr
+         +egó el CA16 y se cambió la nota que pedía documentar el orden |
+         + Spec, decisiones y T05 coherentes | docs/01-spec.md §8, docs/0
+         +0-decisiones.md D-32, docs/02-backlog.md T05, B-19 |           
+
+● Definí el orden de los errores y lo agregué al spec §8, en una nueva
+  subsección «Orden de validación». La API responde siempre el primer error que
+  encuentra.
+
+  Orden general: 401 (sesión) → 403 (rol) → 400 (formato) → 404 (no existe) →
+  reglas de negocio.
+
+  Crear reserva (POST /api/bookings):
+  1. Sala inexistente → 404.
+  2. Reglas de tiempo, que no consultan la base, en el orden de las RN:
+     INVALID_SLOT → INVALID_DURATION → OUTSIDE_BUSINESS_HOURS → BOOKING_IN_PAST
+     → TOO_FAR_AHEAD.
+  3. Reglas que leen la sala: ROOM_INACTIVE → CAPACITY_EXCEEDED.
+  4. DAY_CLOSED, dentro de la transacción y con el bloqueo por fecha.
+  5. 409 BOOKING_CONFLICT, que da la base al insertar.
+
+  Así no se abre una transacción para una petición que ya es inválida.
+
+  Cancelar reserva: 404 → 403 → BOOKING_ALREADY_CANCELLED →
+  BOOKING_ALREADY_STARTED. Si la reserva cumple las dos, "ya cancelada" informa
+  más que "ya empezó".
+
+  Otras operaciones:
+  - Crear cierre: CLOSURE_IN_PAST → 409 CLOSURE_EXISTS.
+  - Eliminar cierre: 404 → CLOSURE_IN_PAST.
+  - Editar usuario: 404 → CANNOT_DEACTIVATE_SELF.
+  - Cambiar contraseña: solo puede dar INVALID_CURRENT_PASSWORD.
+
+  Esta vez registré la decisión como D-32 sin preguntarte. El spec ya la citaba,
+  y dejarla sin registrar habría creado otra referencia rota como las de D-29 y
+  D-41. Como la propuse yo, en "Por qué" dice "Propuesta del agente". En
+  "Costo/riesgo" anoté que cambiar el orden después obliga a tocar las pruebas.
+
+  En la tarea T05 del backlog:
+  - CA16: nuevo criterio. Una reserva que incumple varias reglas recibe el
+    primer error del orden; por ejemplo, sábado a las 10:10 en una sala inactiva
+    da INVALID_SLOT.
+  - Notas para el agente: la nota que pedía documentar el orden ahora remite al
+    spec.
+  - Trazabilidad: agregué la D-32.
+
+  Agregué la fila B-25 (DECISIÓN) al final de la bitácora. No hice commit.
+
+  Solo queda abierto el punto 10, la columna "Tarea" del spec §14. El backlog ya
+  tiene esa tabla lista para copiar. ¿Quieres que la pase yo al spec?
+
+✻ Cogitated for 58s · done 13:51
+
+> sí, pásala al spec §14                                                        
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\01-spec.md)
+  ⎿  Added 20 lines, removed 20 lines
+      502  
+      503  ## 14. Trazabilidad
+      504  
+      505 -Las tareas se completan cuando exista `docs/02-backlog.md`.   
+      505 +La columna "Tarea" sale de `docs/02-backlog.md` («Trazabilidad
+          + para el spec §14»): primero las tareas que implementan la reg
+          +la y, entre paréntesis, la que contiene su prueba.            
+      506  
+      507  | Regla | Endpoint | Pantalla | Tarea | Prueba |
+      508  |-------|----------|----------|-------|--------|
+      509 -| RN-01 | `POST /api/bookings` | `/agenda` | — | P-01, P-02, P
+          --03, P-04 |                                                   
+      510 -| RN-02, RN-03 | `POST /api/bookings` | Formulario de reserva 
+          -| — | P-05 |                                                  
+      511 -| RN-04 | `POST /api/bookings` | `/agenda` | — | P-06 |       
+      512 -| RN-05, RN-06 | `POST /api/bookings` | `/agenda` | — | P-07 |
+      513 -| RN-07, RN-08 | `POST /api/bookings` | Formulario de reserva 
+          -| — | P-08, P-16 |                                            
+      514 -| RN-09 | `POST /api/bookings`, `PATCH /api/rooms/:id` | `/age
+          -nda`, `/admin/rooms` | — | P-08 |                             
+      515 -| RN-10 | `POST /api/bookings`, `GET /api/closures` | `/agenda
+          -` | — | P-08 |                                                
+      516 -| RN-11, RN-12, RN-13 | `POST /api/bookings/:id/cancel` | `/my
+          --bookings`, `/agenda` | — | P-09 |                            
+      517 -| RN-14, RN-15 | `POST /api/auth/login`, `PATCH /api/users/:id
+          -` | `/login`, `/admin/users` | — | P-10 |                     
+      518 -| RN-16, RN-24 | `POST /api/closures` | `/admin/closures` | — 
+          -| P-11 |                                                      
+      519 -| RN-17 | `GET /api/bookings`, `GET /api/bookings/mine` | `/ag
+          -enda` | — | P-13 |                                            
+      520 -| RN-18 | `PATCH /api/auth/password`, `POST /api/users/:id/res
+          -et-password` | `/account`, `/admin/users` | — | P-16 |        
+      521 -| RN-19 | `POST /api/auth/login` | `/login` | — | P-10 |      
+      522 -| RN-20 | `POST /api/bookings` | `/agenda` | — | P-01 (sin 422
+          - por tope) |                                                  
+      523 -| RN-21 | Rutas ADMIN | `/admin/*` | — | P-14 |               
+      524 -| RN-22 | `POST/PATCH /api/rooms` | `/admin/rooms` | — | P-16 
+          -|                                                             
+      525 -| RN-23 | `POST /api/users` | `/admin/users` | — | P-16 |     
+      526 -| RN-25 | `POST /api/audit-logs/search` | `/admin/audit` | — |
+          - P-15 |                                                       
+      527 -| RN-26 | `PATCH /api/users/:id` | `/admin/users` | — | P-10 |
+      509 +| RN-01 | `POST /api/bookings` | `/agenda` | T02, T05 (prueba:
+          + T06) | P-01, P-02, P-03, P-04 |                              
+      510 +| RN-02, RN-03 | `POST /api/bookings` | Formulario de reserva 
+          +| T05 (prueba: T05) | P-05 |                                  
+      511 +| RN-04 | `POST /api/bookings` | `/agenda` | T05 (prueba: T05)
+          + | P-06 |                                                     
+      512 +| RN-05, RN-06 | `POST /api/bookings` | `/agenda` | T05 (prueb
+          +a: T05) | P-07 |                                              
+      513 +| RN-07, RN-08 | `POST /api/bookings` | Formulario de reserva 
+          +| T05, T08a (prueba: T06) | P-08, P-16 |                      
+      514 +| RN-09 | `POST /api/bookings`, `PATCH /api/rooms/:id` | `/age
+          +nda`, `/admin/rooms` | T04, T05, T10 (prueba: T06) | P-08 |   
+      515 +| RN-10 | `POST /api/bookings`, `GET /api/closures` | `/agenda
+          +` | T05, T05b, T08, T10b (prueba: T06) | P-08 |               
+      516 +| RN-11, RN-12, RN-13 | `POST /api/bookings/:id/cancel` | `/my
+          +-bookings`, `/agenda` | T05, T09 (prueba: T05 y T06) | P-09 | 
+      517 +| RN-14, RN-15 | `POST /api/auth/login`, `PATCH /api/users/:id
+          +` | `/login`, `/admin/users` | T03, T05a, T10a (prueba: T06) |
+          + P-10 |                                                       
+      518 +| RN-16, RN-24 | `POST /api/closures`, `DELETE /api/closures/:
+          +id` | `/admin/closures` | T05b, T10b (prueba: T06) | P-11 |   
+      519 +| RN-17 | `GET /api/bookings`, `GET /api/bookings/mine` | `/ag
+          +enda` | T05, T08 (prueba: T06) | P-13 |                       
+      520 +| RN-18 | `PATCH /api/auth/password`, `POST /api/users/:id/res
+          +et-password` | `/account`, `/admin/users` | T03a, T05a, T07b, 
+          +T10a (prueba: T06) | P-16 |                                   
+      521 +| RN-19 | `POST /api/auth/login` | `/login` | T03, T07, T07c (
+          +prueba: T06) | P-10 |                                         
+      522 +| RN-20 | `POST /api/bookings` | `/agenda` | T05 (prueba: T06)
+          + | P-01 (sin 422 por tope) |                                  
+      523 +| RN-21 | Rutas ADMIN | `/admin/*` | T03, T04, T05a, T05b, T06
+          +a, T07, T10 a T10c (prueba: T06) | P-14 |                     
+      524 +| RN-22 | `POST/PATCH /api/rooms` | `/admin/rooms` | T02, T04,
+          + T10 (prueba: T06) | P-16 |                                   
+      525 +| RN-23 | `POST /api/users` | `/admin/users` | T02, T05a, T10a
+          + (prueba: T06) | P-16 |                                       
+      526 +| RN-25 | `POST /api/audit-logs/search` | `/admin/audit` | T06
+          +a, T10c (prueba: T06a) | P-15 |                               
+      527 +| RN-26 | `PATCH /api/users/:id` | `/admin/users` | T05a, T10a
+          + (prueba: T06) | P-10 |                                       
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      1124  
+      1125  ## Trazabilidad para el spec §14
+      1126  
+      1127 -Para completar la columna "Tarea" de `01-spec.md` §14 (el age
+           -nte no edita el spec; la persona lo copia).                  
+      1127 +Fuente de la columna "Tarea" de `01-spec.md` §14, que ya está
+           + copiada allí. Si cambia una tarea, se actualizan las dos tab
+           +las.                                                         
+      1128  
+      1129  | Regla | Tarea | Prueba |
+      1130  |---|---|---|
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      27  | B-23 | 2026-11-15 13:49 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 8 de B-19), eliminar un cierre 
+          de hoy o pasado responde 422 `CLOSURE_IN_PAST`: se actualizó el
+           spec (RN-24 en §5, `DELETE /api/closures/:id` en §8, P-11 en §
+          12) y en T05b se agregó al CA5 y se quitó la nota que pedía con
+          firmarlo | Spec y T05b coherentes. Decisión sin D-xx en 00-deci
+          siones.md | docs/01-spec.md §5 §8 §12, docs/02-backlog.md T05b,
+           B-19 |
+      28  | B-24 | 2026-11-15 13:49 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-31 (eliminar un cierre de
+           hoy o pasado: 422 `CLOSURE_IN_PAST`) y se citó en RN-24 del sp
+          ec y en la trazabilidad de T05b | Decisión de B-23 registrada |
+           docs/00-decisiones.md D-31, docs/01-spec.md §5, docs/02-backlo
+          g.md T05b, B-23 |
+      29  | B-25 | 2026-11-15 13:51 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona (punto 9 de B-19), el agente definió el 
+          orden de validación de los errores: se agregó la subsección «Or
+          den de validación» en spec §8, se registró D-32 y en T05 se agr
+          egó el CA16 y se cambió la nota que pedía documentar el orden |
+           Spec, decisiones y T05 coherentes | docs/01-spec.md §8, docs/0
+          0-decisiones.md D-32, docs/02-backlog.md T05, B-19 |
+      30 +| B-26 | 2026-11-15 13:52 | Agente | 2-Planificar | CORRECCIÓN 
+         +| A pedido de la persona (punto 10 de B-19), se completó la col
+         +umna "Tarea" de spec §14 con la tabla de trazabilidad del backl
+         +og (tareas que implementan cada RN y, entre paréntesis, la de s
+         +u prueba); se agregó `DELETE /api/closures/:id` a la fila RN-16
+         +/RN-24 por D-31; el backlog ya no dice que la persona debe copi
+         +arla | Los 10 puntos de B-19 quedan cerrados | docs/01-spec.md 
+         +§14, docs/02-backlog.md, B-19 |                                
+
+● Completé la columna "Tarea" del spec §14 con la tabla de trazabilidad del
+  backlog. Ahora las 19 filas tienen las tareas que implementan cada regla y,
+  entre paréntesis, la tarea que contiene su prueba. Por ejemplo, RN-01 dice
+  "T02, T05 (prueba: T06)".
+
+  Hice tres cambios más:
+  - Introducción de §14: decía que las tareas se completarían cuando existiera
+    el backlog. Ahora explica de dónde sale la columna y cómo se lee.
+  - Fila RN-16/RN-24: agregué DELETE /api/closures/:id a los endpoints, porque
+    desde la D-31 esa regla también cubre la eliminación de cierres.
+  - Backlog: la sección «Trazabilidad para el spec §14» ya no pide que la
+    persona copie la tabla. Ahora dice que ya está en el spec y que, si cambia
+    una tarea, hay que actualizar las dos tablas.
+
+  Las filas de D-05, D-06 y O5 de la tabla del backlog no las pasé, porque la
+  tabla del spec §14 solo tiene reglas de negocio.
+
+  Agregué la fila B-26 (CORRECCIÓN) al final de la bitácora. Con esto quedan
+  cerrados los 10 puntos de la revisión del backlog.
+
+  Los cambios de B-19 a B-26 todavía no tienen commit. ¿Hago el commit?
+
+✻ Cogitated for 37s · done 13:52
+
+> sí, haz el commit                                                             
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\03-bitacora.md)
+  ⎿  Added 1 line
+      28  | B-24 | 2026-11-15 13:49 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona, se registró D-31 (eliminar un cierre de
+           hoy o pasado: 422 `CLOSURE_IN_PAST`) y se citó en RN-24 del sp
+          ec y en la trazabilidad de T05b | Decisión de B-23 registrada |
+           docs/00-decisiones.md D-31, docs/01-spec.md §5, docs/02-backlo
+          g.md T05b, B-23 |
+      29  | B-25 | 2026-11-15 13:51 | Agente | 2-Planificar | DECISIÓN | 
+          A pedido de la persona (punto 9 de B-19), el agente definió el 
+          orden de validación de los errores: se agregó la subsección «Or
+          den de validación» en spec §8, se registró D-32 y en T05 se agr
+          egó el CA16 y se cambió la nota que pedía documentar el orden |
+           Spec, decisiones y T05 coherentes | docs/01-spec.md §8, docs/0
+          0-decisiones.md D-32, docs/02-backlog.md T05, B-19 |
+      30  | B-26 | 2026-11-15 13:52 | Agente | 2-Planificar | CORRECCIÓN 
+          | A pedido de la persona (punto 10 de B-19), se completó la col
+          umna "Tarea" de spec §14 con la tabla de trazabilidad del backl
+          og (tareas que implementan cada RN y, entre paréntesis, la de s
+          u prueba); se agregó `DELETE /api/closures/:id` a la fila RN-16
+          /RN-24 por D-31; el backlog ya no dice que la persona debe copi
+          arla | Los 10 puntos de B-19 quedan cerrados | docs/01-spec.md 
+          §14, docs/02-backlog.md, B-19 |
+      31 +| B-27 | 2026-11-15 13:53 | Agente | 2-Planificar | AGENTE | A 
+         +pedido de la persona, commit de los ajustes de planificación de
+         + B-19 a B-26: decisiones D-30 a D-32, spec §5, §8, §9, §12 y §1
+         +4, backlog (T05, T05b, T07c, trazabilidad) y bitácora | Commit 
+         +"Planificación: cierre de la revisión del backlog (D-30 a D-32)
+         +" en `master` | B-19..B-26 |                                   
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hice el commit 7052592 en master con el mensaje "Planificación: cierre de la
+  revisión del backlog (D-30 a D-32)". No hice push.
+
+  Incluye los cuatro documentos de planificación:
+  - docs/00-decisiones.md: las decisiones D-30, D-31 y D-32.
+  - docs/01-spec.md: las secciones §5, §8, §9, §12 y §14.
+  - docs/02-backlog.md: las tareas T05, T05b y T07c, y la tabla de trazabilidad.
+  - docs/03-bitacora.md: las filas B-19 a B-27.
+
+  Antes del commit agregué la fila B-27 a la bitácora para que quedara incluida.
+  El árbol de trabajo quedó limpio. Git volvió a avisar sobre la conversión a
+  CRLF; se resuelve en T01 con .gitattributes.
+
+  La planificación está cerrada y todas las tareas siguen en estado Pendiente.
+  Lo siguiente es T01, el esqueleto del proyecto y el compose.
+
+✻ Cogitated for 16s · done 13:53

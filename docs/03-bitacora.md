@@ -32,3 +32,4 @@
 | B-28 | 2026-11-15 13:56 | Yo | 2-Planificar | REVISIÓN | Revisé el spec completo y lo apruebo | Spec aprobado | docs/01-spec.md, B-02 |
 | B-29 | 2026-11-15 13:56 | Agente | 2-Planificar | AGENTE | A pedido de la persona, el estado de `docs/01-spec.md` pasa de Borrador a Aprobado | Spec en estado Aprobado | docs/01-spec.md, B-28 |
 | B-30 | 2026-11-15 13:58 | Agente | 2-Planificar | AGENTE | A pedido de la persona, commit de la aprobación del spec (B-28 y B-29) | Commit "Planificación: spec aprobado" en `master` | B-28, B-29 |
+| B-31 | 2026-11-15 14:00 | Agente | 2-Planificar | AGENTE | A pedido de la persona, se creó `.gitignore` (node_modules, builds, coverage, .env, logs, archivos de SO y editor, `.claude/settings.local.json`) antes de T01 y se versionó la sesión exportada de /bitacora | `.gitignore` en la raíz; T01 lo ajusta si hace falta. Sesión en docs/sesiones/ | .gitignore, docs/sesiones/, docs/02-backlog.md T01 |
