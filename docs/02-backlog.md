@@ -59,7 +59,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 1 | T01 | Esqueleto del monorepo y compose (db, api Nest con health, web nginx con proxy) | — | M | No | Hecha | [T01](tareas/T01.md) |
 | 2 | T02 | Modelo de datos, migraciones (EXCLUDE + `audit_logs` inmutable) y seed | T01 | M | No | Hecha | [T02](tareas/T02.md) |
 | 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | Hecha | [T02a](tareas/T02a.md) |
-| 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | En revisión | [T03](tareas/T03.md) |
+| 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Hecha | [T03](tareas/T03.md) |
 | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Pendiente | |
 | 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Pendiente | |
 | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Pendiente | |
@@ -251,7 +251,7 @@ npm --prefix src/api run lint
 | Dependencias | T02a |
 | Estimación | M |
 | Seguridad / auditoría | Roles: público (`login`, `health`); autenticado (`logout`, `me`). Auditoría: no aplica (el login queda en logs de pino, S-02). OWASP A07: mensaje genérico, bcryptjs, cookie `httpOnly` + `SameSite=Strict` + `Path=/api`; A01: denegación por defecto; A05: Swagger (`/api/docs`) solo fuera de producción |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/auth/**` (controller, service, dto, estrategia JWT) y `src/api/src/modules/users/` mínimo: `UsersRepository` (interfaz) + implementación Prisma con `findByEmail` y `findById`.
