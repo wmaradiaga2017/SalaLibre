@@ -251,6 +251,14 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Costo/riesgo:** Contraseñas por defecto conocidas; aceptable porque solo corre en local.
 - **Afecta a:** spec §3, §10
 
+## D-27 · DoR definida por mí (el enunciado no la define) y DoD
+- **Duda:** ¿Qué conjunto de criterios debe tener una historia de usuario o elemento del backlog antes de comenzar a trabajar?
+- **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logica de aplicacion B) Solo MVP.
+- **Decisión:** A) "Debe cumplir con el MVP, cada funcionalidad con cobertura de preubas unitarias, validacion de seguridad cubriendo las principas fallas de seguridad OWASP Top 10 y debe cumplir con cada RN."
+- **Por qué:** Metodologia de trabajo propia.
+- **Costo/riesgo:** Se pueden empezar y finalizar tareas incompletas, con fallas o riesgos de seguridad
+- **Afecta a:** spec §4 (alcance del MVP), §5 (reglas de negocio RN), §11 (requisitos no funcionales: seguridad), §12 (estrategia de pruebas), §14 (trazabilidad regla → prueba); `docs/02-backlog.md` (DoR y DoD)
+
 ## D-28 · Diseño visual de SalaLibre
 - **Duda:** ¿Qué papel tiene el diseño hecho en Stitch (`docs/diseño/DESIGN.md`) frente al spec?
 - **Opciones:** —
@@ -299,10 +307,3 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Costo/riesgo:** Con `docker compose up` la documentación interactiva no está disponible; hay que correr la API fuera de producción para verla.
 - **Afecta a:** `docs/02-backlog.md` (T03: alcance, seguridad, CA8, verificación y notas), `CLAUDE.md` (Plataforma transversal fijada en T02a), `docs/tareas/T02a.md` §7
 
-## D-27 · DoR definida por mí (el enunciado no la define) y DoD
-- **Duda:** ¿Qué conjunto de criterios debe tener una historia de usuario o elemento del backlog antes de comenzar a trabajar?
-- **Opciones:** A) Cumple MVP, Funcionalidad, Seguridad y logica de aplicacion B) Solo MVP.
-- **Decisión:** A) "Debe cumplir con el MVP, cada funcionalidad con cobertura de preubas unitarias, validacion de seguridad cubriendo las principas fallas de seguridad OWASP Top 10 y debe cumplir con cada RN."
-- **Por qué:** Metodologia de trabajo propia.
-- **Costo/riesgo:** Se pueden empezar y finalizar tareas incompletas, con fallas o riesgos de seguridad
-- **Afecta a:** spec §4 (alcance del MVP), §5 (reglas de negocio RN), §11 (requisitos no funcionales: seguridad), §12 (estrategia de pruebas), §14 (trazabilidad regla → prueba); `docs/02-backlog.md` (DoR y DoD)

@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { CommonModule } from './common/common.module';
 import { TransactionModule } from './common/transaction/transaction.module';
 import { HealthModule } from './health/health.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [CommonModule.forRoot(), PrismaModule, TransactionModule, HealthModule],
+  imports: [CommonModule.forRoot(), PrismaModule, TransactionModule, HealthModule, UsersModule, AuthModule],
 })
 export class AppModule {}

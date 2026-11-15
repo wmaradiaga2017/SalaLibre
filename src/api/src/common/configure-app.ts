@@ -17,11 +17,20 @@ export function configureApp(app: INestApplication): INestApplication {
   app.setGlobalPrefix('api');
   app.enableShutdownHooks();
 
-  const document = SwaggerModule.createDocument(
-    app,
-    new DocumentBuilder().setTitle('SalaLibre API').setDescription('API de reservas de salas (spec §8)').setVersion('1.0').build(),
-  );
-  SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
+  // D-33: Express sirve Swagger fuera del router de Nest (el guard global no lo cubre), así que solo se monta
+  // fuera de producción. En el compose (NODE_ENV=production), /api/docs responde 404.
+  if (process.env.NODE_ENV !== 'production') {
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle('SalaLibre API')
+        .setDescription('API de reservas de salas (spec §8)')
+        .setVersion('1.0')
+        .addCookieAuth('access_token')
+        .build(),
+    );
+    SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
+  }
 
   return app;
 }
