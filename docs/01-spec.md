@@ -97,7 +97,7 @@ Todas las horas se interpretan en `BUSINESS_TZ` y se guardan en UTC (D-07). Un i
 | RN-21 | Solo `ADMIN` gestiona salas, usuarios, cierres y auditoría. | 403 `FORBIDDEN` | D-08, D-14, D-23, D-24 |
 | RN-22 | `room.name` es único (sin distinguir mayúsculas) con 1–60 caracteres. `capacity` es entero entre 1 y 100. `equipment` es un subconjunto sin repetidos de `PROJECTOR`, `VIDEOCONF`, `WHITEBOARD`, `TV`. | 409 `ROOM_NAME_TAKEN` · 400 `VALIDATION_ERROR` | D-14, D-25 |
 | RN-23 | `user.email` es único y se guarda en minúsculas. | 409 `EMAIL_TAKEN` | D-08 |
-| RN-24 | Solo se crea un cierre para una fecha posterior a hoy y no repetida. | 422 `CLOSURE_IN_PAST` · 409 `CLOSURE_EXISTS` | D-23, S-04 |
+| RN-24 | Solo se crea un cierre para una fecha posterior a hoy y no repetida. Solo se elimina un cierre con fecha posterior a hoy. | 422 `CLOSURE_IN_PAST` (crear o eliminar) · 409 `CLOSURE_EXISTS` | D-23, D-31, S-04, S-05 |
 | RN-25 | La auditoría se devuelve ordenada por `createdAt` desc. `pageSize` por defecto 20, máximo 100. `page` empieza en 1. | 400 `VALIDATION_ERROR` | D-24 |
 | RN-26 | Un `ADMIN` no puede desactivarse a sí mismo. | 422 `CANNOT_DEACTIVATE_SELF` | S-03 |
 
@@ -285,6 +285,18 @@ Todas las rutas cuelgan de `/api` (prefijo global de NestJS). nginx hace proxy d
 
 Toda respuesta lleva el header `X-Request-Id`.
 
+### Orden de validación (D-32)
+Cada petición responde con el **primer** error que encuentra, en este orden: 401 (sesión) → 403 (rol, RN-21) → 400 (formato del body) → 404 (recurso inexistente) → reglas de negocio de la operación. Dentro de cada operación, las reglas se evalúan así:
+
+| Operación | Orden |
+|-----------|-------|
+| `POST /api/bookings` | Sala inexistente → 404. Luego 422, primero las reglas de tiempo (sin consultar la base) y después las de datos: `INVALID_SLOT` (RN-02) → `INVALID_DURATION` (RN-03) → `OUTSIDE_BUSINESS_HOURS` (RN-04) → `BOOKING_IN_PAST` (RN-05) → `TOO_FAR_AHEAD` (RN-06) → `ROOM_INACTIVE` (RN-09) → `CAPACITY_EXCEEDED` (RN-07) → `DAY_CLOSED` (RN-10, dentro de la transacción y con el lock por fecha). Por último, el `INSERT` puede dar 409 `BOOKING_CONFLICT` (RN-01). |
+| `POST /api/bookings/:id/cancel` | 404 → 403 `FORBIDDEN` (RN-11) → 422 `BOOKING_ALREADY_CANCELLED` → 422 `BOOKING_ALREADY_STARTED` (RN-12). |
+| `POST /api/closures` | 422 `CLOSURE_IN_PAST` → 409 `CLOSURE_EXISTS` (RN-24). |
+| `DELETE /api/closures/:id` | 404 → 422 `CLOSURE_IN_PAST` (RN-24, D-31). |
+| `PATCH /api/users/:id` | 404 → 422 `CANNOT_DEACTIVATE_SELF` (RN-26). |
+| `PATCH /api/auth/password` | 422 `INVALID_CURRENT_PASSWORD` (RN-18). |
+
 ### Endpoints
 | Método y ruta | Rol | Descripción |
 |---------------|-----|-------------|
@@ -302,7 +314,7 @@ Toda respuesta lleva el header `X-Request-Id`.
 | `POST /api/bookings/:id/cancel` | Dueño o ADMIN | 200 con `Booking`. |
 | `GET /api/closures` | Autenticado | Cierres con `date` ≥ hoy, ordenados por fecha. 200 con `Closure[]`. |
 | `POST /api/closures` | ADMIN | Body `{ date, reason }`. 201 con `Closure` y `cancelledBookings` (número). |
-| `DELETE /api/closures/:id` | ADMIN | Solo cierres con `date` > hoy. 204. No restaura reservas canceladas (S-05). |
+| `DELETE /api/closures/:id` | ADMIN | Solo cierres con `date` > hoy. 204. Cierre de hoy o pasado → 422 `CLOSURE_IN_PAST`; id inexistente → 404. No restaura reservas canceladas (S-05). |
 | `GET /api/users` | ADMIN | 200 con `User[]` ordenado por `name`. |
 | `POST /api/users` | ADMIN | Body `{ name, email, password, role }`. 201 con `User`. |
 | `PATCH /api/users/:id` | ADMIN | Body parcial `{ name?, role?, isActive? }`. 200 con `User`. |
@@ -361,7 +373,7 @@ La guía visual está en `docs/diseño/DESIGN.md` (solo visual, D-28); las panta
 
 | Pantalla | Ruta | Rol | Contenido |
 |----------|------|-----|-----------|
-| Login | `/login` | Público | Correo, contraseña, botón "Entrar". |
+| Login | `/login` | Público | (D-30) Correo, contraseña (con botón para mostrarla u ocultarla) y botón "Iniciar sesión". Composición del prototipo `docs/diseño/stitch/login`: en escritorio, dos columnas con cuatro personajes animados (SVG y CSS propios) que reaccionan al foco, a la contraseña visible y al resultado del envío, sin recibir nunca el valor de la contraseña; en móvil, cabecera compacta y formulario debajo; con `prefers-reduced-motion`, sin animación. Enlace "¿Olvidaste tu contraseña?" que solo muestra un aviso: RR. HH. restablece la contraseña (D-19). Sin "Recordarme", acceso con Google ni registro (D-08). |
 | Agenda | `/agenda` (inicio tras login) | Autenticado | Selector de día (hoy … hoy + 30, solo L–V). Columnas = salas activas filtradas. Filas = bloques de 15 min de 07:00 a 20:00. Filtros: capacidad mínima y equipamiento. Reserva propia con título; ajena con "Ocupado" + nombre (`EMPLOYEE`) o título + nombre (`ADMIN`). Clic en hueco libre abre el formulario de reserva. Día cerrado: banner con el motivo y sin huecos clicables. |
 | Formulario de reserva | Modal sobre `/agenda` | Autenticado | Sala, inicio, fin (selectores de 15 min), título, asistentes. Muestra capacidad de la sala. |
 | Mis reservas | `/my-bookings` | Autenticado | Lista de reservas propias con estado y botón "Cancelar" solo si `CONFIRMED` y futura. |
@@ -462,7 +474,7 @@ Los nombres de prueba incluyen la regla, por ejemplo `it('RN-01 · …')`.
 | P-08 | Integración | RN-07, RN-09, RN-10 · Asistentes > capacidad, sala inactiva y día cerrado → 422 con su código. |
 | P-09 | Unitaria + integración | RN-11, RN-12 · `BookingPolicy`: dueño cancela futura; otro EMPLOYEE → 403; ADMIN → 200; ya empezada → 422. |
 | P-10 | Integración | RN-14, RN-15 · Desactivar usuario cancela sus reservas futuras; su cookie vigente pasa a 401. |
-| P-11 | Integración | RN-16, RN-24 · Crear cierre cancela las reservas del día; repetido → 409; hoy → 422. |
+| P-11 | Integración | RN-16, RN-24 · Crear cierre cancela las reservas del día; repetido → 409; hoy → 422; eliminar un cierre de hoy o pasado → 422. |
 | P-12 | Integración | D-05 · Cada escritura deja una fila en `audit_logs` con `requestId`; `UPDATE` o `DELETE` sobre `audit_logs` falla. |
 | P-13 | Integración | RN-17 · `EMPLOYEE` recibe `title: null` en reservas ajenas; `ADMIN` recibe el título. |
 | P-14 | Integración | RN-21 · `EMPLOYEE` recibe 403 en `/api/rooms` (POST/PATCH), `/api/users`, `/api/closures` (POST/DELETE) y `/api/audit-logs/search`. Sin cookie → 401 en todas salvo las dos públicas. |
@@ -490,26 +502,26 @@ Los nombres de prueba incluyen la regla, por ejemplo `it('RN-01 · …')`.
 
 ## 14. Trazabilidad
 
-Las tareas se completan cuando exista `docs/02-backlog.md`.
+La columna "Tarea" sale de `docs/02-backlog.md` («Trazabilidad para el spec §14»): primero las tareas que implementan la regla y, entre paréntesis, la que contiene su prueba.
 
 | Regla | Endpoint | Pantalla | Tarea | Prueba |
 |-------|----------|----------|-------|--------|
-| RN-01 | `POST /api/bookings` | `/agenda` | — | P-01, P-02, P-03, P-04 |
-| RN-02, RN-03 | `POST /api/bookings` | Formulario de reserva | — | P-05 |
-| RN-04 | `POST /api/bookings` | `/agenda` | — | P-06 |
-| RN-05, RN-06 | `POST /api/bookings` | `/agenda` | — | P-07 |
-| RN-07, RN-08 | `POST /api/bookings` | Formulario de reserva | — | P-08, P-16 |
-| RN-09 | `POST /api/bookings`, `PATCH /api/rooms/:id` | `/agenda`, `/admin/rooms` | — | P-08 |
-| RN-10 | `POST /api/bookings`, `GET /api/closures` | `/agenda` | — | P-08 |
-| RN-11, RN-12, RN-13 | `POST /api/bookings/:id/cancel` | `/my-bookings`, `/agenda` | — | P-09 |
-| RN-14, RN-15 | `POST /api/auth/login`, `PATCH /api/users/:id` | `/login`, `/admin/users` | — | P-10 |
-| RN-16, RN-24 | `POST /api/closures` | `/admin/closures` | — | P-11 |
-| RN-17 | `GET /api/bookings`, `GET /api/bookings/mine` | `/agenda` | — | P-13 |
-| RN-18 | `PATCH /api/auth/password`, `POST /api/users/:id/reset-password` | `/account`, `/admin/users` | — | P-16 |
-| RN-19 | `POST /api/auth/login` | `/login` | — | P-10 |
-| RN-20 | `POST /api/bookings` | `/agenda` | — | P-01 (sin 422 por tope) |
-| RN-21 | Rutas ADMIN | `/admin/*` | — | P-14 |
-| RN-22 | `POST/PATCH /api/rooms` | `/admin/rooms` | — | P-16 |
-| RN-23 | `POST /api/users` | `/admin/users` | — | P-16 |
-| RN-25 | `POST /api/audit-logs/search` | `/admin/audit` | — | P-15 |
-| RN-26 | `PATCH /api/users/:id` | `/admin/users` | — | P-10 |
+| RN-01 | `POST /api/bookings` | `/agenda` | T02, T05 (prueba: T06) | P-01, P-02, P-03, P-04 |
+| RN-02, RN-03 | `POST /api/bookings` | Formulario de reserva | T05 (prueba: T05) | P-05 |
+| RN-04 | `POST /api/bookings` | `/agenda` | T05 (prueba: T05) | P-06 |
+| RN-05, RN-06 | `POST /api/bookings` | `/agenda` | T05 (prueba: T05) | P-07 |
+| RN-07, RN-08 | `POST /api/bookings` | Formulario de reserva | T05, T08a (prueba: T06) | P-08, P-16 |
+| RN-09 | `POST /api/bookings`, `PATCH /api/rooms/:id` | `/agenda`, `/admin/rooms` | T04, T05, T10 (prueba: T06) | P-08 |
+| RN-10 | `POST /api/bookings`, `GET /api/closures` | `/agenda` | T05, T05b, T08, T10b (prueba: T06) | P-08 |
+| RN-11, RN-12, RN-13 | `POST /api/bookings/:id/cancel` | `/my-bookings`, `/agenda` | T05, T09 (prueba: T05 y T06) | P-09 |
+| RN-14, RN-15 | `POST /api/auth/login`, `PATCH /api/users/:id` | `/login`, `/admin/users` | T03, T05a, T10a (prueba: T06) | P-10 |
+| RN-16, RN-24 | `POST /api/closures`, `DELETE /api/closures/:id` | `/admin/closures` | T05b, T10b (prueba: T06) | P-11 |
+| RN-17 | `GET /api/bookings`, `GET /api/bookings/mine` | `/agenda` | T05, T08 (prueba: T06) | P-13 |
+| RN-18 | `PATCH /api/auth/password`, `POST /api/users/:id/reset-password` | `/account`, `/admin/users` | T03a, T05a, T07b, T10a (prueba: T06) | P-16 |
+| RN-19 | `POST /api/auth/login` | `/login` | T03, T07, T07c (prueba: T06) | P-10 |
+| RN-20 | `POST /api/bookings` | `/agenda` | T05 (prueba: T06) | P-01 (sin 422 por tope) |
+| RN-21 | Rutas ADMIN | `/admin/*` | T03, T04, T05a, T05b, T06a, T07, T10 a T10c (prueba: T06) | P-14 |
+| RN-22 | `POST/PATCH /api/rooms` | `/admin/rooms` | T02, T04, T10 (prueba: T06) | P-16 |
+| RN-23 | `POST /api/users` | `/admin/users` | T02, T05a, T10a (prueba: T06) | P-16 |
+| RN-25 | `POST /api/audit-logs/search` | `/admin/audit` | T06a, T10c (prueba: T06a) | P-15 |
+| RN-26 | `PATCH /api/users/:id` | `/admin/users` | T05a, T10a (prueba: T06) | P-10 |

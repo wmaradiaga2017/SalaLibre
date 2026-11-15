@@ -371,7 +371,7 @@ npm --prefix src/api test -- rooms && npm --prefix src/api run lint
 | Campo | Valor |
 |---|---|
 | Objetivo | Crear, listar y cancelar reservas garantizando que no haya choques, con todas las reglas de horario, duración y permisos |
-| Trazabilidad | O1 · RN-01 a RN-13, RN-17, RN-20 · D-04, D-06, D-07, D-09 a D-13, D-15, D-17, D-20, D-23 · spec §5, §7, §8, §11 (concurrencia), F-02, F-03, F-04 · P-05, P-06, P-07, P-09 (unitarias; la integración va en T06) |
+| Trazabilidad | O1 · RN-01 a RN-13, RN-17, RN-20 · D-04, D-06, D-07, D-09 a D-13, D-15, D-17, D-20, D-23, D-32 · spec §5, §7, §8, §11 (concurrencia), F-02, F-03, F-04 · P-05, P-06, P-07, P-09 (unitarias; la integración va en T06) |
 | Dependencias | T04 |
 | Estimación | L |
 | Seguridad / auditoría | Roles: autenticado; cancelar solo dueño o ADMIN (`BookingPolicy`). Auditoría: `BOOKING_CREATED` y `BOOKING_CANCELLED`, que se conectan en T06a. OWASP A01: sin IDOR (`/mine` solo propias, cancelar ajenas solo ADMIN), RN-17 aplicada en la API; A04: la concurrencia la resuelve la base |
@@ -403,6 +403,7 @@ npm --prefix src/api test -- rooms && npm --prefix src/api run lint
 - **CA13** · Dada la creación de una reserva, cuando se ejecuta el servicio, entonces toma `pg_advisory_xact_lock` sobre la fecha y sobre el `userId` dentro de la misma transacción (prueba unitaria con repositorio simulado).
 - **CA14** · Dado el código del módulo de reservas, cuando reviso sus imports, entonces `bookings.controller.ts` no importa Prisma y `domain/` no importa nada de `@nestjs/*` ni de `@prisma/*`.
 - **CA15** · Dado el módulo de reservas, cuando llamo `PATCH`, `PUT` o `DELETE` sobre `/api/bookings/:id`, entonces responde 404 porque no existe endpoint de edición ni de borrado (RN-13).
+- **CA16** · Dada una reserva que incumple varias reglas a la vez (p. ej. sábado a las 10:10 en una sala inactiva), cuando se crea, entonces la API responde el primer error según spec §8 «Orden de validación» (aquí 422 `INVALID_SLOT`); y dada una reserva ya cancelada cuyo inicio ya pasó, cuando se cancela, entonces 422 `BOOKING_ALREADY_CANCELLED` (prueba unitaria).
 
 **Verificación:**
 ```bash
@@ -421,7 +422,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -b /tmp/emp2.txt -X POST $BASE/bookings
 curl -s -b /tmp/emp1.txt -X POST $BASE/bookings/$B/cancel | jq -r .status                      # CANCELLED
 ```
 
-**Notas para el agente:** La restricción `EXCLUDE` ya existe (T02); no la dupliques en código. Valida en el dominio para dar un mensaje claro, pero confía en la base para la concurrencia. Prisma no tiene un código propio para `23P01`: puede llegar como `PrismaClientUnknownRequestError` o dentro de `meta`; confirma la forma real contra la base (la prueba P-01 de T06 la ejercita) y déjala escrita en `docs/tareas/T05.md`. Para la zona horaria usa `Intl` o una librería de zonas (no fijes UTC-6 a mano) y regístrala si es dependencia nueva (D-01). Documenta en `T05.md` el orden en que validas los errores 422, porque el spec no lo fija.
+**Notas para el agente:** La restricción `EXCLUDE` ya existe (T02); no la dupliques en código. Valida en el dominio para dar un mensaje claro, pero confía en la base para la concurrencia. Prisma no tiene un código propio para `23P01`: puede llegar como `PrismaClientUnknownRequestError` o dentro de `meta`; confirma la forma real contra la base (la prueba P-01 de T06 la ejercita) y déjala escrita en `docs/tareas/T05.md`. Para la zona horaria usa `Intl` o una librería de zonas (no fijes UTC-6 a mano) y regístrala si es dependencia nueva (D-01). El orden de los errores lo fija spec §8 «Orden de validación» (D-32); respétalo en el dominio y en el servicio.
 
 ---
 
@@ -479,7 +480,7 @@ npm --prefix src/api test -- users && npm --prefix src/api run lint
 | Campo | Valor |
 |---|---|
 | Objetivo | Que RR. HH. registre y elimine días cerrados; crear uno cancela las reservas de esa fecha |
-| Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, S-04, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lock por fecha), F-07 · P-11 (integración en T06) |
+| Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, D-31, S-04, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lock por fecha), F-07 · P-11 (integración en T06) |
 | Dependencias | T05 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: `GET` autenticado; `POST` y `DELETE` solo ADMIN. Auditoría: `CLOSURE_CREATED`, `CLOSURE_DELETED` y `BOOKING_CANCELLED` por cada reserva cancelada, que se conectan en T06a. OWASP A01; A04: lock por fecha |
@@ -498,7 +499,7 @@ npm --prefix src/api test -- users && npm --prefix src/api run lint
 - **CA2** · Dado un ADMIN y una fecha posterior a hoy con k reservas `CONFIRMED` (de cualquier sala), cuando `POST /api/closures` con `{ date, reason }`, entonces 201 con el `Closure` y `cancelledBookings: k`, y esas reservas quedan `CANCELLED` en la misma transacción, con lock sobre la fecha.
 - **CA3** · Dada una fecha de hoy o pasada, cuando se crea, entonces 422 `CLOSURE_IN_PAST`; dada una fecha ya cerrada, 409 `CLOSURE_EXISTS`; con `reason` vacío o de más de 100 caracteres o fecha mal formada, 400 `VALIDATION_ERROR`.
 - **CA4** · Dado un día cerrado, cuando alguien crea una reserva en esa fecha, entonces 422 `DAY_CLOSED`.
-- **CA5** · Dado un cierre con fecha posterior a hoy, cuando un ADMIN hace `DELETE /api/closures/:id`, entonces 204 y las reservas ya canceladas no se restauran.
+- **CA5** · Dado un cierre con fecha posterior a hoy, cuando un ADMIN hace `DELETE /api/closures/:id`, entonces 204 y las reservas ya canceladas no se restauran; dado un cierre de hoy o pasado, entonces 422 `CLOSURE_IN_PAST`.
 - **CA6** · Dado un `EMPLOYEE`, cuando hace `POST` o `DELETE` en `/api/closures`, entonces 403 `FORBIDDEN`.
 - **CA7** · Dado un id inexistente, cuando se elimina, entonces 404 `NOT_FOUND`.
 
@@ -516,7 +517,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -b /tmp/admin.txt -X DELETE $BASE/closu
 npm --prefix src/api test -- closures && npm --prefix src/api run lint
 ```
 
-**Notas para el agente:** El spec no define el código de error al eliminar un cierre de hoy o pasado (solo dice que `DELETE` aplica a cierres con `date > hoy`). Usa 422 `CLOSURE_IN_PAST` y déjalo anotado en `docs/tareas/T05b.md` para que la persona lo confirme. La fecha de cierre es una fecha del calendario en `BUSINESS_TZ`, no un instante UTC.
+**Notas para el agente:** Eliminar un cierre de hoy o pasado responde 422 `CLOSURE_IN_PAST` (spec RN-24 y §8). La fecha de cierre es una fecha del calendario en `BUSINESS_TZ`, no un instante UTC.
 
 ---
 
@@ -730,7 +731,7 @@ npm --prefix src/web run lint && npm --prefix src/web run build
 | Campo | Valor |
 |---|---|
 | Objetivo | Dejar la pantalla `/login` fiel a la imagen de diseño, con los cuatro personajes que reaccionan al foco, a la visibilidad de la contraseña y al envío |
-| Trazabilidad | D-28 (diseño solo guía visual; el spec manda) · D-03, D-08, D-19 · RN-14, RN-19 · spec §6 (F-01), §8 (`/auth/login`), §9 (Login), §11 (accesibilidad) · diseño: `docs/diseño/stitch/login` y la sección «Login» de `DESIGN.md` |
+| Trazabilidad | D-28 (diseño solo guía visual; el spec manda) · D-30 (login con personajes) · D-03, D-08, D-19 · RN-14, RN-19 · spec §6 (F-01), §8 (`/auth/login`), §9 (Login), §11 (accesibilidad) · diseño: `docs/diseño/stitch/login` y la sección «Login» de `DESIGN.md` |
 | Dependencias | T07a, T07 |
 | Estimación | L |
 | Seguridad / auditoría | Roles: público. Auditoría: no aplica (S-02). OWASP A07: la contraseña no se guarda ni se loguea y no llega a los personajes; mensaje de error genérico; sin envíos duplicados |
@@ -785,7 +786,7 @@ docker compose up -d --build
 #  9) consola del navegador sin errores propios de la app
 ```
 
-**Notas para el agente:** La imagen de `docs/diseño/stitch/login` es la autoridad visual; sus colores orientativos están en `DESIGN.md` («Login»). Si algún texto de la imagen no se lee, usa uno breve y coherente en español, sin inventar funciones. No pidas código de referencia: constrúyelo desde la imagen y esta tarea. Mantén `characterState.ts` como función pura (el spec no pide pruebas de frontend, S-09, pero así queda lista para probarse). ⚠ El spec §9 describe el login con el botón "Entrar" y sin personajes animados: la persona registra la decisión de adoptar el diseño de la imagen y, si quiere, actualiza el spec. **Recortable:** si falta tiempo, se mantiene el login funcional de T07 y se omite esta tarea.
+**Notas para el agente:** La imagen de `docs/diseño/stitch/login` es la autoridad visual; sus colores orientativos están en `DESIGN.md` («Login»). Si algún texto de la imagen no se lee, usa uno breve y coherente en español, sin inventar funciones. No pidas código de referencia: constrúyelo desde la imagen y esta tarea. Mantén `characterState.ts` como función pura (el spec no pide pruebas de frontend, S-09, pero así queda lista para probarse). El spec §9 ya describe el login con "Iniciar sesión" y los personajes animados. **Recortable:** si falta tiempo, se mantiene el login funcional de T07 y se omite esta tarea.
 
 ---
 
@@ -1123,7 +1124,7 @@ grep -rEn "BEGIN (RSA|PRIVATE)|AKIA[0-9A-Z]{16}" . --exclude-dir=node_modules --
 
 ## Trazabilidad para el spec §14
 
-Para completar la columna "Tarea" de `01-spec.md` §14 (el agente no edita el spec; la persona lo copia).
+Fuente de la columna "Tarea" de `01-spec.md` §14, que ya está copiada allí. Si cambia una tarea, se actualizan las dos tablas.
 
 | Regla | Tarea | Prueba |
 |---|---|---|

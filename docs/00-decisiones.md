@@ -35,6 +35,9 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 | D-27 | DoR definida por mí (el enunciado no la define) y DoD |
 | D-28 | Diseño visual de SalaLibre |
 | D-29 | Código en `src/api` y `src/web` |
+| D-30 | Login con "Iniciar sesión" y personajes animados |
+| D-31 | Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PAST` |
+| D-32 | Orden de validación de los errores |
 
 ---
 
@@ -262,6 +265,30 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Por qué:** Regla de la persona en `CLAUDE.md` (Ubicación de código): frontend y backend en carpetas separadas dentro de `src/`.
 - **Costo/riesgo:** —
 - **Afecta a:** spec §7 (rutas de las migraciones SQL propias), §10 (servicios y estructura de carpetas), `docs/02-backlog.md` (rutas y comandos de todas las tareas), CLAUDE.md
+
+## D-30 · Login con "Iniciar sesión" y personajes animados
+- **Duda:** ¿La pantalla de login sigue el spec §9 original (botón "Entrar", sin personajes) o el prototipo de Stitch?
+- **Opciones:** A) Spec original: correo, contraseña y botón "Entrar". B) Prototipo `docs/diseño/stitch/login`: botón "Iniciar sesión" y personajes animados.
+- **Decisión:** B) "Usa Iniciar sesión y personajes en T07c, actualiza el spec §9." Los personajes son SVG y CSS propios, reaccionan al foco, a la contraseña visible y al resultado del envío, y nunca reciben el valor de la contraseña. "¿Olvidaste tu contraseña?" solo muestra un aviso (D-19). Sin "Recordarme", acceso con Google ni registro (D-08).
+- **Por qué:** Elección de la persona.
+- **Costo/riesgo:** T07c es L. Es recortable: si se recorta, queda el login funcional de T07 con "Iniciar sesión" y sin personajes.
+- **Afecta a:** spec §9 (Login), `docs/02-backlog.md` (T07, T07c)
+
+## D-31 · Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PAST`
+- **Duda:** ¿Qué responde `DELETE /api/closures/:id` si el cierre es de hoy o de una fecha pasada? El spec solo decía que se eliminan cierres con `date` > hoy.
+- **Opciones:** —
+- **Decisión:** "Usa 422 CLOSURE_IN_PAST." Es el mismo código que al crear un cierre de hoy o pasado (RN-24).
+- **Por qué:** Elección de la persona.
+- **Costo/riesgo:** —
+- **Afecta a:** spec §5 (RN-24), §8 (`DELETE /api/closures/:id`), §12 (P-11), `docs/02-backlog.md` (T05b)
+
+## D-32 · Orden de validación de los errores
+- **Duda:** Cuando una petición incumple varias reglas a la vez, ¿qué error responde? El spec no fijaba el orden de los 422.
+- **Opciones:** —
+- **Decisión:** La persona delegó la definición al agente ("define tú el orden de los 422"). Se responde el primer error en este orden: 401 → 403 → 400 → 404 → reglas de negocio. En `POST /api/bookings`: `INVALID_SLOT` → `INVALID_DURATION` → `OUTSIDE_BUSINESS_HOURS` → `BOOKING_IN_PAST` → `TOO_FAR_AHEAD` → `ROOM_INACTIVE` → `CAPACITY_EXCEEDED` → `DAY_CLOSED` → 409 `BOOKING_CONFLICT`. Al cancelar: 404 → 403 → `BOOKING_ALREADY_CANCELLED` → `BOOKING_ALREADY_STARTED`. El detalle por operación está en spec §8 «Orden de validación».
+- **Por qué:** Propuesta del agente. Primero lo que no necesita la base (forma y tiempo, en el orden de las RN), luego lo que necesita leer la sala, y al final lo que depende de la transacción con lock (cierres y choque), para no abrir transacciones con peticiones ya inválidas. Al cancelar, "ya cancelada" es más informativo que "ya empezó".
+- **Costo/riesgo:** Fija un contrato: cambiar el orden después cambia qué error ve el usuario y obliga a tocar pruebas.
+- **Afecta a:** spec §8 (Orden de validación), `docs/02-backlog.md` (T05: CA16 y notas)
 
 ## D-27 · DoR definida por mí (el enunciado no la define) y DoD
 - **Duda:** ¿Qué conjunto de criterios debe tener una historia de usuario o elemento del backlog antes de comenzar a trabajar?
