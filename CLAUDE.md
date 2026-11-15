@@ -137,4 +137,4 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Pruebas contra PostgreSQL real** antes de T06: con un script de un solo uso ejecutado en el contenedor
   (`docker compose exec -T api node -`), fuera del repositorio y con la salida pegada en `docs/tareas/Txx.md`.
 - **Swagger en `/api/docs`** lo sirve Express fuera del router de Nest, así que el guard global no lo cubre. Por decisión
-  de la persona, **solo se monta fuera de producción** (`NODE_ENV !== 'production'`); en el compose responde 404 (T03, CA8).
+  de la persona (D-33), **solo se monta fuera de producción** (`NODE_ENV !== 'production'`); en el compose responde 404 (T03, CA8).

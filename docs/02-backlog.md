@@ -247,7 +247,7 @@ npm --prefix src/api run lint
 | Campo | Valor |
 |---|---|
 | Objetivo | Iniciar y cerrar sesión con cookie `httpOnly`, consultar el usuario actual y proteger toda la API con denegación por defecto |
-| Trazabilidad | RN-14, RN-19, RN-21 · D-03, D-16, D-19, S-01, S-02 · spec §5, §8 (`/auth/*`), §11, F-01 · P-10 (parcial), P-14 (parcial; matriz completa en T06) |
+| Trazabilidad | RN-14, RN-19, RN-21 · D-03, D-16, D-19, D-33, S-01, S-02 · spec §5, §8 (`/auth/*`), §11, F-01 · P-10 (parcial), P-14 (parcial; matriz completa en T06) |
 | Dependencias | T02a |
 | Estimación | M |
 | Seguridad / auditoría | Roles: público (`login`, `health`); autenticado (`logout`, `me`). Auditoría: no aplica (el login queda en logs de pino, S-02). OWASP A07: mensaje genérico, bcryptjs, cookie `httpOnly` + `SameSite=Strict` + `Path=/api`; A01: denegación por defecto; A05: Swagger (`/api/docs`) solo fuera de producción |
