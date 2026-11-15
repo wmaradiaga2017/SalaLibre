@@ -1,6 +1,6 @@
 # Spec: SalaLibre
 
-> **Estado:** Borrador
+> **Estado:** Aprobado
 > **Fecha:** 2026-11-15
 > **Objetivo:** Que las 80 personas de la oficina reserven las 5 salas de reunión sin choques y que RRHH las administre, todo en local con un solo `docker compose up`.
 
