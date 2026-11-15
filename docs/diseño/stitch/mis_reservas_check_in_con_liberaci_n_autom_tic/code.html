@@ -1,0 +1,653 @@
+<!DOCTYPE html><html class="light" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MeetHub / Workspace - Mis Reservas &amp; Check-in</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#f8f9ff",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "primary-container": "#1d4ed8",
+            "secondary-container": "#dae2fd",
+            "on-secondary-fixed": "#131b2e",
+            "on-surface-variant": "#434655",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-container-lowest": "#ffffff",
+            "outline-variant": "#c4c5d7",
+            "outline": "#747686",
+            "secondary-fixed": "#dae2fd",
+            "on-secondary-container": "#5c647a",
+            "surface-dim": "#cbdbf5",
+            "primary-fixed-dim": "#b7c4ff",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-variant": "#d3e4fe",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#0039b5",
+            "on-tertiary-fixed": "#002113",
+            "surface-container": "#e5eeff",
+            "on-primary-container": "#cad3ff",
+            "on-surface": "#0b1c30",
+            "on-background": "#0b1c30",
+            "surface-tint": "#2151da",
+            "surface": "#f8f9ff",
+            "inverse-primary": "#b7c4ff",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#d3e4fe",
+            "primary": "#0037b0",
+            "surface-container-high": "#dce9ff",
+            "secondary": "#565e74",
+            "tertiary-container": "#006a48",
+            "background": "#f8f9ff",
+            "on-primary-fixed": "#001551",
+            "primary-fixed": "#dce1ff",
+            "surface-container-low": "#eff4ff",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#bec6e0",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary-fixed-variant": "#3f465c",
+            "on-tertiary-container": "#60eeb1",
+            "tertiary": "#004f35",
+            "inverse-surface": "#213145",
+            "inverse-on-surface": "#eaf1ff",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "gutter-dense": "0.5rem",
+            "space-md": "0.75rem",
+            "margin-compact": "1rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Inter"],
+            "code-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-xs": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "label-xs": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-md": ["13px", { "lineHeight": "16px", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md selection:bg-secondary-container">
+<!-- TOP APP BAR (Shared Component: TopNavBar with 'Mis Reservas' Active) -->
+<header class="sticky top-0 z-40 w-full px-margin h-16 flex items-center justify-between bg-surface-container-lowest dark:bg-surface border-b border-outline-variant/30 shadow-sm">
+<!-- Brand / Search Bar Cluster -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoSlWwm82QuHEiErjDsN9IE0sIm1hW3jNa8grFdX03g6WiYzvGzG4sUMwD-6xpgBbQxqcFVG-_KmF5Gz5DXmzQwxGJwMgAP6wM89YAcfFiaK0PkYLZG-0pga4b4C4uPwpsd5r8ARmZvOSnzlw5vTLVtcxQpgcXwfsPaz_EuBe7vobU1gn45Z-JvW5Dl0FJ7h_xav2YhSgj44rWXwEPTdLXsfjTjxe6e_qJHFF_RcOTQdM58X7LutBo" alt="MeetHub Logo" class="w-8 h-8 rounded-lg object-contain shrink-0">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-inverse-primary tracking-tight">MeetHub / Workspace</span>
+</div>
+<!-- Quick Search Bar (on_left) -->
+<div class="relative w-64">
+<span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-lg" data-icon="search">search</span>
+</span>
+<input class="w-full pl-9 pr-3 py-1.5 text-body-sm font-body-sm bg-surface-container-low rounded-lg border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors" placeholder="Buscar sala, equipo o colega..." type="text">
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex items-center gap-8 h-full">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-on-surface transition-colors pb-1 text-label-md font-label-md" href="#">Agenda</a>
+<!-- Active Link: Mis Reservas -->
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary dark:border-inverse-primary pb-1 text-label-md font-label-md flex items-center gap-1.5" href="#">
+<span>Mis Reservas</span>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-on-surface transition-colors pb-1 text-label-md font-label-md" href="#">Admin RRHH</a>
+</nav>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 text-on-surface-variant bg-surface-container-low px-2.5 py-1 rounded-lg text-label-sm font-label-sm border border-outline-variant/20">
+<span class="material-symbols-outlined text-base" data-icon="schedule">schedule</span>
+<span>Hoy, 24 Oct</span>
+</div>
+<button aria-label="Notificaciones" class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors relative" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="bg-primary text-on-primary hover:bg-primary-container transition-colors px-3 py-1.5 rounded-lg text-label-md font-label-md font-semibold flex items-center gap-1.5 active:scale-[0.99] transition-transform" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+<span>Nueva Reserva</span>
+</button>
+<div class="h-6 w-px bg-outline-variant/40 mx-1"></div>
+<!-- Profile Avatar -->
+<div class="flex items-center gap-2.5 pl-1">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant/50" data-alt="Professional modern corporate headshot photograph of Laura Gómez, an HR talent partner smiling confidently in a brightly lit, minimal office environment with soft teal and natural wood tones in the background, high aesthetic quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnDkf-8NhSEq1jWqXGvCM3PO3NJFaZe3_CwvDwAdpCw0LOOuV6u6P35OLpvUSfobrm9yRtaF3-DWw71n6vDIQNtGo2lshN-s9tLebcj6i8jTf15Ka1zEY2su73pf8t15qubcYzM4ngITRCSJPEAjrxj1WwhbKH9BxnB4OVof0XUipPcJNXA8YPX6wegJhWLYtlU1-YlSPC98QXCpwroWzQHpzG89k2iGGcs547N1o">
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-tertiary-fixed-dim rounded-full border-2 border-surface-container-lowest"></span>
+</div>
+<div class="hidden xl:flex flex-col text-left">
+<span class="text-label-sm font-label-sm font-semibold text-on-surface leading-none">Laura Gómez</span>
+<span class="text-label-xs font-label-xs text-on-surface-variant">HR &amp; People Ops</span>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN WRAPPER WITH COLLAPSIBLE SIDE NAV -->
+<div class="flex flex-1 relative overflow-hidden">
+<!-- SIDE NAV BAR (Shared Component: SideNavBar) -->
+<aside class="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 z-30 bg-surface border-r border-outline-variant/30 flex flex-col justify-between p-margin-compact">
+<div class="flex flex-col gap-4">
+<!-- Subheader & Capacity -->
+<div class="px-2 pt-1 flex items-center justify-between">
+<div>
+<h2 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Salas Corporativas</h2>
+<p class="text-label-xs font-label-xs text-on-surface-variant">Capacidad: 80 Pax Total</p>
+</div>
+<span class="p-1.5 rounded-md bg-surface-container-low text-primary" title="Isotipo de gestión de espacios MeetHub">
+<span class="material-symbols-outlined text-lg" data-icon="domain">domain</span>
+</span>
+</div>
+<!-- Room Nav Tabs (5 rooms) -->
+<nav class="flex flex-col gap-1">
+<!-- Active Sala Innovación -->
+<a class="bg-secondary-container text-on-secondary-container font-medium rounded-lg px-3 py-2 flex items-center gap-3 active:scale-[0.98] transition-transform text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="meeting_room">meeting_room</span>
+<span class="truncate">Sala Innovación (16p)</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="meeting_room">meeting_room</span>
+<span class="truncate">Sala Estrategia (12p)</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="co_present">co_present</span>
+<span class="truncate">Sala Focus A (8p)</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="co_present">co_present</span>
+<span class="truncate">Sala Focus B (8p)</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="corporate_fare">corporate_fare</span>
+<span class="truncate">Sala Ágora (36p)</span>
+</a>
+</nav>
+<!-- CTA Bloquear Sala (RRHH) -->
+<button class="w-full mt-2 py-2 px-3 rounded-lg border border-outline-variant/40 hover:bg-surface-container text-primary font-semibold text-label-sm font-label-sm flex items-center justify-center gap-2 transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span>Bloquear Sala (RRHH)</span>
+</button>
+</div>
+<!-- Footer Rail Options -->
+<div class="pt-4 border-t border-outline-variant/30 flex flex-col gap-1">
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-1.5 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-outline text-base" data-icon="build">build</span>
+<span>Mantenimiento</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-1.5 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-outline text-base" data-icon="tune">tune</span>
+<span>Ajustes Espacios</span>
+</a>
+</div>
+</aside>
+<!-- MAIN SCROLLABLE CONTENT CANVAS (Offset by 64 Tailwind w-64) -->
+<main class="ml-64 flex-1 p-margin space-y-6 overflow-y-auto max-w-7xl">
+<!-- HERO BANNER: IN-PROGRESS MEETING & REAL-TIME CHECK-IN SYSTEM -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-lowest border border-outline-variant/40 shadow-sm p-6">
+<!-- Visual Accent Bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-amber-50 text-amber-800 border border-amber-300">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+<span>En curso ahora</span>
+</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">Jueves, 24 de Octubre</span>
+</div>
+<h1 class="text-headline-lg font-headline-lg font-bold text-on-surface tracking-tight">
+              Tienes una reunión en curso en <span class="text-primary">Sala Innovación</span> (10:30 - 11:30 AM)
+            </h1>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-3">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="groups">groups</span>
+<span>Sync Trimestral Operaciones (8 asistentes)</span>
+</span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-base text-outline" data-icon="videocam">videocam</span>
+<span>Google Meet Vinculado</span>
+</span>
+</p>
+</div>
+<!-- Real-Time Interactive Check-In Module -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant/30" id="checkin-container">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 text-error font-medium text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-base" data-icon="timer">timer</span>
+<span>Auto-liberación inminente</span>
+</div>
+<p class="text-label-xs font-label-xs text-on-surface-variant">
+                Quedan <span class="font-code-sm text-code-sm font-bold text-error" id="countdown-timer">04:31</span> para confirmar llegada
+              </p>
+</div>
+<!-- Check-in Action Button -->
+<button class="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-semibold text-label-md font-label-md shadow-sm transition-all duration-150 flex items-center gap-2 active:scale-95" id="checkin-btn" onclick="executeCheckIn()" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="how_to_reg">how_to_reg</span>
+<span>Hacer Check-in Ahora</span>
+</button>
+<!-- Success State Badge (Hidden initially) -->
+<div class="hidden flex items-center gap-2.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-4 py-2.5 rounded-lg" id="checkin-success-badge">
+<span class="material-symbols-outlined text-emerald-600 text-xl" data-icon="verified" data-weight="fill">verified</span>
+<div>
+<p class="text-label-sm font-label-sm font-bold leading-tight">Check-in realizado a las 10:34 AM</p>
+<p class="text-label-xs font-label-xs text-emerald-700">Validado por Laura Gómez (Host)</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- TWO-COLUMN SECTION: PRÓXIMAS RESERVAS & INFO RRHH -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- UPCOMING RESERVATIONS (2 Cols) -->
+<div class="lg:col-span-2 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="event_upcoming">event_upcoming</span>
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface">Próximas Reservas</h2>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-label-xs font-label-xs font-semibold">2 programadas</span>
+</div>
+<a class="text-primary hover:underline text-label-sm font-label-sm font-medium" href="#">Ver calendario completo</a>
+</div>
+<!-- Cards List -->
+<div class="space-y-3.5">
+<!-- Reservation Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-5 shadow-sm hover:border-primary/50 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-outline-variant/20 gap-2">
+<div class="flex items-center gap-2.5">
+<span class="px-2.5 py-1 rounded bg-surface-container text-primary font-semibold text-label-xs font-label-xs">
+                    Mañana Viernes 25 Oct
+                  </span>
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface">09:00 - 10:00 AM</span>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary" data-icon="meeting_room">meeting_room</span>
+<span class="font-medium text-on-surface">Sala Estrategia</span>
+<span>(Capacidad 12p)</span>
+</div>
+</div>
+<div class="py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Sync Semanal Diseño &amp; Producto</h3>
+<div class="flex items-center gap-4 mt-1 text-label-xs font-label-xs text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+<span>6 asistentes confirmados</span>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="desktop_windows">desktop_windows</span>
+<span>Pantalla Display 4K</span>
+</span>
+</div>
+</div>
+<!-- Host Avatar Stack -->
+<div class="flex -space-x-2 overflow-hidden">
+<img class="inline-block h-7 w-7 rounded-full ring-2 ring-surface-container-lowest object-cover" data-alt="Corporate headshot of a young male UX designer wearing spectacles in a modern well lit workspace setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlLFDaykMWplyYJ4oUV8KumLAI9aA9-3n_fOpk-l8d4Wr2PPH-XNk4i1v0HW72YduZEseERQ7NyGKl_ktPuw37meebs8_HXpCX6xPWcFcAA8xoPt3b-qAYGiB1ACcrQdWqZIBTCWGkiMR3ilmjkFB5QcQ7-tkN5JH4YSDqwYT0olSoWCYUq19OmT0fS8bbI32-_vUK5dp1TSm135hC0GcMjhumHuEFBGVPzhcRzEU">
+<img class="inline-block h-7 w-7 rounded-full ring-2 ring-surface-container-lowest object-cover" data-alt="Corporate headshot portrait of a creative design lead woman with subtle lighting in an architectural studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqX45MbGj_-okm6lf4JkJ_93e8CxBrUsNDQw4ZX7vTxNex3239-gr9uv4HuTthjQphvAoGEIFUAoO0TLT9LCv-X0HQuJiz86CIxLztUw5acWAgUASO9yBG4-dvYvKCGcNoT_r3O-HvN2hKsX9i9Vjn7iIzl6LA7z6rN9qg0ogG1eq_Pvb2m5Sqf885BKz1FYwYNWkClkrdNuWBhlsBNkIqVg4c_8PtBIux6-JJcFA">
+<img class="inline-block h-7 w-7 rounded-full ring-2 ring-surface-container-lowest object-cover" data-alt="Professional portrait headshot of a software product engineer in a minimalist clean corporate environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaWs1anA6s-Hvs1kkZSMe0hd5uSAuTUd4RoCAFPsfjWyFVps46pJnLV7DfRf7_hIk-TPgRnURAwzS22N_Rz-50-u-J86DbMZIBPL69f_3FESqCJyBs7yMFxQL4JkljwGy6mPNB7efOv2sKmkh9yCs6K1Ztdquo974hO2t86gaZ1W-WyUFko6PGnDQCM_vbSY4Oh5MKr7F5JRq_kMP1rEqOuBvveCFUjjeKCLp5xoc">
+<div class="inline-flex items-center justify-center h-7 w-7 rounded-full bg-surface-container-high text-on-surface-variant text-label-xs font-bold ring-2 ring-surface-container-lowest">+3</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="pt-3 border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low text-on-surface text-label-sm font-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base text-outline" data-icon="edit_calendar">edit_calendar</span>
+<span>Modificar horario</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-error-container hover:text-error text-on-surface-variant text-label-sm font-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base" data-icon="cancel">cancel</span>
+<span>Cancelar reserva</span>
+</button>
+</div>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-secondary-container text-primary text-label-sm font-label-sm font-semibold flex items-center gap-1.5 transition-colors" onclick="navigator.clipboard.writeText('https://meet.google.com/mth-des-sync')" type="button">
+<span class="material-symbols-outlined text-base" data-icon="link">link</span>
+<span>Copiar enlace Meet</span>
+</button>
+</div>
+</div>
+<!-- Reservation Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-5 shadow-sm hover:border-primary/50 transition-colors">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-outline-variant/20 gap-2">
+<div class="flex items-center gap-2.5">
+<span class="px-2.5 py-1 rounded bg-secondary-container text-on-secondary-fixed font-semibold text-label-xs font-label-xs">
+                    Lunes 28 Oct
+                  </span>
+<span class="text-headline-sm font-headline-sm font-bold text-on-surface">15:00 - 16:30 (1h 30m)</span>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-base text-primary" data-icon="corporate_fare">corporate_fare</span>
+<span class="font-medium text-on-surface">Sala Ágora</span>
+<span>(Capacidad 36p)</span>
+</div>
+</div>
+<div class="py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Demostración a Cliente Enterprise</h3>
+<!-- Required Badge -->
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-label-xs font-label-xs bg-surface-container text-primary font-semibold border border-primary/20">
+<span class="material-symbols-outlined text-sm" data-icon="videocam">videocam</span>
+<span>Proyector reservado</span>
+</span>
+</div>
+<div class="flex items-center gap-4 mt-1 text-label-xs font-label-xs text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="group">group</span>
+<span>14 asistentes (Directorio &amp; Clientes)</span>
+</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="mic">mic</span>
+<span>Sistema de audio envolvente activo</span>
+</span>
+</div>
+</div>
+<!-- Host info pill -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-base text-tertiary" data-icon="verified_user">verified_user</span>
+<span class="text-label-xs font-label-xs font-medium text-on-surface">Prioridad Alta (Comercial)</span>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="pt-3 border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low text-on-surface text-label-sm font-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base text-outline" data-icon="edit_calendar">edit_calendar</span>
+<span>Modificar horario</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-error-container hover:text-error text-on-surface-variant text-label-sm font-label-sm flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base" data-icon="cancel">cancel</span>
+<span>Cancelar reserva</span>
+</button>
+</div>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-secondary-container text-primary text-label-sm font-label-sm font-semibold flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base" data-icon="mail">mail</span>
+<span>Reenviar convocatoria</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDE: HR BEST PRACTICES & PERSONAL METRICS (1 Col) -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl" data-icon="award_star">award_star</span>
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface">Buenas Prácticas RRHH</h2>
+</div>
+<!-- Personal Metric Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-5 shadow-sm space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-label-xs font-label-xs text-on-surface-variant">Desempeño de uso</p>
+<p class="text-headline-lg font-headline-lg font-bold text-primary">98%</p>
+</div>
+<div class="p-3 bg-tertiary-fixed text-on-tertiary-fixed rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="verified" data-weight="fill">verified</span>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-label-xs font-label-xs mb-1">
+<span class="font-medium text-on-surface">Tasa de puntualidad personal: 98%</span>
+<span class="text-tertiary font-bold">Nivel Excelente</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full rounded-full" style="width: 98%"></div>
+</div>
+<p class="text-label-xs font-label-xs text-on-surface-variant mt-2 leading-relaxed">
+                Has liberado a tiempo 48 de tus últimas 49 salas reservadas sin registrar penalizaciones por no-show.
+              </p>
+</div>
+</div>
+<!-- HR Room Conduct Guide Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 p-5 shadow-sm space-y-3">
+<div class="flex items-center gap-2 pb-2 border-b border-outline-variant/20">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="rule">rule</span>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Reglas de convivencia de salas de RRHH</h3>
+</div>
+<ul class="space-y-2.5 text-body-sm font-body-sm text-on-surface-variant">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-base text-primary mt-0.5" data-icon="check_circle">check_circle</span>
+<span><strong class="text-on-surface">Tolerancia de 10 min:</strong> Si no realizas check-in, la sala se reasigna al equipo automáticamente.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-base text-primary mt-0.5" data-icon="check_circle">check_circle</span>
+<span><strong class="text-on-surface">Orden y cables:</strong> Desconectar y devolver adaptadores HDMI y dongles a su soporte.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-base text-primary mt-0.5" data-icon="check_circle">check_circle</span>
+<span><strong class="text-on-surface">Fin anticipado:</strong> Si terminas antes de tiempo, pulsa "Finalizar reunión" en la pantalla de la sala.</span>
+</li>
+</ul>
+<div class="pt-2">
+<a class="text-primary hover:underline text-label-xs font-label-xs font-semibold flex items-center gap-1" href="#">
+<span>Leer Manual Completo de Espacios Híbridos</span>
+<span class="material-symbols-outlined text-xs" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+<!-- HISTORIAL DE RESERVAS PASADAS (Data Table with crisp styling) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm overflow-hidden">
+<div class="p-5 border-b border-outline-variant/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface">Historial de Reservas Pasadas</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Registro de auditoría y ocupación de los últimos 30 días</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low text-label-sm font-label-sm text-on-surface flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base text-outline" data-icon="filter_list">filter_list</span>
+<span>Filtrar</span>
+</button>
+<button class="px-3 py-1.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low text-label-sm font-label-sm text-on-surface flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-base text-outline" data-icon="download">download</span>
+<span>Exportar CSV</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/30 text-label-xs font-label-xs text-on-surface-variant font-semibold">
+<th class="py-3 px-5">FECHA Y HORA</th>
+<th class="py-3 px-5">SALA</th>
+<th class="py-3 px-5">ASUNTO</th>
+<th class="py-3 px-5">DURACIÓN</th>
+<th class="py-3 px-5">ESTATUS</th>
+<th class="py-3 px-5 text-right">ACCIONES</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 text-body-sm font-body-sm">
+<!-- Row 1: Completada -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3.5 px-5 font-medium text-on-surface">
+                  22 Oct 2024 <span class="text-label-xs font-label-xs text-on-surface-variant font-normal block">11:00 - 12:00</span>
+</td>
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-medium text-on-surface">Sala Innovación</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface">Entrevistas Candidatos Tech Lead</td>
+<td class="py-3.5 px-5 text-on-surface-variant">60 min</td>
+<td class="py-3.5 px-5">
+<!-- Available style badge translated for Completed -->
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold">
+<span class="material-symbols-outlined text-xs" data-icon="check">check</span>
+<span>Completada</span>
+</span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="text-primary hover:text-primary-container font-semibold text-label-xs font-label-xs" type="button">Ver detalles</button>
+</td>
+</tr>
+<!-- Row 2: Cancelada con tiempo -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3.5 px-5 font-medium text-on-surface">
+                  18 Oct 2024 <span class="text-label-xs font-label-xs text-on-surface-variant font-normal block">16:30 - 17:15</span>
+</td>
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-medium text-on-surface">Sala Focus A</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface">One-on-One Rendimiento Trimestral</td>
+<td class="py-3.5 px-5 text-on-surface-variant">45 min</td>
+<td class="py-3.5 px-5">
+<!-- Maintenance style pill translated for Cancelled with notice -->
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-slate-100 text-slate-700 border border-slate-300 font-semibold">
+<span class="material-symbols-outlined text-xs" data-icon="event_busy">event_busy</span>
+<span>Cancelada con tiempo</span>
+</span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="text-primary hover:text-primary-container font-semibold text-label-xs font-label-xs" type="button">Ver detalles</button>
+</td>
+</tr>
+<!-- Row 3: No-show / Auto-liberada -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3.5 px-5 font-medium text-on-surface">
+                  14 Oct 2024 <span class="text-label-xs font-label-xs text-on-surface-variant font-normal block">09:30 - 10:00</span>
+</td>
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-medium text-on-surface">Sala Focus B</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface">Revisión Rápida Presupuesto</td>
+<td class="py-3.5 px-5 text-on-surface-variant">30 min</td>
+<td class="py-3.5 px-5">
+<!-- Occupied/Error style badge translated for No-show / Auto-liberada -->
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-red-50 text-red-800 border border-red-300 font-semibold">
+<span class="material-symbols-outlined text-xs" data-icon="history_toggle_off">history_toggle_off</span>
+<span>No-show / Auto-liberada</span>
+</span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="text-primary hover:text-primary-container font-semibold text-label-xs font-label-xs" type="button">Ver detalles</button>
+</td>
+</tr>
+<!-- Row 4: Completada -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-3.5 px-5 font-medium text-on-surface">
+                  10 Oct 2024 <span class="text-label-xs font-label-xs text-on-surface-variant font-normal block">14:00 - 15:30</span>
+</td>
+<td class="py-3.5 px-5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-medium text-on-surface">Sala Ágora</span>
+</div>
+</td>
+<td class="py-3.5 px-5 text-on-surface">Townhall RRHH &amp; Cultura Organizacional</td>
+<td class="py-3.5 px-5 text-on-surface-variant">90 min</td>
+<td class="py-3.5 px-5">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold">
+<span class="material-symbols-outlined text-xs" data-icon="check">check</span>
+<span>Completada</span>
+</span>
+</td>
+<td class="py-3.5 px-5 text-right">
+<button class="text-primary hover:text-primary-container font-semibold text-label-xs font-label-xs" type="button">Ver detalles</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+<!-- FLOATING ACTION BUTTON (ACCESO RÁPIDO PARA + RESERVAR OTRA SALA) -->
+<aside aria-label="Acciones rápidas" class="fixed bottom-6 right-6 z-50">
+<button class="group flex items-center gap-2.5 px-5 py-3 rounded-full bg-primary hover:bg-primary-container text-on-primary shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 font-semibold text-headline-sm font-headline-sm" type="button">
+<span class="material-symbols-outlined text-2xl transition-transform group-hover:rotate-90 duration-200" data-icon="add">add</span>
+<span>Reservar otra sala</span>
+</button>
+</aside>
+<!-- MICRO-INTERACTIONS JAVASCRIPT: REAL-TIME CHECK-IN & COUNTDOWN -->
+<script>
+    // Live Countdown Logic (Starts at 04:32)
+    let totalSeconds = 4 * 60 + 32;
+    const timerElement = document.getElementById('countdown-timer');
+    const checkinBtn = document.getElementById('checkin-btn');
+    const successBadge = document.getElementById('checkin-success-badge');
+
+    const countdownInterval = setInterval(() => {
+      if (totalSeconds <= 0) {
+        clearInterval(countdownInterval);
+        timerElement.textContent = "00:00";
+        return;
+      }
+      totalSeconds--;
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      if (timerElement) {
+        timerElement.textContent = `${minutes}:${seconds}`;
+      }
+    }, 1000);
+
+    // Interactive Check-In trigger
+    function executeCheckIn() {
+      clearInterval(countdownInterval);
+      if (checkinBtn && successBadge) {
+        // Hide countdown trigger
+        checkinBtn.classList.add('hidden');
+        const timerContainer = timerElement.parentElement.parentElement;
+        if (timerContainer) {
+          timerContainer.classList.add('hidden');
+        }
+        // Show verified badge
+        successBadge.classList.remove('hidden');
+      }
+    }
+  </script>
+
+
+</body></html>

@@ -1,0 +1,1090 @@
+<!DOCTYPE html><html class="light" lang="es" data-scribe-recorder-ready="true"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MeetHub / Workspace - Consola de Administración de Recursos Humanos (Admin RRHH)</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#f8f9ff",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "primary-container": "#1d4ed8",
+            "secondary-container": "#dae2fd",
+            "on-secondary-fixed": "#131b2e",
+            "on-surface-variant": "#434655",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#6ffbbe",
+            "surface-container-lowest": "#ffffff",
+            "outline-variant": "#c4c5d7",
+            "outline": "#747686",
+            "secondary-fixed": "#dae2fd",
+            "on-secondary-container": "#5c647a",
+            "surface-dim": "#cbdbf5",
+            "primary-fixed-dim": "#b7c4ff",
+            "tertiary-fixed-dim": "#4edea3",
+            "surface-variant": "#d3e4fe",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#0039b5",
+            "on-tertiary-fixed": "#002113",
+            "surface-container": "#e5eeff",
+            "on-primary-container": "#cad3ff",
+            "on-surface": "#0b1c30",
+            "on-background": "#0b1c30",
+            "surface-tint": "#2151da",
+            "surface": "#f8f9ff",
+            "inverse-primary": "#b7c4ff",
+            "on-error": "#ffffff",
+            "surface-container-highest": "#d3e4fe",
+            "primary": "#0037b0",
+            "surface-container-high": "#dce9ff",
+            "secondary": "#565e74",
+            "tertiary-container": "#006a48",
+            "background": "#f8f9ff",
+            "on-primary-fixed": "#001551",
+            "primary-fixed": "#dce1ff",
+            "surface-container-low": "#eff4ff",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#bec6e0",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-secondary-fixed-variant": "#3f465c",
+            "on-tertiary-container": "#60eeb1",
+            "tertiary": "#004f35",
+            "inverse-surface": "#213145",
+            "inverse-on-surface": "#eaf1ff",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "margin": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "gutter-dense": "0.5rem",
+            "space-md": "0.75rem",
+            "margin-compact": "1rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Inter"],
+            "code-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-xs": ["Inter"],
+            "label-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "label-xs": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-md": ["13px", { "lineHeight": "16px", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f8f9ff;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c4c5d7;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-secondary-container selection:text-on-secondary-fixed">
+<!-- ==================== SHARED COMPONENT: TopNavBar ==================== -->
+<header class="sticky top-0 z-40 w-full px-margin h-16 flex items-center justify-between bg-surface-container-lowest dark:bg-surface border-b border-outline-variant/30 dark:border-outline/20 shadow-sm dark:shadow-none">
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0JeZuHwmvyPU-IggQ-e5156xq5dFKXPg_ypmT1r8Ip2XpdCwHI5CDiKsSZOTT1XQGioVSwJlhIeIKoU8AY8nT-hFOat2ChAZtJuLWMH7Tpmrnh2oBJqnkOf6rCDCtEiXj3xG7UoruAasvjGVR1w833qtCw9GbHwNF9I-EB2FT0niM9oEweKWtdnj0R2EDSUm31XCjNU7OuJs6kWwc_J2q9Pquw-5SpVrgJph2F1QPJkEWbJ7OcJbH" alt="MeetHub Logo" class="w-8 h-8 rounded-lg object-contain shrink-0">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-inverse-primary tracking-tight">MeetHub / Workspace</span>
+</div>
+<!-- Search bar on left -->
+<div class="relative w-64 hidden xl:block">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg pl-9 pr-3 py-1.5 text-body-sm font-body-sm focus:outline-none focus:border-primary text-on-surface placeholder:text-outline" placeholder="Buscar sala, recurso o ID..." type="text">
+</div>
+<!-- Primary Global Nav Links: Admin RRHH is ACTIVE -->
+<nav class="hidden md:flex items-center gap-space-md ml-space-sm">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-on-surface dark:hover:text-surface-bright transition-colors pb-1 text-label-md font-label-md" href="#">Agenda</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-on-surface dark:hover:text-surface-bright transition-colors pb-1 text-label-md font-label-md" href="#">Mis Reservas</a>
+<a class="text-primary dark:text-inverse-primary font-bold border-b-2 border-primary dark:border-inverse-primary pb-1 text-label-md font-label-md flex items-center gap-1.5" href="#">
+<span>Admin RRHH</span>
+<span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded text-label-xs font-label-xs font-semibold">Consola</span>
+</a>
+</nav>
+</div>
+<div class="flex items-center gap-space-md">
+<!-- Trailing Secondary Action -->
+<div class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm border border-outline-variant/30">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span>Hoy, 24 Oct</span>
+</div>
+<!-- Icon actions -->
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Horarios de oficina">
+<span class="material-symbols-outlined text-xl" data-icon="schedule">schedule</span>
+</button>
+<button class="relative p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors" title="Notificaciones del sistema">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-6 w-px bg-outline-variant/30"></div>
+<!-- Trailing Primary Action -->
+<button class="bg-primary text-on-primary hover:bg-primary-container px-3.5 py-2 rounded-lg text-label-sm font-label-sm font-semibold flex items-center gap-1.5 shadow-sm active:scale-[0.99] transition-all" onclick="document.getElementById('blockingModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span>Nueva Reserva</span>
+</button>
+<!-- Profile Avatar -->
+<div class="flex items-center gap-2 pl-space-xs">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-semibold text-label-sm border border-outline-variant/40" title="Avatar de perfil de RRHH y colaborador">
+          RH
+        </div>
+</div>
+</div>
+</header>
+<!-- ==================== BODY WITH FIXED SIDENAV & MAIN CANVAS ==================== -->
+<div class="flex-1 flex">
+<!-- SHARED COMPONENT: SideNavBar (collapsible_rail as per JSON) -->
+<aside class="w-64 shrink-0 bg-surface dark:bg-inverse-surface border-r border-outline-variant/30 dark:border-outline/20 flex flex-col justify-between p-margin-compact hidden md:flex">
+<div class="flex flex-col gap-space-md">
+<!-- Header Rail -->
+<div class="pb-space-sm border-b border-outline-variant/20">
+<div class="flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm font-semibold text-on-surface dark:text-inverse-on-surface">Salas Corporativas</span>
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-container animate-pulse" title="Sistema en línea"></span>
+</div>
+<p class="text-label-xs font-label-xs text-on-surface-variant mt-0.5">Capacidad: 80 Pax Total</p>
+</div>
+<!-- CTA from JSON -->
+<button class="w-full bg-secondary-container text-on-secondary-fixed hover:bg-surface-container font-semibold rounded-lg px-3 py-2 text-label-sm font-label-sm flex items-center justify-center gap-2 transition-colors active:scale-[0.98]" onclick="document.getElementById('blockingModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-base" data-icon="lock_clock">lock_clock</span>
+<span>Bloquear Sala (RRHH)</span>
+</button>
+<!-- 5 Tabs from JSON -->
+<nav class="flex flex-col gap-1">
+<div class="px-2 py-1 text-label-xs font-label-xs text-outline uppercase tracking-wider font-semibold">Salas Disponibles</div>
+<!-- Sala Innovación (16p) -->
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-variant/30 rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm group" href="#room-innovacion">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="meeting_room">meeting_room</span>
+<span class="truncate">Sala Innovación (16p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-tertiary" title="Disponible"></span>
+</a>
+<!-- Sala Estrategia (12p) -->
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-variant/30 rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm group" href="#room-estrategia">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="meeting_room">meeting_room</span>
+<span class="truncate">Sala Estrategia (12p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-error" title="En uso"></span>
+</a>
+<!-- Sala Focus A (8p) -->
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-variant/30 rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm group" href="#room-focus-a">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="co_present">co_present</span>
+<span class="truncate">Sala Focus A (8p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-tertiary" title="Disponible"></span>
+</a>
+<!-- Sala Focus B (8p) -->
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-variant/30 rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm group" href="#room-focus-b">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="co_present">co_present</span>
+<span class="truncate">Sala Focus B (8p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-tertiary" title="Disponible"></span>
+</a>
+<!-- Sala Ágora (36p) -->
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-low dark:hover:bg-surface-variant/30 rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm group" href="#room-agora">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors text-base" data-icon="corporate_fare">corporate_fare</span>
+<span class="truncate">Sala Ágora (36p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary" title="Bloqueo Institucional"></span>
+</a>
+</nav>
+</div>
+<!-- Footer Tab Labels from JSON -->
+<div class="pt-space-sm border-t border-outline-variant/20 flex flex-col gap-1">
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-base" data-icon="build">build</span>
+<span>Mantenimiento</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-base" data-icon="tune">tune</span>
+<span>Ajustes Espacios</span>
+</a>
+</div>
+</aside>
+<!-- ==================== MAIN CONTENT CANVAS ==================== -->
+<main class="flex-1 overflow-y-auto px-margin py-margin space-y-space-xl max-w-7xl mx-auto w-full">
+<!-- SUB-HEADER CONSOLE TITLE & CONTEXT -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-space-sm border-b border-outline-variant/30">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2.5 py-0.5 rounded-full text-label-xs font-label-xs font-bold uppercase tracking-wider bg-primary text-on-primary">
+              Administrador RRHH
+            </span>
+<span class="text-outline text-label-xs font-label-xs">• 5 Salas Integradas • 80 Colaboradores Activos</span>
+</div>
+<h1 class="text-headline-xl font-headline-xl text-on-surface font-bold tracking-tight">Consola de Control de Espacios &amp; RRHH</h1>
+<p class="text-body-md font-body-md text-on-surface-variant mt-0.5">Gestión centralizada de infraestructura, analítica de ocupación corporativa y mitigación de salas fantasma.</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-2 bg-primary text-on-primary hover:bg-primary-container rounded-lg text-label-sm font-label-sm font-semibold flex items-center gap-2 transition shadow-sm active:scale-[0.98]" onclick="document.getElementById('blockingModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-base" data-icon="security_update_warning">security_update_warning</span>
+<span>Bloqueo Exprés RRHH</span>
+</button>
+<button class="px-3 py-2 bg-surface-container-lowest border border-outline-variant/40 hover:bg-surface-container-low rounded-lg text-label-sm font-label-sm text-on-surface flex items-center gap-1.5 transition">
+<span class="material-symbols-outlined text-base text-outline" data-icon="file_download">file_download</span>
+<span>Exportar Auditoría</span>
+</button>
+</div>
+</div>
+<!-- INTERNAL TABS SELECTOR (ADMIN RRHH) -->
+<div class="flex border-b border-outline-variant/30 gap-space-lg overflow-x-auto text-label-md font-label-md">
+<button class="text-primary font-bold border-b-2 border-primary pb-2.5 flex items-center gap-2 whitespace-nowrap">
+<span class="material-symbols-outlined text-base" data-icon="dashboard_customize">dashboard_customize</span>
+<span>Gestión de Salas</span>
+<span class="bg-primary/10 text-primary text-label-xs font-label-xs px-1.5 py-0.2 rounded-full">5</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="analytics">analytics</span>
+<span>Métricas de Uso &amp; Ocupación</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="policy">policy</span>
+<span>Políticas &amp; Bloqueos</span>
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface pb-2.5 flex items-center gap-2 whitespace-nowrap transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="history">history</span>
+<span>Registro de Auditoría</span>
+</button>
+</div>
+<!-- ==================== EXECUTIVE KPI CARDS ==================== -->
+<section>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- KPI 1: Tasa de ocupación semanal -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-medium">Tasa de Ocupación Semanal</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" data-icon="pie_chart">pie_chart</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface tracking-tight">78.4%</span>
+<span class="inline-flex items-center text-label-xs font-label-xs font-semibold text-tertiary bg-[#ECFDF5] px-1.5 py-0.5 rounded border border-[#A7F3D0]">
+                  +4.2% vs sem. ant.
+                </span>
+</div>
+<p class="text-label-xs font-label-xs text-outline mt-1">Capacidad óptima corporativa</p>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden mt-space-md">
+<div class="bg-primary h-full rounded-full" style="width: 78.4%"></div>
+</div>
+</div>
+<!-- KPI 2: Horarios de mayor saturación -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-medium">Horarios de Mayor Saturación</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-lg" data-icon="schedule">schedule</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-headline-sm font-headline-sm font-bold text-on-surface">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span>10:00 - 12:30</span>
+</div>
+<div class="flex items-center gap-1.5 text-headline-sm font-headline-sm font-bold text-on-surface">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span>15:00 - 17:00</span>
+</div>
+</div>
+<p class="text-label-xs font-label-xs text-outline mt-1">94% demanda pico en simultáneo</p>
+</div>
+<div class="flex items-center justify-between text-label-xs font-label-xs text-on-surface-variant pt-2 border-t border-outline-variant/20 mt-space-sm">
+<span>Sugerencia:</span>
+<span class="font-medium text-primary">Fraccionar sprints de 45m</span>
+</div>
+</div>
+<!-- KPI 3: Horas recuperadas por Check-in -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-medium">Horas Recuperadas (Check-in)</span>
+<div class="w-8 h-8 rounded-lg bg-[#ECFDF5] text-tertiary flex items-center justify-center border border-[#A7F3D0]">
+<span class="material-symbols-outlined text-lg" data-icon="auto_mode">auto_mode</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-1.5">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface">14.5 h</span>
+<span class="text-label-sm font-label-sm text-tertiary font-semibold">liberadas</span>
+</div>
+<p class="text-label-xs font-label-xs text-tertiary font-semibold mt-1">11 salas fantasma prevenidas este mes</p>
+</div>
+<div class="flex items-center gap-1 text-label-xs font-label-xs text-outline mt-space-sm">
+<span class="material-symbols-outlined text-xs text-tertiary" data-icon="check_circle">check_circle</span>
+<span>Regla activa: Liberación a los 10 min</span>
+</div>
+</div>
+<!-- KPI 4: Choques evitados -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-label-sm font-label-sm text-on-surface-variant font-medium">Incidencias / Choques Evitados</span>
+<div class="w-8 h-8 rounded-lg bg-surface-container-low text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="verified_user">verified_user</span>
+</div>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline gap-2">
+<span class="text-headline-lg font-headline-lg font-bold text-primary">0 colisiones</span>
+</div>
+<p class="text-label-xs font-label-xs text-outline mt-1">Desde la implementación del sistema</p>
+</div>
+<div class="flex items-center justify-between text-label-xs font-label-xs text-outline pt-2 border-t border-outline-variant/20 mt-space-sm">
+<span>Validación:</span>
+<span class="text-[#065F46] font-semibold bg-[#ECFDF5] px-1.5 py-0.5 rounded">En tiempo real (100%)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- ==================== ROOM CONFIGURATION PANEL (THE 5 ROOMS) ==================== -->
+<section class="space-y-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface">Configuración &amp; Control de las 5 Salas Corporativas</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Supervisión técnica de amenidades, aforo dinámico y bloqueos preventivos de Recursos Humanos.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-xs font-label-xs text-on-surface-variant bg-surface-container px-2.5 py-1 rounded-full font-medium">
+              4 Habilitadas • 1 Bloqueo Directivo
+            </span>
+</div>
+</div>
+<!-- 5 ROOMS BENTO GRID -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- 1. Sala Ágora (36p) - Featured Large Room -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-space-md shadow-sm flex flex-col justify-between lg:col-span-2 relative overflow-hidden" id="room-agora">
+<div class="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
+<div>
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-headline-md font-headline-md font-bold text-on-surface">Sala Ágora</h3>
+<span class="bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] px-2 py-0.5 rounded text-label-xs font-label-xs font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#92400E] animate-ping"></span>
+                      Bloqueo Preventivo RRHH
+                    </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">Espacio Plenario / Town Halls / Talleres Generales</p>
+</div>
+<!-- Master Toggle Habilitada/Bloqueada -->
+<label class="inline-flex items-center cursor-pointer gap-2" title="Habilitar o Bloquear Sala">
+<span class="text-label-xs font-label-xs font-semibold text-outline">Bloqueada</span>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-11 h-6 bg-error peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</div>
+</label>
+</div>
+<!-- Capacity & Details -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-space-md p-3 bg-surface-container-low rounded-lg">
+<div>
+<label class="text-label-xs font-label-xs text-outline font-medium block">Capacidad Máxima</label>
+<div class="flex items-center gap-2 mt-1">
+<input class="w-16 bg-surface-container-lowest border border-outline-variant/50 rounded px-2 py-1 text-headline-sm font-headline-sm font-bold text-on-surface focus:border-primary" type="number" value="36">
+<span class="text-label-xs font-label-xs text-on-surface-variant">pax total</span>
+</div>
+</div>
+<div>
+<label class="text-label-xs font-label-xs text-outline font-medium block">Ubicación</label>
+<span class="text-label-md font-label-md font-semibold text-on-surface block mt-1">Planta 3 - Ala Norte</span>
+</div>
+<div>
+<label class="text-label-xs font-label-xs text-outline font-medium block">Próximo Desbloqueo</label>
+<span class="text-label-md font-label-md font-semibold text-primary block mt-1">17:00 (Fin Onboarding)</span>
+</div>
+</div>
+<!-- Hardware Switches -->
+<div class="space-y-1.5">
+<span class="text-label-xs font-label-xs font-bold text-outline uppercase tracking-wider">Equipamiento &amp; Conectividad</span>
+<div class="grid grid-cols-3 gap-2">
+<label class="flex items-center justify-between p-2 rounded-lg border border-outline-variant/30 bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer">
+<span class="flex items-center gap-1.5 text-label-xs font-label-xs text-on-surface">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="tv">tv</span>
+<span>Display 85"</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox">
+</label>
+<label class="flex items-center justify-between p-2 rounded-lg border border-outline-variant/30 bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer">
+<span class="flex items-center gap-1.5 text-label-xs font-label-xs text-on-surface">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="videocam">videocam</span>
+<span>Cámara PTZ</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox">
+</label>
+<label class="flex items-center justify-between p-2 rounded-lg border border-outline-variant/30 bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer">
+<span class="flex items-center gap-1.5 text-label-xs font-label-xs text-on-surface">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="draw">draw</span>
+<span>Pizarra Doble</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-4 w-4" type="checkbox">
+</label>
+</div>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="mt-space-md pt-space-sm border-t border-outline-variant/20 flex flex-wrap items-center justify-between gap-2">
+<span class="text-label-xs font-label-xs text-outline italic">Motivo actual: "Capacitación Onboarding Q4"</span>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-label-xs font-label-xs font-medium rounded-lg transition">
+                  Liberar Anticipado
+                </button>
+<button class="px-3 py-1.5 bg-primary text-on-primary hover:bg-primary-container text-label-xs font-label-xs font-semibold rounded-lg flex items-center gap-1 transition" onclick="openModalWithRoom('Sala Ágora (36p)')">
+<span class="material-symbols-outlined text-xs" data-icon="lock">lock</span>
+<span>Modificar Bloqueo RRHH</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 2. Sala Innovación (16p) -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-space-md shadow-sm flex flex-col justify-between relative overflow-hidden" id="room-innovacion">
+<div class="absolute top-0 left-0 right-0 h-1 bg-tertiary"></div>
+<div>
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Sala Innovación</h3>
+<span class="bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] px-1.5 py-0.5 rounded text-label-xs font-label-xs font-semibold">
+                      Habilitada
+                    </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Sesiones de co-creación &amp; demos</p>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</div>
+</div>
+<!-- Capacity & Stats -->
+<div class="my-space-sm p-2.5 bg-surface-container-low rounded-lg flex items-center justify-between">
+<div>
+<label class="text-label-xs font-label-xs text-outline block">Aforo Máx</label>
+<input class="w-14 bg-surface-container-lowest border border-outline-variant/40 rounded px-1.5 py-0.5 text-label-md font-label-md font-bold mt-0.5" type="number" value="16">
+</div>
+<div class="text-right">
+<label class="text-label-xs font-label-xs text-outline block">Ocupación Hoy</label>
+<span class="text-label-sm font-label-sm font-bold text-on-surface">6.5 h / 8 h</span>
+</div>
+</div>
+<!-- Switches -->
+<div class="space-y-1.5">
+<span class="text-label-xs font-label-xs font-bold text-outline uppercase tracking-wider">Equipamiento</span>
+<div class="space-y-1">
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="tv">tv</span>
+<span>Display 75" 4K</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+<span>Cámara Zoom Room</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="draw">draw</span>
+<span>Pizarra Móvil</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-2 border-t border-outline-variant/20 flex items-center justify-between">
+<span class="text-label-xs font-label-xs text-tertiary font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Libre ahora
+              </span>
+<button class="text-primary hover:bg-surface-container px-2.5 py-1 rounded text-label-xs font-label-xs font-semibold transition flex items-center gap-1" onclick="openModalWithRoom('Sala Innovación (16p)')">
+<span class="material-symbols-outlined text-xs" data-icon="lock_clock">lock_clock</span>
+<span>Bloqueo temporal RRHH</span>
+</button>
+</div>
+</div>
+<!-- 3. Sala Estrategia (12p) -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-space-md shadow-sm flex flex-col justify-between relative overflow-hidden" id="room-estrategia">
+<div class="absolute top-0 left-0 right-0 h-1 bg-error"></div>
+<div>
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Sala Estrategia</h3>
+<span class="bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA] px-1.5 py-0.5 rounded text-label-xs font-label-xs font-semibold">
+                      Ocupada (Ventas)
+                    </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Reuniones directivas y clientes</p>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</div>
+</div>
+<!-- Capacity & Stats -->
+<div class="my-space-sm p-2.5 bg-surface-container-low rounded-lg flex items-center justify-between">
+<div>
+<label class="text-label-xs font-label-xs text-outline block">Aforo Máx</label>
+<input class="w-14 bg-surface-container-lowest border border-outline-variant/40 rounded px-1.5 py-0.5 text-label-md font-label-md font-bold mt-0.5" type="number" value="12">
+</div>
+<div class="text-right">
+<label class="text-label-xs font-label-xs text-outline block">Fin de Sesión</label>
+<span class="text-label-sm font-label-sm font-bold text-error">12:30 (QBR Ventas)</span>
+</div>
+</div>
+<!-- Switches -->
+<div class="space-y-1.5">
+<span class="text-label-xs font-label-xs font-bold text-outline uppercase tracking-wider">Equipamiento</span>
+<div class="space-y-1">
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="tv">tv</span>
+<span>Display 65"</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+<span>Barra Audio/Video</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="draw">draw</span>
+<span>Pizarra Cristal</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-2 border-t border-outline-variant/20 flex items-center justify-between">
+<span class="text-label-xs font-label-xs text-on-surface-variant font-medium">Check-in verificado</span>
+<button class="text-primary hover:bg-surface-container px-2.5 py-1 rounded text-label-xs font-label-xs font-semibold transition flex items-center gap-1" onclick="openModalWithRoom('Sala Estrategia (12p)')">
+<span class="material-symbols-outlined text-xs" data-icon="lock_clock">lock_clock</span>
+<span>Bloqueo temporal RRHH</span>
+</button>
+</div>
+</div>
+<!-- 4. Sala Focus A (8p) -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-space-md shadow-sm flex flex-col justify-between relative overflow-hidden" id="room-focus-a">
+<div class="absolute top-0 left-0 right-0 h-1 bg-tertiary"></div>
+<div>
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Sala Focus A</h3>
+<span class="bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] px-1.5 py-0.5 rounded text-label-xs font-label-xs font-semibold">
+                      Habilitada
+                    </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Sprints, syncs y entrevistas</p>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</div>
+</div>
+<div class="my-space-sm p-2.5 bg-surface-container-low rounded-lg flex items-center justify-between">
+<div>
+<label class="text-label-xs font-label-xs text-outline block">Aforo Máx</label>
+<input class="w-14 bg-surface-container-lowest border border-outline-variant/40 rounded px-1.5 py-0.5 text-label-md font-label-md font-bold mt-0.5" type="number" value="8">
+</div>
+<div class="text-right">
+<label class="text-label-xs font-label-xs text-outline block">Próxima Reserva</label>
+<span class="text-label-sm font-label-sm font-bold text-on-surface">14:00 (IT Tech)</span>
+</div>
+</div>
+<!-- Switches -->
+<div class="space-y-1.5">
+<span class="text-label-xs font-label-xs font-bold text-outline uppercase tracking-wider">Equipamiento</span>
+<div class="space-y-1">
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="tv">tv</span>
+<span>Display 55"</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+<span>Cámara Gran Angular</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50 opacity-60">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="draw">draw</span>
+<span>Pizarra (No instalada)</span>
+</span>
+<input class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-2 border-t border-outline-variant/20 flex items-center justify-between">
+<span class="text-label-xs font-label-xs text-tertiary font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Libre (90 min)
+              </span>
+<button class="text-primary hover:bg-surface-container px-2.5 py-1 rounded text-label-xs font-label-xs font-semibold transition flex items-center gap-1" onclick="openModalWithRoom('Sala Focus A (8p)')">
+<span class="material-symbols-outlined text-xs" data-icon="lock_clock">lock_clock</span>
+<span>Bloqueo temporal RRHH</span>
+</button>
+</div>
+</div>
+<!-- 5. Sala Focus B (8p) -->
+<div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-space-md shadow-sm flex flex-col justify-between relative overflow-hidden" id="room-focus-b">
+<div class="absolute top-0 left-0 right-0 h-1 bg-tertiary"></div>
+<div>
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Sala Focus B</h3>
+<span class="bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] px-1.5 py-0.5 rounded text-label-xs font-label-xs font-semibold">
+                      Habilitada
+                    </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Sprints técnicos y 1-on-1s</p>
+</div>
+<div class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox">
+<div class="w-9 h-5 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-tertiary"></div>
+</div>
+</div>
+<div class="my-space-sm p-2.5 bg-surface-container-low rounded-lg flex items-center justify-between">
+<div>
+<label class="text-label-xs font-label-xs text-outline block">Aforo Máx</label>
+<input class="w-14 bg-surface-container-lowest border border-outline-variant/40 rounded px-1.5 py-0.5 text-label-md font-label-md font-bold mt-0.5" type="number" value="8">
+</div>
+<div class="text-right">
+<label class="text-label-xs font-label-xs text-outline block">Mantenimiento AC</label>
+<span class="text-label-sm font-label-sm font-bold text-outline">Programado Vie</span>
+</div>
+</div>
+<!-- Switches -->
+<div class="space-y-1.5">
+<span class="text-label-xs font-label-xs font-bold text-outline uppercase tracking-wider">Equipamiento</span>
+<div class="space-y-1">
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="tv">tv</span>
+<span>Display 55"</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="videocam">videocam</span>
+<span>Cámara Gran Angular</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+<label class="flex items-center justify-between text-label-xs font-label-xs px-2 py-1 rounded bg-surface-container-low/50">
+<span class="flex items-center gap-1.5 text-on-surface">
+<span class="material-symbols-outlined text-xs" data-icon="draw">draw</span>
+<span>Pizarra Vidrio</span>
+</span>
+<input checked="" class="rounded text-primary focus:ring-primary h-3.5 w-3.5" type="checkbox">
+</label>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-2 border-t border-outline-variant/20 flex items-center justify-between">
+<span class="text-label-xs font-label-xs text-tertiary font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Libre ahora
+              </span>
+<button class="text-primary hover:bg-surface-container px-2.5 py-1 rounded text-label-xs font-label-xs font-semibold transition flex items-center gap-1" onclick="openModalWithRoom('Sala Focus B (8p)')">
+<span class="material-symbols-outlined text-xs" data-icon="lock_clock">lock_clock</span>
+<span>Bloqueo temporal RRHH</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- ==================== AUDIT & TEAM USAGE SECTION ==================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- DESGLOSE DE RESERVAS POR ÁREA (5 COLS) -->
+<div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Desglose de Uso por Equipos</h3>
+<p class="text-label-xs font-label-xs text-on-surface-variant">Distribución de reservas corporativas acumuladas del mes</p>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="bar_chart">bar_chart</span>
+</div>
+<!-- Department Progress Bars -->
+<div class="space-y-space-md mt-space-md">
+<!-- IT & Tech (32%) -->
+<div>
+<div class="flex justify-between text-body-sm font-body-sm mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-primary"></span> IT &amp; Tech
+                  </span>
+<span class="font-bold text-on-surface">32% <span class="text-outline font-normal text-label-xs">(128 hrs)</span></span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 32%"></div>
+</div>
+</div>
+<!-- Ventas (28%) -->
+<div>
+<div class="flex justify-between text-body-sm font-body-sm mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-primary-container"></span> Ventas &amp; Clientes
+                  </span>
+<span class="font-bold text-on-surface">28% <span class="text-outline font-normal text-label-xs">(112 hrs)</span></span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 28%"></div>
+</div>
+</div>
+<!-- Marketing (18%) -->
+<div>
+<div class="flex justify-between text-body-sm font-body-sm mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-tertiary"></span> Marketing &amp; Creativo
+                  </span>
+<span class="font-bold text-on-surface">18% <span class="text-outline font-normal text-label-xs">(72 hrs)</span></span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 18%"></div>
+</div>
+</div>
+<!-- Operaciones (12%) -->
+<div>
+<div class="flex justify-between text-body-sm font-body-sm mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-secondary"></span> Operaciones
+                  </span>
+<span class="font-bold text-on-surface">12% <span class="text-outline font-normal text-label-xs">(48 hrs)</span></span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 12%"></div>
+</div>
+</div>
+<!-- RRHH (10%) -->
+<div>
+<div class="flex justify-between text-body-sm font-body-sm mb-1">
+<span class="font-medium text-on-surface flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-outline"></span> Recursos Humanos &amp; Onboarding
+                  </span>
+<span class="font-bold text-on-surface">10% <span class="text-outline font-normal text-label-xs">(40 hrs)</span></span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-outline h-full rounded-full" style="width: 10%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-3 border-t border-outline-variant/20 flex items-center justify-between text-label-xs font-label-xs text-outline">
+<span>Base total mensual: 400 hrs hábiles</span>
+<a class="text-primary hover:underline font-semibold" href="#">Ver detalle por colaborador →</a>
+</div>
+</div>
+<!-- ALERTAS DE NO-SHOW RECURRENTES & AUDITORÍA RRHH (7 COLS) -->
+<div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-space-md shadow-sm flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div>
+<div class="flex items-center gap-2">
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Alertas de No-Show Recurrentes</h3>
+<span class="bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] text-label-xs font-label-xs px-2 py-0.5 rounded-full font-semibold">
+                    Acción RRHH Requerida
+                  </span>
+</div>
+<p class="text-label-xs font-label-xs text-on-surface-variant">Reservas no confirmadas presencialmente en los primeros 10 minutos para asesoría a líderes.</p>
+</div>
+<button class="text-outline hover:text-on-surface p-1 rounded">
+<span class="material-symbols-outlined text-base" data-icon="filter_list">filter_list</span>
+</button>
+</div>
+<!-- Alerts Table / List -->
+<div class="overflow-x-auto">
+<table class="w-full text-left text-body-sm font-body-sm">
+<thead>
+<tr class="border-b border-outline-variant/30 text-label-xs font-label-xs text-outline uppercase tracking-wider">
+<th class="py-2.5 font-semibold">Colaborador / Área</th>
+<th class="py-2.5 font-semibold">Sala / Fecha</th>
+<th class="py-2.5 font-semibold text-center">Incidencias</th>
+<th class="py-2.5 font-semibold text-right">Intervención RRHH</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<!-- Record 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-label-xs">
+                          MR
+                        </div>
+<div>
+<p class="font-medium text-on-surface text-label-sm font-label-sm">Martín Ramos</p>
+<p class="text-label-xs font-label-xs text-outline">Ventas (Lead B2B)</p>
+</div>
+</div>
+</td>
+<td class="py-2.5">
+<p class="text-on-surface text-label-sm font-label-sm">Sala Estrategia</p>
+<p class="text-label-xs font-label-xs text-outline">Ayer, 11:00 (1.5h)</p>
+</td>
+<td class="py-2.5 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-label-xs font-label-xs font-bold bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]">
+                        3 en 14 días
+                      </span>
+</td>
+<td class="py-2.5 text-right">
+<button class="bg-surface-container text-primary hover:bg-primary hover:text-on-primary transition px-2.5 py-1 rounded text-label-xs font-label-xs font-semibold inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="send">send</span>
+<span>Enviar Recordatorio</span>
+</button>
+</td>
+</tr>
+<!-- Record 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-label-xs">
+                          SL
+                        </div>
+<div>
+<p class="font-medium text-on-surface text-label-sm font-label-sm">Sofía Larrea</p>
+<p class="text-label-xs font-label-xs text-outline">Marketing (Growth)</p>
+</div>
+</div>
+</td>
+<td class="py-2.5">
+<p class="text-on-surface text-label-sm font-label-sm">Sala Innovación</p>
+<p class="text-label-xs font-label-xs text-outline">22 Oct, 16:00 (1h)</p>
+</td>
+<td class="py-2.5 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-label-xs font-label-xs font-bold bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]">
+                        2 en 14 días
+                      </span>
+</td>
+<td class="py-2.5 text-right">
+<button class="bg-surface-container text-primary hover:bg-primary hover:text-on-primary transition px-2.5 py-1 rounded text-label-xs font-label-xs font-semibold inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="chat">chat</span>
+<span>Asesorar Líder</span>
+</button>
+</td>
+</tr>
+<!-- Record 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-2.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-label-xs">
+                          CP
+                        </div>
+<div>
+<p class="font-medium text-on-surface text-label-sm font-label-sm">Carlos Peralta</p>
+<p class="text-label-xs font-label-xs text-outline">IT &amp; Tech (DevOps)</p>
+</div>
+</div>
+</td>
+<td class="py-2.5">
+<p class="text-on-surface text-label-sm font-label-sm">Sala Focus A</p>
+<p class="text-label-xs font-label-xs text-outline">21 Oct, 09:30 (45m)</p>
+</td>
+<td class="py-2.5 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-label-xs font-label-xs font-medium bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]">
+                        1era advertencia
+                      </span>
+</td>
+<td class="py-2.5 text-right">
+<span class="text-label-xs font-label-xs text-outline italic">Auto-liberada</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="mt-space-md pt-3 border-t border-outline-variant/20 flex items-center justify-between text-label-xs font-label-xs text-on-surface-variant">
+<span class="flex items-center gap-1.5 text-tertiary font-semibold">
+<span class="material-symbols-outlined text-sm" data-icon="published_with_changes">published_with_changes</span>
+              Política activa: 2 advertencias bloquean agendamiento anticipado por 7 días.
+            </span>
+<button class="text-primary hover:underline font-semibold">Ajustar política RRHH</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- ==================== MODAL: BLOQUEO EXPRÉS RRHH ==================== -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[#0b1c30]/40 backdrop-blur-sm p-4" id="blockingModal">
+<div class="bg-surface-container-lowest rounded-xl max-w-lg w-full border border-outline-variant/40 shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">
+<!-- Modal Header -->
+<div class="px-space-md py- space-md border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-lg" data-icon="lock">lock</span>
+</div>
+<div>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">Bloqueo Exprés RRHH</h3>
+<p class="text-label-xs font-label-xs text-on-surface-variant">Reserva institucional exclusiva y bloqueo preventivo de salas</p>
+</div>
+</div>
+<button class="p-1 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container transition" onclick="document.getElementById('blockingModal').classList.add('hidden')">
+<span class="material-symbols-outlined text-lg" data-icon="close">close</span>
+</button>
+</div>
+<!-- Modal Form Body -->
+<div class="p-space-md space-y-space-md">
+<!-- Sala Selection -->
+<div>
+<label class="block text-label-sm font-label-sm font-semibold text-on-surface mb-1">Sala a Bloquear</label>
+<select class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-3 py-2 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary" id="modalRoomSelect">
+<option value="all">Todas las Salas (Bloqueo Total Planta Corporativa)</option>
+<option value="Sala Ágora (36p)">Sala Ágora (36p) - Plenario</option>
+<option value="Sala Innovación (16p)">Sala Innovación (16p)</option>
+<option value="Sala Estrategia (12p)">Sala Estrategia (12p)</option>
+<option value="Sala Focus A (8p)">Sala Focus A (8p)</option>
+<option value="Sala Focus B (8p)">Sala Focus B (8p)</option>
+</select>
+</div>
+<!-- Motivo Institucional -->
+<div>
+<label class="block text-label-sm font-label-sm font-semibold text-on-surface mb-1">Motivo Institucional / Categoría</label>
+<div class="grid grid-cols-2 gap-2 mb-2">
+<button class="px-2.5 py-1.5 text-left rounded border border-outline-variant/40 text-label-xs font-label-xs hover:border-primary hover:bg-surface-container text-on-surface" onclick="setReason('Capacitación General Onboarding')" type="button">
+              🎓 Onboarding Nuevos Ingresos
+            </button>
+<button class="px-2.5 py-1.5 text-left rounded border border-outline-variant/40 text-label-xs font-label-xs hover:border-primary hover:bg-surface-container text-on-surface" onclick="setReason('Mantenimiento AC &amp; Redes')" type="button">
+              🛠️ Mantenimiento AC &amp; Redes
+            </button>
+<button class="px-2.5 py-1.5 text-left rounded border border-outline-variant/40 text-label-xs font-label-xs hover:border-primary hover:bg-surface-container text-on-surface" onclick="setReason('Reunión de Directorio / Confidencial')" type="button">
+              🔒 Directorio Confidencial
+            </button>
+<button class="px-2.5 py-1.5 text-left rounded border border-outline-variant/40 text-label-xs font-label-xs hover:border-primary hover:bg-surface-container text-on-surface" onclick="setReason('Town Hall Trimestral')" type="button">
+              📢 Town Hall Trimestral
+            </button>
+</div>
+<input class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-3 py-2 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary" id="reasonInput" placeholder="Detalle institucional (ej: Capacitación General Onboarding)" type="text">
+</div>
+<!-- Time Range Selection -->
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-label-sm font-label-sm font-semibold text-on-surface mb-1">Desde</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-3 py-1.5 text-body-sm font-body-sm text-on-surface focus:border-primary" type="time" value="14:00">
+</div>
+</div>
+<div>
+<label class="block text-label-sm font-label-sm font-semibold text-on-surface mb-1">Hasta</label>
+<div class="relative">
+<input class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg px-3 py-1.5 text-body-sm font-body-sm text-on-surface focus:border-primary" type="time" value="17:00">
+</div>
+</div>
+</div>
+<!-- Notificación & Overwrite Option -->
+<div class="p-3 bg-secondary-container/40 rounded-lg border border-secondary-container flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-base mt-0.5" data-icon="info">info</span>
+<div class="text-label-xs font-label-xs text-on-surface">
+<span class="font-semibold text-on-surface">Sobrescritura Administrativa de RRHH:</span>
+            Si existen reservas de colaboradores en esa franja, el sistema reubicará automáticamente a los equipos afectados en salas equivalentes y enviará un aviso por Slack/Email.
+          </div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-space-md py-3 bg-surface-container-low border-t border-outline-variant/30 flex items-center justify-end gap-2">
+<button class="px-4 py-2 rounded-lg text-label-sm font-label-sm font-medium text-on-surface-variant hover:bg-surface-container transition" onclick="document.getElementById('blockingModal').classList.add('hidden')" type="button">
+          Cancelar
+        </button>
+<button class="px-4 py-2 rounded-lg bg-primary text-on-primary hover:bg-primary-container text-label-sm font-label-sm font-semibold flex items-center gap-1.5 shadow-sm transition active:scale-[0.98]" onclick="confirmBlocking()" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span>Aplicar Bloqueo RRHH</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+    function openModalWithRoom(roomName) {
+      const select = document.getElementById('modalRoomSelect');
+      if (select) {
+        select.value = roomName;
+      }
+      document.getElementById('blockingModal').classList.remove('hidden');
+    }
+
+    function setReason(reason) {
+      const input = document.getElementById('reasonInput');
+      if (input) {
+        input.value = reason;
+      }
+    }
+
+    function confirmBlocking() {
+      const room = document.getElementById('modalRoomSelect').value;
+      const reason = document.getElementById('reasonInput').value || 'Bloqueo Institucional RRHH';
+      
+      // Feedback toast simulation
+      alert(`[RRHH] Bloqueo aplicado con éxito para: ${room}\nMotivo: "${reason}". Notificaciones enviadas.`);
+      document.getElementById('blockingModal').classList.add('hidden');
+    }
+  </script>
+
+
+</body></html>

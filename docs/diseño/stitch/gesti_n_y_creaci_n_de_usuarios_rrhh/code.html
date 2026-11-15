@@ -1,0 +1,1068 @@
+<!DOCTYPE html><html class="h-full" lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MeetHub / Workspace - Administración de RRHH: Gestión de Colaboradores</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#0039b5",
+            "surface-tint": "#2151da",
+            "on-primary-container": "#cad3ff",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#131b2e",
+            "on-primary-fixed": "#001551",
+            "surface-bright": "#f8f9ff",
+            "on-secondary-fixed-variant": "#3f465c",
+            "primary": "#0037b0",
+            "secondary": "#565e74",
+            "surface-dim": "#cbdbf5",
+            "surface-container": "#e5eeff",
+            "on-error-container": "#93000a",
+            "background": "#f8f9ff",
+            "tertiary-fixed": "#6ffbbe",
+            "secondary-fixed-dim": "#bec6e0",
+            "inverse-primary": "#b7c4ff",
+            "primary-fixed": "#dce1ff",
+            "error": "#ba1a1a",
+            "surface-container-low": "#eff4ff",
+            "tertiary-fixed-dim": "#4edea3",
+            "on-error": "#ffffff",
+            "surface": "#f8f9ff",
+            "error-container": "#ffdad6",
+            "secondary-container": "#dae2fd",
+            "inverse-surface": "#213145",
+            "on-tertiary-fixed-variant": "#005236",
+            "on-tertiary": "#ffffff",
+            "outline": "#747686",
+            "on-primary": "#ffffff",
+            "on-surface-variant": "#434655",
+            "on-background": "#0b1c30",
+            "outline-variant": "#c4c5d7",
+            "tertiary-container": "#006a48",
+            "primary-fixed-dim": "#b7c4ff",
+            "on-tertiary-fixed": "#002113",
+            "on-tertiary-container": "#60eeb1",
+            "on-surface": "#0b1c30",
+            "on-secondary-container": "#5c647a",
+            "tertiary": "#004f35",
+            "surface-container-high": "#dce9ff",
+            "primary-container": "#1d4ed8",
+            "surface-container-highest": "#d3e4fe",
+            "surface-variant": "#d3e4fe",
+            "on-secondary": "#ffffff",
+            "secondary-fixed": "#dae2fd",
+            "inverse-on-surface": "#eaf1ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "margin": "1.5rem",
+            "space-lg": "1.25rem",
+            "gutter": "1rem",
+            "margin-compact": "1rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "gutter-dense": "0.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "label-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "label-xs": ["Inter"],
+            "code-sm": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "body-sm": ["Inter"]
+          },
+          "fontSize": {
+            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-md": ["13px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-xs": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Custom subtle scrollbar for data tables and panels */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f8f9ff;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #c4c5d7;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #747686;
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface h-full flex flex-col font-body-md text-body-md antialiased overflow-hidden">
+<!-- ================= TOP NAV BAR (Shared Component Anchor) ================= -->
+<header class="sticky top-0 z-40 w-full px-margin h-16 flex items-center justify-between bg-surface-container-lowest border-b border-outline-variant/30 shadow-sm">
+<!-- Left Cluster: Brand & Global Search -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVK9as9lDWGlXVFduhFTfCTlooBlWotpAtI1EfhualgR3J7oAVErygWqUi7tvWcjENY7lyhO49efOKCBsJiaTnQpMv-kXmXksN91w2dHmUPcgAodBz-YGT2Pzo0zPh7S8XxP7RByhMP3Jg0srtqnKh5vq5CGNGqsQTsJpljoIUJ9Bi1niHa6iAJKlr_Davp-icfqUJkY2LKaATEWYtNpiHNgEvg3AJ63HgIL3wi8YWC1cXBhWc8qaO" alt="MeetHub Logo" class="w-8 h-8 rounded-lg object-contain shrink-0">
+<span class="text-headline-md font-headline-md font-bold text-primary tracking-tight">MeetHub / Workspace</span>
+</div>
+<!-- Quick Search Bar (on_left) -->
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/40 rounded-lg pl-9 pr-3 py-1.5 text-body-sm font-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Buscar salas, colaboradores o IDs..." type="text">
+</div>
+</div>
+<!-- Center Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-xl">
+<!-- Link: Agenda (Inactive) -->
+<a class="text-on-surface-variant hover:text-on-surface transition-colors pb-1 text-label-md font-label-md" href="#">
+        Agenda
+      </a>
+<!-- Link: Mis Reservas (Inactive) -->
+<a class="text-on-surface-variant hover:text-on-surface transition-colors pb-1 text-label-md font-label-md" href="#">
+        Mis Reservas
+      </a>
+<!-- Link: Admin RRHH (ACTIVE - Exact Mapping) -->
+<a class="text-primary font-bold border-b-2 border-primary pb-1 text-label-md font-label-md flex items-center gap-1.5" href="#">
+        Admin RRHH
+        <span class="inline-flex items-center justify-center w-2 h-2 rounded-full bg-primary"></span>
+</a>
+</nav>
+<!-- Right Cluster: Primary Actions, Date & User Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Secondary Action -->
+<div class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/30 text-secondary text-label-md font-label-md">
+<span class="material-symbols-outlined text-base" data-icon="schedule">schedule</span>
+<span>Hoy, 24 Oct</span>
+</div>
+<!-- Trailing Primary Action -->
+<button class="bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md px-3.5 py-2 rounded-lg flex items-center gap-1.5 active:scale-[0.99] transition-all shadow-sm">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+<span>Nueva Reserva</span>
+</button>
+<!-- Trailing Icon Action: Notifications -->
+<button aria-label="Notificaciones" class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors relative">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-6 w-px bg-outline-variant/40"></div>
+<!-- User Profile Pill -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer">
+<div class="relative w-8 h-8 rounded-full overflow-hidden border border-outline-variant/40">
+<img class="w-full h-full object-cover" data-alt="Fotografía de retrato profesional en primer plano de una ejecutiva de Recursos Humanos en una oficina corporativa contemporánea, con iluminación natural suave, atmósfera enfocada y sofisticada con fondo desenfocado en tonos azul pálido y blanco." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWdYhSpwyZDJgxs9WLm0zKO39c2qkb9lhlXqiMM3DGPYEH2nn7-SPmMV6XpNyzBWMVnE3wiRl243vnPspDNkl49rG1w3pVHD9DUY7iB3c6xvaio96f6fssqgB4kSnT2ZwRgnoVIVvKtRBI9QKBIp5Y7DWb_qz7FhgsXW2U8qbyURuI11GBB53m1kZ_g55FYUYaBCqDi-ZBR2tUNre63wAZi-Bbr75H55NAJk5rzPQ">
+</div>
+<div class="hidden lg:flex flex-col text-left">
+<span class="text-label-sm font-label-sm font-semibold text-on-surface leading-tight">Valeria Morales</span>
+<span class="text-label-xs font-label-xs text-outline leading-tight">Admin General RRHH</span>
+</div>
+</div>
+</div>
+</header>
+<!-- ================= MAIN WORKSPACE WRAPPER ================= -->
+<div class="flex flex-1 h-[calc(100vh-4rem)] overflow-hidden">
+<!-- ================= SIDE NAV BAR (Shared Component Anchor) ================= -->
+<aside class="fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 z-30 bg-surface border-r border-outline-variant/30 flex flex-col justify-between p-margin-compact">
+<div class="flex flex-col gap-4">
+<!-- SideNav Header Section -->
+<div class="px-2 pt-1 pb-2 border-b border-outline-variant/20">
+<div class="flex items-center gap-2 mb-1">
+<div class="w-7 h-7 rounded bg-secondary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" data-icon="meeting_room">meeting_room</span>
+</div>
+<div>
+<h2 class="text-headline-sm font-headline-sm font-semibold text-on-surface">Salas Corporativas</h2>
+<p class="text-label-xs font-label-xs text-secondary">Capacidad: 80 Pax Total</p>
+</div>
+</div>
+</div>
+<!-- Direct CTA: Bloquear Sala (RRHH) -->
+<button class="w-full bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-sm text-label-sm py-2 px-3 rounded-lg border border-primary/20 flex items-center justify-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-base" data-icon="lock_clock">lock_clock</span>
+<span>Bloquear Sala (RRHH)</span>
+</button>
+<!-- Room Tabs Navigation -->
+<div class="flex flex-col gap-1">
+<span class="text-label-xs font-label-xs font-semibold text-outline uppercase px-2 mb-1">Espacios Monitorizados</span>
+<!-- Sala 1 -->
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="meeting_room">meeting_room</span>
+<span>Sala Innovación (16p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500" title="Disponible"></span>
+</a>
+<!-- Sala 2 -->
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="meeting_room">meeting_room</span>
+<span>Sala Estrategia (12p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-rose-500" title="Ocupada"></span>
+</a>
+<!-- Sala 3 -->
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="co_present">co_present</span>
+<span>Sala Focus A (8p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500" title="Disponible"></span>
+</a>
+<!-- Sala 4 -->
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="co_present">co_present</span>
+<span>Sala Focus B (8p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-amber-500" title="Check-in Pendiente"></span>
+</a>
+<!-- Sala 5 -->
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center justify-between transition-colors text-label-sm font-label-sm" href="#">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="corporate_fare">corporate_fare</span>
+<span>Sala Ágora (36p)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500" title="Disponible"></span>
+</a>
+</div>
+<div class="border-t border-outline-variant/30 pt-3">
+<!-- Active Tab in SideNav: Directorio de Colaboradores (Contextual RRHH anchor) -->
+<div class="bg-secondary-container text-on-secondary-container font-medium rounded-lg px-3 py-2 flex items-center gap-3 text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-lg text-primary" data-icon="badge">badge</span>
+<span class="font-semibold text-primary">Gestión de Personal</span>
+</div>
+</div>
+</div>
+<!-- Footer Rail Actions -->
+<div class="flex flex-col gap-1 border-t border-outline-variant/20 pt-3">
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="build">build</span>
+<span>Mantenimiento</span>
+</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low rounded-lg px-3 py-2 flex items-center gap-3 transition-colors text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="tune">tune</span>
+<span>Ajustes Espacios</span>
+</a>
+</div>
+</aside>
+<!-- ================= CANVAS CONTENT AREA (Plazas, Directorio y Creación) ================= -->
+<main class="ml-64 flex-1 h-full overflow-y-auto bg-background p-margin flex flex-col gap-space-lg">
+<!-- Breadcrumbs & Context Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant/30 pb-4">
+<div>
+<div class="flex items-center gap-2 text-label-sm font-label-sm text-outline mb-1">
+<span>Administración RRHH</span>
+<span class="material-symbols-outlined text-xs" data-icon="chevron_right">chevron_right</span>
+<span class="text-primary font-semibold">Directorio de Colaboradores &amp; Permisos</span>
+</div>
+<div class="flex items-center gap-3">
+<h1 class="text-headline-lg font-headline-lg text-on-surface">Directorio de Colaboradores &amp; Permisos</h1>
+<span class="px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container-high text-primary font-semibold border border-primary/20">
+              80 Activos
+            </span>
+<span class="px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+              5 Departamentos
+            </span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">
+            Supervisa cupos de horas de reserva semanales, privilegios ejecutivos en Sala Ágora y penalizaciones de check-in / no-show.
+          </p>
+</div>
+<!-- Primary Canvas Header CTA Buttons -->
+<div class="flex items-center gap-space-sm flex-shrink-0">
+<button class="bg-surface-container-lowest hover:bg-surface-container-low text-secondary border border-outline-variant/60 font-label-md text-label-md px-3.5 py-2 rounded-lg flex items-center gap-2 transition-colors active:scale-[0.99] shadow-sm">
+<span class="material-symbols-outlined text-base" data-icon="upload_file">upload_file</span>
+<span>Cargar Nómina Masiva (CSV)</span>
+</button>
+<button class="bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-sm active:scale-[0.99]" id="btnOpenUserModal">
+<span class="material-symbols-outlined text-base" data-icon="person_add">person_add</span>
+<span>Nuevo Colaborador</span>
+</button>
+</div>
+</div>
+<!-- Quick Operational Metrics (Bento-style 4-tile grid) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Tile 1: Total Users -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-sm flex items-start justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-secondary">Colaboradores Habilitados</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-xl font-headline-xl text-on-surface">80</span>
+<span class="text-label-xs font-label-xs text-tertiary-container font-semibold flex items-center">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span> 100% cupo
+              </span>
+</div>
+<span class="text-label-xs font-label-xs text-outline mt-1 block">Distribuidos en 5 unidades</span>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="group">group</span>
+</div>
+</div>
+<!-- Tile 2: Check-in & Asistencia -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-sm flex items-start justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-secondary">Tasa de Asistencia General</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-xl font-headline-xl text-on-surface">94.2%</span>
+<span class="text-label-xs font-label-xs text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                +1.8% vs mes ant.
+              </span>
+</div>
+<span class="text-label-xs font-label-xs text-outline mt-1 block">348 reuniones completadas</span>
+</div>
+<div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="event_available">event_available</span>
+</div>
+</div>
+<!-- Tile 3: No-show Warning -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-sm flex items-start justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-secondary">Alerta de Inasistencia (No-Show)</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-xl font-headline-xl text-error">3</span>
+<span class="text-label-xs font-label-xs text-error bg-error-container/40 px-1.5 py-0.5 rounded">
+                Bloqueo preventivo
+              </span>
+</div>
+<span class="text-label-xs font-label-xs text-outline mt-1 block">&gt;2 cancelaciones tardías</span>
+</div>
+<div class="w-10 h-10 rounded-lg bg-red-50 text-error flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="warning">warning</span>
+</div>
+</div>
+<!-- Tile 4: Horas Semanales Asignadas -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 shadow-sm flex items-start justify-between">
+<div>
+<span class="text-label-sm font-label-sm text-secondary">Promedio Cupo Asignado</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="text-headline-xl font-headline-xl text-on-surface">6.4 <span class="text-headline-sm font-headline-sm text-outline">h/sem</span></span>
+</div>
+<span class="text-label-xs font-label-xs text-outline mt-1 block">Liberación automática a los 10m</span>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-low text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-xl" data-icon="timelapse">timelapse</span>
+</div>
+</div>
+</section>
+<!-- Main Interaction Section: Filter Toolbar + Data Grid -->
+<section class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
+<!-- Filter Bar Header -->
+<div class="p-4 border-b border-outline-variant/20 flex flex-wrap items-center justify-between gap-3 bg-surface-bright">
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Search field in table -->
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-outline text-lg" data-icon="search">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg pl-8 pr-3 py-1.5 text-body-sm font-body-sm text-on-surface placeholder:text-outline focus:outline-none focus:border-primary" placeholder="Filtrar por nombre o email..." type="text">
+</div>
+<!-- Departamento Select -->
+<select class="bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-body-sm font-body-sm text-on-surface px-3 py-1.5 focus:border-primary focus:outline-none">
+<option value="">Todos los Departamentos</option>
+<option value="IT">IT &amp; Tech (24)</option>
+<option value="Ventas">Ventas (18)</option>
+<option value="Marketing">Marketing (14)</option>
+<option value="Operaciones">Operaciones (16)</option>
+<option value="RRHH">Recursos Humanos (8)</option>
+</select>
+<!-- Rol Select -->
+<select class="bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-body-sm font-body-sm text-on-surface px-3 py-1.5 focus:border-primary focus:outline-none">
+<option value="">Todos los Roles</option>
+<option value="Admin">Administrador RRHH</option>
+<option value="Lider">Líder de Área</option>
+<option value="Colaborador">Colaborador Estándar</option>
+</select>
+<!-- Estado Select -->
+<select class="bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-body-sm font-body-sm text-on-surface px-3 py-1.5 focus:border-primary focus:outline-none">
+<option value="">Todos los Estados</option>
+<option value="Activo">Activo</option>
+<option value="Penalizado">Con penalización por No-show</option>
+<option value="Inactivo">Inactivo / Licencia</option>
+</select>
+</div>
+<!-- Quick Bulk Actions & Counter -->
+<div class="flex items-center gap-2">
+<span class="text-label-xs font-label-xs text-outline">Mostrando 6 de 80 colaboradores</span>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-surface-container-low rounded transition-colors" title="Descargar reporte">
+<span class="material-symbols-outlined text-lg" data-icon="download">download</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-surface-container-low rounded transition-colors" title="Actualizar lista">
+<span class="material-symbols-outlined text-lg" data-icon="refresh">refresh</span>
+</button>
+</div>
+</div>
+<!-- Colaboradores Data Table -->
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 bg-surface-container-low/50 text-label-xs font-label-xs text-secondary tracking-wider">
+<th class="py-3 px-4 w-12 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</th>
+<th class="py-3 px-4">COLABORADOR</th>
+<th class="py-3 px-4">DEPARTAMENTO</th>
+<th class="py-3 px-4">ROL Y PRIVILEGIOS</th>
+<th class="py-3 px-4">CUPO SEMANAL</th>
+<th class="py-3 px-4">PUNTUALIDAD / CHECK-IN</th>
+<th class="py-3 px-4">ESTADO</th>
+<th class="py-3 px-4 text-right">ACCIONES</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 text-body-sm font-body-sm">
+<!-- Fila 1: Admin RRHH -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-3.5 px-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-secondary-container text-primary flex items-center justify-center font-semibold text-xs overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Retrato contemporáneo de estudio de una profesional de Recursos Humanos sonriente frente a un fondo neutro y luminoso, con luz equilibrada, estética corporativa clara y ropa formal en tonos azul marino." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBt3hPU3O5pbi_FsJL93xHpsK4LiehDCl5ji99d77lEiNAMkkJOey4Zsz_pQG1s4CKk_ZWXa6eD3SJ-jNSTVBQHsamYYybHcg_G-uB5vNXsxQ9wWCfQVBQp5faYYbzpAWDkvHPwmrU6t83EdN9jlfj2AWcNvQhyFpVO3wSpNKQzCRGVl_3yDukAAK-9bydy6QlvAPZkqVE9CinRN0PRu0rD16YXfIWK7pKvHr16dw">
+</div>
+<div>
+<div class="font-medium text-on-surface flex items-center gap-1.5">
+<span>Camila Rosales</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="verified" title="Verificado">verified</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">c.rosales@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+                    Recursos Humanos
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-0.5">
+<span class="inline-flex items-center gap-1 text-label-xs font-label-xs font-semibold text-primary">
+<span class="material-symbols-outlined text-xs" data-icon="shield_person">shield_person</span>
+                      Administrador RRHH
+                    </span>
+<span class="text-label-xs font-label-xs text-outline">Bloqueo de salas + Sala Ágora</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="font-semibold">Ilimitado</span>
+<span class="text-label-xs font-label-xs text-outline">(Master)</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-600 h-full rounded-full" style="width: 98%"></div>
+</div>
+<span class="text-label-xs font-label-xs font-medium text-emerald-700">98%</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">18 reservas este mes</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-label-xs font-label-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+                    Activo
+                  </span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Editar permisos">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Ver historial">
+<span class="material-symbols-outlined text-base" data-icon="history">history</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded" title="Más opciones">
+<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 2: Líder con Reserva Prioritaria -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-3.5 px-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-secondary-container text-primary flex items-center justify-center font-semibold text-xs overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Fotografía corporativa de perfil de un líder de ingeniería de software en oficina moderna de diseño abierto, iluminación suave diurna, mirando a cámara con semblante amable y profesional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBhvEUERoCd9J7ZpmjSSww8Iq1ntva7Dmhn5kv3RsU36qSSsLOT9zU9bSgGv_dhFs_d-KX5_2-I7384asOvkYmU9RmATt5lzNP61b8nX5AfGj9a9GiPp3luIZwfz1oK2pYnb-5fwhIzp1T45IPdia1m__dHzwFnsmSXPLX2ATaxE_3b0u8gP3zJt4WQTdbFNOWh6QUmDKOUcT6gg3fNq_KBKjMZW9nyfuJtQo58F0">
+</div>
+<div>
+<div class="font-medium text-on-surface">Javier Domínguez</div>
+<span class="text-label-xs font-label-xs text-outline">j.dominguez@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+                    IT &amp; Tech
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-0.5">
+<span class="inline-flex items-center gap-1 text-label-xs font-label-xs font-semibold text-secondary">
+<span class="material-symbols-outlined text-xs" data-icon="star">star</span>
+                      Líder de Área
+                    </span>
+<span class="text-label-xs font-label-xs text-outline">Reserva prioritaria + Ágora</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="font-semibold">10 hrs</span>
+<span class="text-label-xs font-label-xs text-outline">/ sem</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-600 h-full rounded-full" style="width: 91%"></div>
+</div>
+<span class="text-label-xs font-label-xs font-medium text-emerald-700">91%</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">12 reservas este mes</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-label-xs font-label-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+                    Activo
+                  </span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Editar permisos">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Ver historial">
+<span class="material-symbols-outlined text-base" data-icon="history">history</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded" title="Más opciones">
+<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 3: Con Penalización por No-Show (Alerta Crítica) -->
+<tr class="bg-red-50/30 hover:bg-red-50/50 transition-colors group">
+<td class="py-3.5 px-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-red-100 text-error flex items-center justify-center font-semibold text-xs overflow-hidden border border-red-200">
+<img class="w-full h-full object-cover" data-alt="Retrato fotográfico de estilo profesional de un ejecutivo de ventas joven en entorno corporativo con iluminación cenital limpia y fondo minimalista en tonalidades grises y blancas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfWJW59c96XSdRd2n0yicDJteaJXIDrfIV6c0HvNMqX1VA4K7aaGq0n6Xv67V_gTDgpZXz7Kz0t9AjJpD4sQ50Nw1rWNiSh74kQyD55T1AsKMOqXw1ORqx1Ia6WVWGpr65jw4Iz4YLVM1D9nrd8Ld6i4BLbXEEzTWnWN4hjRlaceHzc0YQoSe5NK1NReoUP_zVSf4k6NB83XLF2URITXc4Y5UcPGAX_xP5zkd0-HU">
+</div>
+<div>
+<div class="font-medium text-on-surface flex items-center gap-1">
+<span>Esteban Morales</span>
+<span class="material-symbols-outlined text-error text-sm" data-icon="warning" title="Penalización activa">warning</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">e.morales@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+                    Ventas
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-0.5">
+<span class="text-label-xs font-label-xs font-medium text-on-surface-variant">Colaborador Estándar</span>
+<span class="text-label-xs font-label-xs text-outline">Sin acceso a Sala Ágora</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-error">
+<span class="font-semibold line-through">6 hrs</span>
+<span class="text-label-xs font-label-xs font-bold text-error">2 hrs (restringido)</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 58%"></div>
+</div>
+<span class="text-label-xs font-label-xs font-bold text-error">58% No-show</span>
+</div>
+<span class="text-label-xs font-label-xs text-error">3 ausencias sin check-in</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-label-xs font-label-xs bg-red-100 text-error border border-red-300 font-semibold inline-flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                    Penalizado (7 días)
+                  </span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="px-2 py-1 bg-surface-container hover:bg-surface-container-high text-primary rounded text-label-xs font-label-xs font-medium transition-colors" title="Restablecer penalización">
+                      Restablecer
+                    </button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded" title="Más opciones">
+<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 4: Colaborador Estándar Regular -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-3.5 px-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-secondary-container text-primary flex items-center justify-center font-semibold text-xs overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Retrato fotográfico de una analista de marketing digital en entorno corporativo tecnológico, iluminada por luz natural de ventanal con bokeh suave de plantas de oficina y escritorios de madera clara." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD92xYVZJRrSDHBgGMfVym7xSudCUFYOGM9SPYVBnOLoA_rmmy0r_eC_cJ8xb4TpUltnjOI6dkiGeJtsQZybQOefDTGiocTfRrV7WceCmmEuB871AFpFPrbtmbmV9YsUCs2bqZotaLgkbKS_mgyvlQwuSMhFedvFV2MrYvjjdP5RHBwLS25w2tWxHgbMklRtpAgmP8c0Oxjtkmnql2Ade1gTt4EapN6jDd0Dk_ZIPc">
+</div>
+<div>
+<div class="font-medium text-on-surface">Mariana Silva</div>
+<span class="text-label-xs font-label-xs text-outline">m.silva@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+                    Marketing
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-0.5">
+<span class="text-label-xs font-label-xs font-medium text-on-surface-variant">Colaborador Estándar</span>
+<span class="text-label-xs font-label-xs text-outline">Focus &amp; Innovación</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="font-semibold">6 hrs</span>
+<span class="text-label-xs font-label-xs text-outline">/ sem</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-600 h-full rounded-full" style="width: 86%"></div>
+</div>
+<span class="text-label-xs font-label-xs font-medium text-emerald-700">86%</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">7 reservas este mes</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-label-xs font-label-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+                    Activo
+                  </span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Editar permisos">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Ver historial">
+<span class="material-symbols-outlined text-base" data-icon="history">history</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded" title="Más opciones">
+<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 5: Colaborador Operaciones -->
+<tr class="hover:bg-surface-bright transition-colors group">
+<td class="py-3.5 px-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-secondary-container text-primary flex items-center justify-center font-semibold text-xs overflow-hidden border border-outline-variant/30">
+<img class="w-full h-full object-cover" data-alt="Retrato en plano medio de un coordinador de operaciones logísticas en sala de conferencias con iluminación de diseño, look minimalista y vestimenta semi-formal moderna." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8-450mvX5rfVV56kGINdpjylR5bXhltzq1KXImgcEo3ZmKSBBPr_Hjx5tTp4f_J7FHbJ1nYQxqFNaLRvLbr0yM861icWwHS8e6SSbHcMg7pk2D_t2QCKm0dBu53o8iWdxxJpJrUe_EoBPeUtCdu9321Oney1srOs_R1qpHsX36YSo8EiMOXlGRBjko7HV1uj5XUbDQGxqwZoA5bhoRwvHVrdLtIiXZcNOkIAMns4">
+</div>
+<div>
+<div class="font-medium text-on-surface">Rodrigo Pezoa</div>
+<span class="text-label-xs font-label-xs text-outline">r.pezoa@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+                    Operaciones
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-0.5">
+<span class="text-label-xs font-label-xs font-medium text-on-surface-variant">Colaborador Estándar</span>
+<span class="text-label-xs font-label-xs text-outline">Salas regulares</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="font-semibold">6 hrs</span>
+<span class="text-label-xs font-label-xs text-outline">/ sem</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<div class="w-16 bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-emerald-600 h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="text-label-xs font-label-xs font-medium text-emerald-700">100%</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">9 reservas este mes</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-label-xs font-label-xs bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+                    Activo
+                  </span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Editar permisos">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Ver historial">
+<span class="material-symbols-outlined text-base" data-icon="history">history</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded" title="Más opciones">
+<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Fila 6: Inactivo / Licencia -->
+<tr class="hover:bg-surface-bright transition-colors opacity-75 group">
+<td class="py-3.5 px-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-0" type="checkbox">
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-surface-container text-secondary flex items-center justify-center font-semibold text-xs overflow-hidden border border-outline-variant/30">
+<span class="font-bold">FL</span>
+</div>
+<div>
+<div class="font-medium text-on-surface">Fernanda Lagos</div>
+<span class="text-label-xs font-label-xs text-outline">f.lagos@empresa.com</span>
+</div>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-xs font-label-xs bg-surface-container text-secondary font-medium">
+                    IT &amp; Tech
+                  </span>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex flex-col gap-0.5">
+<span class="text-label-xs font-label-xs text-outline">Colaborador Estándar</span>
+<span class="text-label-xs font-label-xs text-outline">Bloqueado temporal</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-1.5 text-outline">
+<span>0 hrs</span>
+</div>
+</td>
+<td class="py-3.5 px-4">
+<div class="flex items-center gap-2">
+<span class="text-label-xs font-label-xs text-outline">N/A (En receso)</span>
+</div>
+<span class="text-label-xs font-label-xs text-outline">0 reservas</span>
+</td>
+<td class="py-3.5 px-4">
+<span class="px-2 py-0.5 rounded text-label-xs font-label-xs bg-slate-100 text-slate-700 border border-slate-300 font-medium">
+                    Licencia
+                  </span>
+</td>
+<td class="py-3.5 px-4 text-right">
+<div class="flex items-center justify-end gap-1">
+<button class="p-1 hover:bg-surface-container text-outline hover:text-primary rounded" title="Reactivar">
+<span class="material-symbols-outlined text-base" data-icon="lock_open">lock_open</span>
+</button>
+<button class="p-1 hover:bg-surface-container text-outline hover:text-on-surface rounded" title="Más opciones">
+<span class="material-symbols-outlined text-base" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="p-3 border-t border-outline-variant/30 flex items-center justify-between bg-surface-container-lowest text-label-sm font-label-sm text-secondary">
+<div class="flex items-center gap-2">
+<span>Filas por página:</span>
+<select class="bg-surface-container-low border border-outline-variant/40 rounded px-2 py-0.5 text-label-xs font-label-xs text-on-surface">
+<option>10</option>
+<option>25</option>
+<option>50</option>
+</select>
+</div>
+<div class="flex items-center gap-4">
+<span>Página 1 de 8</span>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded text-outline hover:bg-surface-container disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-base" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-1 rounded text-on-surface hover:bg-surface-container">
+<span class="material-symbols-outlined text-base" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- ================= SLIDE-OVER DRAWER / MODAL: CREACIÓN DE NUEVO COLABORADOR ================= -->
+<!-- Backdrop scrim -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/40 backdrop-blur-sm transition-opacity duration-200 hidden opacity-0" id="modalOverlay"></div>
+<!-- Drawer Modal Panel (Right Docked 520px) -->
+<aside class="fixed top-0 right-0 z-50 h-full w-full max-w-[540px] bg-surface-container-lowest shadow-2xl border-l border-outline-variant/30 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between" id="userDrawer">
+<!-- Drawer Header -->
+<div class="p-margin border-b border-outline-variant/30 flex items-start justify-between bg-surface-bright">
+<div>
+<div class="flex items-center gap-2 text-primary font-semibold text-label-xs font-label-xs uppercase tracking-wider mb-1">
+<span class="material-symbols-outlined text-base" data-icon="person_add">person_add</span>
+          Alta de Usuario en Directorio
+        </div>
+<h2 class="text-headline-md font-headline-md text-on-surface">Nuevo Colaborador</h2>
+<p class="text-body-sm font-body-sm text-outline mt-0.5">Asigna privilegios de agenda y cupos semanales en MeetHub.</p>
+</div>
+<button aria-label="Cerrar modal" class="p-1.5 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container transition-colors" id="btnCloseModal">
+<span class="material-symbols-outlined text-xl" data-icon="close">close</span>
+</button>
+</div>
+<!-- Drawer Form Body -->
+<form class="p-margin overflow-y-auto flex-1 flex flex-col gap-space-lg" id="colaboradorForm">
+<!-- Section 1: Identidad Corporativa -->
+<div class="flex flex-col gap-3">
+<h3 class="text-label-md font-label-md font-semibold text-on-surface border-b border-outline-variant/20 pb-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base" data-icon="badge">badge</span>
+          Identidad Corporativa
+        </h3>
+<!-- Nombre Completo -->
+<div>
+<label class="block text-label-sm font-label-sm font-medium text-on-surface mb-1">
+            Nombre Completo <span class="text-error">*</span>
+</label>
+<input class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" placeholder="Ej. Sofía Andrade Peña" required="" type="text">
+</div>
+<!-- Correo Corporativo -->
+<div>
+<label class="block text-label-sm font-label-sm font-medium text-on-surface mb-1">
+            Correo Corporativo (@empresa.com) <span class="text-error">*</span>
+</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-base" data-icon="mail">mail</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-all" placeholder="s.andrade@empresa.com" required="" type="email">
+</div>
+<span class="text-label-xs font-label-xs text-outline mt-1 block">El usuario recibirá credenciales SSO vinculadas al directorio Google/Microsoft.</span>
+</div>
+<!-- Departamento -->
+<div>
+<label class="block text-label-sm font-label-sm font-medium text-on-surface mb-1">
+            Departamento / Área <span class="text-error">*</span>
+</label>
+<select class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary" required="">
+<option disabled="" selected="" value="">Selecciona un área</option>
+<option value="IT">IT &amp; Tech</option>
+<option value="Ventas">Ventas</option>
+<option value="Marketing">Marketing</option>
+<option value="Operaciones">Operaciones</option>
+<option value="RRHH">Recursos Humanos (RRHH)</option>
+</select>
+</div>
+</div>
+<!-- Section 2: Rol y Permisos de Agenda -->
+<div class="flex flex-col gap-3">
+<h3 class="text-label-md font-label-md font-semibold text-on-surface border-b border-outline-variant/20 pb-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base" data-icon="admin_panel_settings">admin_panel_settings</span>
+          Rol &amp; Políticas de Reserva
+        </h3>
+<!-- Selector de Rol -->
+<div>
+<label class="block text-label-sm font-label-sm font-medium text-on-surface mb-2">
+            Nivel de Rol en MeetHub <span class="text-error">*</span>
+</label>
+<div class="space-y-2">
+<!-- Option 1: Admin RRHH -->
+<label class="flex items-start gap-3 p-2.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+<input class="mt-0.5 text-primary focus:ring-0" name="userRole" type="radio" value="admin">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm font-semibold text-on-surface">Administrador RRHH</span>
+<span class="text-label-xs font-label-xs text-outline">Bloqueo de salas por eventos corporativos y bypass de restricciones.</span>
+</div>
+</label>
+<!-- Option 2: Líder de Área -->
+<label class="flex items-start gap-3 p-2.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+<input class="mt-0.5 text-primary focus:ring-0" name="userRole" type="radio" value="lider">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm font-semibold text-on-surface">Líder de Área (Reserva Prioritaria)</span>
+<span class="text-label-xs font-label-xs text-outline">Prioridad para reuniones de equipo y reserva recurrente.</span>
+</div>
+</label>
+<!-- Option 3: Colaborador Estándar -->
+<label class="flex items-start gap-3 p-2.5 rounded-lg border border-outline-variant/40 hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+<input checked="" class="mt-0.5 text-primary focus:ring-0" name="userRole" type="radio" value="estandar">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm font-semibold text-on-surface">Colaborador Estándar</span>
+<span class="text-label-xs font-label-xs text-outline">Reserva de salas bajo cupo estándar y regla de check-in en 10 min.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Cupo Máximo Semanal -->
+<div class="grid grid-cols-2 gap-3 pt-1">
+<div>
+<label class="block text-label-sm font-label-sm font-medium text-on-surface mb-1">
+              Cupo Semanal de Horas
+            </label>
+<div class="flex items-center gap-2">
+<input class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-3 py-2 text-body-sm font-body-sm font-semibold text-on-surface focus:outline-none focus:border-primary" max="40" min="1" type="number" value="6">
+<span class="text-label-sm font-label-sm text-secondary">hrs/sem</span>
+</div>
+</div>
+<div>
+<label class="block text-label-sm font-label-sm font-medium text-on-surface mb-1">
+              Ventana Anticipación
+            </label>
+<select class="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-2 py-2 text-body-sm font-body-sm text-on-surface focus:border-primary">
+<option>14 días hábiles</option>
+<option>30 días hábiles</option>
+<option>Ilimitada</option>
+</select>
+</div>
+</div>
+<!-- Executive Room Privileges Switch (Sala Ágora) -->
+<div class="p-3 bg-surface-container-low rounded-lg border border-outline-variant/40 flex items-center justify-between gap-3 mt-1">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-xl mt-0.5" data-icon="corporate_fare">corporate_fare</span>
+<div>
+<span class="text-label-sm font-label-sm font-semibold text-on-surface block">
+                Habilitado para reservas en Sala Ágora (36p)
+              </span>
+<span class="text-label-xs font-label-xs text-outline block">
+                Sala directiva de alta jerarquía con videoconferencia telepresence.
+              </span>
+</div>
+</div>
+<!-- Custom Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+<input class="sr-only peer" type="checkbox" value="">
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Warning Card / Policy Note -->
+<div class="p-3 bg-surface-container rounded-lg text-label-xs font-label-xs text-on-secondary-container flex items-start gap-2">
+<span class="material-symbols-outlined text-base text-primary" data-icon="info">info</span>
+<span>El colaborador quedará sujeto a la política de No-Show: si no realiza check-in en el tótem o dashboard en 10 minutos, la sala se liberará y computará como penalización.</span>
+</div>
+</div>
+</form>
+<!-- Drawer Footer Actions -->
+<div class="p-margin border-t border-outline-variant/30 bg-surface-bright flex items-center justify-between gap-3">
+<button class="px-4 py-2 text-label-md font-label-md text-secondary hover:text-on-surface rounded-lg hover:bg-surface-container transition-colors" id="btnCancelDrawer" type="button">
+        Cancelar
+      </button>
+<div class="flex items-center gap-2">
+<button class="bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md px-3.5 py-2 rounded-lg transition-colors border border-primary/20" type="button">
+          Guardar y Enviar Acceso
+        </button>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg transition-all shadow-sm active:scale-[0.99]" form="colaboradorForm" type="submit">
+          Guardar Colaborador
+        </button>
+</div>
+</div>
+</aside>
+<!-- ================= INLINE SCRIPT FOR INTERACTION HANDLING ================= -->
+<script>
+    // Elements
+    const btnOpenUserModal = document.getElementById('btnOpenUserModal');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const btnCancelDrawer = document.getElementById('btnCancelDrawer');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const userDrawer = document.getElementById('userDrawer');
+    const colaboradorForm = document.getElementById('colaboradorForm');
+
+    // Function to Open Drawer
+    function openDrawer() {
+      modalOverlay.classList.remove('hidden');
+      setTimeout(() => {
+        modalOverlay.classList.remove('opacity-0');
+        userDrawer.classList.remove('translate-x-full');
+      }, 10);
+    }
+
+    // Function to Close Drawer
+    function closeDrawer() {
+      userDrawer.classList.add('translate-x-full');
+      modalOverlay.classList.add('opacity-0');
+      setTimeout(() => {
+        modalOverlay.classList.add('hidden');
+      }, 300);
+    }
+
+    // Event Listeners
+    btnOpenUserModal?.addEventListener('click', openDrawer);
+    btnCloseModal?.addEventListener('click', closeDrawer);
+    btnCancelDrawer?.addEventListener('click', closeDrawer);
+    modalOverlay?.addEventListener('click', closeDrawer);
+
+    // Form submit simulated action
+    colaboradorForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Provide clean feedback
+      const originalText = btnOpenUserModal.innerText;
+      closeDrawer();
+      
+      // Temporary toast
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-6 right-6 z-50 bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 text-label-sm font-label-sm border border-outline-variant/20 transition-all';
+      toast.innerHTML = '<span class="material-symbols-outlined text-tertiary-fixed-dim text-lg">check_circle</span> Colaborador registrado exitosamente en MeetHub Workspace.';
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDrawer();
+      }
+    });
+  </script>
+
+
+</body></html>

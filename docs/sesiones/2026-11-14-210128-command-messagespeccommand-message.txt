@@ -1,0 +1,679 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre\docs
+
+
+> /spec                                                                         
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Ambos archivos de docs están vacíos, así que trabajo en modo Crear con la
+  descripción de CLAUDE.md, y las restricciones técnicas ya fijadas en ese
+  archivo las registro como decisiones cerradas. Ahora empiezo con el primer
+  bloque: roles y reglas básicas. · summary
+
+● User answered Claude's questions:
+  ⎿  · Roles y alta de usuarios: ¿cómo se crean las cuentas de las 80 personas 
+     en el MVP? → Seed + ADMIN crea (Recomendado)
+     · Horario reservable: ¿en qué franja se puede reservar una sala (en 
+     BUSINESS_TZ)? → L–V 07:00–20:00
+     · Duración y granularidad: ¿qué límites tiene una reserva? → Bloques 15 
+     min, 15 min–4 h (Recomendado)
+     · Anticipación: ¿con cuánto tiempo hacia adelante se puede reservar? → 
+     Hasta 30 días (Recomendado)
+
+● Write(00-decisiones.md)
+  ⎿  Wrote 109 lines to 00-decisiones.md
+       1 # 00 · Decisiones
+       2 
+       3 SalaLibre es una app interna de reservas de salas de reunión (80
+          personas, 5 salas, RRHH administra) que corre solo en local con
+          `docker compose up`.
+       4 Principio rector: las decisiones las toma la persona; el agente 
+         las redacta con sus palabras y no inventa reglas.
+       5 
+       6 ## Índice
+       7 | ID | Tema |
+     … +102 lines (ctrl+o to expand)
+
+● Registré D-01..D-11. Segundo bloque: cancelación, permisos y salas.
+
+● User answered Claude's questions:
+  ⎿  · Cancelar y editar: ¿qué puede hacer el dueño (EMPLOYEE) con su propia 
+     reserva? → Cancelar antes de empezar, sin editar (Recomendado)
+     · Poderes de RRHH (ADMIN) sobre reservas ajenas: ¿qué puede hacer? → Ver 
+     todas y cancelar cualquiera (Recomendado)
+     · Gestión de salas: ¿qué se puede hacer con las 5 salas en el MVP? → ADMIN 
+     crea, edita y desactiva (Recomendado)
+     · Tope por persona: ¿cuántas reservas activas (futuras, no canceladas) 
+     puede tener un EMPLOYEE? → Sin tope (Recomendado)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && python -
+      <<'EOF'
+      p='00-decisiones.md'…)
+  ⎿  Updated 00-decisiones.md (+37 -0)
+      17  | D-09 | Horario reservable L–V 07:00–20:00 |
+      18  | D-10 | Duración en bloques de 15 min, de 15 min a 4 h |
+      19  | D-11 | Anticipación máxima de 30 días |
+      20 +| D-12 | Cancelación por el dueño antes del inicio, sin edición
+         + |                                                             
+      21 +| D-13 | ADMIN ve todas las reservas y cancela cualquiera |    
+      22 +| D-14 | Gestión de salas por ADMIN con desactivación |        
+      23 +| D-15 | Sin tope de reservas por persona |                    
+      24  
+      25  ---
+      26  
+     ...
+      111  - **Por qué:** Aceptó la recomendación: "Evita acaparar salas 
+           meses antes."
+      112  - **Costo/riesgo:** —
+      113  - **Afecta a:** spec §5
+      114 +                                                              
+      115 +## D-12 · Cancelación por el dueño antes del inicio, sin edici
+          +ón                                                            
+      116 +- **Duda:** ¿Qué puede hacer el dueño (EMPLOYEE) con su propia
+          + reserva?                                                     
+      117 +- **Opciones:** A) Cancelar antes de empezar, sin editar. B) C
+          +ancelar y editar antes de empezar. C) Cancelar también durante
+          + la reunión.                                                  
+      118 +- **Decisión:** A) "El dueño cancela hasta la hora de inicio. 
+          +Para cambiar horario, cancela y crea otra. La reserva queda co
+          +n estado CANCELLED (no se borra)."                            
+      119 +- **Por qué:** Aceptó la recomendación: "para conservar histor
+          +ial".                                                         
+      120 +- **Costo/riesgo:** Mover una reserva exige dos pasos y puede 
+          +perder el hueco entre ambos.                                  
+      121 +- **Afecta a:** spec §5, §7, §8                               
+      122 +                                                              
+      123 +## D-13 · ADMIN ve todas las reservas y cancela cualquiera    
+      124 +- **Duda:** ¿Qué puede hacer RRHH (ADMIN) con reservas ajenas?
+      125 +- **Opciones:** A) Ver todas y cancelar cualquiera. B) Lo ante
+          +rior + reservar a nombre de otro. C) Solo administra salas y u
+          +suarios.                                                      
+      126 +- **Decisión:** A) "ADMIN ve todas las reservas y puede cancel
+          +ar cualquiera futura; queda auditado quién canceló. No crea re
+          +servas a nombre de otros."                                    
+      127 +- **Por qué:** Aceptó la recomendación.                       
+      128 +- **Costo/riesgo:** —                                         
+      129 +- **Afecta a:** spec §3, §5, `BookingPolicy`                  
+      130 +                                                              
+      131 +## D-14 · Gestión de salas por ADMIN con desactivación        
+      132 +- **Duda:** ¿Qué se puede hacer con las 5 salas en el MVP?    
+      133 +- **Opciones:** A) ADMIN crea, edita y desactiva. B) Solo seed
+          +. C) ADMIN crea/edita y desactivar cancela futuras.           
+      134 +- **Decisión:** A) "Campos: nombre, capacidad, ubicación. Desa
+          +ctivar (no borrar) impide nuevas reservas; las futuras existen
+          +tes se mantienen. El seed crea las 5."                        
+      135 +- **Por qué:** Aceptó la recomendación.                       
+      136 +- **Costo/riesgo:** Una sala desactivada puede conservar reser
+          +vas futuras que RRHH debe cancelar a mano si hace falta.      
+      137 +- **Afecta a:** spec §5, §7, §8, §9                           
+      138 +                                                              
+      139 +## D-15 · Sin tope de reservas por persona                    
+      140 +- **Duda:** ¿Cuántas reservas activas puede tener un EMPLOYEE?
+     … 6 more lines (ctrl+o to expand)
+
+● D-12..D-15 registradas. Tercer bloque: usuarios, datos de la reserva y
+  pantallas.
+
+● User answered Claude's questions:
+  ⎿  · Usuario desactivado por RRHH: ¿qué pasa con su sesión y sus reservas 
+     futuras? → No entra; reservas se cancelan (Recomendado)
+     · Datos de la reserva: ¿qué captura el formulario además de sala, inicio y 
+     fin? → Título obligatorio + asistentes ≤ capacidad (Recomendado)
+     · Pantalla principal tras el login: ¿qué ve el usuario? → Agenda diaria 
+     salas × horas (Recomendado)
+     · Contraseñas y sesión: ¿cómo se gestionan en el MVP? → ADMIN fija la 
+     inicial; usuario la cambia; JWT 8 h (Recomendado)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && python -
+      <<'EOF'
+      p='00-decisiones.md'…)
+  ⎿  Updated 00-decisiones.md (+36 -0)
+      21  | D-13 | ADMIN ve todas las reservas y cancela cualquiera |
+      22  | D-14 | Gestión de salas por ADMIN con desactivación |
+      23  | D-15 | Sin tope de reservas por persona |
+      24 +| D-16 | Usuario desactivado: sin acceso y reservas futuras can
+         +celadas |                                                      
+      25 +| D-17 | Reserva con título y asistentes ≤ capacidad |         
+      26 +| D-18 | Pantalla principal: agenda diaria salas × horas |     
+      27 +| D-19 | Contraseñas: ADMIN fija la inicial, el usuario la camb
+         +ia; JWT 8 h |                                                  
+      28  
+      29  ---
+      30  
+     ...
+      148  - **Costo/riesgo:** Una persona podría acaparar salas dentro d
+           e la ventana de 30 días.
+      149  - **Revisar si:** RRHH detecta acaparamiento.
+      150  - **Afecta a:** spec §4, §5
+      151 +                                                              
+      152 +## D-16 · Usuario desactivado: sin acceso y reservas futuras c
+          +anceladas                                                     
+      153 +- **Duda:** ¿Qué pasa con la sesión y las reservas futuras de 
+          +un usuario que RRHH desactiva?                                
+      154 +- **Opciones:** A) No entra; reservas se cancelan. B) No entra
+          +; reservas se mantienen.                                      
+      155 +- **Decisión:** A) "Login devuelve 401 y cualquier request con
+          + su cookie también. Sus reservas futuras pasan a CANCELLED en 
+          +la misma transacción, auditadas."                             
+      156 +- **Por qué:** Aceptó la recomendación: "Libera salas de quien
+          + ya no está."                                                 
+      157 +- **Costo/riesgo:** La desactivación no es reversible respecto
+          + a las reservas canceladas.                                   
+      158 +- **Afecta a:** spec §5, §6, §8                               
+      159 +                                                              
+      160 +## D-17 · Reserva con título y asistentes ≤ capacidad         
+      161 +- **Duda:** ¿Qué captura el formulario además de sala, inicio 
+          +y fin?                                                        
+      162 +- **Opciones:** A) Título obligatorio + asistentes ≤ capacidad
+          +. B) Solo título. C) Nada más.                                
+      163 +- **Decisión:** A) "title (1–100 caracteres) y attendees (ente
+          +ro ≥ 1). Si attendees > capacidad de la sala → 422."          
+      164 +- **Por qué:** Aceptó la recomendación: "Ayuda a elegir sala a
+          +decuada."                                                     
+      165 +- **Costo/riesgo:** —                                         
+      166 +- **Afecta a:** spec §5, §7, §8                               
+      167 +                                                              
+      168 +## D-18 · Pantalla principal: agenda diaria salas × horas     
+      169 +- **Duda:** ¿Qué ve el usuario tras el login?                 
+      170 +- **Opciones:** A) Agenda diaria salas × horas. B) Lista de sa
+          +las + formulario. C) Solo "Mis reservas".                     
+      171 +- **Decisión:** A) "Selector de día; columnas = salas activas,
+          + filas = bloques de 15 min de 07:00 a 20:00. Huecos libres cli
+          +cables para reservar. Más 'Mis reservas' en otra ruta."       
+      172 +- **Por qué:** Aceptó la recomendación.                       
+      173 +- **Costo/riesgo:** Pantalla más compleja en móvil.           
+      174 +- **Afecta a:** spec §8, §9                                   
+      175 +                                                              
+      176 +## D-19 · Contraseñas: ADMIN fija la inicial, el usuario la ca
+          +mbia; JWT 8 h                                                 
+      177 +- **Duda:** ¿Cómo se gestionan contraseñas y sesión?          
+     … 5 more lines (ctrl+o to expand)
+
+● D-16..D-19 registradas. Último bloque para cerrar alcance y datos de ejemplo.
+
+● User answered Claude's questions:
+  ⎿  · Privacidad en la agenda: ¿qué ve un EMPLOYEE de las reservas de otras 
+     personas? → Solo 'Ocupado' + nombre
+     · Zona horaria del negocio: ¿valor por defecto de BUSINESS_TZ? → 
+     America/Tegucigalpa
+     · ¿Qué queda FUERA del MVP? (marca todo lo que se difiere) → Recurrencias y
+     notificaciones
+     · Seed y rol ADMIN: ¿qué datos de ejemplo crea y puede ADMIN reservar? → 1 
+     ADMIN + 3 EMPLOYEE, ADMIN reserva (Recomendado)
+
+● Solo marcaste recurrencias y notificaciones como fuera, así que feriados,
+  auditoría y equipamiento/filtros siguen dentro del MVP; necesito definirlos
+  para que sean verificables. · summary
+
+● User answered Claude's questions:
+  ⎿  · Feriados y cierres quedan DENTRO. ¿Cómo funcionan? → ADMIN registra días 
+     cerrados globales (Recomendado)
+     · Pantalla de auditoría queda DENTRO. ¿Qué muestra? → Lista paginada pero 
+     no muestres informacion por get en la url, carga la lista paginada y 
+     dejemos desde el backend un servicio que nos brinde esa informacion y 
+     configura la paginacion desde backend con bd.
+     · Equipamiento y filtros quedan DENTRO. ¿Cómo? → Lista fija de equipos + 
+     filtro en agenda (Recomendado)
+     · Privacidad elegida: EMPLOYEE ve 'Ocupado' + nombre en reservas ajenas. ¿Y
+     el ADMIN, y por qué ocultar el título? → ADMIN ve el título; motivo: 
+     reuniones confidenciales
+
+● Entiendo lo de auditoría: nada de parámetros en la URL y paginación resuelta
+  en el backend contra la base de datos. Me falta concretarlo:
+
+● User answered Claude's questions:
+  ⎿  · Auditoría sin datos en la URL: ¿cómo pide el frontend cada página? → POST
+     /audit-logs/search con body (Recomendado)
+     · ¿La lista de auditoría lleva filtros (también en el body)? → Filtro por 
+     rango de fechas y acción
+     · ¿Por qué America/Tegucigalpa como BUSINESS_TZ por defecto? (para 
+     registrarlo con tus palabras) → La oficina está en Honduras
+
+● Tengo todo para responder las tres preguntas de cierre sin asumir. Registro
+  D-20..D-26 y escribo el spec.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && python -
+      <<'EOF'
+      p='00-decisiones.md'…)
+  ⎿  26
+  ⎿  Updated 00-decisiones.md (+63 -0)
+      25  | D-17 | Reserva con título y asistentes ≤ capacidad |
+      26  | D-18 | Pantalla principal: agenda diaria salas × horas |
+      27  | D-19 | Contraseñas: ADMIN fija la inicial, el usuario la camb
+          ia; JWT 8 h |
+      28 +| D-20 | Privacidad: reservas ajenas como "Ocupado" + nombre | 
+      29 +| D-21 | `BUSINESS_TZ` por defecto `America/Tegucigalpa` |     
+      30 +| D-22 | Fuera del MVP: recurrencias y notificaciones |        
+      31 +| D-23 | Días cerrados globales que cancelan reservas existente
+         +s |                                                            
+      32 +| D-24 | Auditoría: `POST /audit-logs/search` paginada en BD co
+         +n filtros en el body |                                         
+      33 +| D-25 | Equipamiento de lista fija y filtro en la agenda |    
+      34 +| D-26 | Seed: 1 ADMIN + 3 EMPLOYEE + 5 salas; ADMIN también re
+         +serva |                                                        
+      35  
+      36  ---
+      37  
+     ...
+      187  - **Por qué:** Aceptó la recomendación.
+      188  - **Costo/riesgo:** Un JWT emitido sigue siendo válido hasta 8
+            h tras un cambio de contraseña, salvo que se verifique el est
+           ado del usuario en cada request.
+      189  - **Afecta a:** spec §5, §8, §9, §11
+      190 +                                                              
+      191 +## D-20 · Privacidad: reservas ajenas como "Ocupado" + nombre 
+      192 +- **Duda:** ¿Qué ve un EMPLOYEE de las reservas de otras perso
+          +nas?                                                          
+      193 +- **Opciones:** A) Título + nombre del dueño. B) Solo "Ocupado
+          +" + nombre. C) Solo "Ocupado".                                
+      194 +- **Decisión:** B) El EMPLOYEE ve "Ocupado" y el nombre del du
+          +eño; la API omite `title` en reservas ajenas. El ADMIN sí reci
+          +be el título.                                                 
+      195 +- **Por qué:** "Reuniones confidenciales." El ADMIN lo ve "par
+          +a poder decidir cancelaciones".                               
+      196 +- **Costo/riesgo:** Si el frontend recibe el título por error 
+          +se filtra; por eso se omite en la API, no en la UI.           
+      197 +- **Afecta a:** spec §5, §8, §9                               
+      198 +                                                              
+      199 +## D-21 · `BUSINESS_TZ` por defecto `America/Tegucigalpa`     
+      200 +- **Duda:** ¿Qué valor por defecto tiene `BUSINESS_TZ`?       
+      201 +- **Opciones:** A) America/Tegucigalpa. B) America/Mexico_City
+          +. C) America/Bogota. D) Europe/Madrid.                        
+      202 +- **Decisión:** A) `America/Tegucigalpa`.                     
+      203 +- **Por qué:** "La oficina está en Honduras."                 
+      204 +- **Costo/riesgo:** —                                         
+      205 +- **Afecta a:** spec §5, §10                                  
+      206 +                                                              
+      207 +## D-22 · Fuera del MVP: recurrencias y notificaciones        
+      208 +- **Duda:** ¿Qué se difiere a v2?                             
+      209 +- **Opciones:** Recurrencias y notificaciones · Feriados y cie
+          +rres · Pantalla de auditoría · Equipamiento y filtros.        
+      210 +- **Decisión:** Solo "Recurrencias y notificaciones" quedan fu
+          +era. Feriados, pantalla de auditoría y equipamiento con filtro
+          +s quedan dentro (ver D-23, D-24, D-25).                       
+      211 +- **Por qué:** Elección de la persona.                        
+      212 +- **Costo/riesgo:** El MVP crece en tres funciones de administ
+          +ración.                                                       
+      213 +- **Afecta a:** spec §2, §4                                   
+     … 32 more lines (ctrl+o to expand)
+
+● Write(01-spec.md)
+  ⎿  Wrote 515 lines to 01-spec.md
+      1 # Spec: SalaLibre
+      2 
+      3 > **Estado:** Borrador
+      4 > **Fecha:** 2026-11-15
+      5 > **Objetivo:** Que las 80 personas de la oficina reserven las 5 
+        salas de reunión sin choques y que RRHH las administre, todo en l
+        ocal con un solo `docker compose up`.
+      6 
+      7 Cada decisión citada como `D-xx` está en `00-decisiones.md`.
+      8 
+     … +507 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && sed -i
+      's|^Cada módulo de `api` sigue Controller|Stack según D-01. Cada módulo de
+      `api` sigue Co…)
+  ⎿  423:Stack según D-01. Cada módulo de `api` sigue Controller → Service
+     → Dominio + Repositorio (interfaz) → implementación Prisma, según `CLA
+     UDE.md`.
+  ⎿  Updated 01-spec.md (+1 -1)
+      420  .gitattributes
+      421  ```
+      422  
+      423 -Cada módulo de `api` sigue Controller → Service → Dominio + Re
+          -positorio (interfaz) → implementación Prisma, según `CLAUDE.md
+          -`.                                                            
+      423 +Stack según D-01. Cada módulo de `api` sigue Controller → Serv
+          +ice → Dominio + Repositorio (interfaz) → implementación Prisma
+          +, según `CLAUDE.md`.                                          
+      424  
+      425  ### Datos de ejemplo (seed idempotente con upsert, D-26)
+      426  - `admin@salalibre.local` · rol `ADMIN` · contraseña `SEED_ADM
+           IN_PASSWORD`.
+  ⎿  Created 03-bitacora.md (+5 -0)
+      1 +# 03 · Bitácora                                                 
+      2 +                                                                
+      3 +| ID | Hora | Actor | Tipo | Qué pasó | Ref |                   
+      4 +|----|------|-------|------|----------|-----|                   
+      5 +| B-01 | 2026-11-14 20:52 | Agente | Decisión | Spec y decisione
+        +s redactados con /spec a partir de las respuestas del humano | D
+        +-01..D-26 |                                                     
+
+● El spec está escrito en docs/01-spec.md con estado Borrador. Registré 26 
+  decisiones (D-01..D-26) en docs/00-decisiones.md: 7 vienen de tu CLAUDE.md y
+  19 de tus respuestas.
+
+  Qué contiene
+  - 26 reglas de negocio (RN-01..RN-26). Cada una se comprueba con sí o no y
+    tiene su código de error.
+  - Modelo de datos con 5 tablas, la restricción anti-choques en SQL y el
+    trigger que impide modificar la auditoría.
+  - API: 21 endpoints con nombres exactos de campos y JSON de ejemplo. La
+    auditoría se consulta con POST /api/audit-logs/search, así que ni los
+    filtros ni la página aparecen en la URL.
+  - Pantallas: 9, con sus estados de carga, vacío, error y sin permiso.
+  - Pruebas: 18 casos obligatorios. Los cuatro primeros cubren el riesgo
+    central, el choque de reservas.
+  - Trazabilidad: cada regla enlazada a su endpoint, pantalla y prueba. La
+    columna de tarea queda vacía hasta que exista el backlog.
+
+  Revisa sobre todo estos supuestos (§13). Los tomé con la opción más
+  conservadora porque no los decidiste:
+  - S-01: existe POST /api/auth/logout, que pide sesión. Con la cookie httpOnly
+    no hay otra forma de cerrar sesión.
+  - S-03: un ADMIN no puede desactivarse a sí mismo.
+  - S-04: un cierre solo se puede crear para fechas posteriores a hoy.
+  - S-05: un cierre futuro se puede eliminar, pero las reservas que canceló no
+    se restauran.
+  - S-06 (choca con tu CLAUDE.md): CLAUDE.md solo permite las carpetas
+    features/auth|bookings|rooms. Usuarios, cierres y auditoría necesitan
+    features/users, closures y audit. Te propongo actualizar CLAUDE.md antes de
+    la primera tarea de esas pantallas.
+  - S-07: puse nombres a las 5 salas del seed.
+  - S-08: las pruebas de integración corren en un servicio api-test dentro de la
+    red interna, porque la base no publica puertos.
+
+  Discrepancia de fechas: el encabezado del spec lleva la fecha que dio la skill
+  (2026-11-15). El sistema marca 2026-11-14 20:52, y esa es la hora de la fila
+  B-01 que agregué al crear docs/03-bitacora.md. Probablemente una está en UTC y
+  la otra en hora local. Si quieres, corrijo el encabezado.
+
+  No hice commit, porque esta skill no lo pide.
+
+  Siguiente paso: relee el spec y cámbialo a Aprobado cuando estés de acuerdo.
+  Después redacta docs/02-backlog.md con las tareas T1..Tn y su DoR, y ejecuta
+  /spec-impl T1.
+
+✻ Sautéed for 5m 56s · done 20:52
+
+● Unknown command: /bitacora
+● Args from unknown skill: Registre la primera propuesta del 01-spec. 
+  Para leer y determinar que todo este correctamente para aprobar
+
+> /bitacora Registre la primera propuesta del 01-spec. Para leer y determinar   
+que todo este correctamente para aprobar                                        
+  ⎿  2 skills available
+
+● User answered Claude's questions:
+  ⎿  · El texto empieza con "Registre", que no es un tipo válido de la bitácora.
+     ¿Qué tipo lleva la entrada "Registré la primera propuesta del 01-spec para
+     leerla y comprobar que todo esté correcto antes de aprobarla"? → REVISIÓN
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && T=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 03-bitacora.md && echo "| B-02 | $T | Yo |
+      REVISIÓN | Reg…)
+  ⎿  | B-01 | 2026-11-14 20:52 | Agente | Decisión | Spec y decisiones reda
+     ctados con /spec a partir de las respuestas del humano | D-01..D-26 |
+     | B-02 | 2026-11-14 20:58 | Yo | REVISIÓN | Registré la primera propue
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated 03-bitacora.md (+1 -0)
+      3  | ID | Hora | Actor | Tipo | Qué pasó | Ref |
+      4  |----|------|-------|------|----------|-----|
+      5  | B-01 | 2026-11-14 20:52 | Agente | Decisión | Spec y decisione
+         s redactados con /spec a partir de las respuestas del humano | D
+         -01..D-26 |
+      6 +| B-02 | 2026-11-14 20:58 | Yo | REVISIÓN | Registré la primera 
+        +propuesta del 01-spec para leerla y determinar que todo esté cor
+        +recto para aprobarla | docs/01-spec.md |                        
+
+● Agregué la fila B-02 al final de docs/03-bitacora.md:
+
+  | B-02 | 2026-11-14 20:58 | Yo | REVISIÓN | Registré la primera propuesta del 
+  01-spec para leerla y determinar que todo esté correcto para aprobarla | 
+  docs/01-spec.md |
+
+  No quedaron registradas la Fase ni el Resultado, porque la tabla no tiene esas
+  columnas. La creé yo antes, con ID | Hora | Actor | Tipo | Qué pasó | Ref, y
+  /bitacora también pide Fase y Resultado. La Fase sería 2-Planificar, porque
+  aún no existe docs/02-backlog.md. El Resultado no lo indicaste.
+
+  Otra diferencia: B-01 dice Decisión y B-02 dice REVISIÓN, en mayúsculas como
+  pide /bitacora.
+
+  Para corregir el formato habría que tocar la cabecera y la fila B-01, y las
+  reglas solo permiten agregar filas al final. Si quieres, ajusto el formato de
+  la tabla.
+
+✻ Baked for 14s · done 20:58
+
+> sí, ajusta el formato de la tabla de la bitácora                              
+
+● Write(03-bitacora.md)
+  ⎿  Added 4 lines, removed 4 lines
+      1  # 03 · Bitácora
+      2  
+      3 -| ID | Hora | Actor | Tipo | Qué pasó | Ref |                   
+      4 -|----|------|-------|------|----------|-----|                   
+      5 -| B-01 | 2026-11-14 20:52 | Agente | Decisión | Spec y decisione
+        -s redactados con /spec a partir de las respuestas del humano | D
+        --01..D-26 |                                                     
+      6 -| B-02 | 2026-11-14 20:58 | Yo | REVISIÓN | Registré la primera 
+        -propuesta del 01-spec para leerla y determinar que todo esté cor
+        -recto para aprobarla | docs/01-spec.md |                        
+      3 +| ID | Hora | Actor | Fase | Tipo | Qué pasó | Resultado | Ref |
+      4 +|----|------|-------|------|------|----------|-----------|-----|
+      5 +| B-01 | 2026-11-14 20:52 | Agente | 2-Planificar | DECISIÓN | S
+        +pec y decisiones redactados con /spec a partir de las respuestas
+        + del humano | `docs/01-spec.md` en Borrador; 26 decisiones regis
+        +tradas | D-01..D-26 |                                           
+      6 +| B-02 | 2026-11-14 20:58 | Yo | 2-Planificar | REVISIÓN | Regis
+        +tré la primera propuesta del 01-spec para leerla y determinar qu
+        +e todo esté correcto para aprobarla | — | docs/01-spec.md |     
+
+● Ajusté la tabla de docs/03-bitacora.md. Ahora tiene las columnas ID | Hora | 
+  Actor | Fase | Tipo | Qué pasó | Resultado | Ref. Las dos filas que ya
+  existían quedaron así:
+
+  - B-01: Fase 2-Planificar. El tipo pasó de Decisión a DECISIÓN. En Resultado
+    puse "docs/01-spec.md en Borrador; 26 decisiones registradas".
+  - B-02: Fase 2-Planificar. El Resultado queda en —, porque no lo indicaste.
+
+  Las horas y los textos de "Qué pasó" y "Ref" no cambiaron. Desde ahora
+  /bitacora puede agregar filas sin que falten columnas.
+
+  Dos cosas que debes saber:
+  - En B-01, el Resultado y la Fase los puse yo a partir de lo que pasó en la
+    sesión. Si prefieres otra redacción, dímelo.
+  - Esta corrección reescribió filas que ya existían, y la regla dice que solo
+    se agregan filas al final. La hice porque me lo pediste. Si quieres dejar
+    constancia, puedo agregar una fila CORRECCIÓN.
+
+✻ Cooked for 9s · done 20:59
+
+> sí, agrega la fila CORRECCIÓN                                                 
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && T=$(date
+      "+%Y-%m-%d %H:%M") && echo "| B-03 | $T | Agente | 2-Planificar |
+      CORRECCIÓN | Se ajust…)
+  ⎿  | B-03 | 2026-11-14 20:59 | Agente | 2-Planificar | CORRECCIÓN | Se aj
+     ustó el formato de la tabla de la bitácora a pedido de la persona: se
+     agregaron las columnas Fase y Resultado y se completaron en B-01 y B-0
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated 03-bitacora.md (+1 -0)
+      4  |----|------|-------|------|------|----------|-----------|-----|
+      5  | B-01 | 2026-11-14 20:52 | Agente | 2-Planificar | DECISIÓN | S
+         pec y decisiones redactados con /spec a partir de las respuestas
+          del humano | `docs/01-spec.md` en Borrador; 26 decisiones regis
+         tradas | D-01..D-26 |
+      6  | B-02 | 2026-11-14 20:58 | Yo | 2-Planificar | REVISIÓN | Regis
+         tré la primera propuesta del 01-spec para leerla y determinar qu
+         e todo esté correcto para aprobarla | — | docs/01-spec.md |
+      7 +| B-03 | 2026-11-14 20:59 | Agente | 2-Planificar | CORRECCIÓN |
+        + Se ajustó el formato de la tabla de la bitácora a pedido de la 
+        +persona: se agregaron las columnas Fase y Resultado y se complet
+        +aron en B-01 y B-02; el tipo de B-01 pasó de "Decisión" a "DECIS
+        +IÓN" | Tabla con las columnas que pide /bitacora; horas, "Qué pa
+        +só" y "Ref" de B-01 y B-02 sin cambios | B-01, B-02 |           
+
+● Agregué la fila B-03 al final de docs/03-bitacora.md:
+
+  | B-03 | 2026-11-14 20:59 | Agente | 2-Planificar | CORRECCIÓN | Se ajustó el 
+  formato de la tabla de la bitácora a pedido de la persona: se agregaron las 
+  columnas Fase y Resultado y se completaron en B-01 y B-02; el tipo de B-01 
+  pasó de "Decisión" a "DECISIÓN" | Tabla con las columnas que pide /bitacora; 
+  horas, "Qué pasó" y "Ref" de B-01 y B-02 sin cambios | B-01, B-02 |
+
+  Lleva actor Agente porque el cambio de formato lo hice yo. No hice commit: la
+  bitácora entra en el siguiente commit de tarea.
+
+✻ Baked for 7s · done 20:59
+
+> actualiza CLAUDE.md con las features users, closures y audit                  
+
+● Update(E:\Proyectos\Personal\Ingenieria Digital\SalaLibre\CLAUDE.md)
+  ⎿  Added 1 line, removed 1 line
+      79  - **Saltos de línea:** `.gitattributes` con `* text=auto eol=lf
+          `, porque se desarrolla en Windows y un `.sh` con CRLF rompe el
+           contenedor.
+      80  
+      81  ## Frontend
+      82 -- Estructura por features (`features/auth|bookings|rooms`) + `s
+         -hared/`.                                                       
+      82 +- Estructura por features (`features/auth|bookings|rooms|users|
+         +closures|audit`) + `shared/`.                                  
+      83  - **TanStack Query** para los datos del servidor; **React Hook 
+          Form + Zod** para los formularios.
+      84  - **Un único `apiClient`:** maneja el 401 (lleva a `/login`) y 
+          el 409, y muestra el `requestId` en los errores.
+      85  - Antes de cualquier tarea de UI, leer `docs/05-diseno.md` y la
+           imagen de la pantalla.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && T=$(date
+      "+%Y-%m-%d %H:%M") && echo "| B-04 | $T | Agente | 2-Planificar | AGENTE |
+      A pedido de…)
+  ⎿  | B-04 | 2026-11-14 21:00 | Agente | 2-Planificar | AGENTE | A pedido
+     de la persona, CLAUDE.md (sección Frontend) amplía las features permit
+     idas con users, closures y audit | Estructura: features/auth\|bookings
+     \|rooms\|users\|closures\|audit + shared/ | CLAUDE.md, spec §13 S-06 |
+  ⎿  Updated 03-bitacora.md (+1 -0)
+      5  | B-01 | 2026-11-14 20:52 | Agente | 2-Planificar | DECISIÓN | S
+         pec y decisiones redactados con /spec a partir de las respuestas
+          del humano | `docs/01-spec.md` en Borrador; 26 decisiones regis
+         tradas | D-01..D-26 |
+      6  | B-02 | 2026-11-14 20:58 | Yo | 2-Planificar | REVISIÓN | Regis
+         tré la primera propuesta del 01-spec para leerla y determinar qu
+         e todo esté correcto para aprobarla | — | docs/01-spec.md |
+      7  | B-03 | 2026-11-14 20:59 | Agente | 2-Planificar | CORRECCIÓN |
+          Se ajustó el formato de la tabla de la bitácora a pedido de la 
+         persona: se agregaron las columnas Fase y Resultado y se complet
+         aron en B-01 y B-02; el tipo de B-01 pasó de "Decisión" a "DECIS
+         IÓN" | Tabla con las columnas que pide /bitacora; horas, "Qué pa
+         só" y "Ref" de B-01 y B-02 sin cambios | B-01, B-02 |
+      8 +| B-04 | 2026-11-14 21:00 | Agente | 2-Planificar | AGENTE | A p
+        +edido de la persona, CLAUDE.md (sección Frontend) amplía las fea
+        +tures permitidas con users, closures y audit | Estructura: featu
+        +res/auth\|bookings\|rooms\|users\|closures\|audit + shared/ | CL
+        +AUDE.md, spec §13 S-06 |                                        
+
+● Actualicé CLAUDE.md. En la sección Frontend, la estructura permitida ahora es:
+
+  - Estructura por features (features/auth|bookings|rooms|users|closures|audit) 
+  + shared/.
+
+  También agregué la fila B-04 (tipo AGENTE) al final de docs/03-bitacora.md,
+  porque CLAUDE.md pide registrar el trabajo del agente.
+
+  El supuesto S-06 del spec (§13) dice todavía que falta actualizar CLAUDE.md, y
+  eso ya está hecho. Para que el spec quede coherente, propongo:
+  - quitar S-06 de §13;
+  - quitar las notas # ver S-06 de la estructura de carpetas en §10.
+
+  Como el spec ya existe, no lo cambio sin tu confirmación. ¿Lo aplico?
+
+✻ Cogitated for 11s · done 21:00
+
+> sí, aplícalo y agrega a bitacora                                              
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/docs" && sed -i -e
+      '/^| S-06 |/d' -e 's|^\(  src/features/[a-z]*/\) *# ver S-06$|\1|'
+      01-spec.md && grep…)
+  ⎿  412:  src/features/auth/
+     413:  src/features/bookings/
+     414:  src/features/rooms/
+     … +8 lines (ctrl+o to expand)
+  ⎿  Updated 01-spec.md (+3 -4)
+      412    src/features/auth/
+      413    src/features/bookings/
+      414    src/features/rooms/
+      415 -  src/features/users/           # ver S-06                    
+      416 -  src/features/closures/        # ver S-06                    
+      417 -  src/features/audit/           # ver S-06                    
+      415 +  src/features/users/                                         
+      416 +  src/features/closures/                                      
+      417 +  src/features/audit/                                         
+      418    src/shared/                   # apiClient, layout, component
+           es base
+      419  docker-compose.yml
+      420  .gitattributes
+     ...
+      483  | S-03 | Un ADMIN no puede desactivarse a sí mismo (RN-26). | 
+           Opción conservadora: evita quedarse sin ningún ADMIN activo. |
+      484  | S-04 | Un cierre solo se crea para fechas posteriores a hoy.
+            | Opción conservadora: evita cancelar reservas en curso, que 
+           RN-12 no permite cancelar. |
+      485  | S-05 | Un ADMIN puede eliminar un cierre futuro; las reserva
+           s canceladas no se restauran. | Sin esto, un cierre creado por
+            error sería permanente. Es el único borrado físico. |
+      486 -| S-06 | `CLAUDE.md` lista solo `features/auth|bookings|rooms`
+          -. D-08, D-23 y D-24 añaden `users`, `closures` y `audit`. | Re
+          -quiere que la persona actualice `CLAUDE.md` antes de la primer
+          -a tarea de esas pantallas. |                                  
+      486  | S-07 | Nombres de las 5 salas del seed: Sala Copán (8), Sala
+            Roatán (4), Sala Lempira (12), Sala Morazán (6), Sala Pico Bo
+           nito (20). | Datos de ejemplo; el ADMIN puede renombrarlas. |
+      487  | S-08 | Las pruebas de integración corren en un servicio `api
+           -test` del perfil `test` del compose, en la red interna, porqu
+           e `db` no publica puertos. | `docker compose up` normal no lo 
+           arranca. |
+      488  | S-09 | Sin pruebas automáticas de frontend en el MVP. | El s
+           tack solo declara Jest para la API; el frontend se verifica co
+           n el humo P-18 y los flujos de §6. |
+  ⎿  Updated 03-bitacora.md (+1 -0)
+      6  | B-02 | 2026-11-14 20:58 | Yo | 2-Planificar | REVISIÓN | Regis
+         tré la primera propuesta del 01-spec para leerla y determinar qu
+         e todo esté correcto para aprobarla | — | docs/01-spec.md |
+      7  | B-03 | 2026-11-14 20:59 | Agente | 2-Planificar | CORRECCIÓN |
+          Se ajustó el formato de la tabla de la bitácora a pedido de la 
+         persona: se agregaron las columnas Fase y Resultado y se complet
+         aron en B-01 y B-02; el tipo de B-01 pasó de "Decisión" a "DECIS
+         IÓN" | Tabla con las columnas que pide /bitacora; horas, "Qué pa
+         só" y "Ref" de B-01 y B-02 sin cambios | B-01, B-02 |
+      8  | B-04 | 2026-11-14 21:00 | Agente | 2-Planificar | AGENTE | A p
+         edido de la persona, CLAUDE.md (sección Frontend) amplía las fea
+         tures permitidas con users, closures y audit | Estructura: featu
+         res/auth\|bookings\|rooms\|users\|closures\|audit + shared/ | CL
+         AUDE.md, spec §13 S-06 |
+      9 +| B-05 | 2026-11-14 21:00 | Agente | 2-Planificar | CORRECCIÓN |
+        + A pedido de la persona, se quitó el supuesto S-06 de 01-spec §1
+        +3 y las notas "# ver S-06" de §10, porque CLAUDE.md ya permite l
+        +as features users, closures y audit | Spec coherente con CLAUDE.
+        +md; los demás supuestos conservan su ID | docs/01-spec.md §10, §
+        +13; B-04 |                                                      
+
+● Quité S-06 de docs/01-spec.md y agregué la fila B-05 a la bitácora.
+
+  En el spec:
+  - §13 ya no tiene la fila S-06.
+  - §10 ya no tiene las notas # ver S-06 junto a features/users, closures y
+    audit.
+  - Ya no queda ninguna mención a S-06 en el spec.
+
+  Los demás supuestos conservan su ID, así que la numeración salta de S-05 a
+  S-07. Así nada que los cite apunta a otro supuesto.
+
+  En la bitácora, la fila agregada es:
+
+  | B-05 | 2026-11-14 21:00 | Agente | 2-Planificar | CORRECCIÓN | A pedido de 
+  la persona, se quitó el supuesto S-06 de 01-spec §13 y las notas "# ver S-06" 
+  de §10, porque CLAUDE.md ya permite las features users, closures y audit | 
+  Spec coherente con CLAUDE.md; los demás supuestos conservan su ID | 
+  docs/01-spec.md §10, §13; B-04 |
+
+  El spec sigue en Borrador hasta que lo marques Aprobado.
+
+✻ Baked for 9s · done 21:00
