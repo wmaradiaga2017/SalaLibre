@@ -7,6 +7,9 @@ build/
 coverage/
 *.tsbuildinfo
 
+# Cliente Prisma generado (se genera en el build con `prisma generate`)
+src/api/src/generated/
+
 # Variables de entorno locales (el compose tiene valores por defecto)
 .env
 .env.*

@@ -7,7 +7,8 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "prisma:generate": "prisma generate",
+    "build": "prisma generate && tsc -p tsconfig.build.json && tsc -p tsconfig.seed.json",
     "start": "node dist/main.js",
     "lint": "eslint .",
     "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js"
@@ -16,6 +17,10 @@
     "@nestjs/common": "12.5.0",
     "@nestjs/core": "12.5.0",
     "@nestjs/platform-express": "12.5.0",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "bcryptjs": "3.0.3",
+    "prisma": "7.10.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },
@@ -39,6 +44,9 @@
       "<rootDir>/src"
     ],
     "testRegex": ".*\\.spec\\.ts$",
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },

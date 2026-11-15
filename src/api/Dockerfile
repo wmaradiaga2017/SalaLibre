@@ -1,13 +1,14 @@
-# Etapa 1: compila TypeScript con todas las dependencias
+# Etapa 1: genera el cliente Prisma y compila TypeScript (api + seed)
 FROM node:24-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-COPY tsconfig.json tsconfig.build.json ./
+COPY tsconfig.json tsconfig.build.json tsconfig.seed.json prisma.config.ts ./
+COPY prisma ./prisma
 COPY src ./src
 RUN npm run build
 
-# Etapa 2: solo dependencias de producción
+# Etapa 2: solo dependencias de producción (incluye la CLI de Prisma para `migrate deploy`)
 FROM node:24-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -19,7 +20,8 @@ ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=deps --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
-COPY --chown=node:node package.json ./
+COPY --chown=node:node package.json prisma.config.ts docker-entrypoint.sh ./
+COPY --chown=node:node prisma ./prisma
 USER node
 EXPOSE 3000
-CMD ["node", "dist/main.js"]
+CMD ["sh", "docker-entrypoint.sh"]

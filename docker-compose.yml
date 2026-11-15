@@ -23,6 +23,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      DATABASE_URL: ${DATABASE_URL:-postgresql://salalibre:salalibre@db:5432/salalibre}
       BUSINESS_TZ: ${BUSINESS_TZ:-America/Tegucigalpa}
       BUSINESS_OPEN_TIME: ${BUSINESS_OPEN_TIME:-07:00}
       BUSINESS_CLOSE_TIME: ${BUSINESS_CLOSE_TIME:-20:00}
@@ -42,7 +43,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 12
-      start_period: 10s
+      start_period: 30s
 
   web:
     build:
