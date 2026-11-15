@@ -95,3 +95,13 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 ## Dependencias
 - Versiones **exactas** en `package.json` y `package-lock.json` en el repositorio.
 - No agregar dependencias que no estén en el spec sin registrarlas en el documento de la tarea con su motivo.
+
+### Versiones y herramientas fijadas en T01 (ver `docs/tareas/T01.md` §6)
+- **NestJS 12**, que se publica **solo como ESM**. La API compila a CommonJS y en ejecución carga Nest con el
+  `require(esm)` nativo de Node 24, sin flags.
+- **TypeScript 6.0.x** (no la 7) en `api` y `web`: typescript-eslint y ts-jest aún no soportan la 7. No subir a la 7
+  hasta que ambos la soporten.
+- **Jest** corre con `node --experimental-vm-modules` (script `npm test` de `src/api`) para poder cargar los paquetes
+  ESM de Nest. `tsconfig` de la API con `module: nodenext` e `isolatedModules: true`. No cambiar el script por `jest` a secas.
+- **Build de la API con `tsc -p tsconfig.build.json`**, sin `@nestjs/cli`.
+- **Imagen de nginx:** `nginx:1.30-alpine` (etapa final de `web`).
