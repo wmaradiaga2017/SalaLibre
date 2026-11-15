@@ -250,12 +250,13 @@ npm --prefix src/api run lint
 | Trazabilidad | RN-14, RN-19, RN-21 · D-03, D-16, D-19, S-01, S-02 · spec §5, §8 (`/auth/*`), §11, F-01 · P-10 (parcial), P-14 (parcial; matriz completa en T06) |
 | Dependencias | T02a |
 | Estimación | M |
-| Seguridad / auditoría | Roles: público (`login`, `health`); autenticado (`logout`, `me`). Auditoría: no aplica (el login queda en logs de pino, S-02). OWASP A07: mensaje genérico, bcryptjs, cookie `httpOnly` + `SameSite=Strict` + `Path=/api`; A01: denegación por defecto |
+| Seguridad / auditoría | Roles: público (`login`, `health`); autenticado (`logout`, `me`). Auditoría: no aplica (el login queda en logs de pino, S-02). OWASP A07: mensaje genérico, bcryptjs, cookie `httpOnly` + `SameSite=Strict` + `Path=/api`; A01: denegación por defecto; A05: Swagger (`/api/docs`) solo fuera de producción |
 | Estado | Pendiente |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/auth/**` (controller, service, dto, estrategia JWT) y `src/api/src/modules/users/` mínimo: `UsersRepository` (interfaz) + implementación Prisma con `findByEmail` y `findById`.
 - `src/api/src/common/`: `JwtAuthGuard` global (`APP_GUARD`), `RolesGuard`, decoradores `@Public()`, `@Roles()`, `@CurrentUser()`.
+- `src/api/src/common/configure-app.ts`: Swagger en `/api/docs` solo se monta si `NODE_ENV` no es `production`. Express lo sirve fuera del router de Nest, así que el guard global no lo cubre.
 
 **Fuera de alcance:**
 - Cambio de contraseña (T03a), CRUD de usuarios (T05a), escritura de auditoría, frontend.
@@ -268,6 +269,7 @@ npm --prefix src/api run lint
 - **CA5** · Dada una cookie con JWT vencido o firma inválida, cuando llama a cualquier ruta, entonces 401 `UNAUTHENTICATED`. El JWT dura `JWT_EXPIRES_IN` (8 h), no se renueva (RN-19) y su payload solo lleva `sub` y `role`.
 - **CA6** · Dada una sesión, cuando `POST /api/auth/logout`, entonces 204 y la cookie queda borrada.
 - **CA7** · Dada una ruta nueva sin `@Public()`, cuando se llama sin sesión, entonces 401; dada una ruta con `@Roles('ADMIN')`, cuando la llama un `EMPLOYEE`, entonces 403 `FORBIDDEN`.
+- **CA8** · Dado `NODE_ENV=production` (el valor del compose), cuando pido `GET /api/docs`, entonces 404 `NOT_FOUND` con el formato de error; dado otro `NODE_ENV` (desarrollo o pruebas), cuando lo pido, entonces responde 200.
 
 **Verificación:**
 ```bash
@@ -278,11 +280,12 @@ curl -s -b /tmp/emp1.txt $BASE/auth/me                                   # el us
 curl -s $BASE/auth/me                                                    # 401 UNAUTHENTICATED
 curl -s -H "$H" -d '{"email":"empleado1@salalibre.local","password":"mala"}' $BASE/auth/login   # 401 INVALID_CREDENTIALS
 curl -s -o /dev/null -w "%{http_code}\n" -b /tmp/emp1.txt -X POST $BASE/auth/logout            # 204
+curl -s $BASE/docs                                                       # 404 NOT_FOUND (compose con NODE_ENV=production)
 npm --prefix src/api test -- auth
 npm --prefix src/api run lint
 ```
 
-**Notas para el agente:** No agregues límite de intentos (throttler) ni el código 429: no están en el spec (§8 lista 400, 401, 403, 404, 409, 422 y 500). `logout` no está en `CLAUDE.md` pero se justifica en S-01.
+**Notas para el agente:** No agregues límite de intentos (throttler) ni el código 429: no están en el spec (§8 lista 400, 401, 403, 404, 409, 422 y 500). `logout` no está en `CLAUDE.md` pero se justifica en S-01. Swagger (`/api/docs`) solo se sirve fuera de producción: lo decidió la persona tras T02a, porque `CLAUDE.md` solo permite como públicas `POST /auth/login` y `GET /health`. El caso 200 de CA8 se prueba en `src/api/test/` con `NODE_ENV` distinto de `production`.
 
 ---
 

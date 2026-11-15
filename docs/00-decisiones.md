@@ -38,6 +38,7 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 | D-30 | Login con "Iniciar sesión" y personajes animados |
 | D-31 | Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PAST` |
 | D-32 | Orden de validación de los errores |
+| D-33 | Swagger (`/api/docs`) solo fuera de producción |
 
 ---
 
@@ -289,6 +290,14 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Por qué:** Propuesta del agente. Primero lo que no necesita la base (forma y tiempo, en el orden de las RN), luego lo que necesita leer la sala, y al final lo que depende de la transacción con lock (cierres y choque), para no abrir transacciones con peticiones ya inválidas. Al cancelar, "ya cancelada" es más informativo que "ya empezó".
 - **Costo/riesgo:** Fija un contrato: cambiar el orden después cambia qué error ve el usuario y obliga a tocar pruebas.
 - **Afecta a:** spec §8 (Orden de validación), `docs/02-backlog.md` (T05: CA16 y notas)
+
+## D-33 · Swagger (`/api/docs`) solo fuera de producción
+- **Duda:** Express sirve `/api/docs` fuera del router de Nest, así que el `JwtAuthGuard` global de T03 no lo protege; `CLAUDE.md` solo permite como públicas `POST /auth/login` y `GET /health`. ¿Qué se hace con Swagger?
+- **Opciones:** A) Dejarlo público. B) Protegerlo con la sesión. C) Servirlo solo fuera de producción.
+- **Decisión:** C) La persona pidió "servirlo solo fuera de producción". `configureApp()` monta Swagger solo si `NODE_ENV` no es `production`. En el compose (`NODE_ENV=production`), `GET /api/docs` responde 404 `NOT_FOUND`.
+- **Por qué:** Mantiene la denegación por defecto de `CLAUDE.md` sin agregar rutas públicas y conserva la documentación para desarrollo y pruebas.
+- **Costo/riesgo:** Con `docker compose up` la documentación interactiva no está disponible; hay que correr la API fuera de producción para verla.
+- **Afecta a:** `docs/02-backlog.md` (T03: alcance, seguridad, CA8, verificación y notas), `CLAUDE.md` (Plataforma transversal fijada en T02a), `docs/tareas/T02a.md` §7
 
 ## D-27 · DoR definida por mí (el enunciado no la define) y DoD
 - **Duda:** ¿Qué conjunto de criterios debe tener una historia de usuario o elemento del backlog antes de comenzar a trabajar?
