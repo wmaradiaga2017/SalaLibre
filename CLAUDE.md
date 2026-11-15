@@ -105,3 +105,17 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   ESM de Nest. `tsconfig` de la API con `module: nodenext` e `isolatedModules: true`. No cambiar el script por `jest` a secas.
 - **Build de la API con `tsc -p tsconfig.build.json`**, sin `@nestjs/cli`.
 - **Imagen de nginx:** `nginx:1.30-alpine` (etapa final de `web`).
+
+### Versiones y herramientas fijadas en T02 (ver `docs/tareas/T02.md` §6 y §7)
+- **Prisma 7.10.1** (no la etiqueta `latest` de npm, que apunta a una 8.0.0-rc). Usa `prisma.config.ts`, el generador
+  `prisma-client` con `output` en `src/api/src/generated/prisma` (CommonJS, no se versiona, lo genera `npm run build`)
+  y el adaptador `@prisma/adapter-pg`. `prisma` va en `dependencies` porque `migrate deploy` corre en la imagen final.
+- **Seed compilado con `tsc`** (`tsconfig.seed.json` → `dist/seed/prisma/seed.js`), sin `tsx` ni `ts-node`.
+  El arranque de `api` es `docker-entrypoint.sh`: `prisma migrate deploy` → seed → `node dist/main.js`.
+- **Seed de salas:** las 5 salas solo se crean si la tabla `rooms` está vacía, para no recrear una sala que el ADMIN
+  haya renombrado. Los usuarios sí usan `upsert` por email con `update: {}`. Comportamiento aprobado por la persona.
+- **Trigger de `audit_logs`:** `BEFORE UPDATE OR DELETE OR TRUNCATE ... FOR EACH STATEMENT`, para que falle aunque la
+  sentencia no afecte filas.
+- **Jest:** `moduleNameMapper` `^(\.{1,2}/.*)\.js$ → $1` para resolver los imports `.js` del cliente generado.
+- **Restricciones SQL propias en la migración `init`:** índice único `lower(name)`, CHECK de capacidad, asistentes,
+  `end_at > start_at`, `email = lower(email)` y `rooms.equipment NOT NULL`.
