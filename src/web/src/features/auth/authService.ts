@@ -16,6 +16,11 @@ export const authService = {
     await apiClient.post<void>('/auth/logout', undefined, { skipUnauthorizedHandler: true });
   },
 
+  /** `PATCH /auth/password` (F-09, 204). Contraseña actual incorrecta → `ApiError` 422 `INVALID_CURRENT_PASSWORD`. */
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await apiClient.patch<void>('/auth/password', { currentPassword, newPassword });
+  },
+
   /** `GET /auth/me`: el usuario de la sesión, o `null` si no hay sesión válida (401). */
   async me(signal?: AbortSignal): Promise<User | null> {
     try {

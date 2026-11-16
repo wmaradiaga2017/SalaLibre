@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
+import { AccountPage } from './features/auth/AccountPage';
 import { AuthProvider } from './features/auth/AuthProvider';
 import { LoginPage } from './features/auth/LoginPage';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
@@ -29,7 +30,7 @@ export function App() {
                   <Route index element={<Navigate to="/agenda" replace />} />
                   <Route path="/agenda" element={<PlaceholderPage title="Agenda" />} />
                   <Route path="/my-bookings" element={<PlaceholderPage title="Mis reservas" />} />
-                  <Route path="/account" element={<PlaceholderPage title="Mi cuenta" />} />
+                  <Route path="/account" element={<AccountPage />} />
                   <Route path="/admin" element={<RequireRole role="ADMIN" />}>
                     <Route index element={<Navigate to="/agenda" replace />} />
                     <Route path="rooms" element={<PlaceholderPage title="Salas" />} />

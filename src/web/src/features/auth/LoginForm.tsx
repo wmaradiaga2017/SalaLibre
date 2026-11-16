@@ -55,6 +55,8 @@ export function LoginForm({ onFocusChange, onPasswordVisibleChange, onSubmitStat
 
   const login = useMutation({
     mutationFn: ({ email, password }: LoginData) => authService.login(email, password),
+    // La contraseña no queda en la caché de mutaciones al salir de la pantalla (A07).
+    gcTime: 0,
     onMutate: () => onSubmitStatusChange?.('loading'),
     onSuccess: (user) => {
       onSubmitStatusChange?.('success');
