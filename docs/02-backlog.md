@@ -62,7 +62,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Hecha | [T03](tareas/T03.md) |
 | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Hecha | [T03a](tareas/T03a.md) |
 | 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tareas/T04.md) |
-| 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Pendiente | |
+| 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | En revisión | [T05](tareas/T05.md) |
 | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | Pendiente | |
 | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | Pendiente | |
 | 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | Pendiente | |
@@ -378,7 +378,7 @@ npm --prefix src/api test -- rooms && npm --prefix src/api run lint
 | Dependencias | T04 |
 | Estimación | L |
 | Seguridad / auditoría | Roles: autenticado; cancelar solo dueño o ADMIN (`BookingPolicy`). Auditoría: `BOOKING_CREATED` y `BOOKING_CANCELLED`, que se conectan en T06a. OWASP A01: sin IDOR (`/mine` solo propias, cancelar ajenas solo ADMIN), RN-17 aplicada en la API; A04: la concurrencia la resuelve la base |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/bookings/**`: controller, service, dto, `domain/booking-rules.ts` (RN-02 a RN-08, puro y sin NestJS ni Prisma), `domain/booking.policy.ts`, `bookings.repository.ts` (interfaz), `prisma-bookings.repository.ts`.

@@ -12,8 +12,9 @@ export class UsersService {
     return this.users.findByEmail(normalizeEmail(email));
   }
 
-  findById(id: string): Promise<UserWithCredentials | null> {
-    return this.users.findById(id);
+  /** Con `ctx`, lee dentro de esa transacción (obligatorio si se llama desde dentro de una). */
+  findById(id: string, ctx?: TransactionContext): Promise<UserWithCredentials | null> {
+    return this.users.findById(id, ctx);
   }
 
   /** Guarda un hash ya calculado. Se llama dentro de una transacción del módulo que escribe. */

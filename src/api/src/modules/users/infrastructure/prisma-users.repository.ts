@@ -15,11 +15,12 @@ export class PrismaUsersRepository implements UsersRepository {
     return this.prisma.user.findUnique({ where: { email }, select: SELECT });
   }
 
-  async findById(id: string): Promise<UserWithCredentials | null> {
+  async findById(id: string, ctx?: TransactionContext): Promise<UserWithCredentials | null> {
     if (!UUID.test(id)) {
       return null; // evita un error de Postgres por un `sub` que no es uuid
     }
-    return this.prisma.user.findUnique({ where: { id }, select: SELECT });
+    const client = ctx ? prismaTx(ctx) : this.prisma;
+    return client.user.findUnique({ where: { id }, select: SELECT });
   }
 
   async updatePasswordHash(ctx: TransactionContext, id: string, passwordHash: string): Promise<void> {

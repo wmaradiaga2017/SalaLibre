@@ -42,6 +42,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (exception instanceof AppError) {
       return { status: exception.status, code: exception.code, message: exception.message };
     }
+    if (isExclusionViolation(exception)) {
+      // RN-01: la restricción `bookings_no_overlap` rechazó el INSERT (choque, también entre peticiones simultáneas).
+      return { status: 409, code: 'BOOKING_CONFLICT', message: BOOKING_CONFLICT_MESSAGE };
+    }
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const code = this.codeForStatus(status);
@@ -63,4 +67,24 @@ export class HttpExceptionFilter implements ExceptionFilter {
         return status >= 400 && status < 500 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR';
     }
   }
+}
+
+const BOOKING_CONFLICT_MESSAGE = 'La sala ya está reservada en ese horario.';
+
+/** Código SQLSTATE de PostgreSQL para una violación de restricción `EXCLUDE`. */
+const EXCLUSION_VIOLATION = '23P01';
+
+/**
+ * Detecta un `23P01` sin importar Prisma. Forma real con Prisma 7.10.1 + `@prisma/adapter-pg` (confirmada contra la
+ * base en T05): `PrismaClientKnownRequestError` con `code: "P2039"` y
+ * `meta.driverAdapterError.cause.originalCode === "23P01"` (también `cause.code`). Se acepta además `code: "23P01"`
+ * directo (error de `pg` sin envolver).
+ */
+export function isExclusionViolation(exception: unknown): boolean {
+  if (typeof exception !== 'object' || exception === null) {
+    return false;
+  }
+  const e = exception as { code?: unknown; meta?: { driverAdapterError?: { cause?: { originalCode?: unknown; code?: unknown } } } };
+  const cause = e.meta?.driverAdapterError?.cause;
+  return e.code === EXCLUSION_VIOLATION || cause?.originalCode === EXCLUSION_VIOLATION || cause?.code === EXCLUSION_VIOLATION;
 }

@@ -65,7 +65,7 @@ export class AuthService implements SessionResolver {
    */
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
     await this.tx.run(async (ctx) => {
-      const user = await this.users.findById(userId);
+      const user = await this.users.findById(userId, ctx); // misma conexión que la transacción (B-74)
       if (!user || !user.isActive) {
         throw new AppError('UNAUTHENTICATED', 'Necesitas iniciar sesión.');
       }
