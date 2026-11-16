@@ -473,3 +473,34 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   `window.fetch` para que ese `POST` responda el cuerpo de error real (`{ error: { code, message, requestId } }`) y se
   comprueba dónde aparece el mensaje; aparte, se confirma por `curl` que la API devuelve el código. Anotarlo como paso
   manual en `docs/tareas/Txx.md`. Contar los `POST` con un contenedor de `fetch` para comprobar el doble envío.
+
+### Mis reservas y cancelar fijados en T09 (ver `docs/tareas/T09.md` §6 y §7; B-147)
+- **Qué acciones ofrece la UI** sobre una reserva lo decide una función pura (`features/bookings/booking-actions.ts`:
+  `canCancel(booking, isAdmin, now)` = `CONFIRMED`, inicio > ahora, propia o `ADMIN`). Es solo experiencia de uso: la
+  API autoriza con `BookingPolicy` (403/422) y audita. No repetir la regla dentro de los componentes.
+- **"Ahora" para decidir acciones:** `actionNow(useNow(), query.dataUpdatedAt)`, no `useNow()` solo. `useNow` se
+  actualiza cada 60 s sin alinearse al minuto, y tras un 422 `BOOKING_ALREADY_STARTED` el botón seguía visible hasta el
+  siguiente tick (B-147).
+- **Invalidación:** `useCancelBooking` invalida `agendaKeys.bookings` en `onSettled` (también ante error), que cubre la
+  agenda de cada día y Mis reservas (`agendaKeys.mine` cuelga de `['bookings']`). Las pantallas de administración que
+  cancelen reservas en cascada (T10a, T10b) invalidan esa misma clave.
+- **Errores "desactualizados"** (`STALE_CANCEL_ERRORS` en `booking-errors.ts`: `BOOKING_ALREADY_STARTED`,
+  `BOOKING_ALREADY_CANCELLED`): cierran el diálogo, muestran un aviso de error con el `requestId` y la lista se recarga.
+  Cualquier otro error queda en un `Banner` dentro del diálogo.
+- **Diálogos de confirmación** (`ConfirmDialog`): muestran qué se afecta y la consecuencia, con foco inicial en
+  "Volver" y candado síncrono (`useRef`) contra el doble envío, como los formularios de T08a.
+- **Tarjetas de la agenda:** son `<button aria-haspopup="dialog">` (con `scroll-mt-*`) que abren `BookingDetailDialog`.
+  Del detalle a la confirmación se cierra uno y se abre el otro; `Modal` devuelve el foco a la tarjeta.
+- **Verificación:**
+  - **Reservas ya empezadas o que empiezan pronto** (la API no deja crearlas): se insertan con `psql` en el script de
+    verificación (por ejemplo, `start_at = now() + interval '75 seconds'`) y se borran al final del mismo script.
+    Antes de borrarlas, comprobar que no tengan filas en `audit_logs`.
+  - **Estado de error de una consulta:** el `queryClient` reintenta una vez los 5xx, así que la simulación tiene que
+    fallar **dos** veces seguidas para que se vea el error. Para el estado de carga, recargar la página primero (con
+    `staleTime` de 30 s, la caché no vuelve a pedir los datos al navegar dentro de la app).
+  - **Esperas largas** (por ejemplo, hasta que empiece una reserva): repartirlas en varias llamadas de
+    `javascript_tool`, cada una de menos de 45 s.
+  - **Credenciales de prueba generadas:** leer el valor del archivo **antes** de usarlo, nunca en llamadas paralelas
+    (en T09 un login dio 401 por eso).
+- **Datos que dejó la verificación de T09** en la base de desarrollo: el usuario `t09.vacia.<sufijo>@salalibre.local`
+  (activo, sin reservas) y reservas `T09 …` canceladas como historial.
