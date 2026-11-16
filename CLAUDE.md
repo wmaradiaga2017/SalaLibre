@@ -169,3 +169,33 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   `test/support/auth-app.ts`; `createApp` reemplaza `TRANSACTION_RUNNER` por `InMemoryTransactionRunner`.
 - **Pruebas que revisan los logs reales** (con `NODE_ENV=development` y `capture()`) van en un archivo `.spec.ts` propio:
   si se crea antes otra app en el mismo archivo, el logger queda en `silent` y los logs llegan vacíos (B-60).
+
+### Salas y validación de entradas fijadas en T04 (ver `docs/tareas/T04.md` §2, §6 y §7; revisión B-68)
+- **Módulo `rooms`** con la misma estructura que `users`: dominio puro en `domain/` (`EQUIPMENT`, `ROOM_LIMITS`, `Room`),
+  interfaz `RoomsRepository` (token `ROOMS_REPOSITORY`) y `PrismaRoomsRepository` en `infrastructure/`. Otros módulos
+  (T05) usan solo `RoomsService`. Sin `DELETE`: las salas se desactivan (D-14).
+- **Unicidad por la base, no por consulta previa:** el nombre único lo garantiza el índice `lower(name)`; el repositorio
+  Prisma traduce `P2002` a `AppError('ROOM_NAME_TAKEN')` y `P2025` a `NOT_FOUND`. Hacer lo mismo con `EMAIL_TAKEN` (T05a)
+  y `CLOSURE_EXISTS` (T05b).
+- **Reglas de los DTOs (correcciones de la revisión de T04, obligatorias en todos los módulos):**
+  - **Texto obligatorio** (nombres, ubicaciones, motivos…): `@IsString()` + `@Length(…)` + `@NotBlank()`
+    (`common/validation/decorators.ts`); solo espacios → 400. Excepción: contraseñas. No se recortan espacios.
+  - **Campos opcionales de un `PATCH`:** `@OptionalNotNull()`, **nunca** `@IsOptional()` (deja pasar `null` a la base)
+    ni `@ValidateIf` solo. `null` → 400 `VALIDATION_ERROR` "`<campo>` (no puede ser null)". `PATCH {}` → 200 sin cambios.
+  - **Cuerpos que no son UTF-8 válido → 400** en toda la API: `configureApp()` registra los parsers `json` y
+    `urlencoded` y detrás `rejectNonUtf8Body` (`common/validation/utf8-body.ts`), que lee `req.rawBody`. Por eso **toda**
+    app Nest se crea con `rawBody: true` (`main.ts`, `test/support/auth-app.ts`, cualquier `createNestApplication` nuevo).
+- **Controles automáticos de esas reglas** (no quitarlos ni saltarlos; si fallan, se corrige el código):
+  - `test/conventions.spec.ts`: recorre `src/modules/**/dto/*.dto.ts` y falla si un texto obligatorio no tiene
+    `@NotBlank()` o un campo opcional no tiene `@OptionalNotNull()`, y si alguna app Nest se crea sin `rawBody: true`.
+  - ESLint (`eslint.config.mjs`): `no-restricted-imports` prohíbe importar `IsOptional` de `class-validator` en `src/`.
+  - Cada módulo nuevo agrega su prueba de capas como la de `test/rooms.spec.ts` (CA8): sin imports de otros módulos
+    internos, controller sin Prisma ni repositorios, dominio sin `@nestjs`/`@prisma`.
+- **Pruebas de módulos de negocio:** `createApp(repo, { modules, overrides, runner })` de `test/support/auth-app.ts`
+  monta el módulo con repositorios en memoria que emulan las restricciones de la base (ver
+  `test/support/in-memory-rooms.repository.ts`).
+- **Verificación manual con `curl` desde Git Bash (B-66):** el texto con tildes o `ñ` se envía **siempre** con escapes
+  Unicode en el JSON (`"Sala Roatán"`), nunca escrito literal: Git Bash no lo manda en UTF-8 y ahora la API lo
+  rechaza con 400. Antes de un `PATCH` sobre datos del seed, confirmar el id y revertir al terminar.
+- **`jq` no está instalado** en la máquina de desarrollo: en las verificaciones se usa `node -e` para leer el JSON y se
+  anota en `docs/tareas/Txx.md`.

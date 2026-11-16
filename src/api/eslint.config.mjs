@@ -12,4 +12,22 @@ export default tseslint.config(
       globals: { ...globals.node, ...globals.jest },
     },
   },
+  {
+    // Revisión de T04: `@IsOptional` deja pasar `null` hasta la base. Los campos opcionales usan `@OptionalNotNull()`.
+    files: ['src/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'class-validator',
+              importNames: ['IsOptional'],
+              message: 'Usa @OptionalNotNull() de common/validation/decorators (null → 400 con mensaje).',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );
