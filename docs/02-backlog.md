@@ -71,7 +71,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layout y rutas protegidas por rol | T03, T07a | M | No | Hecha | [T07](tareas/T07.md) |
 | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | Hecha | [T07b](tareas/T07b.md) |
 | 15 | T07c | Login: composición visual de la imagen y personajes animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T07c.md) |
-| 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, selector de día, filtros, cierres | T05b, T07 | L | No | En revisión | [T08](tareas/T08.md) |
+| 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, selector de día, filtros, cierres | T05b, T07 | L | No | Hecha | [T08](tareas/T08.md) |
 | 17 | T08a | Reservar desde la agenda: formulario modal y manejo del 409 | T08 | M | No | Pendiente | |
 | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas desde la agenda) | T08a | M | No | Pendiente | |
 | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
@@ -801,7 +801,7 @@ docker compose up -d --build
 | Dependencias | T05b, T07 |
 | Estimación | L |
 | Seguridad / auditoría | Roles: autenticado. Auditoría: no aplica. OWASP A01: un `EMPLOYEE` no recibe los títulos ajenos (la API los omite, RN-17) y la UI no los reconstruye |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/bookings/`: `AgendaPage`, `DayPicker`, grilla de línea de tiempo, `BookingCard`, `RoomFilters`, hooks `useRooms`, `useBookings(date)` y `useClosures`.
