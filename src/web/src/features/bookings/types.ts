@@ -24,9 +24,5 @@ export interface Booking {
   isMine: boolean;
 }
 
-export interface Closure {
-  id: string;
-  /** Día de calendario `AAAA-MM-DD` en `BUSINESS_TZ`. */
-  date: string;
-  reason: string;
-}
+/** Cierres: los define `features/closures` (T10b); se reexportan para la agenda. */
+export type { Closure } from '../closures/types';

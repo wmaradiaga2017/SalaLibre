@@ -6,6 +6,7 @@ import { AuthProvider } from './features/auth/AuthProvider';
 import { LoginPage } from './features/auth/LoginPage';
 import { AgendaPage } from './features/bookings/AgendaPage';
 import { MyBookingsPage } from './features/bookings/MyBookingsPage';
+import { AdminClosuresPage } from './features/closures/AdminClosuresPage';
 import { AdminRoomsPage } from './features/rooms/AdminRoomsPage';
 import { AdminUsersPage } from './features/users/AdminUsersPage';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
@@ -17,7 +18,7 @@ import { ToastProvider } from './shared/ui';
 
 /**
  * Rutas de spec §9. `/login` es pública; el resto exige sesión y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son
- * marcadores hasta sus tareas (T10b, T10c).
+ * marcadores hasta sus tareas (T10c).
  */
 export function App() {
   const [queryClient] = useState(createQueryClient);
@@ -39,7 +40,7 @@ export function App() {
                     <Route index element={<Navigate to="/agenda" replace />} />
                     <Route path="rooms" element={<AdminRoomsPage />} />
                     <Route path="users" element={<AdminUsersPage />} />
-                    <Route path="closures" element={<PlaceholderPage title="Cierres" />} />
+                    <Route path="closures" element={<AdminClosuresPage />} />
                     <Route path="audit" element={<PlaceholderPage title="Auditoría" />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/agenda" replace />} />
