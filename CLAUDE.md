@@ -219,8 +219,8 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Locks (spec §11):** siempre en el orden `date:<AAAA-MM-DD local>` → `user:<uuid>`, para no generar bloqueos
   cruzados. T05b toma solo `date:` y T05a solo `user:`. Después del lock por usuario se relee el usuario con `ctx`.
 - **`BookingsService` es la API del módulo de reservas** para T05a (cancelar al desactivar) y T05b (cancelar al cerrar
-  un día). Mientras no exista el módulo de cierres, `PrismaBookingsRepository.isDateClosed` lee `closures` directamente
-  dentro de la transacción; T05b puede pasarlo a `ClosuresService`.
+  un día). `PrismaBookingsRepository.isDateClosed` lee `closures` directamente dentro de la transacción (se queda así
+  desde T05b: ver abajo).
 - **Contrato de `Booking`:** `cancelledBy` es `{ id, name }` como `owner`; `title` se guarda recortado; las fechas del
   body exigen zona (`Z` o `±hh:mm`), sin zona → 400.
 - **Controles automáticos (no quitarlos ni saltarlos):**
@@ -246,7 +246,7 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Cancelación en cascada:** `BookingsService.cancelFutureByUser(ctx, userId, cancelledById)` (el `ctx` primero, como
   toda escritura) cancela con un solo `updateManyAndReturn` las `CONFIRMED` con `startAt > ahora` (`Clock`) y devuelve
   los ids, para auditar cada uno en T06a. Las reservas en curso no se cancelan. T05b hace lo mismo para los cierres
-  (`cancelByDate(ctx, …)` o equivalente), dentro de su transacción y con el lock `date:` tomado.
+  con `cancelConfirmedByDate(ctx, …)` (ver la subsección de T05b).
 - **Claves de lock:** usar siempre `lockKeys` de `bookings.service.ts` (`lockKeys.user(id)`, `lockKeys.date(d)`), nunca
   escribir el prefijo a mano. Desactivar: `begin → lock user: → findById(ctx) (404) → 422 CANNOT_DEACTIVATE_SELF →
   UPDATE → cascada → commit`.
@@ -263,3 +263,25 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Datos que dejó la verificación de T05a** en la base del compose: `prueba.uno@salalibre.local` (activo, contraseña
   `Nueva12345`) y usuarios `rafaga.*` desactivados. No hay `DELETE` de usuarios: en verificaciones nuevas, usar correos
   únicos (por ejemplo con un sufijo de tiempo).
+
+### Cierres fijados en T05b (ver `docs/tareas/T05b.md` §6 y §7)
+- **Dependencias entre módulos:** `ClosuresModule` importa `BookingsModule` (cascada, RN-16); el módulo de reservas
+  **no** importa el de cierres. RN-10 (`DAY_CLOSED`) la sigue resolviendo `BookingsRepository.isDateClosed` dentro de la
+  transacción de la reserva; no pasarla a `ClosuresService` (sería un ciclo). `test/closures.spec.ts` lo comprueba.
+- **Fechas de cierre:** `Closure.date` es texto `AAAA-MM-DD` (día de calendario en `BUSINESS_TZ`), nunca un instante.
+  `PrismaClosuresRepository` convierte la columna `@db.Date` con `new Date(\`${date}T00:00:00.000Z\`)` y
+  `toISOString().slice(0, 10)`. "Hoy" = `localDate(clock.now(), config.timeZone)`; "posterior a hoy" compara las fechas
+  como texto (`isAfterToday`). `GET` muestra fecha ≥ hoy; crear y eliminar exigen fecha > hoy (RN-24, D-31).
+- **Cancelación por fecha:** `BookingsService.cancelConfirmedByDate(ctx, date, cancelledById)` arma el rango UTC del día
+  local con `startOfLocalDay` y llama a `BookingsRepository.cancelConfirmedBetween(ctx, from, to, cancelledById, at)`
+  (un solo `updateManyAndReturn`, todas las salas). Devuelve los ids, para auditar cada uno en T06a.
+- **Orden en la transacción:**
+  - Crear: `422 CLOSURE_IN_PAST` (sin abrir transacción) → `begin → lock date: → INSERT (409 por P2002) → cascada → commit`.
+  - Eliminar: `begin → findById(ctx) (404) → 422 → lock date: → DELETE (deleteMany; 0 filas → 404) → commit`. Eliminar
+    también toma el lock `date:` para serializarse con las reservas de ese día. No restaura reservas (S-05).
+- **Pruebas de cierres:** `InMemoryClosuresRepository` recibe el mismo `Set` que `InMemoryBookingsRepository.closedDates`,
+  para que un cierre creado por la API dé `DAY_CLOSED` al reservar, como en la base.
+- **Verificación manual de cierres de hoy o pasados:** la API no los deja crear. Para probar el 422 de `DELETE` se
+  insertan con `psql` dentro del script de verificación y se borran al final del mismo script; anotarlo en
+  `docs/tareas/Txx.md` como paso manual. Al terminar una verificación, no dejar cierres futuros en la base: bloquean las
+  reservas de esos días en las tareas siguientes.
