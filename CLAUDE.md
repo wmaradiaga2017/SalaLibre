@@ -157,3 +157,15 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Pruebas de auth** con un repositorio en memoria (`test/support/in-memory-users.repository.ts`, vía
   `overrideProvider(USERS_REPOSITORY)`) y controladores de prueba en `test/support/`, sin base de datos.
 - **Commits del agente:** agregar los archivos por ruta, nunca `git add -A` (B-54: se coló un `.bak` del editor).
+
+### Cambio de contraseña fijado en T03a (ver `docs/tareas/T03a.md` §6 y §7)
+- **Hashes nuevos con bcryptjs de costo 10**, el mismo del seed (`BCRYPT_ROUNDS`). No usar otro costo en T05a (reset).
+- **Escrituras de repositorio reciben el `TransactionContext`:** por ejemplo `UsersRepository.updatePasswordHash(ctx, id, hash)`,
+  implementado con `prismaTx(ctx)`, así solo se pueden llamar dentro de `TransactionRunner.run`. Otros módulos escriben a
+  través del service (`UsersService.updatePasswordHash(ctx, …)`).
+- **Cambiar la contraseña no invalida sesiones** (el spec no lo pide). La nueva igual a la actual se acepta.
+- **Logs de eventos de seguridad:** `event: password_change` con `result` y `userId`, como el login; nunca contraseñas ni hashes.
+- **Pruebas de auth:** los helpers comunes (`createApp`, `json`, `sessionCookie`, `silent`, `capture`) viven en
+  `test/support/auth-app.ts`; `createApp` reemplaza `TRANSACTION_RUNNER` por `InMemoryTransactionRunner`.
+- **Pruebas que revisan los logs reales** (con `NODE_ENV=development` y `capture()`) van en un archivo `.spec.ts` propio:
+  si se crea antes otra app en el mismo archivo, el logger queda en `silent` y los logs llegan vacíos (B-60).
