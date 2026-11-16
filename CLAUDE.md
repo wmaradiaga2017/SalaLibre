@@ -306,8 +306,33 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Estados imposibles por la API** (reserva ya empezada, cierre de hoy o pasado) se insertan con `api.prisma` en la
   base de pruebas, no con `psql`.
 - **Matriz RBAC (`rbac.int-spec.ts`):** toda ruta nueva se agrega a `ADMIN_ROUTES` o a `AUTHENTICATED_ROUTES`, con un body
-  válido para que el 403 no se confunda con un 400. **T06a** debe agregar `POST /audit-logs/search` a `ADMIN_ROUTES` y
-  quitar el `it.todo` (hoy la ruta no existe y responde 404 antes de los guards).
+  válido para que el 403 no se confunda con un 400. `POST /audit-logs/search` ya está en `ADMIN_ROUTES` (T06a).
 - **Carreras (R-01, R-02):** se comprueba el invariante final (ninguna `CONFIRMED` y toda reserva creada cancelada), no
   un orden concreto de las peticiones.
-- **Nombres:** `it('RN-xx · P-xx · …')`. Las escrituras nuevas (T06a) agregan aquí sus casos de integración (P-12, P-15).
+- **Nombres:** `it('RN-xx · P-xx · …')`. Toda escritura nueva agrega aquí su caso de integración, incluida su fila de
+  auditoría (como `audit.int-spec.ts`, P-12 y P-15).
+
+### Auditoría fijada en T06a (ver `docs/tareas/T06a.md` §2, §6 y §7)
+- **Toda escritura de negocio audita dentro de su `TransactionRunner.run`:** `await this.audit.record(ctx, { action,
+  entity, entityId, data })` (o `recordMany` para varias filas en un solo `INSERT`). El módulo importa `AuditModule` y
+  usa solo `AuditService`; nunca archivos internos de `modules/audit/` (lo comprueba `test/audit.spec.ts`).
+  `AuditModule` no importa ningún módulo de negocio, así cualquiera lo importa sin ciclos.
+- **Actor y request ID no se pasan a mano:** salen del contexto de petición (`AsyncLocalStorage`,
+  `common/request-context/`), que fija `RequestContextInterceptor` (global, `APP_INTERCEPTOR` en `CommonModule`) después
+  de los guards. No moverlo a un middleware previo al body parser: ahí el contexto se pierde. Si falta el request ID o
+  el usuario, `record` lanza y la escritura entera se revierte (falla cerrado).
+- **`data`:** solo lo mínimo para entender la operación (tabla de `docs/tareas/T06a.md` §2). `AuditService` rechaza
+  claves que contengan `password`, `hash`, `token`, `cookie` o `secret`, a cualquier profundidad, y quita los campos
+  `undefined` (un `PATCH` parcial guarda solo `changes` con lo enviado). Un `PATCH` sin cambios igual deja su fila.
+- **Cascadas (RN-15, RN-16):** las audita `BookingsService` con una fila `BOOKING_CANCELLED` por reserva y
+  `data.cause` (`MANUAL`, `USER_DEACTIVATED`, `DAY_CLOSED`); el actor es el ADMIN que desactiva o cierra el día.
+- **Consulta (`POST /audit-logs/search`, D-24):** `COUNT` + `skip/take` con los mismos filtros, orden `createdAt` desc y
+  `id` desc como desempate (las filas de una transacción comparten `created_at`). `from`/`to` se convierten con
+  `startOfLocalDay` en `BUSINESS_TZ` (`to` + 1 día, excluido). `AuditPage.items` no incluye `data` (spec §8). `page`
+  tiene tope `AUDIT_PAGE.pageMax` (21 474 836) para que un `OFFSET` fuera de rango dé 400 y no 500. Sin `GET`.
+- **Pruebas:** `createApp` reemplaza `AUDIT_REPOSITORY` por `InMemoryAuditRepository` (opción `audit`), que no emula el
+  rollback: CA2 se prueba en integración. Los dobles de `AuditService` en las pruebas de orden registran
+  `audit <ACCIÓN>` para comprobar que va antes del commit y con el `ctx`. En integración, `api.request(…, { requestId })`
+  envía `X-Request-Id` para encontrar las filas de una petición.
+- **`audit_logs` no se limpia entre pruebas** (el trigger lo impide): comparar por `requestId` o por diferencia de
+  `COUNT`, nunca por un total fijo. Las verificaciones manuales dejan filas permanentes en la base de desarrollo.
