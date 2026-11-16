@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CommonModule } from './common/common.module';
 import { TransactionModule } from './common/transaction/transaction.module';
 import { HealthModule } from './health/health.module';
+import { AuditModule } from './modules/audit/audit.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { ClosuresModule } from './modules/closures/closures.module';
@@ -22,6 +23,7 @@ import { PrismaModule } from './prisma/prisma.module';
     BookingsModule,
     UsersAdminModule,
     ClosuresModule,
+    AuditModule,
   ],
 })
 export class AppModule {}

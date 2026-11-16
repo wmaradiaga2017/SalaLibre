@@ -6,9 +6,11 @@ import { CommonModule } from '../../src/common/common.module';
 import { configureApp } from '../../src/common/configure-app';
 import { TRANSACTION_RUNNER } from '../../src/common/transaction/transaction-runner';
 import { TransactionModule } from '../../src/common/transaction/transaction.module';
+import { AUDIT_REPOSITORY } from '../../src/modules/audit/domain/audit.repository';
 import { AuthModule } from '../../src/modules/auth/auth.module';
 import { USERS_REPOSITORY } from '../../src/modules/users/domain/users.repository';
 import { AuthTestController } from './auth-test.controller';
+import { InMemoryAuditRepository } from './in-memory-audit.repository';
 import { InMemoryTransactionRunner, type InMemoryUsersRepository } from './in-memory-users.repository';
 
 /** Utilidades compartidas por las pruebas HTTP (auth y módulos de negocio), sin base de datos. */
@@ -43,6 +45,8 @@ export function capture() {
 export interface CreateAppOptions {
   logStream?: Writable;
   runner?: InMemoryTransactionRunner;
+  /** Repositorio de auditoría en memoria (T06a); por defecto, uno nuevo. */
+  audit?: InMemoryAuditRepository;
   /** Módulos de negocio adicionales (por ejemplo `RoomsModule`). */
   modules?: Type[];
   /** Reemplazos de providers por token (repositorios en memoria). */
@@ -62,7 +66,9 @@ export async function createApp(repo: InMemoryUsersRepository, options: CreateAp
     .overrideProvider(USERS_REPOSITORY)
     .useValue(repo)
     .overrideProvider(TRANSACTION_RUNNER)
-    .useValue(options.runner ?? new InMemoryTransactionRunner());
+    .useValue(options.runner ?? new InMemoryTransactionRunner())
+    .overrideProvider(AUDIT_REPOSITORY)
+    .useValue(options.audit ?? new InMemoryAuditRepository());
   for (const { token, value } of options.overrides ?? []) {
     builder = builder.overrideProvider(token).useValue(value);
   }

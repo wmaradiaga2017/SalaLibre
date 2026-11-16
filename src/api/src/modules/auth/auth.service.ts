@@ -5,6 +5,7 @@ import { PinoLogger } from 'nestjs-pino';
 import type { SessionResolver, SessionRole, SessionUser } from '../../common/auth/session';
 import { AppError } from '../../common/errors/app-error';
 import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
+import { AuditService } from '../audit/audit.service';
 import { BCRYPT_ROUNDS, toPublicUser, type PublicUser } from '../users/domain/user';
 import { UsersService } from '../users/users.service';
 
@@ -34,6 +35,7 @@ export class AuthService implements SessionResolver {
     private readonly jwt: JwtService,
     private readonly logger: PinoLogger,
     @Inject(TRANSACTION_RUNNER) private readonly tx: TransactionRunner,
+    private readonly audit: AuditService,
   ) {
     this.logger.setContext(AuthService.name);
   }
@@ -71,7 +73,7 @@ export class AuthService implements SessionResolver {
         throw new AppError('INVALID_CURRENT_PASSWORD', 'La contraseña actual no es correcta.');
       }
       await this.users.updatePasswordHash(ctx, user.id, await hash(newPassword, BCRYPT_ROUNDS));
-      // T06a agrega aquí la auditoría USER_PASSWORD_CHANGED, dentro de la misma transacción.
+      await this.audit.record(ctx, { action: 'USER_PASSWORD_CHANGED', entity: 'user', entityId: user.id }); // sin datos
     });
     this.logger.info({ event: 'password_change', result: 'ok', userId }, 'contraseña cambiada');
   }

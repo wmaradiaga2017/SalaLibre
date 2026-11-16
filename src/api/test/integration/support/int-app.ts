@@ -107,8 +107,13 @@ export class IntegrationApp {
     await this.prisma.closure.deleteMany({});
   }
 
-  request(method: string, path: string, options: { cookie?: string; body?: unknown } = {}): Promise<Response> {
+  request(
+    method: string,
+    path: string,
+    options: { cookie?: string; body?: unknown; requestId?: string } = {},
+  ): Promise<Response> {
     const headers: Record<string, string> = {};
+    if (options.requestId) headers['X-Request-Id'] = options.requestId; // T06a: para buscar las filas de auditoría
     if (options.cookie) headers.Cookie = options.cookie;
     if (options.body !== undefined) headers['Content-Type'] = 'application/json';
     return fetch(`${this.baseUrl}${path}`, {

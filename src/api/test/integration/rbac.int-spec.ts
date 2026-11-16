@@ -25,6 +25,7 @@ const ADMIN_ROUTES: Route[] = [
   { method: 'POST', path: `/users/${MISSING}/reset-password`, body: { newPassword: 'Rbac123456' } },
   { method: 'POST', path: '/closures', body: { date: nextBusinessDay(), reason: 'RBAC' } },
   { method: 'DELETE', path: `/closures/${MISSING}` },
+  { method: 'POST', path: '/audit-logs/search', body: { page: 1, pageSize: 20 } },
 ];
 
 /** Rutas de cualquier usuario autenticado. */
@@ -92,7 +93,4 @@ describe('Integración · matriz de roles (RN-21, P-14)', () => {
     expect(res.status).toBe(404);
     expect((await api.request('GET', '/users', { cookie: admin })).status).toBe(200);
   });
-
-  // `POST /audit-logs/search` aún no existe: la crea T06a, que debe agregarla a ADMIN_ROUTES (403 y 401).
-  it.todo('RN-21 · POST /audit-logs/search → 403 para EMPLOYEE y 401 sin cookie (T06a)');
 });

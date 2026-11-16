@@ -3,6 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { CLOCK } from '../src/common/time/clock';
 import type { TransactionContext, TransactionRunner } from '../src/common/transaction/transaction-runner';
+import type { AuditService } from '../src/modules/audit/audit.service';
 import type { BookingsService } from '../src/modules/bookings/bookings.service';
 import type { BookingRecord } from '../src/modules/bookings/domain/booking';
 import { BOOKINGS_REPOSITORY } from '../src/modules/bookings/domain/bookings.repository';
@@ -395,7 +396,13 @@ describe('Desactivación en una sola transacción (T05a, CA5)', () => {
       },
     } as unknown as BookingsService;
     const logger = { setContext: () => undefined, info: () => undefined };
-    const service = new UsersAdminService(users, bookings, logger as never, tx);
+    // T06a: la auditoría va dentro de la transacción y con su ctx.
+    const audit = {
+      record: async (c: TransactionContext, e: { action: string }) => {
+        events.push(`audit ${e.action}${c === ctx ? '' : ' (sin ctx)'}`);
+      },
+    } as unknown as AuditService;
+    const service = new UsersAdminService(users, bookings, logger as never, tx, audit);
     return { service, events };
   }
 
@@ -410,6 +417,7 @@ describe('Desactivación en una sola transacción (T05a, CA5)', () => {
       'findById',
       'update',
       `cancelFutureByUser ${TARGET} por ${ACTOR}`,
+      'audit USER_UPDATED',
       'commit',
     ]);
   });

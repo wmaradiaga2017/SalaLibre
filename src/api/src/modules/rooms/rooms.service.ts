@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AppError } from '../../common/errors/app-error';
 import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
+import { AuditService } from '../audit/audit.service';
 import { canSeeInactiveRooms, toRoom, type NewRoom, type Room, type RoomChanges, type RoomViewerRole } from './domain/room';
 import { ROOMS_REPOSITORY, type RoomsRepository } from './domain/rooms.repository';
 
@@ -10,6 +11,7 @@ export class RoomsService {
   constructor(
     @Inject(ROOMS_REPOSITORY) private readonly rooms: RoomsRepository,
     @Inject(TRANSACTION_RUNNER) private readonly tx: TransactionRunner,
+    private readonly audit: AuditService,
   ) {}
 
   /** A01: el filtro por rol vive aquí, no en la UI. */
@@ -26,7 +28,12 @@ export class RoomsService {
   async create(room: NewRoom): Promise<Room> {
     return this.tx.run(async (ctx) => {
       const created = await this.rooms.create(ctx, room);
-      // T06a agrega aquí la auditoría ROOM_CREATED, dentro de la misma transacción.
+      await this.audit.record(ctx, {
+        action: 'ROOM_CREATED',
+        entity: 'room',
+        entityId: created.id,
+        data: { name: created.name, capacity: created.capacity, location: created.location, equipment: created.equipment },
+      });
       return toRoom(created);
     });
   }
@@ -38,7 +45,8 @@ export class RoomsService {
         throw new AppError('NOT_FOUND', 'La sala no existe.');
       }
       const updated = await this.rooms.update(ctx, id, changes);
-      // T06a agrega aquí la auditoría ROOM_UPDATED, dentro de la misma transacción.
+      // Solo los campos enviados en el PATCH: AuditService quita los ausentes (undefined, B-80).
+      await this.audit.record(ctx, { action: 'ROOM_UPDATED', entity: 'room', entityId: id, data: { changes: { ...changes } } });
       return toRoom(updated);
     });
   }

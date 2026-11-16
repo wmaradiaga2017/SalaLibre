@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { loadBusinessConfig } from '../src/common/config/business-config';
 import { CLOCK } from '../src/common/time/clock';
 import type { TransactionContext, TransactionRunner } from '../src/common/transaction/transaction-runner';
+import type { AuditService } from '../src/modules/audit/audit.service';
 import type { BookingsService } from '../src/modules/bookings/bookings.service';
 import type { BookingRecord } from '../src/modules/bookings/domain/booking';
 import { BOOKINGS_REPOSITORY } from '../src/modules/bookings/domain/bookings.repository';
@@ -335,7 +336,13 @@ describe('Cierre en una sola transacción (T05b, CA2)', () => {
     } as unknown as BookingsService;
     const logger = { setContext: () => undefined, info: () => undefined };
     const config = loadBusinessConfig({});
-    const service = new ClosuresService(repo, tx, config, { now: () => NOW }, bookings, logger as never);
+    // T06a: la auditoría va dentro de la transacción y con su ctx.
+    const audit = {
+      record: async (c: TransactionContext, e: { action: string }) => {
+        events.push(`audit ${e.action}${c === ctx ? '' : ' (sin ctx)'}`);
+      },
+    } as unknown as AuditService;
+    const service = new ClosuresService(repo, tx, config, { now: () => NOW }, bookings, logger as never, audit);
     return { service, events };
   }
 
@@ -350,6 +357,7 @@ describe('Cierre en una sola transacción (T05b, CA2)', () => {
       `lock date:${DATE}`,
       'create',
       `cancelConfirmedByDate ${DATE} por ${ADMIN_ID}`,
+      'audit CLOSURE_CREATED',
       'commit',
     ]);
   });

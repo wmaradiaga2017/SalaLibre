@@ -3,6 +3,7 @@ import { hash } from 'bcryptjs';
 import { PinoLogger } from 'nestjs-pino';
 import { AppError } from '../../common/errors/app-error';
 import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
+import { AuditService } from '../audit/audit.service';
 import { BookingsService, lockKeys } from '../bookings/bookings.service';
 import {
   BCRYPT_ROUNDS,
@@ -33,6 +34,7 @@ export class UsersAdminService {
     private readonly bookings: BookingsService,
     private readonly logger: PinoLogger,
     @Inject(TRANSACTION_RUNNER) private readonly tx: TransactionRunner,
+    private readonly audit: AuditService,
   ) {
     this.logger.setContext(UsersAdminService.name);
   }
@@ -51,7 +53,13 @@ export class UsersAdminService {
         role: input.role,
         passwordHash,
       });
-      // T06a agrega aquí la auditoría USER_CREATED, dentro de la misma transacción.
+      // Nunca la contraseña ni su hash (spec §7).
+      await this.audit.record(ctx, {
+        action: 'USER_CREATED',
+        entity: 'user',
+        entityId: created.id,
+        data: { email: created.email, name: created.name, role: created.role },
+      });
       return created;
     });
   }
@@ -72,8 +80,14 @@ export class UsersAdminService {
         throw new AppError('CANNOT_DEACTIVATE_SELF', 'No puedes desactivar tu propia cuenta.');
       }
       const updated = await this.users.update(ctx, id, changes);
-      // T06a agrega aquí la auditoría USER_UPDATED, dentro de la misma transacción.
+      // RN-15: la cascada audita una fila BOOKING_CANCELLED por reserva (BookingsService).
       const cancelledIds = changes.isActive === false ? await this.bookings.cancelFutureByUser(ctx, id, actorId) : [];
+      await this.audit.record(ctx, {
+        action: 'USER_UPDATED',
+        entity: 'user',
+        entityId: id,
+        data: { changes: { ...changes }, cancelledBookings: cancelledIds.length },
+      });
       return { user: updated, cancelled: cancelledIds.length };
     });
     if (changes.isActive === false) {
@@ -90,7 +104,7 @@ export class UsersAdminService {
         throw new AppError('NOT_FOUND', NOT_FOUND_MESSAGE);
       }
       await this.users.updatePasswordHash(ctx, id, passwordHash);
-      // T06a agrega aquí la auditoría USER_PASSWORD_RESET, dentro de la misma transacción.
+      await this.audit.record(ctx, { action: 'USER_PASSWORD_RESET', entity: 'user', entityId: id }); // sin datos: nunca la contraseña
     });
     this.logger.info({ event: 'password_reset', result: 'ok', userId: id }, 'contraseña restablecida');
   }

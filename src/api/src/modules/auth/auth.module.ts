@@ -4,6 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { SESSION_RESOLVER } from '../../common/auth/session';
+import { AuditModule } from '../audit/audit.module';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -19,6 +20,7 @@ function requireEnv(name: string): string {
 @Module({
   imports: [
     UsersModule,
+    AuditModule,
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: requireEnv('JWT_SECRET'),

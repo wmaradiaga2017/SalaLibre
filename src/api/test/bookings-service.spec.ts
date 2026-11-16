@@ -1,6 +1,7 @@
 import { loadBusinessConfig } from '../src/common/config/business-config';
 import { AppError } from '../src/common/errors/app-error';
 import type { TransactionContext, TransactionRunner } from '../src/common/transaction/transaction-runner';
+import type { AuditService } from '../src/modules/audit/audit.service';
 import { BookingsService } from '../src/modules/bookings/bookings.service';
 import type { BookingRecord, NewBooking } from '../src/modules/bookings/domain/booking';
 import type { BookingsRepository } from '../src/modules/bookings/domain/bookings.repository';
@@ -86,7 +87,16 @@ function setup(options: { closed?: boolean; userActive?: boolean; cancelReturnsN
     },
   } as unknown as UsersService;
 
-  const service = new BookingsService(repo, tx, loadBusinessConfig({}), { now: () => NOW }, rooms, users);
+  // T06a: la auditoría va dentro de la transacción y con su ctx.
+  const audit = {
+    record: async (c: TransactionContext, e: { action: string }) => {
+      events.push(`audit ${e.action}${c === ctx ? '' : ' (sin ctx)'}`);
+    },
+    recordMany: async (c: TransactionContext, list: { action: string }[]) => {
+      for (const e of list) events.push(`audit ${e.action}${c === ctx ? '' : ' (sin ctx)'}`);
+    },
+  } as unknown as AuditService;
+  const service = new BookingsService(repo, tx, loadBusinessConfig({}), { now: () => NOW }, rooms, users, audit);
   return { service, events };
 }
 
@@ -116,6 +126,7 @@ describe('BookingsService (T05, unitarias)', () => {
       'user',
       'isDateClosed 2026-11-17',
       'create',
+      'audit BOOKING_CREATED',
       'end',
     ]);
   });
@@ -157,5 +168,12 @@ describe('BookingsService (T05, unitarias)', () => {
 
     expect(await codeOf(service.cancel(EMPLOYEE, 'booking-1'))).toBe('BOOKING_ALREADY_CANCELLED');
     expect(events).toEqual(['findById', 'begin', 'cancel', 'end']);
+  });
+
+  it('D-05 · al cancelar, la auditoría BOOKING_CANCELLED va dentro de la transacción, con su ctx y después del UPDATE', async () => {
+    const { service, events } = setup();
+
+    await service.cancel(EMPLOYEE, 'booking-1');
+    expect(events).toEqual(['findById', 'begin', 'cancel', 'audit BOOKING_CANCELLED', 'end']);
   });
 });

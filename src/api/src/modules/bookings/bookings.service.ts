@@ -8,6 +8,7 @@ import {
   type TransactionContext,
   type TransactionRunner,
 } from '../../common/transaction/transaction-runner';
+import { AuditService } from '../audit/audit.service';
 import { RoomsService } from '../rooms/rooms.service';
 import { UsersService } from '../users/users.service';
 import { toBookingView, type BookingView, type Viewer } from './domain/booking';
@@ -39,6 +40,7 @@ export class BookingsService {
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly rooms: RoomsService,
     private readonly users: UsersService,
+    private readonly audit: AuditService,
   ) {}
 
   /** `GET /bookings?date=`: reservas `CONFIRMED` del día local `date`, de todas las salas, con RN-17. */
@@ -91,7 +93,17 @@ export class BookingsService {
         startAt: input.startAt,
         endAt: input.endAt,
       });
-      // T06a agrega aquí la auditoría BOOKING_CREATED, dentro de la misma transacción.
+      await this.audit.record(ctx, {
+        action: 'BOOKING_CREATED',
+        entity: 'booking',
+        entityId: booking.id,
+        data: {
+          roomId: booking.roomId,
+          startAt: booking.startAt.toISOString(),
+          endAt: booking.endAt.toISOString(),
+          attendees: booking.attendees,
+        },
+      });
       return booking;
     });
     return toBookingView(created, viewer);
@@ -112,7 +124,13 @@ export class BookingsService {
         // Otra petición la canceló entre la lectura y el UPDATE.
         throw new AppError('BOOKING_ALREADY_CANCELLED', 'La reserva ya estaba cancelada.');
       }
-      // T06a agrega aquí la auditoría BOOKING_CANCELLED, dentro de la misma transacción.
+      // F-04: si cancela un ADMIN una reserva ajena, el actor es el ADMIN y `ownerId` el dueño.
+      await this.audit.record(ctx, {
+        action: 'BOOKING_CANCELLED',
+        entity: 'booking',
+        entityId: id,
+        data: { cause: 'MANUAL', ownerId: result.userId },
+      });
       return result;
     });
     return toBookingView(cancelled, viewer);
@@ -125,7 +143,7 @@ export class BookingsService {
    */
   async cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string): Promise<string[]> {
     const ids = await this.bookings.cancelFutureByUser(ctx, userId, cancelledById, this.clock.now());
-    // T06a agrega aquí la auditoría BOOKING_CANCELLED por cada id, dentro de la misma transacción.
+    await this.auditCascade(ctx, ids, { cause: 'USER_DEACTIVATED', ownerId: userId });
     return ids;
   }
 
@@ -138,7 +156,15 @@ export class BookingsService {
     const from = startOfLocalDay(date, this.config.timeZone);
     const to = startOfLocalDay(addDays(date, 1), this.config.timeZone);
     const ids = await this.bookings.cancelConfirmedBetween(ctx, from, to, cancelledById, this.clock.now());
-    // T06a agrega aquí la auditoría BOOKING_CANCELLED por cada id, dentro de la misma transacción.
+    await this.auditCascade(ctx, ids, { cause: 'DAY_CLOSED', date });
     return ids;
+  }
+
+  /** RN-15 y RN-16: una fila `BOOKING_CANCELLED` por reserva cancelada en cascada, en la misma transacción. */
+  private auditCascade(ctx: TransactionContext, ids: string[], data: Record<string, string>): Promise<void> {
+    return this.audit.recordMany(
+      ctx,
+      ids.map((id) => ({ action: 'BOOKING_CANCELLED', entity: 'booking', entityId: id, data })),
+    );
   }
 }

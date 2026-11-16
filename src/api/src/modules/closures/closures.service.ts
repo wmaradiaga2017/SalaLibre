@@ -5,6 +5,7 @@ import { AppError } from '../../common/errors/app-error';
 import { CLOCK, type Clock } from '../../common/time/clock';
 import { localDate } from '../../common/time/zoned-time';
 import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
+import { AuditService } from '../audit/audit.service';
 import { BookingsService, lockKeys } from '../bookings/bookings.service';
 import { isAfterToday, toClosure, type Closure, type CreatedClosure } from './domain/closure';
 import { CLOSURES_REPOSITORY, type ClosuresRepository } from './domain/closures.repository';
@@ -22,6 +23,7 @@ export class ClosuresService {
     @Inject(CLOCK) private readonly clock: Clock,
     private readonly bookings: BookingsService,
     private readonly logger: PinoLogger,
+    private readonly audit: AuditService,
   ) {
     this.logger.setContext(ClosuresService.name);
   }
@@ -49,8 +51,14 @@ export class ClosuresService {
     const result = await this.tx.run(async (ctx) => {
       await ctx.advisoryLock(lockKeys.date(date));
       const closure = await this.closures.create(ctx, { date, reason, createdById: actorId });
-      // T06a agrega aquí la auditoría CLOSURE_CREATED, dentro de la misma transacción.
+      // RN-16: la cascada audita una fila BOOKING_CANCELLED por reserva (BookingsService).
       const cancelled = await this.bookings.cancelConfirmedByDate(ctx, date, actorId);
+      await this.audit.record(ctx, {
+        action: 'CLOSURE_CREATED',
+        entity: 'closure',
+        entityId: closure.id,
+        data: { date, reason, cancelledBookings: cancelled.length },
+      });
       return { ...toClosure(closure), cancelledBookings: cancelled.length };
     });
     this.logger.info(
@@ -77,7 +85,12 @@ export class ClosuresService {
       if (!(await this.closures.delete(ctx, id))) {
         throw new AppError('NOT_FOUND', NOT_FOUND_MESSAGE); // otra petición lo eliminó entre la lectura y el DELETE
       }
-      // T06a agrega aquí la auditoría CLOSURE_DELETED, dentro de la misma transacción.
+      await this.audit.record(ctx, {
+        action: 'CLOSURE_DELETED',
+        entity: 'closure',
+        entityId: id,
+        data: { date: closure.date, reason: closure.reason },
+      });
     });
   }
 }
