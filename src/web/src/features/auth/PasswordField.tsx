@@ -27,6 +27,9 @@ export function PasswordField({ onPasswordVisibleChange, className, ref, ...inpu
       <button
         type="button"
         onClick={toggle}
+        // Con el ratón, el foco se queda en el campo (T07c, CA11: al ocultarla, si la contraseña conserva el foco,
+        // los personajes vuelven a mirar a la izquierda). Con el teclado, el botón recibe el foco como siempre.
+        onMouseDown={(event) => event.preventDefault()}
         aria-pressed={visible}
         aria-label={visible ? 'Ocultar contraseña' : 'Mostrar contraseña'}
         aria-controls={inputProps.id}

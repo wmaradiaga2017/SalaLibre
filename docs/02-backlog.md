@@ -70,7 +70,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 12 | T07a | Sistema visual base (tokens, componentes de `shared/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
 | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layout y rutas protegidas por rol | T03, T07a | M | No | Hecha | [T07](tareas/T07.md) |
 | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | Hecha | [T07b](tareas/T07b.md) |
-| 15 | T07c | Login: composición visual de la imagen y personajes animados | T07a, T07 | L | **Sí** | Pendiente | |
+| 15 | T07c | Login: composición visual de la imagen y personajes animados | T07a, T07 | L | **Sí** | En revisión | [T07c](tareas/T07c.md) |
 | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, selector de día, filtros, cierres | T05b, T07 | L | No | Pendiente | |
 | 17 | T08a | Reservar desde la agenda: formulario modal y manejo del 409 | T08 | M | No | Pendiente | |
 | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas desde la agenda) | T08a | M | No | Pendiente | |
@@ -738,7 +738,7 @@ npm --prefix src/web run lint && npm --prefix src/web run build
 | Dependencias | T07a, T07 |
 | Estimación | L |
 | Seguridad / auditoría | Roles: público. Auditoría: no aplica (S-02). OWASP A07: la contraseña no se guarda ni se loguea y no llega a los personajes; mensaje de error genérico; sin envíos duplicados |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/auth/LoginPage.tsx`: composición de dos columnas en escritorio y cabecera compacta más formulario en móvil.

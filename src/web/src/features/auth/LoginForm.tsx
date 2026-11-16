@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { ArrowUpRight } from 'lucide-react';
-import type { FocusEvent } from 'react';
+import { useEffect, useRef, useState, type FocusEvent, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
@@ -16,6 +16,9 @@ export type LoginSubmitStatus = 'idle' | 'loading' | 'error' | 'success';
 
 /** Mensaje genérico de F-01 (A07): no dice si falló el correo o la contraseña. */
 const INVALID_CREDENTIALS_MESSAGE = 'Correo o contraseña incorrectos';
+
+/** Espera máxima antes de ir a `/agenda` para ver la celebración (T07c, CA12: no más de 1 s). */
+const MAX_SUCCESS_DELAY_MS = 1000;
 
 /** CA9: correo obligatorio y con formato; contraseña obligatoria, sin regla de longitud (eso es RN-18, al cambiarla). */
 const loginSchema = z.object({
@@ -37,12 +40,44 @@ interface LoginFormProps {
   onPasswordVisibleChange?: (visible: boolean) => void;
   /** Estado del envío (T07c). */
   onSubmitStatusChange?: (status: LoginSubmitStatus) => void;
+  /** Contenido bajo el campo de contraseña (T07c: enlace "¿Olvidaste tu contraseña?"). */
+  afterPassword?: ReactNode;
+  /** Espera tras un login correcto antes de ir a `/agenda` (T07c: celebración; tope de 1 s). */
+  successDelayMs?: number;
 }
 
+const STATUS_TEXT: Record<LoginSubmitStatus, string> = {
+  idle: '',
+  loading: 'Iniciando sesión…',
+  error: 'No se pudo iniciar sesión.',
+  success: 'Sesión iniciada. Entrando a la agenda…',
+};
+
 /** Formulario de inicio de sesión (F-01) contra `POST /api/auth/login`. Al entrar va a `/agenda`. */
-export function LoginForm({ onFocusChange, onPasswordVisibleChange, onSubmitStatusChange }: LoginFormProps) {
+export function LoginForm({
+  onFocusChange,
+  onPasswordVisibleChange,
+  onSubmitStatusChange,
+  afterPassword,
+  successDelayMs = 0,
+}: LoginFormProps) {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const [status, setStatus] = useState<LoginSubmitStatus>('idle');
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // CA14: si la pantalla se desmonta durante la espera, se cancela el temporizador.
+  useEffect(
+    () => () => {
+      if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    },
+    [],
+  );
+
+  const changeStatus = (next: LoginSubmitStatus) => {
+    setStatus(next);
+    onSubmitStatusChange?.(next);
+  };
 
   const {
     register,
@@ -57,18 +92,25 @@ export function LoginForm({ onFocusChange, onPasswordVisibleChange, onSubmitStat
     mutationFn: ({ email, password }: LoginData) => authService.login(email, password),
     // La contraseña no queda en la caché de mutaciones al salir de la pantalla (A07).
     gcTime: 0,
-    onMutate: () => onSubmitStatusChange?.('loading'),
+    onMutate: () => changeStatus('loading'),
     onSuccess: (user) => {
-      onSubmitStatusChange?.('success');
-      signIn(user);
-      navigate('/agenda', { replace: true });
+      changeStatus('success');
+      const enter = () => {
+        signIn(user);
+        navigate('/agenda', { replace: true });
+      };
+      const delay = Math.min(Math.max(successDelayMs, 0), MAX_SUCCESS_DELAY_MS);
+      if (delay === 0) enter();
+      else redirectTimer.current = setTimeout(enter, delay);
     },
-    onError: () => onSubmitStatusChange?.('error'),
+    onError: () => changeStatus('error'),
   });
 
+  const busy = login.isPending || status === 'success';
+
   const onSubmit = handleSubmit((data) => {
-    // Sin envíos duplicados mientras hay una petición en curso (spec §9, Cargando).
-    if (login.isPending) return;
+    // Sin envíos duplicados mientras hay una petición en curso o se está entrando (spec §9, Cargando; T07c CA7).
+    if (busy) return;
     login.mutate(data);
   });
 
@@ -87,6 +129,11 @@ export function LoginForm({ onFocusChange, onPasswordVisibleChange, onSubmitStat
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-space-lg">
+      {/* CA7: anuncia carga, error y éxito a los lectores de pantalla. */}
+      <p role="status" className="sr-only">
+        {STATUS_TEXT[status]}
+      </p>
+
       {apiError && (
         <Banner tone="error" requestId={apiError.requestId}>
           {isInvalidCredentials ? INVALID_CREDENTIALS_MESSAGE : apiError.message}
@@ -107,27 +154,25 @@ export function LoginForm({ onFocusChange, onPasswordVisibleChange, onSubmitStat
         )}
       </Field>
 
-      <Field label="Contraseña" error={errors.password?.message}>
-        {(control) => (
-          <PasswordField
-            {...control}
-            autoComplete="current-password"
-            placeholder="Escribe tu contraseña"
-            onPasswordVisibleChange={onPasswordVisibleChange}
-            {...password}
-            {...focusHandlers('password', password.onBlur)}
-          />
-        )}
-      </Field>
+      <div className="flex flex-col gap-space-sm">
+        <Field label="Contraseña" error={errors.password?.message}>
+          {(control) => (
+            <PasswordField
+              {...control}
+              autoComplete="current-password"
+              placeholder="Escribe tu contraseña"
+              onPasswordVisibleChange={onPasswordVisibleChange}
+              {...password}
+              {...focusHandlers('password', password.onBlur)}
+            />
+          )}
+        </Field>
+        {afterPassword}
+      </div>
 
-      <Button
-        type="submit"
-        size="lg"
-        loading={login.isPending}
-        className="w-full"
-        icon={login.isPending ? undefined : <ArrowUpRight size={18} />}
-      >
+      <Button type="submit" size="lg" loading={busy} className="w-full">
         Iniciar sesión
+        {!busy && <ArrowUpRight aria-hidden="true" size={18} />}
       </Button>
     </form>
   );
