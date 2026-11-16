@@ -67,7 +67,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
 | 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | Hecha | [T06](tareas/T06.md) |
 | 11 | T06a | Auditoría: `AuditService` transaccional en todas las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** | Hecha | [T06a](tareas/T06a.md) |
-| 12 | T07a | Sistema visual base (tokens, componentes de `shared/ui`) | T01 | M | No | Pendiente | |
+| 12 | T07a | Sistema visual base (tokens, componentes de `shared/ui`) | T01 | M | No | En revisión | [T07a](tareas/T07a.md) |
 | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layout y rutas protegidas por rol | T03, T07a | M | No | Pendiente | |
 | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | Pendiente | |
 | 15 | T07c | Login: composición visual de la imagen y personajes animados | T07a, T07 | L | **Sí** | Pendiente | |
@@ -617,7 +617,7 @@ docker compose exec -T db psql -U salalibre -d salalibre -c "SELECT count(*) FRO
 | Dependencias | T01 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: no aplica. Auditoría: no aplica. Sin recursos externos (CDN, fuentes ni imágenes remotas), lo que reduce la superficie de la cadena de suministro (OWASP A08) |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/web/tailwind.config.*` y estilos globales con los tokens de `DESIGN.md` (colores, radios, espaciado, tipografía, utilidad de cifras tabulares).

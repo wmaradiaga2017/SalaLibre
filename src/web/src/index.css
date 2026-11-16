@@ -1,1 +1,170 @@
+/*
+ * T07a · Tokens de docs/diseño/DESIGN.md (D-28: solo guía visual). Tailwind 4 se configura en CSS con @theme
+ * (no hay tailwind.config.*). Se quita la paleta por defecto de Tailwind: en los componentes solo existen estos colores
+ * (CLAUDE.md: "solo se usan los tokens del diseño, sin colores sueltos").
+ */
 @import 'tailwindcss';
+
+@theme {
+  /* Sin la paleta por defecto (blue-500, slate-200…): solo los tokens de abajo. */
+  --color-*: initial;
+
+  /* Colores (DESIGN.md, frontmatter) */
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #cbdbf5;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #434655;
+  --color-inverse-surface: #213145;
+  --color-inverse-on-surface: #eaf1ff;
+  --color-outline: #747686;
+  --color-outline-variant: #c4c5d7;
+  --color-surface-tint: #2151da;
+  --color-primary: #0037b0;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1d4ed8;
+  --color-on-primary-container: #cad3ff;
+  --color-inverse-primary: #b7c4ff;
+  --color-secondary: #565e74;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #dae2fd;
+  --color-on-secondary-container: #5c647a;
+  --color-tertiary: #004f35;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #006a48;
+  --color-on-tertiary-container: #60eeb1;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-primary-fixed: #dce1ff;
+  --color-primary-fixed-dim: #b7c4ff;
+  --color-on-primary-fixed: #001551;
+  --color-on-primary-fixed-variant: #0039b5;
+  --color-secondary-fixed: #dae2fd;
+  --color-secondary-fixed-dim: #bec6e0;
+  --color-on-secondary-fixed: #131b2e;
+  --color-on-secondary-fixed-variant: #3f465c;
+  --color-tertiary-fixed: #6ffbbe;
+  --color-tertiary-fixed-dim: #4edea3;
+  --color-on-tertiary-fixed: #002113;
+  --color-on-tertiary-fixed-variant: #005236;
+  --color-background: #f8f9ff;
+  --color-on-background: #0b1c30;
+  --color-surface-variant: #d3e4fe;
+
+  /* Base neutra y acentos de "Colores › Arquitectura base" y "Elevación" */
+  --color-canvas: #f8fafc; /* capa base, fondo de la app */
+  --color-mist: #f1f5f9; /* columnas secundarias y cuadrícula */
+  --color-divider: #e2e8f0; /* divisiones estructurales */
+  --color-ink: #0f172a; /* titulares críticos */
+  --color-interactive: #2563eb; /* contorno de hover en franjas libres */
+  --color-scrim: rgb(15 23 42 / 0.4); /* velo de los modales */
+
+  /* Insignias de estado (DESIGN.md, Componentes 2): fondo, texto, borde y color sólido del punto */
+  --color-available-container: #ecfdf5;
+  --color-on-available-container: #065f46;
+  --color-available-outline: #a7f3d0;
+  --color-available: #10b981;
+  --color-busy-container: #fef2f2;
+  --color-on-busy-container: #991b1b;
+  --color-busy-outline: #fecaca;
+  --color-busy: #ef4444;
+  --color-maintenance-container: #f1f5f9;
+  --color-on-maintenance-container: #475569;
+  --color-maintenance-outline: #cbd5e1;
+  --color-maintenance: #64748b;
+
+  /* Tipografía: Inter empaquetada en local (@fontsource-variable/inter) */
+  --font-sans: 'Inter Variable', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --text-headline-xl: 32px;
+  --text-headline-xl--line-height: 40px;
+  --text-headline-xl--letter-spacing: -0.02em;
+  --text-headline-xl--font-weight: 600;
+  --text-headline-lg: 24px;
+  --text-headline-lg--line-height: 32px;
+  --text-headline-lg--letter-spacing: -0.015em;
+  --text-headline-lg--font-weight: 600;
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 600;
+  --text-headline-sm: 16px;
+  --text-headline-sm--line-height: 24px;
+  --text-headline-sm--letter-spacing: -0.005em;
+  --text-headline-sm--font-weight: 600;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 18px;
+  --text-label-md: 13px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--font-weight: 500;
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--font-weight: 500;
+  --text-label-xs: 11px;
+  --text-label-xs--line-height: 14px;
+  --text-label-xs--letter-spacing: 0.02em;
+  --text-label-xs--font-weight: 600;
+  --text-code-sm: 12px;
+  --text-code-sm--line-height: 16px;
+  --text-code-sm--font-weight: 500;
+
+  /* Formas: 4 px microcomponentes (rounded-base), 8 px contenedores (rounded-lg), círculo (rounded-full) */
+  --radius-base: 4px;
+  --radius-lg: 8px;
+
+  /* Espaciado con nombre (DESIGN.md); la escala numérica de Tailwind sigue disponible */
+  --spacing-gutter: 1rem;
+  --spacing-gutter-dense: 0.5rem;
+  --spacing-margin: 1.5rem;
+  --spacing-margin-compact: 1rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 0.75rem;
+  --spacing-space-lg: 1.25rem;
+  --spacing-space-xl: 2rem;
+
+  /* Anchos de modal: 480 px (reserva y confirmación) y 640 px (formularios de administración) */
+  --container-modal-sm: 480px;
+  --container-modal-md: 640px;
+
+  /* Elevación */
+  --shadow-elevated: 0 1px 3px 0 rgb(15 23 42 / 0.05), 0 1px 2px -1px rgb(15 23 42 / 0.05);
+  --shadow-modal: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 10px -6px rgb(15 23 42 / 0.1);
+}
+
+/* Cifras tabulares para horas, capacidades y contadores (DESIGN.md, Tipografía). */
+@utility tnum {
+  font-feature-settings: 'tnum' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-on-surface);
+    background-color: var(--color-canvas);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md--line-height);
+  }
+
+  /* Foco visible en todo elemento enfocable con teclado (spec §11). */
+  :focus-visible {
+    outline: 2px solid var(--color-primary-container);
+    outline-offset: 2px;
+  }
+}
