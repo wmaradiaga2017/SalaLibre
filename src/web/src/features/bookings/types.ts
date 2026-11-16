@@ -1,26 +1,7 @@
 /** Objetos del API que usa la agenda (spec §8). */
 
-export type Equipment = 'PROJECTOR' | 'VIDEOCONF' | 'WHITEBOARD' | 'TV';
-
-/** Lista fija de equipos (RN-22, D-25), en el orden en que se muestran. */
-export const EQUIPMENT: readonly Equipment[] = ['PROJECTOR', 'VIDEOCONF', 'WHITEBOARD', 'TV'];
-
-/** Etiquetas en español (notas de T08 en el backlog). */
-export const EQUIPMENT_LABELS: Record<Equipment, string> = {
-  PROJECTOR: 'Proyector',
-  VIDEOCONF: 'Videoconferencia',
-  WHITEBOARD: 'Pizarra',
-  TV: 'TV',
-};
-
-export interface Room {
-  id: string;
-  name: string;
-  capacity: number;
-  location: string;
-  equipment: Equipment[];
-  isActive: boolean;
-}
+/** Salas y equipamiento: los define `features/rooms` (T10); se reexportan para la agenda. */
+export { EQUIPMENT, EQUIPMENT_LABELS, type Equipment, type Room } from '../rooms/types';
 
 export interface BookingPerson {
   id: string;

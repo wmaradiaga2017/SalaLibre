@@ -2,7 +2,7 @@ import { Users, X } from 'lucide-react';
 import { useId } from 'react';
 import { Button, CheckboxGroup, Input } from '../../shared/ui';
 import { hasFilters, NO_FILTERS, type RoomFilterValue } from './agenda-logic';
-import { EQUIPMENT_ICONS } from './equipment-icons';
+import { EQUIPMENT_ICONS } from '../rooms/equipment-icons';
 import { EQUIPMENT, EQUIPMENT_LABELS, type Equipment } from './types';
 
 const EQUIPMENT_OPTIONS = EQUIPMENT.map((e) => ({ value: e, label: EQUIPMENT_LABELS[e], icon: EQUIPMENT_ICONS[e] }));

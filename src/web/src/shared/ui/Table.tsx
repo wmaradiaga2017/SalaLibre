@@ -25,7 +25,8 @@ interface TableProps<T> {
 /** Tabla administrativa: superficie blanca, encabezado `label-xs` en mayúsculas y filas separadas por el borde. */
 export function Table<T>({ caption, columns, rows, rowKey, className }: TableProps<T>) {
   return (
-    <div className={cn('overflow-x-auto rounded-lg border border-divider bg-surface-container-lowest', className)}>
+    // `relative`: los textos `sr-only` (posición absoluta) quedan dentro del desplazamiento de la tabla y no ensanchan la página.
+    <div className={cn('relative overflow-x-auto rounded-lg border border-divider bg-surface-container-lowest', className)}>
       <table className="w-full border-collapse text-left text-body-md">
         <caption className="sr-only">{caption}</caption>
         <thead className="bg-mist">

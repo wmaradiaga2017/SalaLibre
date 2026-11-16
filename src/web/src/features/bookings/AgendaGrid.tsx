@@ -13,7 +13,7 @@ import {
 } from './agenda-config';
 import { bookingMinutes, bookingsByRoom, occupiedSlots } from './agenda-logic';
 import { BookingCard } from './BookingCard';
-import { EQUIPMENT_ICONS } from './equipment-icons';
+import { EQUIPMENT_ICONS } from '../rooms/equipment-icons';
 import { EQUIPMENT_LABELS, type Booking, type Room } from './types';
 
 interface AgendaGridProps {
