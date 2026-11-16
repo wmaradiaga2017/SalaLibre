@@ -7,7 +7,11 @@ import { useAuth } from '../auth/auth-context';
 import { agendaDays, hasFilters, NO_FILTERS, visibleRooms, type RoomFilterValue } from './agenda-logic';
 import { useBookings, useClosures, useRooms } from './agenda-queries';
 import { AgendaGrid } from './AgendaGrid';
+import { actionNow, canCancel } from './booking-actions';
+import { BookingDetailDialog } from './BookingDetailDialog';
 import { BookingFormModal, type SlotSelection } from './BookingFormModal';
+import { CancelBookingDialog } from './CancelBookingDialog';
+import type { Booking } from './types';
 import { DayPicker } from './DayPicker';
 import { RoomFilters } from './RoomFilters';
 
@@ -27,6 +31,10 @@ export function AgendaPage() {
   const [filters, setFilters] = useState<RoomFilterValue>(NO_FILTERS);
   // Hueco elegido: abre el formulario de reserva (F-02 paso 3, T08a).
   const [slot, setSlot] = useState<SlotSelection | null>(null);
+  // Reserva elegida: primero su detalle y, si corresponde, la confirmación de cancelar (T09, F-04).
+  const [detail, setDetail] = useState<Booking | null>(null);
+  const [cancelling, setCancelling] = useState<Booking | null>(null);
+  const isAdmin = user?.role === 'ADMIN';
 
   const rooms = useRooms();
   const bookings = useBookings(day);
@@ -90,6 +98,7 @@ export function AgendaPage() {
         bookings={bookings.data ?? []}
         closed={closure !== undefined}
         onSelectSlot={(roomId, startAt) => setSlot({ roomId, startAt })}
+        onSelectBooking={setDetail}
       />
     );
   }
@@ -121,6 +130,20 @@ export function AgendaPage() {
       {content}
 
       {slot && <BookingFormModal slot={slot} rooms={activeRooms} onClose={() => setSlot(null)} />}
+
+      {detail && (
+        <BookingDetailDialog
+          booking={detail}
+          cancellable={canCancel(detail, isAdmin, actionNow(now, bookings.dataUpdatedAt))}
+          onClose={() => setDetail(null)}
+          onCancel={() => {
+            setDetail(null);
+            setCancelling(detail);
+          }}
+        />
+      )}
+
+      {cancelling && <CancelBookingDialog booking={cancelling} onClose={() => setCancelling(null)} />}
     </section>
   );
 }

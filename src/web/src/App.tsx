@@ -5,6 +5,7 @@ import { AccountPage } from './features/auth/AccountPage';
 import { AuthProvider } from './features/auth/AuthProvider';
 import { LoginPage } from './features/auth/LoginPage';
 import { AgendaPage } from './features/bookings/AgendaPage';
+import { MyBookingsPage } from './features/bookings/MyBookingsPage';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
 import { RequireRole } from './features/auth/RequireRole';
 import { SessionLayout } from './features/auth/SessionLayout';
@@ -30,7 +31,7 @@ export function App() {
                 <Route element={<SessionLayout />}>
                   <Route index element={<Navigate to="/agenda" replace />} />
                   <Route path="/agenda" element={<AgendaPage />} />
-                  <Route path="/my-bookings" element={<PlaceholderPage title="Mis reservas" />} />
+                  <Route path="/my-bookings" element={<MyBookingsPage />} />
                   <Route path="/account" element={<AccountPage />} />
                   <Route path="/admin" element={<RequireRole role="ADMIN" />}>
                     <Route index element={<Navigate to="/agenda" replace />} />

@@ -10,6 +10,8 @@ export const agendaKeys = {
   rooms: ['rooms'] as const,
   bookingsOf: (date: string) => ['bookings', 'day', date] as const,
   bookings: ['bookings'] as const,
+  /** Mis reservas (T09). Cuelga de `bookings`: invalidar `agendaKeys.bookings` recarga también esta lista. */
+  mine: ['bookings', 'mine'] as const,
   closures: ['closures'] as const,
 };
 

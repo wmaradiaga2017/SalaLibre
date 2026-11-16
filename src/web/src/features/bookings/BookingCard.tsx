@@ -6,15 +6,18 @@ import type { Booking } from './types';
 
 interface BookingCardProps {
   booking: Booking;
+  /** Abre el detalle de la reserva (T09: título según rol, dueño y, si corresponde, "Cancelar"). */
+  onSelect: (booking: Booking) => void;
 }
 
 /**
  * Bloque de reunión (DESIGN.md, Componentes 1): posicionado de su inicio a su fin, con franja izquierda de 3 px
  * según de quién es (azul la propia, rojo de "Ocupada" la ajena), texto principal, rango horario y dueño.
  * Privacidad (RN-17, D-20): si la API no envió el título, se muestra "Ocupado"; nunca se reconstruye.
- * Las de menos de 30 min usan la tarjeta compacta en línea: texto principal, duración y dueño (CA9). En T08 no tiene acciones (cancelar es T09).
+ * Las de menos de 30 min usan la tarjeta compacta en línea: texto principal, duración y dueño (CA9).
+ * Es un botón (T09): con clic, Enter o Espacio abre el detalle de la reserva.
  */
-export function BookingCard({ booking }: BookingCardProps) {
+export function BookingCard({ booking, onSelect }: BookingCardProps) {
   const { top, height, minutes } = bookingBox(booking);
   const headline = bookingHeadline(booking);
   const range = `${formatTime(new Date(booking.startAt))}–${formatTime(new Date(booking.endAt))}`;
@@ -24,13 +27,17 @@ export function BookingCard({ booking }: BookingCardProps) {
   const tall = minutes >= 60;
 
   return (
-    <article
+    <button
+      type="button"
+      onClick={() => onSelect(booking)}
       aria-label={label}
+      aria-haspopup="dialog"
       title={label}
       style={{ top, height }}
       className={cn(
-        'absolute inset-x-1 z-[1] overflow-hidden rounded-base border border-divider border-l-[3px]',
-        'bg-surface-container-lowest text-on-surface shadow-elevated',
+        'absolute inset-x-1 z-[1] scroll-mt-20 scroll-ml-16 overflow-hidden rounded-base border border-divider border-l-[3px] text-left',
+        'bg-surface-container-lowest text-on-surface shadow-elevated hover:bg-surface-container-low',
+        'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-primary-container',
         booking.isMine ? 'border-l-primary-container' : 'border-l-busy',
         compact ? 'flex items-center gap-space-xs px-space-sm' : 'flex flex-col px-space-sm py-px',
         tall && 'gap-space-xs py-space-xs',
@@ -60,6 +67,6 @@ export function BookingCard({ booking }: BookingCardProps) {
           </span>
         </>
       )}
-    </article>
+    </button>
   );
 }

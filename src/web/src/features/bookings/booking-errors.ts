@@ -1,5 +1,5 @@
 /**
- * Errores de `POST /bookings` (spec §5 y §8, T08a CA3–CA5): un solo lugar con el mensaje en español de cada código y
+ * Errores de `POST /bookings` (spec §5 y §8, T08a CA3–CA5) y de `POST /bookings/:id/cancel` (T09 CA4): un solo lugar con el mensaje en español de cada código y
  * el campo del formulario al que corresponde. Los que no tienen campo van al banner del formulario con su `requestId`.
  * Las validaciones del cliente son comodidad: la API decide (RN-01 a RN-10).
  */
@@ -36,7 +36,13 @@ export const BOOKING_ERRORS: Partial<Record<string, BookingErrorInfo>> = {
   ROOM_INACTIVE: { message: 'La sala está desactivada y no admite reservas. Elige otra sala.', field: 'roomId' },
   // RN-10
   DAY_CLOSED: { message: 'Ese día está cerrado y no admite reservas.' },
+  // RN-12 (cancelar, T09 CA4)
+  BOOKING_ALREADY_STARTED: { message: 'La reserva ya empezó y no se puede cancelar.' },
+  BOOKING_ALREADY_CANCELLED: { message: 'La reserva ya estaba cancelada.' },
 };
+
+/** Errores de cancelar que solo indican que la vista estaba desactualizada: se avisa y se recarga (T09 CA4). */
+export const STALE_CANCEL_ERRORS: ReadonlySet<string> = new Set(['BOOKING_ALREADY_STARTED', 'BOOKING_ALREADY_CANCELLED']);
 
 /** Mensaje y campo de un error de la API. Si el código no está en el mapa, se usa el mensaje del `apiClient`. */
 export function bookingErrorInfo(error: ApiError): BookingErrorInfo {

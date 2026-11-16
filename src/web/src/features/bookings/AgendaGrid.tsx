@@ -28,6 +28,8 @@ interface AgendaGridProps {
   closed: boolean;
   /** Clic o Enter en un hueco libre (T08 CA7): abre el formulario de reserva (T08a). */
   onSelectSlot: (roomId: string, startAt: Date) => void;
+  /** Clic, Enter o Espacio en una reserva: abre su detalle (T09). */
+  onSelectBooking: (booking: Booking) => void;
 }
 
 const HOURS = SLOT_STARTS.filter((m) => m % 60 === 0);
@@ -36,7 +38,16 @@ const HOURS = SLOT_STARTS.filter((m) => m % 60 === 0);
  * Línea de tiempo (DESIGN.md, «Arquitectura de la línea de tiempo»): eje de horas fijo de 64 px, una columna por
  * sala (≥ 180 px, reparto igual y desplazamiento horizontal si no caben) y 52 franjas de 15 min de 16 px.
  */
-export function AgendaGrid({ date, isToday, now, rooms, bookings, closed, onSelectSlot }: AgendaGridProps) {
+export function AgendaGrid({
+  date,
+  isToday,
+  now,
+  rooms,
+  bookings,
+  closed,
+  onSelectSlot,
+  onSelectBooking,
+}: AgendaGridProps) {
   const byRoom = useMemo(() => bookingsByRoom(bookings), [bookings]);
   // Instante de inicio de cada franja del día (una sola vez por fecha).
   const slotTimes = useMemo(() => SLOT_STARTS.map((m) => zonedInstant(date, m)), [date]);
@@ -91,6 +102,7 @@ export function AgendaGrid({ date, isToday, now, rooms, bookings, closed, onSele
             bookings={byRoom.get(room.id) ?? []}
             closed={closed}
             onSelectSlot={onSelectSlot}
+            onSelectBooking={onSelectBooking}
             nowLineTop={showNowLine ? (nowMinutes - OPEN_MINUTES) * PX_PER_MINUTE : null}
           />
         ))}
@@ -150,10 +162,20 @@ interface RoomColumnProps {
   bookings: Booking[];
   closed: boolean;
   onSelectSlot: (roomId: string, startAt: Date) => void;
+  onSelectBooking: (booking: Booking) => void;
   nowLineTop: number | null;
 }
 
-function RoomColumn({ room, slotTimes, nowMs, bookings, closed, onSelectSlot, nowLineTop }: RoomColumnProps) {
+function RoomColumn({
+  room,
+  slotTimes,
+  nowMs,
+  bookings,
+  closed,
+  onSelectSlot,
+  onSelectBooking,
+  nowLineTop,
+}: RoomColumnProps) {
   const taken = useMemo(() => occupiedSlots(bookings), [bookings]);
 
   return (
@@ -201,7 +223,7 @@ function RoomColumn({ room, slotTimes, nowMs, bookings, closed, onSelectSlot, no
         );
       })}
       {bookings.map((b) => (
-        <BookingCard key={b.id} booking={b} />
+        <BookingCard key={b.id} booking={b} onSelect={onSelectBooking} />
       ))}
       {nowLineTop !== null && (
         <div
