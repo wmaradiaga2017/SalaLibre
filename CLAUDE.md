@@ -406,3 +406,27 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   No hay campo de confirmación (el spec no lo pide).
 - **Verificación con usuarios del seed:** si una prueba cambia la contraseña de uno, se restaura la del seed al terminar
   y se comprueba con un login por `curl`.
+
+### Login visual fijado en T07c (ver `docs/tareas/T07c.md` §6 y §7; B-124, B-127)
+- **Estructura:** `LoginPage` compone la pantalla; `AnimatedCharacters` (SVG propio) solo recibe `focus`,
+  `passwordVisible` y `submitStatus`, nunca la contraseña. La pose sale de la función pura `characterState.ts`
+  (prioridad `loading`/`error`/`success` > `peeking` > `password` > `email` > `idle`) y las poses viven en
+  `animated-characters.css` según `data-pose`. El cursor lo sigue `useCharacterLook.ts` (un listener y un
+  `requestAnimationFrame`, limpiados al desmontar). No agregar librerías de animación.
+- **`LoginForm`** expone además `afterPassword` (enlace "¿Olvidaste tu contraseña?") y `successDelayMs` (tope 1000 ms;
+  `LoginPage` usa 700, o 0 con movimiento reducido) y una región `role="status"`. `PasswordField` no quita el foco del
+  campo al pulsar el ojo con el ratón (`onMouseDown` con `preventDefault`).
+- **Colores que no son utilidades de Tailwind** (degradados del SVG): tokens en un bloque `@theme static` de
+  `index.css` (como `--color-char-*`), usados con `var(--color-…)`. Nunca hex en componentes ni en CSS de features.
+- **Animaciones CSS en SVG:** la animación reemplaza el `transform` del elemento animado; la posición va en un `<g
+  transform>` que lo envuelve (B-124). Toda animación se apaga con `@media (prefers-reduced-motion: reduce)` y en
+  ese modo los estados se siguen distinguiendo sin movimiento; el JS consulta `usePrefersReducedMotion()`.
+- **Login responsive:** dos columnas desde 1024 px (`lg`); por debajo, cabecera compacta (logo e ilustración, sin
+  titular ni pie). La tarjeta mide `clamp(480px, 100dvh − 48px, 812px)` y la ilustración ocupa el alto restante
+  (`flex-1`, `preserveAspectRatio="xMidYMax meet"`). No volver a un alto mínimo fijo (B-127).
+- **Verificación de pantallas a pantalla completa:** al 100 % de zoom y en ventanas bajas, no solo en la del navegador
+  de pruebas (que puede estar con otro zoom: B-127 pasó por verificar al 67 %). Medir con iframes de tamaño fijo en px
+  CSS (por ejemplo 1366×607, 1280×600, 1024×560, 1920×937, 768×900, 390×700 y 360×640) que `scrollHeight` y
+  `scrollWidth` no superen la ventana, y anotar las medidas en `docs/tareas/Txx.md`.
+- **`prefers-reduced-motion` no se puede emular** con la herramienta del navegador del agente: se comprueban las reglas
+  en `document.styleSheets` y la emulación en DevTools queda como paso manual de la revisión.
