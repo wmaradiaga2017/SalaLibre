@@ -336,3 +336,32 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   envía `X-Request-Id` para encontrar las filas de una petición.
 - **`audit_logs` no se limpia entre pruebas** (el trigger lo impide): comparar por `requestId` o por diferencia de
   `COUNT`, nunca por un total fijo. Las verificaciones manuales dejan filas permanentes en la base de desarrollo.
+
+### Sistema visual fijado en T07a (ver `docs/tareas/T07a.md` §2, §6 y §7)
+- **Sin `tailwind.config.*`:** Tailwind 4 (`@tailwindcss/vite`) se configura en CSS. Todos los tokens viven en el
+  `@theme` de `src/web/src/index.css`; un token nuevo se agrega ahí, con su nombre y su origen en `DESIGN.md`.
+- **La paleta por defecto de Tailwind está quitada** (`--color-*: initial`): `bg-blue-500`, `text-slate-600`,
+  `bg-white` o `text-black` no existen. Usar los tokens (`bg-primary-container`, `text-on-surface`,
+  `bg-surface-container-lowest`…) y los nombres agregados para lo que `DESIGN.md` da solo en texto: `canvas`, `mist`,
+  `divider`, `ink`, `interactive`, `scrim`, y los tonos de insignia `available-*`, `busy-*`, `maintenance-*`.
+  No volver a activar la paleta ni escribir hex, `rgb()` o colores arbitrarios (`bg-[#…]`) en componentes.
+- **Formas y medidas:** `rounded-base` (4 px, controles e insignias), `rounded-lg` (8 px, contenedores y modales),
+  `rounded-full` (avatares y píldoras); tipografía con `text-headline-*`, `text-body-*`, `text-label-*`, `text-code-sm`
+  (ya traen alto de línea, espaciado y peso); espaciado con nombre (`gutter`, `margin`, `space-*`); modales
+  `max-w-modal-sm` (480 px) y `max-w-modal-md` (640 px); sombras `shadow-elevated` y `shadow-modal`. Horas, fechas y
+  capacidades siempre con la utilidad `tnum`.
+- **Fuente e iconos locales:** Inter con `@fontsource-variable/inter` (importada en `main.tsx`, familia
+  `'Inter Variable'`) e iconos con `lucide-react` (no Material Symbols). Nunca fuentes, iconos, imágenes ni scripts
+  por CDN o URL externa; los iconos van con `aria-hidden="true"` y el estado siempre lleva texto.
+- **Componentes base en `src/web/src/shared/ui/`**, importados desde `shared/ui` (el `index.ts`): las pantallas los
+  reutilizan en lugar de repetir estilos. Formularios con `Field` (render prop que entrega `id`, `aria-describedby` y
+  `aria-invalid` al control), diálogos con `Modal`/`ConfirmDialog` (nunca `alert()` ni `confirm()`), avisos con
+  `useToast()` dentro de `ToastProvider` (lo monta T07), errores del API con `ErrorState` o `Banner` y su `requestId`.
+  `Badge` solo ofrece tonos: cada pantalla decide el tono de cada estado.
+- **Contraste AA:** el texto de ejemplo de los campos usa `on-surface-variant`, no `outline` (4,49:1 sobre blanco).
+  Al combinar un token de texto con uno de fondo que no esté en la tabla de `docs/tareas/T07a.md` §2, medir el
+  contraste y anotarlo en el documento de la tarea.
+- **Sin pruebas automáticas de frontend (S-09):** el comportamiento accesible (foco, Escape, `aria-*`) se comprueba en
+  el navegador. Si se usa una página temporal de demostración, se borra antes del commit (no hay página de demo
+  permanente). En `react-refresh`, los hooks y helpers van en archivos aparte de los componentes (como
+  `toast-context.ts` e `initials.ts`) para que el lint no dé avisos.
