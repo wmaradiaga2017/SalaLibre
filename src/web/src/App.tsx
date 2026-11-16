@@ -17,8 +17,8 @@ import { createQueryClient } from './shared/queryClient';
 import { ToastProvider } from './shared/ui';
 
 /**
- * Rutas de spec §9. `/login` es pública; el resto exige sesión y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son
- * marcadores hasta sus tareas (T10c).
+ * Rutas de spec §9. `/login` es pública; el resto exige sesión y `/admin/*` exige `ADMIN` (RN-21). `/admin/audit`
+ * muestra un aviso: su pantalla (T10c) se recortó (D-34).
  */
 export function App() {
   const [queryClient] = useState(createQueryClient);
@@ -41,7 +41,15 @@ export function App() {
                     <Route path="rooms" element={<AdminRoomsPage />} />
                     <Route path="users" element={<AdminUsersPage />} />
                     <Route path="closures" element={<AdminClosuresPage />} />
-                    <Route path="audit" element={<PlaceholderPage title="Auditoría" />} />
+                    <Route
+                      path="audit"
+                      element={
+                        <PlaceholderPage title="Auditoría" notice="Esta sección se recortó de esta versión">
+                          La pantalla de consulta de la auditoría no se incluyó por falta de tiempo. Todas las
+                          operaciones se siguen registrando en la auditoría y se pueden consultar a través del API.
+                        </PlaceholderPage>
+                      }
+                    />
                   </Route>
                   <Route path="*" element={<Navigate to="/agenda" replace />} />
                 </Route>

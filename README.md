@@ -53,8 +53,8 @@ El seed crea además 5 salas activas (Copán, Roatán, Lempira, Morazán y Pico 
 Las reglas de negocio (horario 07:00–20:00 de lunes a viernes en `America/Tegucigalpa`, bloques de 15 min,
 hasta 4 h, hasta 30 días de anticipación, sin choques ni con concurrencia) están en `docs/01-spec.md` §5.
 
-**Recortado:** la pantalla de auditoría (`/admin/audit`, tarea T10c) no se construyó (D-34); el enlace muestra una
-página de marcador. La auditoría sí se registra en cada escritura y un ADMIN la consulta por la API con
+**Recortado:** la pantalla de auditoría (`/admin/audit`, tarea T10c) no se construyó (D-34); el enlace lleva a un
+aviso que lo explica. La auditoría sí se registra en cada escritura y un ADMIN la consulta por la API con
 `POST /api/audit-logs/search`.
 
 ## Pruebas

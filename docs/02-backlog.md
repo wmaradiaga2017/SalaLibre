@@ -1078,7 +1078,7 @@ curl -s -b /tmp/admin.txt -H "$H" -d '{"page":1,"pageSize":20}' $BASE/audit-logs
 
 **Notas para el agente:** **Recortable** junto con T06a. Si T06a no se hizo, esta tarea no se ejecuta.
 
-**Recorte (D-34, B-170):** la persona recortó esta tarea el 2026-11-16 por falta de tiempo. **No se ejecuta.** La auditoría se sigue escribiendo (T06a) y se consulta con `POST /api/audit-logs/search`. El enlace "Auditoría" del ADMIN sigue mostrando la página de marcador de `/admin/audit`; qué hacer con él se decide en T11. Se declara en `docs/04-cierre.md`.
+**Recorte (D-34, B-170):** la persona recortó esta tarea el 2026-11-16 por falta de tiempo. **No se ejecuta.** La auditoría se sigue escribiendo (T06a) y se consulta con `POST /api/audit-logs/search`. El enlace "Auditoría" del ADMIN sigue mostrando la página de marcador de `/admin/audit`; qué hacer con él se decide en T11. **Decidido en T11 (B-174):** la página muestra un aviso de que la sección se recortó. Se declara en `docs/04-cierre.md`.
 
 ---
 

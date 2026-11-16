@@ -453,9 +453,9 @@ Stack según D-01. Cada módulo de `api` sigue Controller → Service → Domini
 ## 12. Estrategia de pruebas
 
 **Comandos**
-- Unitarias (dominio, sin base): `npm --prefix api test`.
+- Unitarias (dominio, sin base): `npm --prefix src/api test`.
 - Integración contra PostgreSQL real: `docker compose --profile test run --rm api-test` (S-08).
-- Lint: `npm --prefix api run lint` y `npm --prefix web run lint`.
+- Lint: `npm --prefix src/api run lint` y `npm --prefix src/web run lint`.
 - Humo: `docker compose up` desde un clon limpio y login con el seed en `http://localhost:8080`.
 
 Los nombres de prueba incluyen la regla, por ejemplo `it('RN-01 · …')`.

@@ -593,5 +593,6 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **T10c (pantalla de auditoría `/admin/audit`) no se ejecuta:** la persona la recortó por falta de tiempo. No crear
   `features/audit/` ni la pantalla, aunque el spec §9 la liste; el recorte se declara en `docs/04-cierre.md` (T11).
 - La auditoría sigue completa en la API (T06a) y se consulta con `POST /api/audit-logs/search` (solo ADMIN).
-- El enlace "Auditoría" del ADMIN y su `PlaceholderPage` en `/admin/audit` quedan como están hasta que la persona decida
-  en T11; no quitarlos ni cambiarlos sin que lo pida.
+- Decidido en T11 (B-174): el enlace "Auditoría" del ADMIN se mantiene y `/admin/audit` muestra `PlaceholderPage` con
+  un aviso (`Banner` `info`) de que la sección se recortó y la auditoría se sigue registrando. No quitarlo ni cambiarlo
+  sin que la persona lo pida.

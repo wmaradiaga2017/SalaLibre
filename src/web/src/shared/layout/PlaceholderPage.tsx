@@ -1,15 +1,27 @@
-import { EmptyState } from '../ui';
+import type { ReactNode } from 'react';
+import { Banner } from '../ui';
 
-/** Marcador de una ruta cuyo contenido llega en una tarea posterior (T07: solo rutas y navegación). */
-export function PlaceholderPage({ title }: { title: string }) {
+interface PlaceholderPageProps {
+  title: string;
+  /** Título del aviso. */
+  notice: string;
+  /** Explicación del aviso. */
+  children?: ReactNode;
+}
+
+/**
+ * Página de una sección que existe en la navegación pero no tiene pantalla. Hoy solo la usa `/admin/audit`, porque
+ * T10c se recortó (D-34): muestra un aviso en lugar de una pantalla vacía.
+ */
+export function PlaceholderPage({ title, notice, children }: PlaceholderPageProps) {
   return (
     <section aria-labelledby="titulo-pagina" className="mx-auto flex max-w-5xl flex-col gap-space-lg">
       <h1 id="titulo-pagina" className="text-headline-lg text-ink">
         {title}
       </h1>
-      <div className="rounded-lg border border-divider bg-surface-container-lowest">
-        <EmptyState title="Pantalla en construcción" />
-      </div>
+      <Banner tone="info" title={notice}>
+        {children}
+      </Banner>
     </section>
   );
 }
