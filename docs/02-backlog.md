@@ -61,7 +61,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 3 | T02a | Plataforma transversal de la API: request ID, logger, filtro de errores, ValidationPipe, helmet, Swagger, TransactionRunner | T02 | M | No | Hecha | [T02a](tareas/T02a.md) |
 | 4 | T03 | Auth: login y logout con cookie, `/me`, guard global (denegación por defecto), `RolesGuard` | T02a | M | No | Hecha | [T03](tareas/T03.md) |
 | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Hecha | [T03a](tareas/T03a.md) |
-| 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | En revisión | [T04](tareas/T04.md) |
+| 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tareas/T04.md) |
 | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Pendiente | |
 | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | Pendiente | |
 | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | Pendiente | |
@@ -335,7 +335,7 @@ npm --prefix src/api test -- auth && npm --prefix src/api run lint
 | Dependencias | T03 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: `GET` autenticado (`EMPLOYEE` solo activas, `ADMIN` todas); `POST` y `PATCH` solo ADMIN. Auditoría: `ROOM_CREATED` y `ROOM_UPDATED`, que se conectan en T06a. OWASP A01: el filtro por rol vive en el servicio, no en la UI; A03: DTO con enum de equipamiento |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/rooms/**`: controller, service, `rooms.repository.ts` (interfaz), `prisma-rooms.repository.ts`, dto.
