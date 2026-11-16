@@ -74,7 +74,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, selector de día, filtros, cierres | T05b, T07 | L | No | Hecha | [T08](tareas/T08.md) |
 | 17 | T08a | Reservar desde la agenda: formulario modal y manejo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
 | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T09.md) |
-| 19 | T10 | Admin de salas | T04, T07 | M | No | En revisión | [T10](tareas/T10.md) |
+| 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10](tareas/T10.md) |
 | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendiente | |
 | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente | |
 | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, T07 | M | **Sí** | Pendiente | |
@@ -923,12 +923,12 @@ docker compose up -d --build
 ## T10 · Admin de salas
 | Campo | Valor |
 |---|---|
-| Objetivo | Que RR. HH. administre las salas desde `/admin/rooms` |
+| Objetivo | Que RRHH administre las salas desde `/admin/rooms` |
 | Trazabilidad | RN-09, RN-21, RN-22 · D-14, D-25 · spec §6 (F-05), §9 (Salas) · diseño: prototipo `consola_de_administraci_n_y_reglas_de_rrhh`; Componentes 6 y 7 |
 | Dependencias | T04, T07 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: solo ADMIN (la API igual responde 403). Auditoría: la genera la API (`ROOM_CREATED`, `ROOM_UPDATED`, T06a) |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/rooms/`: `AdminRoomsPage`, `RoomFormModal`, hooks de lectura y escritura.
@@ -1005,7 +1005,7 @@ docker compose up -d --build
 ## T10b · Admin de cierres
 | Campo | Valor |
 |---|---|
-| Objetivo | Que RR. HH. registre y elimine días cerrados desde `/admin/closures`, sabiendo cuántas reservas se cancelarán |
+| Objetivo | Que RRHH registre y elimine días cerrados desde `/admin/closures`, sabiendo cuántas reservas se cancelarán |
 | Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, S-04, S-05 · spec §6 (F-07), §9 (Cierres) · diseño: sin prototipo (Componentes 6 y 7, modal y banner) |
 | Dependencias | T05b, T07 |
 | Estimación | M |

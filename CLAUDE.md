@@ -504,3 +504,30 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
     (en T09 un login dio 401 por eso).
 - **Datos que dejó la verificación de T09** en la base de desarrollo: el usuario `t09.vacia.<sufijo>@salalibre.local`
   (activo, sin reservas) y reservas `T09 …` canceladas como historial.
+
+### Admin de salas fijado en T10 (ver `docs/tareas/T10.md` §6 y §7; B-153)
+- **`features/rooms/` es dueño de las salas en el frontend:** `types.ts` (`Room`, `Equipment`, `EQUIPMENT`,
+  `EQUIPMENT_LABELS`, `ROOM_LIMITS` igual al API), `equipment-icons.tsx` y `rooms-queries.ts` (`roomKeys`, `useRooms`,
+  `useCreateRoom`, `useUpdateRoom`). La agenda los importa de ahí (`bookings/types.ts` reexporta; `agendaKeys.rooms` es
+  `roomKeys.all`). No volver a declarar `Room` ni el equipamiento en otra feature. Las pantallas de T10a–T10c siguen
+  el mismo criterio: los tipos y las consultas de una entidad viven en su feature.
+- **Toda mutación de salas invalida `roomKeys.all`** en `onSettled` (también ante error): así la agenda deja de mostrar
+  una sala desactivada sin recargar.
+- **Formularios de administración** (sala; después usuario y cierre): modal `size="md"` (640 px), esquema Zod con los
+  mismos límites que el DTO (texto obligatorio "no solo espacios" con `trim()` en el `refine`, sin recortar el valor
+  enviado), mapa de códigos del API a campos (`ROOM_NAME_TAKEN` → `name`; igual `EMAIL_TAKEN` en T10a) y candado síncrono
+  (`useRef`) contra el doble envío, como `RoomFormModal`. Editar manda solo los campos cambiados; sin cambios, se cierra
+  sin llamar al API (no deja una fila de auditoría vacía).
+- **Activar/desactivar en tablas:** botones con texto en la columna de acciones (no interruptor). Desactivar pasa por
+  `ConfirmDialog` con la consecuencia; activar es directo. Ambos con candado contra el doble clic y aviso del resultado.
+  El estado `isActive` no se edita en el modal.
+- **`shared/ui/Table` tiene `relative` en el contenedor:** sin él, los `sr-only` (posición absoluta) escapan del
+  `overflow-x-auto` y la página entera se desplaza en horizontal en pantallas estrechas (B-153). No quitarlo. Toda tabla
+  nueva se mide con iframes de 1920 a 360 px (`scrollWidth` del documento ≤ ancho de la ventana).
+- **Tamaño del bundle:** desde T10 `vite build` avisa que el JS supera 500 kB (505 kB). Es un aviso, no un error; dividir
+  el código no está pedido en ninguna tarea.
+- **Pendiente de decisión de la persona:** las reservas futuras de una sala inactiva no se pueden cancelar desde la UI
+  (la agenda no muestra salas inactivas, D-14). No agregar nada sin que lo diga el spec.
+- **Datos que dejó la verificación de T10** en la base de desarrollo: "Sala Prueba T10" **inactiva** y la reserva
+  "T10 reserva futura" cancelada. "Sala Prueba" (inactiva) ya existía antes. No hay `DELETE` de salas: en verificaciones
+  nuevas, usar nombres únicos y dejarlas inactivas al terminar para no agregar columnas a la agenda.
