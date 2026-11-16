@@ -11,7 +11,8 @@
     "build": "prisma generate && tsc -p tsconfig.build.json && tsc -p tsconfig.seed.json",
     "start": "node dist/main.js",
     "lint": "eslint .",
-    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js"
+    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js",
+    "test:int": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js --config test/integration/jest.config.json --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "12.5.0",

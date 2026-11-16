@@ -14,6 +14,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
+# Etapa de pruebas de integración (T06, S-08): parte de `build` (dependencias de desarrollo y cliente generado) y
+# agrega las pruebas. Solo la usa el servicio `api-test` del perfil `test`; la imagen de `api` no la construye.
+FROM build AS test
+COPY --chown=node:node test ./test
+USER node
+CMD ["sh", "test/integration/run.sh"]
+
 # Etapa 3: imagen final, sin root
 FROM node:24-alpine AS runtime
 ENV NODE_ENV=production
