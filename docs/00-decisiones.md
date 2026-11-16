@@ -39,6 +39,7 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 | D-31 | Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PAST` |
 | D-32 | Orden de validación de los errores |
 | D-33 | Swagger (`/api/docs`) solo fuera de producción |
+| D-34 | Se recorta T10c (pantalla de auditoría) |
 
 ---
 
@@ -307,3 +308,10 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Costo/riesgo:** Con `docker compose up` la documentación interactiva no está disponible; hay que correr la API fuera de producción para verla.
 - **Afecta a:** `docs/02-backlog.md` (T03: alcance, seguridad, CA8, verificación y notas), `CLAUDE.md` (Plataforma transversal fijada en T02a), `docs/tareas/T02a.md` §7
 
+## D-34 · Se recorta T10c (pantalla de auditoría)
+- **Duda:** T10c (pantalla `/admin/audit`, consulta paginada de la auditoría) está marcada como recortable en el backlog. ¿Se ejecuta?
+- **Opciones:** A) Ejecutarla. B) Recortarla y declararlo en `04-cierre.md`.
+- **Decisión:** B) La persona decidió recortar T10c el 2026-11-16 por **falta de tiempo** (B-170).
+- **Por qué:** Prioriza cerrar el proyecto con T11 (README y verificación desde un clon limpio).
+- **Costo/riesgo:** No hay pantalla de auditoría: se pierde F-08 en la UI y la fila "Auditoría" de spec §9 no se implementa. La auditoría sí se escribe en toda escritura de negocio, en la misma transacción y con su request ID (T06a: O4, RN-25, P-12 y P-15 se mantienen), y se consulta con `POST /api/audit-logs/search` (solo ADMIN). Con `docker compose up` Swagger no está disponible (D-33), así que la consulta es por `curl` o desde la consola del navegador con la sesión de un ADMIN. El enlace "Auditoría" de la navegación del ADMIN sigue llevando a `/admin/audit`, que muestra una página de marcador vacía (`PlaceholderPage`); por decisión de la persona, solo se documenta y se decide en T11.
+- **Afecta a:** `docs/02-backlog.md` (T10c: estado Recortada; T11: dependencia), `docs/04-cierre.md` (se declara en T11), `CLAUDE.md`

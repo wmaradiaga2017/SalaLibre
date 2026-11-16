@@ -29,7 +29,7 @@ Una tarea está **lista para el agente** cuando tiene:
 - [ ] Hay un commit `Txx: <título>`.
 
 ## Estados
-`Pendiente → Lista (cumple DoR) → En curso → En revisión (la reviso yo) → Hecha` · o `Bloqueada (motivo)`
+`Pendiente → Lista (cumple DoR) → En curso → En revisión (la reviso yo) → Hecha` · o `Bloqueada (motivo)` · o `Recortada (D-xx)` (solo tareas recortables, por decisión de la persona; se declara en `04-cierre.md`)
 
 ## Convenciones de verificación
 
@@ -77,7 +77,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10](tareas/T10.md) |
 | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | [T10a](tareas/T10a.md) |
 | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [T10b](tareas/T10b.md) |
-| 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, T07 | M | **Sí** | Pendiente | |
+| 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, T07 | M | **Sí** | Recortada (D-34) | |
 | 23 | T11 | README final y verificación desde un clon limpio | todas | S | No | Pendiente | |
 
 **Esfuerzo total estimado:** 4 L + 16 M + 3 S ≈ 12,75 h de ejecución del agente, sin contar la revisión. Si se recortan T06a y T10c se ahorra ≈ 1 h, pero se pierde O4 (auditoría), P-12, P-15, F-08 y parte de D-05: habría que declararlo en `04-cierre.md`. Recortar T07c ahorra ≈ 1 h más y solo afecta a lo visual: el login funcional queda en T07.
@@ -1049,7 +1049,7 @@ docker compose up -d --build
 | Dependencias | T06a, T07 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: solo lectura (esta pantalla no genera filas). OWASP A09 |
-| Estado | Pendiente |
+| Estado | Recortada (D-34) |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/audit/`: `AuditPage`, filtros, tabla, paginación, hook `useAuditSearch` sobre `POST /api/audit-logs/search`.
@@ -1077,6 +1077,8 @@ curl -s -b /tmp/admin.txt -H "$H" -d '{"page":1,"pageSize":20}' $BASE/audit-logs
 ```
 
 **Notas para el agente:** **Recortable** junto con T06a. Si T06a no se hizo, esta tarea no se ejecuta.
+
+**Recorte (D-34, B-170):** la persona recortó esta tarea el 2026-11-16 por falta de tiempo. **No se ejecuta.** La auditoría se sigue escribiendo (T06a) y se consulta con `POST /api/audit-logs/search`. El enlace "Auditoría" del ADMIN sigue mostrando la página de marcador de `/admin/audit`; qué hacer con él se decide en T11. Se declara en `docs/04-cierre.md`.
 
 ---
 

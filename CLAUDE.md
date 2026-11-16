@@ -588,3 +588,10 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   no tengan filas en `audit_logs` y se borran en el mismo script. Al terminar no quedan cierres en la base.
 - **Datos que dejó la verificación de T10b** en la base de desarrollo: la reserva "T10b reserva del miercoles" de
   empleado1 cancelada como historial. Bundle del frontend: 527 kB (aviso de Vite).
+
+### T10c recortada (D-34, B-170)
+- **T10c (pantalla de auditoría `/admin/audit`) no se ejecuta:** la persona la recortó por falta de tiempo. No crear
+  `features/audit/` ni la pantalla, aunque el spec §9 la liste; el recorte se declara en `docs/04-cierre.md` (T11).
+- La auditoría sigue completa en la API (T06a) y se consulta con `POST /api/audit-logs/search` (solo ADMIN).
+- El enlace "Auditoría" del ADMIN y su `PlaceholderPage` en `/admin/audit` quedan como están hasta que la persona decida
+  en T11; no quitarlos ni cambiarlos sin que lo pida.
