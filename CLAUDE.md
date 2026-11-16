@@ -388,5 +388,21 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   `{ error: '…' }` y `z.email()`. Los textos de error van en español y junto al campo.
 - **`LoginForm` y `PasswordField`** ya exponen `onFocusChange`, `onPasswordVisibleChange` y `onSubmitStatusChange` para
   T07c, que solo debe cambiar `LoginPage` y agregar los personajes, sin pasarles el valor de la contraseña.
-- **Pendiente de prueba:** el manejador general de 401 aún no se ejercitó en el navegador (solo `/me`); comprobarlo en
-  T07b o T08 con la primera pantalla que llame a la API.
+- **Manejador general de 401 comprobado en T07b:** con la sesión invalidada en el servidor, `PATCH /auth/password` dio
+  401 y la app llevó a `/login`.
+
+### Mi cuenta fijado en T07b (ver `docs/tareas/T07b.md` §6 y §7)
+- **Mutaciones que llevan contraseñas** (login, cambio, alta de usuario y reset en T10a): `useMutation({ …, gcTime: 0 })`
+  y, si el formulario sigue montado después del envío, `reset()` de la mutación en `onSettled`, para que la contraseña
+  no quede en la caché de TanStack Query. Nunca `console.log` de valores de formularios.
+- **Errores del API en formularios:** un error de regla de negocio que corresponde a un campo (`INVALID_CURRENT_PASSWORD`;
+  después, por ejemplo, `EMAIL_TAKEN` o `ROOM_NAME_TAKEN`) va a ese campo con `setError(campo, { message }, { shouldFocus:
+  true })` y el mensaje del API. Todo error inesperado o sin campo va a un `Banner` con su `requestId`, encima del formulario.
+- **Éxito de un formulario:** `useToast().show({ tone: 'success', message })` y limpiar el formulario con `reset(...)`.
+- **Validación del cliente igual a la del API** (por ejemplo, contraseña ≥ 8, RN-18), con mensajes en español junto al campo.
+  Si con eso el 400 del API no se puede provocar desde la pantalla, se comprueba con una petición directa y se anota en
+  `docs/tareas/Txx.md`.
+- **`PasswordField`** se reutiliza en todo campo de contraseña, con `autoComplete` `current-password` o `new-password`.
+  No hay campo de confirmación (el spec no lo pide).
+- **Verificación con usuarios del seed:** si una prueba cambia la contraseña de uno, se restaura la del seed al terminar
+  y se comprueba con un login por `curl`.
