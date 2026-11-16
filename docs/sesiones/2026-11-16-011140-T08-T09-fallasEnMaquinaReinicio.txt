@@ -1,0 +1,2058 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+> revisa en que estado quedo la ejecucion de la tarea: T08a ya que hubo un      
+  problema con la maquina                                                       
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Now let me look at the task card and the code written so far.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora compruebo si lo que hay compila y pasa el lint.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● T08a quedó a medias. Del código ya está escrita la mayor parte; falta toda la
+  verificación y el cierre. No se perdió nada, pero tampoco hay commit.
+
+  Registro
+  - La última fila de la bitácora es B-139 (2026-11-16 00:09): «Inicio de T08a…
+    En curso». Está en el archivo, pero sin commit.
+  - En docs/02-backlog.md, T08a sigue en Pendiente: no se llegó a pasar a "En
+    curso".
+  - docs/tareas/T08a.md no existe.
+
+  Código (sin commit)
+
+  Archivo: BookingFormModal.tsx
+  Estado: Completo: sala, inicio y fin cada 15 min, título, asistentes,
+  capacidad
+    visible, foco inicial en el título, errores en su campo o en un Banner con
+  el
+     requestId, y el botón de envío bloqueado mientras envía
+  ────────────────────────────────────────
+  Archivo: booking-form.ts
+  Estado: Completo: esquema Zod (título de 1 a 100, asistentes entero ≥ 1 y ≤
+    capacidad, duración de 15 min a 4 h) y las opciones de inicio y fin
+  ────────────────────────────────────────
+  Archivo: booking-errors.ts
+  Estado: Completo: mapa de códigos a mensajes en español con los 9 códigos de
+    CA3 a CA5
+  ────────────────────────────────────────
+  Archivo: useCreateBooking.ts
+  Estado: Completo: POST /bookings; recarga la agenda al crear y también ante un
+
+    409, un DAY_CLOSED o un ROOM_INACTIVE
+  ────────────────────────────────────────
+  Archivo: AgendaPage.tsx / AgendaGrid.tsx
+  Estado: Conectados: elegir un hueco abre el modal
+
+  Acabo de correr lint y build del frontend y los dos terminan sin errores. El
+  Modal ya devuelve el foco a lo que lo abrió, que es lo que pide CA7.
+
+  Falta
+  1. Docker no está corriendo. Hay que abrir Docker Desktop y luego docker 
+     compose up -d --build.
+  2. La verificación manual en el navegador: las dos sesiones (empleado1 y
+     empleado2) con el 409, título vacío, asistentes 0 y 9, los mensajes de los
+     422, Escape y el foco, y los 5 clics de CA8. Después hay que cancelar las
+     reservas de prueba.
+  3. Escribir docs/tareas/T08a.md con la salida real, poner T08a en el backlog,
+     sumar las filas de la bitácora y hacer el commit T08a: ….
+
+  En la bitácora sugiero agregar una fila ERROR (B-140) que registre la
+  interrupción por la falla de la máquina y que el trabajo se retoma desde este
+  punto. No la escribí porque solo pediste revisar.
+
+  ¿Retomo T08a desde aquí? Primero tendrías que abrir Docker Desktop.
+
+✻ Cooked for 2m 9s · done 0:29
+
+> si retoma el trabajo                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Docker ya está arriba. Registro la interrupción en la bitácora y levanto el
+  compose.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; cat >>
+      docs/03-bitacora.md <<'EOF'
+      | B-140 | 2026-11-16 00:37 | Agente | 3-Ejecutar | ERROR | T08a inte…)
+  ⎿   de T08a escrito sin commit (`BookingFormModal.tsx`, `booking-form.ts`
+     , `booking-errors.ts`, `useCreateBooking.ts`, conexión en `AgendaPage`
+     ); `lint` y `build` del frontend pasan; faltaban la verificación, `doc
+     … +10 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      141  | B-137 | 2026-11-16 00:06 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T08 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-136 | T08 Hecha |
+            docs/02-backlog.md, B-136 |
+      142  | B-138 | 2026-11-16 00:07 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T08, B
+           -136), CLAUDE.md (Dependencias) agrega la subsección «Agenda f
+           ijada en T08»: fechas solo con `shared/datetime` y `useNow`, h
+           orario y zona como constantes del spec, `agendaKeys` para inva
+           lidar en T08a y T09, la UI no decide disponibilidad, tarjetas 
+           con `title ?? 'Ocupado'` y dueño en toda variante, `onSelectSl
+           ot` como punto de conexión, `cn` sin fusión de clases, grillas
+            sin `min-w-max` y con `scroll-mt`, y cómo verificar "hoy" con
+            reloj simulado | Solo documentación; sin cambios de código | 
+           CLAUDE.md, docs/tareas/T08.md §6 y §7, B-133, B-136 |
+      143  | B-139 | 2026-11-16 00:09 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T08a (Reservar desde la agenda: formulario modal y man
+           ejo del 409). DoR comprobada: dependencia T08 en Hecha | En cu
+           rso | docs/02-backlog.md (T08a) |
+      144 +| B-140 | 2026-11-16 00:37 | Agente | 3-Ejecutar | ERROR | T08
+          +a interrumpida por una falla de la máquina. Al retomar: código
+          + de T08a escrito sin commit (`BookingFormModal.tsx`, `booking-
+          +form.ts`, `booking-errors.ts`, `useCreateBooking.ts`, conexión
+          + en `AgendaPage`); `lint` y `build` del frontend pasan; faltab
+          +an la verificación, `docs/tareas/T08a.md` y el commit. Se reto
+          +ma desde ahí | Sin pérdida de trabajo | B-139 |               
+  ⎿  (timeout 10m)
+
+● Antes de probar en el navegador, reviso las piezas compartidas que usa el
+  modal.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● El código ya cumple F-02 y la spec §9; voy a sacar el horario y los 30 días de
+  booking-errors.ts y ponerlos como constantes de agenda-config.ts para que no
+  se desincronicen. · summary
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/bookings"; node -e '
+      const fs=require("fs");const f="booking-errors.ts";let s=fs.rea…)
+  ⎿  8:import { CLOSE_MINUTES, MAX_DAYS_AHEAD, OPEN_MINUTES } from './agend
+     a-config';
+     9:import { MAX_DURATION, MIN_DURATION } from './booking-form';
+     … +15 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\booking-errors.ts (+6 -3)
+       4   * Las validaciones del cliente son comodidad: la API decide (R
+          N-01 a RN-10).
+       5   */
+       6  import type { ApiError } from '../../shared/apiClient';
+       7 +import { formatMinutes } from '../../shared/datetime';         
+       8 +import { CLOSE_MINUTES, MAX_DAYS_AHEAD, OPEN_MINUTES } from './
+         +agenda-config';                                                
+       9 +import { MAX_DURATION, MIN_DURATION } from './booking-form';   
+      10  
+      11  export type BookingField = 'roomId' | 'start' | 'end' | 'title'
+           | 'attendees';
+      12  
+     ...
+      21    // RN-02
+      22    INVALID_SLOT: { message: 'El inicio y el fin deben caer en bl
+          oques de 15 minutos (:00, :15, :30 o :45).' },
+      23    // RN-03
+      21 -  INVALID_DURATION: { message: 'La reserva debe durar entre 15 
+         -minutos y 4 horas.', field: 'end' },                           
+      24 +  INVALID_DURATION: { message: `La reserva debe durar entre ${M
+         +IN_DURATION} minutos y ${MAX_DURATION / 60} horas.`, field: 'en
+         +d' },                                                          
+      25    // RN-04
+      26    OUTSIDE_BUSINESS_HOURS: {
+      24 -    message: 'Solo se reserva de lunes a viernes, entre las 07:
+         -00 y las 20:00, dentro del mismo día.',                        
+      27 +    message: `Solo se reserva de lunes a viernes, entre las ${f
+         +ormatMinutes(OPEN_MINUTES)} y las ${formatMinutes(CLOSE_MINUTES
+         +)}, dentro del mismo día.`,                                    
+      28    },
+      29    // RN-05
+      30    BOOKING_IN_PAST: { message: 'Ese horario ya empezó. Elige un 
+          inicio posterior a la hora actual.', field: 'start' },
+      31    // RN-06
+      29 -  TOO_FAR_AHEAD: { message: 'Solo se puede reservar hasta 30 dí
+         -as por adelantado.', field: 'start' },                         
+      32 +  TOO_FAR_AHEAD: { message: `Solo se puede reservar hasta ${MAX
+         +_DAYS_AHEAD} días por adelantado.`, field: 'start' },          
+      33    // RN-07
+      34    CAPACITY_EXCEEDED: { message: 'Hay más asistentes que la capa
+          cidad de la sala.', field: 'attendees' },
+      35    // RN-09
+  ⎿  Updated src\web\src\features\bookings\booking-form.ts (+1 -1)
+      40        }
+      41        const duration = Number(v.end) - Number(v.start);
+      42        if (v.start && v.end && (duration < MIN_DURATION || durat
+          ion > MAX_DURATION)) {
+      43 -        ctx.addIssue({ code: 'custom', path: ['end'], message: 
+         -'La reserva debe durar entre 15 minutos y 4 horas.' });        
+      43 +        ctx.addIssue({ code: 'custom', path: ['end'], message: 
+         +`La reserva debe durar entre ${MIN_DURATION} minutos y ${MAX_DU
+         +RATION / 60} horas.` });                                       
+      44        }
+      45      });
+      46  }
+  ⎿  (timeout 5m)
+
+● Lint y tipos pasan. Reconstruyo web y paso a la verificación en el navegador.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Primero confirmo por curl qué códigos devuelve la API en cada caso. Después
+  hago la prueba en el navegador.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Uso el lunes 2026-11-23 para las pruebas (hoy es lunes, pero apenas pasada la
+  medianoche). Abro el navegador.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● Ya hay una sesión de Empleado Uno en el navegador. Elijo el lunes 23 y abro el
+  hueco Copán 10:00.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA1 cumple: sala e inicio precargados, capacidad visible, fin en pasos de 15
+  min. Ahora miro cómo se ve y pruebo la validación.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● La validación del cliente marca los dos campos. Ahora pruebo con un título
+  largo de 101 caracteres y 9 asistentes.
+
+  Called claude-in-chrome 7 times (ctrl+o to expand)
+
+● CA4 en el cliente cumple: no se envió ningún POST. Ahora pruebo que Escape
+  cierre el modal y que el foco vuelva al hueco (CA7).
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA7 cumple. Ahora el 409: abro el modal del hueco 10:00 como empleado1 y,
+  antes de enviar, empleado2 reserva 10:30–11:30 por curl.
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+
+● Empleado2 ya tomó 10:30–11:30. Ahora empleado1 envía 10:00–11:00 desde el
+  modal, sin recargar la agenda.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● CA3 pasa: aparece el banner de horario ocupado y la agenda se recarga. CA6
+  falla porque tres clics enviaron tres POST, ya que isPending sigue en false
+  durante la validación asíncrona; lo corrijo con un candado useRef tomado antes
+  de validar. · summary
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\web\src\features\bookings\BookingFormModal.tsx)
+  ⎿  Added 17 lines, removed 2 lines
+       88      if (!(e > s && endOptions(s).some((o) => Number(o.value) =
+           == e))) setValue('end', String(defaultEnd(s)));
+       89    };
+       90  
+       91 -  const onSubmit = handleSubmit((values) => {                 
+       92 -    if (createBooking.isPending) return;                      
+       91 +  // Candado síncrono contra el doble envío (CA6): `handleSubm
+          +it` valida de forma asíncrona, así que `isPending` sigue en   
+       92 +  // `false` si llegan varios clics antes de que se llame a `m
+          +utate`. Se toma antes de validar y se suelta al terminar.     
+       93 +  const submitting = useRef(false);                           
+       94 +  const release = () => {                                     
+       95 +    submitting.current = false;                               
+       96 +  };                                                          
+       97 +                                                              
+       98 +  const onSubmit = (event: FormEvent<HTMLFormElement>) => {   
+       99 +    if (submitting.current) {                                 
+      100 +      event.preventDefault();                                 
+      101 +      return;                                                 
+      102 +    }                                                         
+      103 +    submitting.current = true;                                
+      104 +    void handleSubmit(send, release)(event);                  
+      105 +  };                                                          
+      106 +                                                              
+      107 +  const send = (values: BookingFormValues) => {               
+      108      setFormError(null);
+      109      const s = Number(values.start);
+      110      const e = Number(values.end);
+
+● Update(src\web\src\features\bookings\BookingFormModal.tsx)
+  ⎿  Added 2 lines, removed 1 line
+      134              setFormError({ message: info.message, requestId: a
+           piError.requestId });
+      135            }
+      136          },
+      137 +        onSettled: release,                                   
+      138        },
+      139      );
+      139 -  });                                                         
+      140 +  };                                                          
+      141  
+      142    const roomOptions = rooms.map((r) => ({ value: r.id, label: 
+           `${r.name} · ${r.capacity} pax` }));
+      143  
+
+● Update(src\web\src\features\bookings\BookingFormModal.tsx)
+  ⎿  Added 1 line, removed 1 line
+      1  import { zodResolver } from '@hookform/resolvers/zod';
+      2  import { CalendarDays } from 'lucide-react';
+      3 -import { useEffect, useId, useMemo, useState } from 'react';    
+      3 +import { useEffect, useId, useMemo, useRef, useState, type FormE
+        +vent } from 'react';                                            
+      4  import { useForm, useWatch, type Resolver } from 'react-hook-for
+         m';
+      5  import { toApiError } from '../../shared/apiClient';
+      6  import { formatLongDate, formatMinutes, localDate, localMinutes,
+          zonedInstant } from '../../shared/datetime';
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Reconstruido. Repito la prueba de los tres clics, ahora con una reserva válida
+  (Copán 10:00–10:30), para comprobar a la vez CA6 y CA2.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● Con el candado sale un solo POST. El modal se cierra y la reserva aparece en
+  la agenda. Falta confirmar el aviso de éxito: lo busco en pantalla y en el
+  DOM.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● El aviso pudo haberse cerrado solo antes de que lo leyera. Hago otra reserva
+  (Lempira 12:00) y lo capturo con un observador del DOM.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● El aviso de reserva ya cumple CA2. Para CA5, como desde la pantalla casi no se
+  pueden provocar esos 422, voy a sustituir en la página la respuesta del POST
+  por cada cuerpo de error real y luego confirmaré con curl que la API los
+  devuelve. · summary
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Los ocho códigos ya tienen su mensaje en español, y los de campo marcan el
+  campo con foco mientras los demás van al banner con el requestId. Ahora
+  verifico con curl que la API real devuelve esos códigos. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Los códigos ya coinciden; no provoco ROOM_INACTIVE ni DAY_CLOSED porque ya los
+  cubren las pruebas de T05, T05b y T06. Ahora sigo con CA8: cerrar sesión y
+  contar los clics de empleado3 hasta completar su reserva. · summary
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● Clic 1: el campo de correo.
+
+  Called claude-in-chrome 7 times (ctrl+o to expand)
+
+● Clic 3: el hueco Roatán 09:00 de hoy.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● Clic 4: Reservar.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA8 cumple: 4 clics desde el login (correo, Iniciar sesión, hueco, Reservar).
+  Ahora cancelo todas las reservas de prueba.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Limpieza hecha. Cierro la pestaña y leo la plantilla de la ficha de tarea.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Corro la verificación final para pegar la salida real en la ficha.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Todo verde. Escribo docs/tareas/T08a.md.
+
+● Write(docs\tareas\T08a.md)
+  ⎿  Wrote 132 lines to docs\tareas\T08a.md
+       1 # T08a · Reservar desde la agenda
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha (en revisión) |
+       8 | Inicio – fin | 2026-11-16 00:09 – 00:47 (38 min, con una inter
+         rupción por falla de la máquina, B-140) · estimado: M |
+     … +124 lines (ctrl+o to expand)
+
+● Actualizo el estado en el backlog (en el resumen y en la ficha), igual que se
+  hizo con T08.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; sed -i '75s/|
+      T08 | M | No | Pendiente | |$/| T08 | M | No | En revisión |
+      [T08a](tareas\/T08a.md) |/'…)
+  ⎿  | 17 | T08a | Reservar desde la agenda: formulario modal y manejo del
+     409 | T08 | M | No | En revisión | [T08a](tareas/T08a.md) |
+     | Estado | En revisión |
+     2026-11-16 00:47
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Hecha | [T07b](tareas/T07b.md) |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T0
+          7c.md) |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75 -| 17 | T08a | Reservar desde la agenda: formulario modal y mane
+         -jo del 409 | T08 | M | No | Pendiente | |                      
+      75 +| 17 | T08a | Reservar desde la agenda: formulario modal y mane
+         +jo del 409 | T08 | M | No | En revisión | [T08a](tareas/T08a.md
+         +) |                                                            
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Pendiente | |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+     ...
+      849  | Dependencias | T08 |
+      850  | Estimación | M |
+      851  | Seguridad / auditoría | Roles: autenticado. Auditoría: la ge
+           nera la API (`BOOKING_CREATED`, T06a). Las validaciones del cl
+           iente son comodidad; la API decide |
+      852 -| Estado | Pendiente |                                        
+      852 +| Estado | En revisión |                                      
+      853  
+      854  **Alcance (archivos o módulos):**
+      855  - `src/web/src/features/bookings/BookingFormModal.tsx`, `useCr
+           eateBooking`, esquema Zod, selectores de inicio y fin en pasos
+            de 15 minutos, mapa de códigos de error a mensajes en español
+            en un solo archivo.
+
+  Ran 1 shell command (ctrl+o to expand)
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; cat >>
+      docs/03-bitacora.md <<'EOF'
+      | B-141 | 2026-11-16 00:47 | Agente | 3-Ejecutar | ERROR | T08a: en…)
+  ⎿  10:| Commit(s) | `T08a: Reservar desde la agenda: formulario modal y m
+     anejo del 409` (B-142) |
+     The file will have its original line endings in your working directory
+     … +11 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      142  | B-138 | 2026-11-16 00:07 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T08, B
+           -136), CLAUDE.md (Dependencias) agrega la subsección «Agenda f
+           ijada en T08»: fechas solo con `shared/datetime` y `useNow`, h
+           orario y zona como constantes del spec, `agendaKeys` para inva
+           lidar en T08a y T09, la UI no decide disponibilidad, tarjetas 
+           con `title ?? 'Ocupado'` y dueño en toda variante, `onSelectSl
+           ot` como punto de conexión, `cn` sin fusión de clases, grillas
+            sin `min-w-max` y con `scroll-mt`, y cómo verificar "hoy" con
+            reloj simulado | Solo documentación; sin cambios de código | 
+           CLAUDE.md, docs/tareas/T08.md §6 y §7, B-133, B-136 |
+      143  | B-139 | 2026-11-16 00:09 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T08a (Reservar desde la agenda: formulario modal y man
+           ejo del 409). DoR comprobada: dependencia T08 en Hecha | En cu
+           rso | docs/02-backlog.md (T08a) |
+      144  | B-140 | 2026-11-16 00:37 | Agente | 3-Ejecutar | ERROR | T08
+           a interrumpida por una falla de la máquina. Al retomar: código
+            de T08a escrito sin commit (`BookingFormModal.tsx`, `booking-
+           form.ts`, `booking-errors.ts`, `useCreateBooking.ts`, conexión
+            en `AgendaPage`); `lint` y `build` del frontend pasan; faltab
+           an la verificación, `docs/tareas/T08a.md` y el commit. Se reto
+           ma desde ahí | Sin pérdida de trabajo | B-139 |
+      145 +| B-141 | 2026-11-16 00:47 | Agente | 3-Ejecutar | ERROR | T08
+          +a: en la verificación en Chrome, tres clics seguidos en "Reser
+          +var" mandaron 3 `POST /api/bookings` (CA6): `handleSubmit` val
+          +ida de forma asíncrona y `isPending` seguía en `false` | Corre
+          +gido antes del commit con un candado síncrono (`useRef`) tomad
+          +o antes de validar; vuelto a probar: 1 POST | docs/tareas/T08a
+          +.md §6 |                                                      
+      146 +| B-142 | 2026-11-16 00:47 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T08a (Reservar desde la agenda): `BookingFormModal` (sala
+          +, inicio y fin en pasos de 15 min, título, asistentes, capacid
+          +ad visible, foco en el título), esquema Zod en `booking-form.t
+          +s`, mapa único de códigos a mensajes y campos en `booking-erro
+          +rs.ts`, `useCreateBooking` (invalida la agenda al crear y ante
+          + 409, `DAY_CLOSED` y `ROOM_INACTIVE`) y `AgendaPage` abre el m
+          +odal desde el hueco. Lint (web y api) y build sin errores, com
+          +pose healthy; CA1–CA8 comprobados en Chrome con empleado1, emp
+          +leado2 y empleado3 (CA8: 4 clics desde el login), CA5 con resp
+          +uestas simuladas en la página y códigos reales por `curl`; res
+          +ervas de prueba canceladas | T08a En revisión. Commit: `T08a: 
+          +Reservar desde la agenda: formulario modal y manejo del 409` (
+          +hash en `git log`). Ambigüedades: `ROOM_INACTIVE`/`DAY_CLOSED`
+          + reales no provocados, foco en `body` tras crear | docs/tareas
+          +/T08a.md, B-140, B-141 |                                      
+  ⎿  Updated docs\tareas\T08a.md (+1 -1)
+       7  | Estado | Hecha (en revisión) |
+       8  | Inicio – fin | 2026-11-16 00:09 – 00:47 (38 min, con una inte
+          rrupción por falla de la máquina, B-140) · estimado: M |
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (exportación
+           pendiente) |
+      10 -| Commit(s) | ver B-142 |                                      
+      10 +| Commit(s) | `T08a: Reservar desde la agenda: formulario modal
+         + y manejo del 409` (B-142) |                                   
+      11  | Trazabilidad | O2 · RN-01 a RN-10 · D-17 · spec §6 (F-02 paso
+          s 3–7), §9 (Formulario de reserva) · backlog T08a |
+      12  
+      13  ## 1. Objetivo
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● T08a está terminada y en el commit 7f2d05d. En el backlog queda En revisión, a
+  la espera de tu revisión.
+
+  Al retomar: el código que había antes de la falla estaba completo y sin
+  commit, así que no se perdió nada. Registré la interrupción en la bitácora
+  como B-140.
+
+  Un fallo encontrado y corregido antes del commit (B-141): el bloqueo del doble
+  envío (CA6) no funcionaba. Tres clics seguidos en "Reservar" mandaron 3
+  reservas a la API. La causa es que el formulario valida antes de enviar y,
+  mientras tanto, todavía no se considera que haya un envío en curso. Agregué un
+  candado que se activa con el primer clic, y al repetir la prueba salió una
+  sola reserva.
+
+  Criterios de aceptación, comprobados en Chrome:
+
+  ┌─────┬────────────────────────────────────────────────────────────────────┐
+  │ CA  │                             Resultado                              │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA1 │ Sala e inicio vienen del hueco, se ve "Capacidad: 8 personas" y el │
+  │     │  fin va de 15 en 15 minutos                                        │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA2 │ La reserva se crea, el modal se cierra, aparece en la agenda y     │
+  │     │ sale el aviso "Reserva creada: …"                                  │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │     │ Mientras empleado1 tenía el modal abierto, empleado2 tomó el       │
+  │ CA3 │ horario. Al enviar, empleado1 ve "Ese horario acaba de ocuparse."  │
+  │     │ con el código de seguimiento y la agenda se recarga                │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA4 │ Con título vacío, título de 101 caracteres, 0 asistentes o 9       │
+  │     │ asistentes en Copán, se marcan los campos y no se envía nada       │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA5 │ Los 8 códigos de error muestran su mensaje en español, en el campo │
+  │     │  que corresponde o en el banner con el código de seguimiento       │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA6 │ Un solo envío aunque se pulse varias veces (después de la          │
+  │     │ corrección)                                                        │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA7 │ Cada campo tiene su etiqueta, el foco empieza en Título y Escape   │
+  │     │ cierra el modal y devuelve el foco al hueco                        │
+  ├─────┼────────────────────────────────────────────────────────────────────┤
+  │ CA8 │ 4 clics desde el login hasta tener la reserva                      │
+  └─────┴────────────────────────────────────────────────────────────────────┘
+
+  Lint y build pasan, y docker compose up arranca con todos los servicios sanos.
+  Cancelé todas las reservas de prueba.
+
+  Para tu revisión:
+  - CA5: desde la pantalla no se pueden provocar esos errores, porque las listas
+    ya los evitan. Para ver cómo los muestra la interfaz, reemplacé en el
+    navegador la respuesta de la API por cada código de error; anoté ese paso
+    manual en la ficha. Con peticiones directas confirmé que la API devuelve 6
+    de esos códigos y el 409. Los otros dos (sala desactivada y día cerrado) no
+    los provoqué para no desactivar una sala del seed ni dejar un día cerrado;
+    los cubren las pruebas de T05, T05b y T06.
+  - Foco después de reservar: el hueco desaparece porque lo ocupa la reserva,
+    así que el foco queda en la página. El spec no dice a dónde debe ir y lo
+    dejé así; está en "Ambigüedades encontradas".
+  - Mensajes de error: ahora toman el horario, los 30 días y las duraciones de
+    las constantes del código, en lugar de tenerlos escritos a mano.
+
+  Me detengo aquí. T09 sigue cuando apruebes T08a.
+
+✻ Cogitated for 10m 46s · done 0:48
+
+> /bitacora T08a revisada, cumple la DoD                                        
+
+● User answered Claude's questions:
+  ⎿  · El texto «T08a revisada, cumple la DoD» no empieza con un tipo válido. 
+     ¿Qué tipo lleva la fila? (Para T08, con el mismo texto, se usó REVISIÓN en 
+     B-136.) → REVISIÓN (Recommended)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M"); tail -1 docs/03-bitacora.md | cut -c1-12; echo "|
+      B-143 | $D | Yo | 3-Ejec…)
+  ⎿  | B-142 | 20
+     | B-143 | 2026-11-16 00:49 | Yo | 3-Ejecutar | REVISIÓN | T08a revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      144  | B-140 | 2026-11-16 00:37 | Agente | 3-Ejecutar | ERROR | T08
+           a interrumpida por una falla de la máquina. Al retomar: código
+            de T08a escrito sin commit (`BookingFormModal.tsx`, `booking-
+           form.ts`, `booking-errors.ts`, `useCreateBooking.ts`, conexión
+            en `AgendaPage`); `lint` y `build` del frontend pasan; faltab
+           an la verificación, `docs/tareas/T08a.md` y el commit. Se reto
+           ma desde ahí | Sin pérdida de trabajo | B-139 |
+      145  | B-141 | 2026-11-16 00:47 | Agente | 3-Ejecutar | ERROR | T08
+           a: en la verificación en Chrome, tres clics seguidos en "Reser
+           var" mandaron 3 `POST /api/bookings` (CA6): `handleSubmit` val
+           ida de forma asíncrona y `isPending` seguía en `false` | Corre
+           gido antes del commit con un candado síncrono (`useRef`) tomad
+           o antes de validar; vuelto a probar: 1 POST | docs/tareas/T08a
+           .md §6 |
+      146  | B-142 | 2026-11-16 00:47 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T08a (Reservar desde la agenda): `BookingFormModal` (sala
+           , inicio y fin en pasos de 15 min, título, asistentes, capacid
+           ad visible, foco en el título), esquema Zod en `booking-form.t
+           s`, mapa único de códigos a mensajes y campos en `booking-erro
+           rs.ts`, `useCreateBooking` (invalida la agenda al crear y ante
+            409, `DAY_CLOSED` y `ROOM_INACTIVE`) y `AgendaPage` abre el m
+           odal desde el hueco. Lint (web y api) y build sin errores, com
+           pose healthy; CA1–CA8 comprobados en Chrome con empleado1, emp
+           leado2 y empleado3 (CA8: 4 clics desde el login), CA5 con resp
+           uestas simuladas en la página y códigos reales por `curl`; res
+           ervas de prueba canceladas | T08a En revisión. Commit: `T08a: 
+           Reservar desde la agenda: formulario modal y manejo del 409` (
+           hash en `git log`). Ambigüedades: `ROOM_INACTIVE`/`DAY_CLOSED`
+            reales no provocados, foco en `body` tras crear | docs/tareas
+           /T08a.md, B-140, B-141 |
+      147 +| B-143 | 2026-11-16 00:49 | Yo | 3-Ejecutar | REVISIÓN | T08a
+          + revisada, cumple la DoD | — | — |                            
+
+● Fila agregada al final de docs/03-bitacora.md; no hice commit:
+
+  | B-143 | 2026-11-16 00:49 | Yo | 3-Ejecutar | REVISIÓN | T08a revisada, 
+  cumple la DoD | — | — |
+
+✻ Brewed for 10s · done 0:49
+
+> pasa T08a a Hecha y haz el commit                                             
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Sigo el mismo cierre que T08 (commit f42e0ec): cambio el backlog y agrego la
+  fila en la bitácora.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; git show f42e0ec
+      -- docs/03-bitacora.md | grep "^+|" | cut -c1-200; D=$(date "+%Y-%m-%d
+      %H:%M")
+      sed -i…)
+  ⎿  +| B-136 | 2026-11-16 00:05 | Yo | 3-Ejecutar | REVISIÓN | T08 revisad
+     a, cumple la DoD | — | — |
+     +| B-137 | 2026-11-16 00:06 | Agente | 3-Ejecutar | AGENTE | A pedido
+     … +11 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Hecha | [T07b](tareas/T07b.md) |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T0
+          7c.md) |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75 -| 17 | T08a | Reservar desde la agenda: formulario modal y mane
+         -jo del 409 | T08 | M | No | En revisión | [T08a](tareas/T08a.md
+         -) |                                                            
+      75 +| 17 | T08a | Reservar desde la agenda: formulario modal y mane
+         +jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |   
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Pendiente | |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+     ...
+      849  | Dependencias | T08 |
+      850  | Estimación | M |
+      851  | Seguridad / auditoría | Roles: autenticado. Auditoría: la ge
+           nera la API (`BOOKING_CREATED`, T06a). Las validaciones del cl
+           iente son comodidad; la API decide |
+      852 -| Estado | En revisión |                                      
+      852 +| Estado | Hecha |                                            
+      853  
+      854  **Alcance (archivos o módulos):**
+      855  - `src/web/src/features/bookings/BookingFormModal.tsx`, `useCr
+           eateBooking`, esquema Zod, selectores de inicio y fin en pasos
+            de 15 minutos, mapa de códigos de error a mensajes en español
+            en un solo archivo.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      145  | B-141 | 2026-11-16 00:47 | Agente | 3-Ejecutar | ERROR | T08
+           a: en la verificación en Chrome, tres clics seguidos en "Reser
+           var" mandaron 3 `POST /api/bookings` (CA6): `handleSubmit` val
+           ida de forma asíncrona y `isPending` seguía en `false` | Corre
+           gido antes del commit con un candado síncrono (`useRef`) tomad
+           o antes de validar; vuelto a probar: 1 POST | docs/tareas/T08a
+           .md §6 |
+      146  | B-142 | 2026-11-16 00:47 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T08a (Reservar desde la agenda): `BookingFormModal` (sala
+           , inicio y fin en pasos de 15 min, título, asistentes, capacid
+           ad visible, foco en el título), esquema Zod en `booking-form.t
+           s`, mapa único de códigos a mensajes y campos en `booking-erro
+           rs.ts`, `useCreateBooking` (invalida la agenda al crear y ante
+            409, `DAY_CLOSED` y `ROOM_INACTIVE`) y `AgendaPage` abre el m
+           odal desde el hueco. Lint (web y api) y build sin errores, com
+           pose healthy; CA1–CA8 comprobados en Chrome con empleado1, emp
+           leado2 y empleado3 (CA8: 4 clics desde el login), CA5 con resp
+           uestas simuladas en la página y códigos reales por `curl`; res
+           ervas de prueba canceladas | T08a En revisión. Commit: `T08a: 
+           Reservar desde la agenda: formulario modal y manejo del 409` (
+           hash en `git log`). Ambigüedades: `ROOM_INACTIVE`/`DAY_CLOSED`
+            reales no provocados, foco en `body` tras crear | docs/tareas
+           /T08a.md, B-140, B-141 |
+      147  | B-143 | 2026-11-16 00:49 | Yo | 3-Ejecutar | REVISIÓN | T08a
+            revisada, cumple la DoD | — | — |
+      148 +| B-144 | 2026-11-16 00:50 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T08a pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-143 | T08a Hecha
+          + | docs/02-backlog.md, B-143 |                                
+
+● En docs/tareas/T08a.md hay un cambio que no es mío. Lo reviso antes de seguir.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Listo: T08a quedó Hecha y está en el commit f8365cb («T08a: revisión aprobada
+  y estado Hecha»).
+
+  - Backlog: la tabla de resumen y la ficha de T08a dicen Hecha.
+  - Bitácora: agregué la fila B-144, que registra el cambio de estado tras tu
+    revisión (B-143).
+
+  docs/tareas/T08a.md tiene un cambio sin commit que no es mío: tu §8 de
+  revisión. Lo dejé fuera porque no sabía si ya lo habías terminado. En esa
+  revisión pides actualizar CLAUDE.md con los desvíos de T08a «si se requiere»,
+  y creo que sí conviene. Agregaría una subsección «Formulario de reserva fijado
+  en T08a» con:
+  - el candado síncrono (useRef) para no enviar dos veces, porque isPending no
+    alcanza con handleSubmit;
+  - el mapa único booking-errors.ts: los errores con campo van al campo y el
+    resto a un Banner con el requestId;
+  - mensajes armados con las constantes del spec, nunca con horas o días
+    escritos a mano;
+  - cómo verificar desde la pantalla los 422 que la interfaz no deja provocar.
+
+  ¿Lo hago y lo subo junto con tu §8 en un commit «T08a: revisión de la persona
+  y CLAUDE.md», como se hizo con T08?
+
+✻ Worked for 23s · done 0:50
+
+> si, actualiza CLAUDE.md y haz el commit                                       
+
+● Update(CLAUDE.md)
+  ⎿  Added 18 lines
+      455  - **Verificar "hoy" en fin de semana o fuera de horario:** se 
+           reemplaza `Date` en la página (clase que devuelve un
+      456    instante fijo sin argumentos) y se espera el tick de `useNow
+           ` (≤ 60 s); anotarlo como paso manual en `docs/tareas/Txx.md`.
+      457    No usar esperas largas dentro de una sola llamada de `javasc
+           ript_tool` (vence a los 45 s).
+      458 +                                                              
+      459 +### Formulario de reserva fijado en T08a (ver `docs/tareas/T08
+          +a.md` §6 y §7; B-141)                                         
+      460 +- **Sin doble envío:** `isPending` de TanStack Query **no alca
+          +nza** con `handleSubmit` de React Hook Form, que valida de    
+      461 +  forma asíncrona (tres clics seguidos mandaron 3 `POST`, B-14
+          +1). Todo formulario que crea algo usa un candado síncrono     
+      462 +  (`useRef`) tomado en el `onSubmit` antes de validar y soltad
+          +o en `onInvalid` y en `onSettled` de la mutación, como        
+      463 +  `BookingFormModal`. Además, botón con `loading` y modal con 
+          +`dismissible={!isPending}`.                                   
+      464 +- **Errores de la API en un solo mapa por formulario** (`featu
+          +res/bookings/booking-errors.ts`): código → mensaje en         
+      465 +  español y, si corresponde, campo. Con campo → `setError(camp
+          +o, …, { shouldFocus: true })`; sin campo o desconocido →      
+      466 +  `Banner` con el `requestId`. El 409 `BOOKING_CONFLICT` usa e
+          +l texto del spec ("Ese horario acaba de ocuparse.").          
+      467 +- **Mensajes y validaciones con las constantes** de `agenda-co
+          +nfig.ts` y `booking-form.ts` (horario, días de                
+      468 +  anticipación, duraciones), nunca con "07:00", "30 días" o "4
+          + horas" escritos a mano.                                      
+      469 +- **`useCreateBooking`** invalida `agendaKeys.bookings` al cre
+          +ar y ante un 409; ante `DAY_CLOSED` también                   
+      470 +  `agendaKeys.closures` y ante `ROOM_INACTIVE` `agendaKeys.roo
+          +ms`. T09 sigue el mismo criterio al cancelar.                 
+      471 +- **Fechas al API** con `zonedInstant(fecha, minutos).toISOStr
+          +ing()` (UTC con `Z`), nunca armando el texto a mano.          
+      472 +- **Verificar errores que la pantalla no deja provocar** (422 
+          +que los selectores ya evitan): en la página se reemplaza      
+      473 +  `window.fetch` para que ese `POST` responda el cuerpo de err
+          +or real (`{ error: { code, message, requestId } }`) y se      
+      474 +  comprueba dónde aparece el mensaje; aparte, se confirma por 
+          +`curl` que la API devuelve el código. Anotarlo como paso      
+      475 +  manual en `docs/tareas/Txx.md`. Contar los `POST` con un con
+          +tenedor de `fetch` para comprobar el doble envío.             
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M"); echo "| B-145 | $D | Agente | 3-Ejecutar | CORRECCIÓN
+      | A pedido de la per…)
+  ⎿  | B-145 | 2026-11-16 00:50 | Agente | 3-Ejecutar | CORRECCIÓN | A pedi
+     do de la persona (observación de la revisión de
+     85330f7 T08a: revisión de la persona y CLAUDE.md con los desvíos de la
+      tarea
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      146  | B-142 | 2026-11-16 00:47 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T08a (Reservar desde la agenda): `BookingFormModal` (sala
+           , inicio y fin en pasos de 15 min, título, asistentes, capacid
+           ad visible, foco en el título), esquema Zod en `booking-form.t
+           s`, mapa único de códigos a mensajes y campos en `booking-erro
+           rs.ts`, `useCreateBooking` (invalida la agenda al crear y ante
+            409, `DAY_CLOSED` y `ROOM_INACTIVE`) y `AgendaPage` abre el m
+           odal desde el hueco. Lint (web y api) y build sin errores, com
+           pose healthy; CA1–CA8 comprobados en Chrome con empleado1, emp
+           leado2 y empleado3 (CA8: 4 clics desde el login), CA5 con resp
+           uestas simuladas en la página y códigos reales por `curl`; res
+           ervas de prueba canceladas | T08a En revisión. Commit: `T08a: 
+           Reservar desde la agenda: formulario modal y manejo del 409` (
+           hash en `git log`). Ambigüedades: `ROOM_INACTIVE`/`DAY_CLOSED`
+            reales no provocados, foco en `body` tras crear | docs/tareas
+           /T08a.md, B-140, B-141 |
+      147  | B-143 | 2026-11-16 00:49 | Yo | 3-Ejecutar | REVISIÓN | T08a
+            revisada, cumple la DoD | — | — |
+      148  | B-144 | 2026-11-16 00:50 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T08a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-143 | T08a Hecha
+            | docs/02-backlog.md, B-143 |
+      149 +| B-145 | 2026-11-16 00:50 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T08a, 
+          +§8 de docs/tareas/T08a.md), CLAUDE.md (Dependencias) agrega la
+          + subsección «Formulario de reserva fijado en T08a»: candado sí
+          +ncrono con `useRef` contra el doble envío (`isPending` no alca
+          +nza con `handleSubmit`), mapa único de errores por formulario 
+          +(campo o `Banner` con `requestId`), mensajes con las constante
+          +s del spec, invalidaciones de `useCreateBooking`, fechas con `
+          +zonedInstant` y cómo verificar los 422 que la pantalla no deja
+          + provocar | Solo documentación; sin cambios de código | CLAUDE
+          +.md, docs/tareas/T08a.md §6, §7 y §8, B-141, B-143 |          
+
+● Listo: el commit 85330f7 («T08a: revisión de la persona y CLAUDE.md con los
+  desvíos de la tarea») incluye:
+
+  - CLAUDE.md: una subsección nueva, «Formulario de reserva fijado en T08a», al
+    final de Dependencias. Fija lo siguiente:
+    - Doble envío: todo formulario que crea algo lleva un candado (useRef) que
+      se toma antes de validar, porque isPending solo no lo evita (B-141).
+    - Errores de la API: un solo mapa por formulario. Si el error corresponde a
+      un campo, va a ese campo con el foco; si no, al Banner con el requestId.
+    - Mensajes y validaciones: se arman con las constantes del spec (horario,
+      días, duraciones), nunca escritos a mano.
+    - Recarga de la agenda: tras crear o ante un 409, día cerrado o sala
+      desactivada; T09 hará lo mismo al cancelar.
+    - Fechas al API: siempre con zonedInstant(...).toISOString().
+    - Verificación de errores que la pantalla no deja provocar: se simula la
+      respuesta del POST en la página y se confirma el código por curl; también
+      se cuentan los POST para comprobar el doble envío.
+  - docs/tareas/T08a.md: tu §8 de revisión, tal como la escribiste.
+  - Bitácora: la fila B-145, de tipo CORRECCIÓN.
+
+  El repositorio quedó sin cambios pendientes. La siguiente tarea del backlog es
+  T09 (Mis reservas y cancelar); su única dependencia es T08a, que ya está
+  Hecha.
+
+✻ Cogitated for 21s · done 0:50
+
+> /ejecutar-tarea T09                                                           
+
+● Empiezo por la ficha de T09 y la DoR.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● La DoR se cumple: los campos están completos y la dependencia T08a está Hecha.
+  Registro el inicio.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M"); echo "| B-146 | $D | Agente | 3-Ejecutar | AGENTE |
+      Inicio de T09 (Mis res…)
+  ⎿  | B-146 | 2026-11-16 00:52 | Agente | 3-Ejecutar | AGENTE | Inicio de
+     T09 (Mis reservas y cancelar). DoR comprobada: dependencia T08a en Hec
+     ha | En curso | docs/02-backlog.md (T09) |
+     … +29 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T0
+          7c.md) |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76 -| 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+         -enas desde la agenda) | T08a | M | No | Pendiente | |          
+      76 +| 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+         +enas desde la agenda) | T08a | M | No | En curso | |           
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      147  | B-143 | 2026-11-16 00:49 | Yo | 3-Ejecutar | REVISIÓN | T08a
+            revisada, cumple la DoD | — | — |
+      148  | B-144 | 2026-11-16 00:50 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T08a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-143 | T08a Hecha
+            | docs/02-backlog.md, B-143 |
+      149  | B-145 | 2026-11-16 00:50 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T08a, 
+           §8 de docs/tareas/T08a.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Formulario de reserva fijado en T08a»: candado sí
+           ncrono con `useRef` contra el doble envío (`isPending` no alca
+           nza con `handleSubmit`), mapa único de errores por formulario 
+           (campo o `Banner` con `requestId`), mensajes con las constante
+           s del spec, invalidaciones de `useCreateBooking`, fechas con `
+           zonedInstant` y cómo verificar los 422 que la pantalla no deja
+            provocar | Solo documentación; sin cambios de código | CLAUDE
+           .md, docs/tareas/T08a.md §6, §7 y §8, B-141, B-143 |
+      150 +| B-146 | 2026-11-16 00:52 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T09 (Mis reservas y cancelar). DoR comprobada: depende
+          +ncia T08a en Hecha | En curso | docs/02-backlog.md (T09) |    
+
+● Ahora reviso el diseño: los componentes 2, 6 y 7 de DESIGN.md y la pantalla de
+  Stitch de Mis reservas.
+
+  Read 1 file, ran 2 shell commands (ctrl+o to expand)
+● Leo el código del frontend que voy a reutilizar.
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● Ya tengo el contexto. Voy a crear los hooks de datos y la regla canCancel,
+  luego el diálogo de cancelación y la página /my-bookings, y por último
+  convertir las tarjetas de la agenda en botones con detalle. · summary
+
+● Write(src\web\src\features\bookings\booking-actions.ts)
+  ⎿  Wrote 25 lines to src\web\src\features\bookings\booking-actions.ts
+       1 /**
+       2  * Qué acciones ofrece la UI sobre una reserva (RN-11, RN-12; T0
+         9 CA2 y CA6). Solo decide si se muestra el botón:
+       3  * la autorización real la hace la API con `BookingPolicy` (403 
+         / 422), y ocultar el botón no la sustituye (OWASP A01).
+       4  */
+       5 import { formatTime, localDate } from '../../shared/datetime';
+       6 import type { Booking } from './types';
+       7 
+       8 /** "Cancelar" solo en reservas `CONFIRMED` que aún no empezaron
+     … +18 lines (ctrl+o to expand)
+
+● Update(src\web\src\features\bookings\agenda-queries.ts)
+  ⎿  Added 2 lines
+      10    rooms: ['rooms'] as const,
+      11    bookingsOf: (date: string) => ['bookings', 'day', date] as co
+          nst,
+      12    bookings: ['bookings'] as const,
+      13 +  /** Mis reservas (T09). Cuelga de `bookings`: invalidar `agen
+         +daKeys.bookings` recarga también esta lista. */                
+      14 +  mine: ['bookings', 'mine'] as const,                         
+      15    closures: ['closures'] as const,
+      16  };
+      17  
+
+● Write(src\web\src\features\bookings\useMyBookings.ts)
+  ⎿  Wrote 15 lines to src\web\src\features\bookings\useMyBookings.ts
+       1 import { useQuery } from '@tanstack/react-query';
+       2 import { apiClient } from '../../shared/apiClient';
+       3 import { agendaKeys } from './agenda-queries';
+       4 import type { Booking } from './types';
+       5 
+       6 /**
+       7  * `GET /bookings/mine` (spec §8): reservas propias con `endAt` 
+         ≥ inicio de hoy, confirmadas y canceladas, ya
+       8  * ordenadas por `startAt` por la API (T09 CA1).
+       9  */
+     … +6 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\bookings\useCancelBooking.ts)
+  ⎿  Wrote 17 lines to src\web\src\features\bookings\useCancelBooking.ts
+       1 import { useMutation, useQueryClient } from '@tanstack/react-que
+         ry';
+       2 import { apiClient } from '../../shared/apiClient';
+       3 import { agendaKeys } from './agenda-queries';
+       4 import type { Booking } from './types';
+       5 
+       6 /**
+       7  * `POST /bookings/:id/cancel` (F-03 paso 3, F-04). Al terminar,
+          con éxito o con error, recarga todas las consultas de
+       8  * reservas (`agendaKeys.bookings`: la agenda de cada día y Mis 
+     … +10 lines (ctrl+o to expand)
+
+● Update(src\web\src\features\bookings\booking-errors.ts)
+  ⎿  Added 6 lines
+      36    ROOM_INACTIVE: { message: 'La sala está desactivada y no admi
+          te reservas. Elige otra sala.', field: 'roomId' },
+      37    // RN-10
+      38    DAY_CLOSED: { message: 'Ese día está cerrado y no admite rese
+          rvas.' },
+      39 +  // RN-12 (cancelar, T09 CA4)                                 
+      40 +  BOOKING_ALREADY_STARTED: { message: 'La reserva ya empezó y n
+         +o se puede cancelar.' },                                       
+      41 +  BOOKING_ALREADY_CANCELLED: { message: 'La reserva ya estaba c
+         +ancelada.' },                                                  
+      42  };
+      43  
+      44 +/** Errores de cancelar que solo indican que la vista estaba de
+         +sactualizada: se avisa y se recarga (T09 CA4). */              
+      45 +export const STALE_CANCEL_ERRORS: ReadonlySet<string> = new Set
+         +(['BOOKING_ALREADY_STARTED', 'BOOKING_ALREADY_CANCELLED']);    
+      46 +                                                               
+      47  /** Mensaje y campo de un error de la API. Si el código no está
+           en el mapa, se usa el mensaje del `apiClient`. */
+      48  export function bookingErrorInfo(error: ApiError): BookingError
+          Info {
+      49    return BOOKING_ERRORS[error.code] ?? { message: error.message
+           };
+
+● Update(src\web\src\features\bookings\booking-errors.ts)
+  ⎿  Added 1 line, removed 1 line
+      1  /**
+      2 - * Errores de `POST /bookings` (spec §5 y §8, T08a CA3–CA5): un 
+        -solo lugar con el mensaje en español de cada código y           
+      2 + * Errores de `POST /bookings` (spec §5 y §8, T08a CA3–CA5) y de
+        + `POST /bookings/:id/cancel` (T09 CA4): un solo lugar con el men
+        +saje en español de cada código y                                
+      3   * el campo del formulario al que corresponde. Los que no tienen
+          campo van al banner del formulario con su `requestId`.
+      4   * Las validaciones del cliente son comodidad: la API decide (RN
+         -01 a RN-10).
+      5   */
+
+● Ahora el diálogo de cancelación.
+
+● Write(src\web\src\features\bookings\CancelBookingDialog.tsx)
+  ⎿  Wrote 97 lines to
+     src\web\src\features\bookings\CancelBookingDialog.tsx
+      1 import { useRef, useState } from 'react';
+      2 import { toApiError } from '../../shared/apiClient';
+      3 import { formatLongDate } from '../../shared/datetime';
+      4 import { Banner, ConfirmDialog, useToast } from '../../shared/ui'
+        ;
+      5 import { bookingDate, bookingRange } from './booking-actions';
+      6 import { bookingErrorInfo, STALE_CANCEL_ERRORS } from './booking-
+        errors';
+      7 import { bookingHeadline } from './agenda-logic';
+      8 import type { Booking } from './types';
+     … +89 lines (ctrl+o to expand)
+
+● Ahora la pantalla Mis reservas.
+
+● Write(src\web\src\features\bookings\MyBookingsPage.tsx)
+  ⎿  Wrote 171 lines to src\web\src\features\bookings\MyBookingsPage.tsx
+      1 import { CalendarDays, CircleX, DoorOpen, Users } from 'lucide-re
+        act';
+      2 import { useState } from 'react';
+      3 import { toApiError } from '../../shared/apiClient';
+      4 import { formatShortDate, localDate, useNow } from '../../shared/
+        datetime';
+      5 import { Badge, Button, EmptyState, ErrorState, Skeleton } from '
+        ../../shared/ui';
+      6 import { bookingDate, bookingRange, canCancel } from './booking-a
+        ctions';
+     … +165 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(src\web\src\features\bookings\MyBookingsPage.tsx)
+  ⎿  Added 6 lines, removed 1 line
+      139  
+      140        {cancellable && (
+      141          <div className="flex justify-end">
+      142 -          <Button variant="secondary" icon={<CircleX size={16}
+          - />} onClick={onCancel}>                                      
+      142 +          <Button                                             
+      143 +            variant="secondary"                               
+      144 +            icon={<CircleX size={16} />}                      
+      145 +            onClick={onCancel}                                
+      146 +            aria-label={`Cancelar la reserva de ${booking.room
+          +Name}, ${dayLabel}, ${bookingRange(booking)}`}                
+      147 +          >                                                   
+      148              Cancelar
+      149            </Button>
+      150          </div>
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora la agenda: la tarjeta pasa a ser un botón y agrego el detalle de la
+  reserva.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/bookings"; node - <<'EOF'
+      const fs=require('fs');const f='BookingCard.tsx';let s=fs.…)
+  ⎿  3
+     30:  onSelectSlot: (roomId: string, startAt: Date) => void;
+     39:export function AgendaGrid({ date, isToday, now, rooms, bookings, c
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\BookingCard.tsx (+13 -6)
+       6  
+       7  interface BookingCardProps {
+       8    booking: Booking;
+       9 +  /** Abre el detalle de la reserva (T09: título según rol, due
+         +ño y, si corresponde, "Cancelar"). */                          
+      10 +  onSelect: (booking: Booking) => void;                        
+      11  }
+      12  
+      13  /**
+      14   * Bloque de reunión (DESIGN.md, Componentes 1): posicionado de
+           su inicio a su fin, con franja izquierda de 3 px
+      15   * según de quién es (azul la propia, rojo de "Ocupada" la ajen
+          a), texto principal, rango horario y dueño.
+      16   * Privacidad (RN-17, D-20): si la API no envió el título, se m
+          uestra "Ocupado"; nunca se reconstruye.
+      15 - * Las de menos de 30 min usan la tarjeta compacta en línea: te
+         -xto principal, duración y dueño (CA9). En T08 no tiene acciones
+         - (cancelar es T09).                                            
+      17 + * Las de menos de 30 min usan la tarjeta compacta en línea: te
+         +xto principal, duración y dueño (CA9).                         
+      18 + * Es un botón (T09): con clic, Enter o Espacio abre el detalle
+         + de la reserva.                                                
+      19   */
+      17 -export function BookingCard({ booking }: BookingCardProps) {   
+      20 +export function BookingCard({ booking, onSelect }: BookingCardP
+         +rops) {                                                        
+      21    const { top, height, minutes } = bookingBox(booking);
+      22    const headline = bookingHeadline(booking);
+      23    const range = `${formatTime(new Date(booking.startAt))}–${for
+          matTime(new Date(booking.endAt))}`;
+     ...
+      27    const tall = minutes >= 60;
+      28  
+      29    return (
+      27 -    <article                                                   
+      30 +    <button                                                    
+      31 +      type="button"                                            
+      32 +      onClick={() => onSelect(booking)}                        
+      33        aria-label={label}
+      34 +      aria-haspopup="dialog"                                   
+      35        title={label}
+      36        style={{ top, height }}
+      37        className={cn(
+      32 -        'absolute inset-x-1 z-[1] overflow-hidden rounded-base 
+         -border border-divider border-l-[3px]',                         
+      33 -        'bg-surface-container-lowest text-on-surface shadow-ele
+         -vated',                                                        
+      38 +        'absolute inset-x-1 z-[1] scroll-mt-20 scroll-ml-16 ove
+         +rflow-hidden rounded-base border border-divider border-l-[3px] 
+         +text-left',                                                    
+      39 +        'bg-surface-container-lowest text-on-surface shadow-ele
+         +vated hover:bg-surface-container-low',                         
+      40 +        'focus-visible:outline-2 focus-visible:outline-offset-1
+         + focus-visible:outline-primary-container',                     
+      41          booking.isMine ? 'border-l-primary-container' : 'border
+          -l-busy',
+      42          compact ? 'flex items-center gap-space-xs px-space-sm' 
+          : 'flex flex-col px-space-sm py-px',
+      43          tall && 'gap-space-xs py-space-xs',
+     … 7 more lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● El archivo tiene finales de línea CRLF y el reemplazo no los encontró. Lo hago
+  con Edit.
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\web\src\features\bookings\AgendaGrid.tsx)
+  ⎿  Added 2 lines
+      28    closed: boolean;
+      29    /** Clic o Enter en un hueco libre (T08 CA7): abre el formula
+          rio de reserva (T08a). */
+      30    onSelectSlot: (roomId: string, startAt: Date) => void;
+      31 +  /** Clic, Enter o Espacio en una reserva: abre su detalle (T0
+         +9). */                                                         
+      32 +  onSelectBooking: (booking: Booking) => void;                 
+      33  }
+      34  
+      35  const HOURS = SLOT_STARTS.filter((m) => m % 60 === 0);
+
+● Update(src\web\src\features\bookings\AgendaGrid.tsx)
+  ⎿  Added 10 lines, removed 1 line
+      38   * Línea de tiempo (DESIGN.md, «Arquitectura de la línea de tie
+          mpo»): eje de horas fijo de 64 px, una columna por
+      39   * sala (≥ 180 px, reparto igual y desplazamiento horizontal si
+           no caben) y 52 franjas de 15 min de 16 px.
+      40   */
+      41 -export function AgendaGrid({ date, isToday, now, rooms, booking
+         -s, closed, onSelectSlot }: AgendaGridProps) {                  
+      41 +export function AgendaGrid({                                   
+      42 +  date,                                                        
+      43 +  isToday,                                                     
+      44 +  now,                                                         
+      45 +  rooms,                                                       
+      46 +  bookings,                                                    
+      47 +  closed,                                                      
+      48 +  onSelectSlot,                                                
+      49 +  onSelectBooking,                                             
+      50 +}: AgendaGridProps) {                                          
+      51    const byRoom = useMemo(() => bookingsByRoom(bookings), [booki
+          ngs]);
+      52    // Instante de inicio de cada franja del día (una sola vez po
+          r fecha).
+      53    const slotTimes = useMemo(() => SLOT_STARTS.map((m) => zonedI
+          nstant(date, m)), [date]);
+
+● Update(src\web\src\features\bookings\AgendaGrid.tsx)
+  ⎿  Added 1 line
+      102              bookings={byRoom.get(room.id) ?? []}
+      103              closed={closed}
+      104              onSelectSlot={onSelectSlot}
+      105 +            onSelectBooking={onSelectBooking}                 
+      106              nowLineTop={showNowLine ? (nowMinutes - OPEN_MINUT
+           ES) * PX_PER_MINUTE : null}
+      107            />
+      108          ))}
+
+● Update(src\web\src\features\bookings\AgendaGrid.tsx)
+  ⎿  Added 11 lines, removed 1 line
+      162    bookings: Booking[];
+      163    closed: boolean;
+      164    onSelectSlot: (roomId: string, startAt: Date) => void;
+      165 +  onSelectBooking: (booking: Booking) => void;                
+      166    nowLineTop: number | null;
+      167  }
+      168  
+      168 -function RoomColumn({ room, slotTimes, nowMs, bookings, closed
+          -, onSelectSlot, nowLineTop }: RoomColumnProps) {              
+      169 +function RoomColumn({                                         
+      170 +  room,                                                       
+      171 +  slotTimes,                                                  
+      172 +  nowMs,                                                      
+      173 +  bookings,                                                   
+      174 +  closed,                                                     
+      175 +  onSelectSlot,                                               
+      176 +  onSelectBooking,                                            
+      177 +  nowLineTop,                                                 
+      178 +}: RoomColumnProps) {                                         
+      179    const taken = useMemo(() => occupiedSlots(bookings), [bookin
+           gs]);
+      180  
+      181    return (
+
+● Update(src\web\src\features\bookings\AgendaGrid.tsx)  ⎿  Added 1 line, removed 1 line
+      223          );
+      224        })}
+      225        {bookings.map((b) => (
+      226 -        <BookingCard key={b.id} booking={b} />                
+      226 +        <BookingCard key={b.id} booking={b} onSelect={onSelect
+          +Booking} />                                                   
+      227        ))}
+      228        {nowLineTop !== null && (
+      229          <div
+
+● Compruebo que los reemplazos en BookingCard.tsx se aplicaron todos (si el
+  archivo tenía CRLF, alguno pudo fallar sin avisar).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● BookingCard quedó bien. Ahora creo el diálogo de detalle y lo conecto en
+  AgendaPage.
+
+● Write(src\web\src\features\bookings\BookingDetailDialog.tsx)
+  ⎿  Wrote 58 lines to
+     src\web\src\features\bookings\BookingDetailDialog.tsx
+       1 import { CircleX } from 'lucide-react';
+       2 import { formatLongDate } from '../../shared/datetime';
+       3 import { Avatar, Badge, Button, Modal } from '../../shared/ui';
+       4 import { bookingHeadline } from './agenda-logic';
+       5 import { bookingDate, bookingRange } from './booking-actions';
+       6 import type { Booking } from './types';
+       7 
+       8 interface BookingDetailDialogProps {
+       9   booking: Booking;
+      10   /** Mostrar "Cancelar reserva" (propia o, para `ADMIN`, ajena;
+     … +49 lines (~2 KB) (ctrl+o to expand)
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Update(src\web\src\features\bookings\AgendaPage.tsx)
+  ⎿  Added 4 lines
+      27    const [filters, setFilters] = useState<RoomFilterValue>(NO_FI
+          LTERS);
+      28    // Hueco elegido: abre el formulario de reserva (F-02 paso 3,
+           T08a).
+      29    const [slot, setSlot] = useState<SlotSelection | null>(null);
+      30 +  // Reserva elegida: primero su detalle y, si corresponde, la 
+         +confirmación de cancelar (T09, F-04).                          
+      31 +  const [detail, setDetail] = useState<Booking | null>(null);  
+      32 +  const [cancelling, setCancelling] = useState<Booking | null>(
+         +null);                                                         
+      33 +  const isAdmin = user?.role === 'ADMIN';                      
+      34  
+      35    const rooms = useRooms();
+      36    const bookings = useBookings(day);
+
+● Update(src\web\src\features\bookings\AgendaPage.tsx)
+  ⎿  Added 1 line
+       94          bookings={bookings.data ?? []}
+       95          closed={closure !== undefined}
+       96          onSelectSlot={(roomId, startAt) => setSlot({ roomId, s
+           tartAt })}
+       97 +        onSelectBooking={setDetail}                           
+       98        />
+       99      );
+      100    }
+
+● Update(src\web\src\features\bookings\AgendaPage.tsx)
+  ⎿  Added 14 lines
+      126        {content}
+      127  
+      128        {slot && <BookingFormModal slot={slot} rooms={activeRoom
+           s} onClose={() => setSlot(null)} />}
+      129 +                                                              
+      130 +      {detail && (                                            
+      131 +        <BookingDetailDialog                                  
+      132 +          booking={detail}                                    
+      133 +          cancellable={canCancel(detail, isAdmin, now)}       
+      134 +          onClose={() => setDetail(null)}                     
+      135 +          onCancel={() => {                                   
+      136 +            setDetail(null);                                  
+      137 +            setCancelling(detail);                            
+      138 +          }}                                                  
+      139 +        />                                                    
+      140 +      )}                                                      
+      141 +                                                              
+      142 +      {cancelling && <CancelBookingDialog booking={cancelling}
+          + onClose={() => setCancelling(null)} />}                      
+      143      </section>
+      144    );
+      145  }
+
+● Update(src\web\src\features\bookings\AgendaPage.tsx)
+  ⎿  Added 4 lines
+       7  import { agendaDays, hasFilters, NO_FILTERS, visibleRooms, type
+           RoomFilterValue } from './agenda-logic';
+       8  import { useBookings, useClosures, useRooms } from './agenda-qu
+          eries';
+       9  import { AgendaGrid } from './AgendaGrid';
+      10 +import { canCancel } from './booking-actions';                 
+      11 +import { BookingDetailDialog } from './BookingDetailDialog';   
+      12  import { BookingFormModal, type SlotSelection } from './Booking
+          FormModal';
+      13 +import { CancelBookingDialog } from './CancelBookingDialog';   
+      14 +import type { Booking } from './types';                        
+      15  import { DayPicker } from './DayPicker';
+      16  import { RoomFilters } from './RoomFilters';
+      17  
+
+● Update(src\web\src\App.tsx)
+  ⎿  Added 1 line, removed 1 line
+      30                  <Route element={<SessionLayout />}>
+      31                    <Route index element={<Navigate to="/agenda" 
+          replace />} />
+      32                    <Route path="/agenda" element={<AgendaPage />
+          } />
+      33 -                  <Route path="/my-bookings" element={<Placehol
+         -derPage title="Mis reservas" />} />                            
+      33 +                  <Route path="/my-bookings" element={<MyBookin
+         +gsPage />} />                                                  
+      34                    <Route path="/account" element={<AccountPage 
+          />} />
+      35                    <Route path="/admin" element={<RequireRole ro
+          le="ADMIN" />}>
+      36                      <Route index element={<Navigate to="/agenda
+          " replace />} />
+
+● Update(src\web\src\App.tsx)
+  ⎿  Added 1 line
+       5  import { AuthProvider } from './features/auth/AuthProvider';
+       6  import { LoginPage } from './features/auth/LoginPage';
+       7  import { AgendaPage } from './features/bookings/AgendaPage';
+       8 +import { MyBookingsPage } from './features/bookings/MyBookingsP
+         +age';                                                          
+       9  import { ProtectedRoute } from './features/auth/ProtectedRoute'
+          ;
+      10  import { RequireRole } from './features/auth/RequireRole';
+      11  import { SessionLayout } from './features/auth/SessionLayout';
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lint y build pasan. Reconstruyo web y preparo los datos de prueba.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Datos listos: A (cancelar desde Mis reservas), B (ya cancelada), C (la cancela
+  el admin), D (para el 422) y E (en curso, insertada con psql). Abro el
+  navegador como empleado1.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● La pantalla carga. Reviso por DOM cada tarjeta: orden, estado y si tiene botón
+  "Cancelar" (CA1 y CA2).
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Las reservas ya cumplen CA1 y CA2: van ordenadas por inicio, y solo A, C y D
+  tienen "Cancelar". Ahora pruebo CA3 cancelando la reserva A desde la pantalla.
+  · summary
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● Aparece el diálogo propio de la app. Confirmo con "Cancelar reserva" (clic
+  real, coordenadas en el marco 1366×551).
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA3 ya cumple en Mis reservas, con un solo POST y sin confirmación, y el
+  contador baja de 4 a 3. Ahora reproduzco CA4 con BOOKING_ALREADY_CANCELLED,
+  cancelando D por curl antes de confirmar. · summary
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+
+● El caso BOOKING_ALREADY_CANCELLED ya funciona: aparece el aviso en español con
+  su requestId, el diálogo se cierra y D queda Cancelada. Ahora preparo una
+  reserva F que empieza en 75 segundos para probar BOOKING_ALREADY_STARTED. 
+  · summary
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+
+● El diálogo está abierto y F empieza a las 06:58:49 UTC. Espero a que pase esa
+  hora (en dos tramos, porque la herramienta corta a los 45 s) y confirmo.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA4 ya maneja BOOKING_ALREADY_STARTED correctamente, pero F sigue mostrando
+  "Cancelar" porque canCancel depende de useNow, que solo se actualiza cada
+  minuto; voy a revisar cómo está implementado. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● useNow no se alinea al minuto, así que el botón puede seguir visible hasta 60
+  s después de que la API ya marcó la reserva como iniciada. Voy a usar como
+  "ahora" el más reciente entre el tick de useNow y dataUpdatedAt, para que el
+  botón desaparezca en cuanto se recargue la lista. · summary
+
+● Update(src\web\src\features\bookings\booking-actions.ts)  ⎿  Added 9 lines
+      14    );
+      15  }
+      16  
+      17 +/**                                                            
+      18 + * "Ahora" para decidir las acciones: el más reciente entre el 
+         +tick de `useNow` (cada minuto) y el momento en que             
+      19 + * llegaron los datos. Así, tras un 422 `BOOKING_ALREADY_STARTE
+         +D` y la recarga, el botón "Cancelar" desaparece al             
+      20 + * instante en lugar de esperar al siguiente tick (T09 CA4).   
+      21 + */                                                            
+      22 +export function actionNow(now: Date, dataUpdatedAt: number): Da
+         +te {                                                           
+      23 +  return dataUpdatedAt > now.getTime() ? new Date(dataUpdatedAt
+         +) : now;                                                       
+      24 +}                                                              
+      25 +                                                               
+      26  /** Día local (`AAAA-MM-DD` en `BUSINESS_TZ`) en que empieza la
+           reserva. */
+      27  export function bookingDate(booking: Booking): string {
+      28    return localDate(new Date(booking.startAt));
+
+● Update(src\web\src\features\bookings\MyBookingsPage.tsx)
+  ⎿  Added 1 line, removed 1 line
+      52              <MyBookingCard
+      53                booking={b}
+      54                today={today}
+      55 -              cancellable={canCancel(b, false, now)}           
+      55 +              cancellable={canCancel(b, false, actionNow(now, b
+         +ookings.dataUpdatedAt))}                                       
+      56                onCancel={() => setCancelling(b)}
+      57              />
+      58            </li>
+
+● Update(src\web\src\features\bookings\MyBookingsPage.tsx)
+  ⎿  Added 1 line, removed 1 line
+      3  import { toApiError } from '../../shared/apiClient';
+      4  import { formatShortDate, localDate, useNow } from '../../shared
+         /datetime';
+      5  import { Badge, Button, EmptyState, ErrorState, Skeleton } from 
+         '../../shared/ui';
+      6 -import { bookingDate, bookingRange, canCancel } from './booking-
+        -actions';                                                       
+      6 +import { actionNow, bookingDate, bookingRange, canCancel } from 
+        +'./booking-actions';                                            
+      7  import { CancelBookingDialog } from './CancelBookingDialog';
+      8  import type { Booking } from './types';
+      9  import { useMyBookings } from './useMyBookings';
+
+● Update(src\web\src\features\bookings\AgendaPage.tsx)
+  ⎿  Added 1 line, removed 1 line
+      134        {detail && (
+      135          <BookingDetailDialog
+      136            booking={detail}
+      137 -          cancellable={canCancel(detail, isAdmin, now)}       
+      137 +          cancellable={canCancel(detail, isAdmin, actionNow(no
+          +w, bookings.dataUpdatedAt))}                                  
+      138            onClose={() => setDetail(null)}
+      139            onCancel={() => {
+      140              setDetail(null);
+
+● Update(src\web\src\features\bookings\AgendaPage.tsx)
+  ⎿  Added 1 line, removed 1 line
+       7  import { agendaDays, hasFilters, NO_FILTERS, visibleRooms, type
+           RoomFilterValue } from './agenda-logic';
+       8  import { useBookings, useClosures, useRooms } from './agenda-qu
+          eries';
+       9  import { AgendaGrid } from './AgendaGrid';
+      10 -import { canCancel } from './booking-actions';                 
+      10 +import { actionNow, canCancel } from './booking-actions';      
+      11  import { BookingDetailDialog } from './BookingDetailDialog';
+      12  import { BookingFormModal, type SlotSelection } from './Booking
+          FormModal';
+      13  import { CancelBookingDialog } from './CancelBookingDialog';
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Reconstruido. Repito la prueba de BOOKING_ALREADY_STARTED con otra reserva, G,
+  que empieza en 50 s.
+
+  Called claude-in-chrome 4 times, ran 1 shell command (ctrl+o to expand)
+
+● La herramienta venció por el tiempo de espera, pero el script siguió
+  corriendo: hizo clic y el diálogo ya se cerró. Leo el resultado.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● G perdió su botón al recargarse la lista, unos 6 s antes del siguiente tick de
+  useNow; como el aviso ya se cerró, voy a confirmar con curl que G sigue
+  confirmada, lo que indicaría que la API rechazó la cancelación. Luego seguiré
+  con CA6 como admin en /agenda. · summary
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● Copán 09:00 aparece libre, así que la cancelación de A ya se ve en la agenda.
+  Abro la reserva C con un clic real.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● El admin ve el título y el dueño, y tiene "Cancelar reserva". Pulso ese botón
+  y después confirmo.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● El admin canceló C: la tarjeta desapareció y Morazán 14:00 quedó libre. Ahora
+  la parte de EMPLOYEE en CA6: empleado1 crea H y empleado2 la abre desde la
+  agenda.
+
+  Called claude-in-chrome 5 times, ran 1 shell command (ctrl+o to expand)
+
+● CA6 queda cubierto para EMPLOYEE: la reserva ajena muestra "Ocupado" y el
+  dueño solo ve "Cerrar", y Escape devuelve el foco a la tarjeta. Ahora reviso
+  cómo se verificó el estado de error en T08 para hacer CA5 y CA7 igual. 
+  · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Igual que en T08, reemplazo fetch en la página para retrasar la respuesta de
+  /bookings/mine y devolver un 500 con requestId, y después abro Mis reservas
+  desde el menú sin recargar. · summary
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Dos puntos pendientes: el estado de error (alert vacío) no se vio, y el
+  selector del esqueleto no encontró nada. Voy a comprobar si queryClient
+  reintenta solo tras el 500. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Así es: los 5xx se reintentan una vez. Recargo /agenda para vaciar la caché y
+  simulo dos fallos seguidos. Para el esqueleto busco la clase animate-pulse.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA7 está cubierto con el esqueleto, el error con requestId y Reintentar, y la
+  carga de las 11 tarjetas. Para CA5 creo un usuario nuevo sin reservas, con
+  correo único. · summary
+
+  Read 1 file, called claude-in-chrome 3 times, ran 3 shell commands (ctrl+o to expand)
+
+● Me equivoqué: lancé el login en paralelo con la lectura del archivo y usé una
+  contraseña que no era la generada, por eso el 401. Repito con la correcta.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● CA5 cumple. Por la regla de T07c, mido el desborde de Mis reservas con datos
+  (empleado1) en iframes de varios tamaños.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● No hay desborde horizontal en ningún tamaño de pantalla. Ahora compruebo la
+  auditoría de la cancelación del admin por la API y que G sigue confirmada, y
+  después limpio los datos. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● G sigue CONFIRMED, así que la API sí rechazó la cancelación. entityId no es un
+  filtro de la búsqueda de auditoría, así que consulto la tabla directamente.
+
+  Ran 2 shell commands (ctrl+o to expand)
+● La auditoría muestra a empleado1 como actor de A y al admin como actor de C.
+  Ahora limpio: cancelo H, y borro E, F y G, que insertó con psql y no tienen
+  registros de auditoría. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Limpieza hecha. Cierro la pestaña y corro la verificación final.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Todo verde. Escribo docs/tareas/T09.md.
+
+● Write(docs\tareas\T09.md)
+  ⎿  Wrote 149 lines to docs\tareas\T09.md
+       1 # T09 · Mis reservas y cancelar
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha (en revisión) |
+       8 | Inicio – fin | 2026-11-16 00:52 – 01:04 (12 min de construcció
+         n y verificación; el reloj de la máquina avanzó más durante las 
+     … +142 lines (~11 KB) (ctrl+o to expand)
+
+● Update(docs\tareas\T09.md)
+  ⎿  Added 1 line, removed 1 line
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha (en revisión) |
+       8 -| Inicio – fin | 2026-11-16 00:52 – 01:04 (12 min de construcci
+         -ón y verificación; el reloj de la máquina avanzó más durante la
+         -s esperas de la prueba de CA4) · estimado: M |                 
+       8 +| Inicio – fin | 2026-11-16 00:52 – 01:05 (13 min) · estimado: 
+         +M |                                                            
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (exportación
+           pendiente) |
+      10  | Commit(s) | `T09: Mis reservas y cancelar` (B-148) |
+      11  | Trazabilidad | RN-11, RN-12, RN-13 · D-12, D-13 · spec §6 (F-
+          03, F-04), §9 (Mis reservas) · DESIGN.md Componentes 2, 6 y 7 ·
+           backlog T09 |
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M"); echo $D
+      cat >> docs/03-bitacora.md <<EOF…)
+  ⎿  2026-11-16 01:05
+     | B-147 | 2026-11-16 01:05 | Agente | 3-Ejecutar | ERROR | T09: en la
+     prueba de CA4 con `B
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T0
+          7c.md) |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76 -| 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+         -enas desde la agenda) | T08a | M | No | En curso | |           
+      76 +| 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+         +enas desde la agenda) | T08a | M | No | En revisión | [T09](tar
+         +eas/T09.md) |                                                  
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      148  | B-144 | 2026-11-16 00:50 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T08a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-143 | T08a Hecha
+            | docs/02-backlog.md, B-143 |
+      149  | B-145 | 2026-11-16 00:50 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T08a, 
+           §8 de docs/tareas/T08a.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Formulario de reserva fijado en T08a»: candado sí
+           ncrono con `useRef` contra el doble envío (`isPending` no alca
+           nza con `handleSubmit`), mapa único de errores por formulario 
+           (campo o `Banner` con `requestId`), mensajes con las constante
+           s del spec, invalidaciones de `useCreateBooking`, fechas con `
+           zonedInstant` y cómo verificar los 422 que la pantalla no deja
+            provocar | Solo documentación; sin cambios de código | CLAUDE
+           .md, docs/tareas/T08a.md §6, §7 y §8, B-141, B-143 |
+      150  | B-146 | 2026-11-16 00:52 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T09 (Mis reservas y cancelar). DoR comprobada: depende
+           ncia T08a en Hecha | En curso | docs/02-backlog.md (T09) |
+      151 +| B-147 | 2026-11-16 01:05 | Agente | 3-Ejecutar | ERROR | T09
+          +: en la prueba de CA4 con `BOOKING_ALREADY_STARTED` real, tras
+          + el aviso y la recarga, la reserva seguía mostrando "Cancelar"
+          + hasta el siguiente tick de `useNow` (cada 60 s, no alineado a
+          +l minuto) | Corregido antes del commit con `actionNow` (el más
+          + reciente entre `useNow` y `dataUpdatedAt`); repetido con otra
+          + reserva: el botón desaparece con la recarga | docs/tareas/T09
+          +.md §6 |                                                      
+      152 +| B-148 | 2026-11-16 01:05 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T09 (Mis reservas y cancelar): `MyBookingsPage` en `/my-b
+          +ookings` (tarjetas con fecha, horario, sala, título, asistente
+          +s y estado; esqueleto, error con `requestId` y "Reintentar", v
+          +acío "No tienes reservas próximas"), `useMyBookings`, `useCanc
+          +elBooking` (invalida `agendaKeys.bookings`: agenda y Mis reser
+          +vas), `CancelBookingDialog` sobre `ConfirmDialog` con candado 
+          +contra el doble envío, `canCancel`/`actionNow` en `booking-act
+          +ions.ts`, y en la agenda la tarjeta es un botón que abre `Book
+          +ingDetailDialog` (título según rol, dueño y "Cancelar reserva"
+          + si corresponde). Lint (web y api) y build sin errores, compos
+          +e healthy; CA1–CA7 comprobados en Chrome con empleado1, emplea
+          +do2, admin y un usuario nuevo sin reservas, con 422 reales (`p
+          +sql` para reservas ya empezadas) y la auditoría con el ADMIN c
+          +omo actor; datos de prueba cancelados o borrados | T09 En revi
+          +sión. Commit: `T09: Mis reservas y cancelar` (hash en `git log
+          +`). Ambigüedades: cancelar la propia desde la agenda, "Cancela
+          +da por …", error desactualizado cierra el diálogo, lista sin p
+          +aginar | docs/tareas/T09.md, B-146, B-147 |                   
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; L=$(grep -n "^##
+      T09 ·" docs/02-backlog.md | cut -d: -f1); E=$((L+8)); sed -i "${E}s/|
+      Estado | Pendien…)
+  ⎿  1:## T09 · Mis reservas y cancelar
+     9:| Estado | En revisión |
+     M  docs/02-backlog.md
+     … +15 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      888  | Dependencias | T08a |
+      889  | Estimación | M |
+      890  | Seguridad / auditoría | Roles: autenticado (propias); ADMIN 
+           cancela ajenas desde `/agenda`. Auditoría: la genera la API (`
+           BOOKING_CANCELLED`, T06a). OWASP A01: ocultar el botón no sust
+           ituye al 403 de la API |
+      891 -| Estado | Pendiente |                                        
+      891 +| Estado | En revisión |                                      
+      892  
+      893  **Alcance (archivos o módulos):**
+      894  - `src/web/src/features/bookings/MyBookingsPage.tsx`, `useMyBo
+           okings`, `useCancelBooking`, `CancelBookingDialog` (sobre `Con
+           firmDialog`).
+
+● T09 está terminada y en el commit 967891f, en estado En revisión. Lint y build
+  pasan, docker compose up arranca con todos los servicios sanos y los 7
+  criterios de aceptación cumplen en Chrome con empleado1, empleado2, admin y un
+  usuario nuevo sin reservas.
+
+  Qué hice
+  - /my-bookings: muestra tus reservas desde hoy (confirmadas y canceladas) con
+    fecha, horario, sala, título y estado. "Cancelar" aparece solo en las
+    confirmadas que todavía no empezaron. Tiene estado de carga, de error con
+    código de seguimiento y "Reintentar", y de vacío ("No tienes reservas
+    próximas").
+  - Cancelar: pasa por un diálogo propio de la app. Si la API responde que la
+    reserva ya empezó o ya estaba cancelada, aparece el mensaje en español, el
+    diálogo se cierra y la lista se recarga. Cancelar actualiza a la vez Mis
+    reservas y la agenda.
+  - Agenda: las tarjetas ahora son botones que abren un detalle con el título
+    (un empleado ve "Ocupado" en las ajenas), el dueño, la sala y el horario. El
+    admin puede cancelar cualquier reserva futura y el empleado solo las suyas.
+    La auditoría registra al admin como quien canceló.
+
+  Error encontrado y corregido antes del commit (B-147): después de un "la
+  reserva ya empezó", la tarjeta seguía mostrando "Cancelar" hasta 60 s, porque
+  el "ahora" de la pantalla se actualiza una vez por minuto. Ahora se toma como
+  "ahora" también el momento en que llegan los datos, así que el botón
+  desaparece con la recarga. Lo comprobé con otra reserva.
+
+  Ambigüedades (anotadas en la ficha):
+  - Un empleado también puede cancelar su propia reserva desde la agenda, porque
+    RN-11 lo permite.
+  - "Cancelada por …" aparece solo si la canceló otra persona.
+  - La lista no se pagina. Empleado1 tiene 46 tarjetas, casi todas canceladas
+    por pruebas anteriores.
+
+  Verificación y datos:
+  - Para probar reservas ya empezadas inserté tres con psql y las borré al
+    final; no tenían auditoría.
+  - Las demás reservas de prueba quedan canceladas como historial.
+  - En la base de desarrollo queda un usuario
+    t09.vacia.<sufijo>@salalibre.local, porque no hay forma de borrar usuarios.
+  - En la verificación usé por error una contraseña equivocada para ese usuario
+    y el login dio 401; lo repetí con la correcta. No afecta a la app.
+
+  Me detengo aquí hasta tu revisión.
+
+✻ Crunched for 13m 29s · done 1:05
+
+> /bitacora REVISION T09 revisada, cumple la DoD                                
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M"); tail -1 docs/03-bitacora.md | cut -c1-10; echo "|
+      B-149 | $D | Yo | 3-Ejec…)
+  ⎿  | B-148 |
+     | B-149 | 2026-11-16 01:07 | Yo | 3-Ejecutar | REVISIÓN | T09 revisada
+     , cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      150  | B-146 | 2026-11-16 00:52 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T09 (Mis reservas y cancelar). DoR comprobada: depende
+           ncia T08a en Hecha | En curso | docs/02-backlog.md (T09) |
+      151  | B-147 | 2026-11-16 01:05 | Agente | 3-Ejecutar | ERROR | T09
+           : en la prueba de CA4 con `BOOKING_ALREADY_STARTED` real, tras
+            el aviso y la recarga, la reserva seguía mostrando "Cancelar"
+            hasta el siguiente tick de `useNow` (cada 60 s, no alineado a
+           l minuto) | Corregido antes del commit con `actionNow` (el más
+            reciente entre `useNow` y `dataUpdatedAt`); repetido con otra
+            reserva: el botón desaparece con la recarga | docs/tareas/T09
+           .md §6 |
+      152  | B-148 | 2026-11-16 01:05 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T09 (Mis reservas y cancelar): `MyBookingsPage` en `/my-b
+           ookings` (tarjetas con fecha, horario, sala, título, asistente
+           s y estado; esqueleto, error con `requestId` y "Reintentar", v
+           acío "No tienes reservas próximas"), `useMyBookings`, `useCanc
+           elBooking` (invalida `agendaKeys.bookings`: agenda y Mis reser
+           vas), `CancelBookingDialog` sobre `ConfirmDialog` con candado 
+           contra el doble envío, `canCancel`/`actionNow` en `booking-act
+           ions.ts`, y en la agenda la tarjeta es un botón que abre `Book
+           ingDetailDialog` (título según rol, dueño y "Cancelar reserva"
+            si corresponde). Lint (web y api) y build sin errores, compos
+           e healthy; CA1–CA7 comprobados en Chrome con empleado1, emplea
+           do2, admin y un usuario nuevo sin reservas, con 422 reales (`p
+           sql` para reservas ya empezadas) y la auditoría con el ADMIN c
+           omo actor; datos de prueba cancelados o borrados | T09 En revi
+           sión. Commit: `T09: Mis reservas y cancelar` (hash en `git log
+           `). Ambigüedades: cancelar la propia desde la agenda, "Cancela
+           da por …", error desactualizado cierra el diálogo, lista sin p
+           aginar | docs/tareas/T09.md, B-146, B-147 |
+      153 +| B-149 | 2026-11-16 01:07 | Yo | 3-Ejecutar | REVISIÓN | T09 
+          +revisada, cumple la DoD | — | — |                             
+
+● Fila agregada al final de docs/03-bitacora.md; no hice commit:
+
+  | B-149 | 2026-11-16 01:07 | Yo | 3-Ejecutar | REVISIÓN | T09 revisada, cumple
+  la DoD | — | — |
+
+✻ Crunched for 7s · done 1:07
+
+> pasa T09 a Hecha y haz el commit                                              
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tu §8 de revisión está en T09.md y la incluyo en este commit. Primero cambio
+  el estado.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M")
+      sed -i '76s/| T08a | M | No | En revisión |/| T08a | M | No | Hecha |/'
+      doc…)
+  ⎿  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas de
+     sde la agenda) | T08a | M | No | Hecha | [T09](tareas/T09.md) |
+     | Estado | Hecha |
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T0
+          7c.md) |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76 -| 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+         -enas desde la agenda) | T08a | M | No | En revisión | [T09](tar
+         -eas/T09.md) |                                                  
+      76 +| 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+         +enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+         +9.md) |                                                        
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+     ...
+      888  | Dependencias | T08a |
+      889  | Estimación | M |
+      890  | Seguridad / auditoría | Roles: autenticado (propias); ADMIN 
+           cancela ajenas desde `/agenda`. Auditoría: la genera la API (`
+           BOOKING_CANCELLED`, T06a). OWASP A01: ocultar el botón no sust
+           ituye al 403 de la API |
+      891 -| Estado | En revisión |                                      
+      891 +| Estado | Hecha |                                            
+      892  
+      893  **Alcance (archivos o módulos):**
+      894  - `src/web/src/features/bookings/MyBookingsPage.tsx`, `useMyBo
+           okings`, `useCancelBooking`, `CancelBookingDialog` (sobre `Con
+           firmDialog`).
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      151  | B-147 | 2026-11-16 01:05 | Agente | 3-Ejecutar | ERROR | T09
+           : en la prueba de CA4 con `BOOKING_ALREADY_STARTED` real, tras
+            el aviso y la recarga, la reserva seguía mostrando "Cancelar"
+            hasta el siguiente tick de `useNow` (cada 60 s, no alineado a
+           l minuto) | Corregido antes del commit con `actionNow` (el más
+            reciente entre `useNow` y `dataUpdatedAt`); repetido con otra
+            reserva: el botón desaparece con la recarga | docs/tareas/T09
+           .md §6 |
+      152  | B-148 | 2026-11-16 01:05 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T09 (Mis reservas y cancelar): `MyBookingsPage` en `/my-b
+           ookings` (tarjetas con fecha, horario, sala, título, asistente
+           s y estado; esqueleto, error con `requestId` y "Reintentar", v
+           acío "No tienes reservas próximas"), `useMyBookings`, `useCanc
+           elBooking` (invalida `agendaKeys.bookings`: agenda y Mis reser
+           vas), `CancelBookingDialog` sobre `ConfirmDialog` con candado 
+           contra el doble envío, `canCancel`/`actionNow` en `booking-act
+           ions.ts`, y en la agenda la tarjeta es un botón que abre `Book
+           ingDetailDialog` (título según rol, dueño y "Cancelar reserva"
+            si corresponde). Lint (web y api) y build sin errores, compos
+           e healthy; CA1–CA7 comprobados en Chrome con empleado1, emplea
+           do2, admin y un usuario nuevo sin reservas, con 422 reales (`p
+           sql` para reservas ya empezadas) y la auditoría con el ADMIN c
+           omo actor; datos de prueba cancelados o borrados | T09 En revi
+           sión. Commit: `T09: Mis reservas y cancelar` (hash en `git log
+           `). Ambigüedades: cancelar la propia desde la agenda, "Cancela
+           da por …", error desactualizado cierra el diálogo, lista sin p
+           aginar | docs/tareas/T09.md, B-146, B-147 |
+      153  | B-149 | 2026-11-16 01:07 | Yo | 3-Ejecutar | REVISIÓN | T09 
+           revisada, cumple la DoD | — | — |
+      154 +| B-150 | 2026-11-16 01:08 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T09 pasa a Hecha en el resumen y en la f
+          +icha de 02-backlog.md, tras la revisión de B-149 | T09 Hecha |
+          + docs/02-backlog.md, B-149 |                                  
+
+● T09 quedó Hecha y está en el commit a7c8a7c («T09: revisión aprobada y estado
+  Hecha»).
+
+  - Backlog: la tabla de resumen y la ficha de T09 dicen Hecha.
+  - Bitácora: agregué la fila B-150, que registra el cambio de estado tras tu
+    revisión (B-149).
+  - docs/tareas/T09.md: el commit incluye tu §8 de revisión.
+
+  En tu revisión pides actualizar CLAUDE.md con los desvíos de T09. Creo que
+  conviene; agregaría una subsección «Mis reservas y cancelar fijado en T09»
+  con:
+  - "Ahora" para las acciones: actionNow(now, dataUpdatedAt), porque useNow no
+    está alineado al minuto (B-147).
+  - Qué botones se muestran: lo decide canCancel en booking-actions.ts. Es solo
+    para la experiencia de uso: la API autoriza.
+  - Invalidación: cancelar invalida agendaKeys.bookings, que incluye Mis
+    reservas. Las tarjetas de la agenda son botones que abren el detalle.
+  - Errores "desactualizados": cierran el diálogo con un aviso y recargan la
+    lista. Los demás errores quedan en un banner con el requestId.
+  - Verificación: las reservas ya empezadas se insertan con psql (por ejemplo,
+    now() + 75 s) y se borran al final. Los 5xx se reintentan una vez, así que
+    para ver el estado de error hay que simular dos fallos seguidos. Las esperas
+    largas se reparten en varias llamadas de javascript_tool.
+
+  ¿Lo hago y lo subo en un commit «T09: CLAUDE.md con los desvíos de la tarea»?
+
+✻ Crunched for 19s · done 1:09
+
+> si, actualiza CLAUDE.md y haz el commit                                       
+
+● Update(CLAUDE.md)
+  ⎿  Added 31 lines
+      473    `window.fetch` para que ese `POST` responda el cuerpo de err
+           or real (`{ error: { code, message, requestId } }`) y se
+      474    comprueba dónde aparece el mensaje; aparte, se confirma por 
+           `curl` que la API devuelve el código. Anotarlo como paso
+      475    manual en `docs/tareas/Txx.md`. Contar los `POST` con un con
+           tenedor de `fetch` para comprobar el doble envío.
+      476 +                                                              
+      477 +### Mis reservas y cancelar fijados en T09 (ver `docs/tareas/T
+          +09.md` §6 y §7; B-147)                                        
+      478 +- **Qué acciones ofrece la UI** sobre una reserva lo decide un
+          +a función pura (`features/bookings/booking-actions.ts`:       
+      479 +  `canCancel(booking, isAdmin, now)` = `CONFIRMED`, inicio > a
+          +hora, propia o `ADMIN`). Es solo experiencia de uso: la       
+      480 +  API autoriza con `BookingPolicy` (403/422) y audita. No repe
+          +tir la regla dentro de los componentes.                       
+      481 +- **"Ahora" para decidir acciones:** `actionNow(useNow(), quer
+          +y.dataUpdatedAt)`, no `useNow()` solo. `useNow` se            
+      482 +  actualiza cada 60 s sin alinearse al minuto, y tras un 422 `
+          +BOOKING_ALREADY_STARTED` el botón seguía visible hasta el     
+      483 +  siguiente tick (B-147).                                     
+      484 +- **Invalidación:** `useCancelBooking` invalida `agendaKeys.bo
+          +okings` en `onSettled` (también ante error), que cubre la     
+      485 +  agenda de cada día y Mis reservas (`agendaKeys.mine` cuelga 
+          +de `['bookings']`). Las pantallas de administración que       
+      486 +  cancelen reservas en cascada (T10a, T10b) invalidan esa mism
+          +a clave.                                                      
+      487 +- **Errores "desactualizados"** (`STALE_CANCEL_ERRORS` en `boo
+          +king-errors.ts`: `BOOKING_ALREADY_STARTED`,                   
+      488 +  `BOOKING_ALREADY_CANCELLED`): cierran el diálogo, muestran u
+          +n aviso de error con el `requestId` y la lista se recarga.    
+      489 +  Cualquier otro error queda en un `Banner` dentro del diálogo
+          +.                                                             
+      490 +- **Diálogos de confirmación** (`ConfirmDialog`): muestran qué
+          + se afecta y la consecuencia, con foco inicial en             
+      491 +  "Volver" y candado síncrono (`useRef`) contra el doble envío
+          +, como los formularios de T08a.                               
+      492 +- **Tarjetas de la agenda:** son `<button aria-haspopup="dialo
+          +g">` (con `scroll-mt-*`) que abren `BookingDetailDialog`.     
+      493 +  Del detalle a la confirmación se cierra uno y se abre el otr
+          +o; `Modal` devuelve el foco a la tarjeta.                     
+      494 +- **Verificación:**                                           
+      495 +  - **Reservas ya empezadas o que empiezan pronto** (la API no
+          + deja crearlas): se insertan con `psql` en el script de       
+      496 +    verificación (por ejemplo, `start_at = now() + interval '7
+          +5 seconds'`) y se borran al final del mismo script.           
+      497 +    Antes de borrarlas, comprobar que no tengan filas en `audi
+          +t_logs`.                                                      
+      498 +  - **Estado de error de una consulta:** el `queryClient` rein
+          +tenta una vez los 5xx, así que la simulación tiene que        
+      499 +    fallar **dos** veces seguidas para que se vea el error. Pa
+          +ra el estado de carga, recargar la página primero (con        
+      500 +    `staleTime` de 30 s, la caché no vuelve a pedir los datos 
+          +al navegar dentro de la app).                                 
+      501 +  - **Esperas largas** (por ejemplo, hasta que empiece una res
+          +erva): repartirlas en varias llamadas de                      
+      502 +    `javascript_tool`, cada una de menos de 45 s.             
+      503 +  - **Credenciales de prueba generadas:** leer el valor del ar
+          +chivo **antes** de usarlo, nunca en llamadas paralelas        
+      504 +    (en T09 un login dio 401 por eso).                        
+      505 +- **Datos que dejó la verificación de T09** en la base de desa
+          +rrollo: el usuario `t09.vacia.<sufijo>@salalibre.local`       
+      506 +  (activo, sin reservas) y reservas `T09 …` canceladas como hi
+          +storial.                                                      
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre"; D=$(date
+      "+%Y-%m-%d %H:%M"); echo "| B-151 | $D | Agente | 3-Ejecutar | CORRECCIÓN
+      | A pedido de la per…)
+  ⎿  | B-151 | 2026-11-16 01:11 | Agente | 3-Ejecutar | CORRECCIÓN | A pedi
+     do de la persona (observació
+     b8b0b76 T09: CLAUDE.md con los desvíos de la tarea
+     ?? main
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      152  | B-148 | 2026-11-16 01:05 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T09 (Mis reservas y cancelar): `MyBookingsPage` en `/my-b
+           ookings` (tarjetas con fecha, horario, sala, título, asistente
+           s y estado; esqueleto, error con `requestId` y "Reintentar", v
+           acío "No tienes reservas próximas"), `useMyBookings`, `useCanc
+           elBooking` (invalida `agendaKeys.bookings`: agenda y Mis reser
+           vas), `CancelBookingDialog` sobre `ConfirmDialog` con candado 
+           contra el doble envío, `canCancel`/`actionNow` en `booking-act
+           ions.ts`, y en la agenda la tarjeta es un botón que abre `Book
+           ingDetailDialog` (título según rol, dueño y "Cancelar reserva"
+            si corresponde). Lint (web y api) y build sin errores, compos
+           e healthy; CA1–CA7 comprobados en Chrome con empleado1, emplea
+           do2, admin y un usuario nuevo sin reservas, con 422 reales (`p
+           sql` para reservas ya empezadas) y la auditoría con el ADMIN c
+           omo actor; datos de prueba cancelados o borrados | T09 En revi
+           sión. Commit: `T09: Mis reservas y cancelar` (hash en `git log
+           `). Ambigüedades: cancelar la propia desde la agenda, "Cancela
+           da por …", error desactualizado cierra el diálogo, lista sin p
+           aginar | docs/tareas/T09.md, B-146, B-147 |
+      153  | B-149 | 2026-11-16 01:07 | Yo | 3-Ejecutar | REVISIÓN | T09 
+           revisada, cumple la DoD | — | — |
+      154  | B-150 | 2026-11-16 01:08 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T09 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-149 | T09 Hecha |
+            docs/02-backlog.md, B-149 |
+      155 +| B-151 | 2026-11-16 01:11 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T09, §
+          +8 de docs/tareas/T09.md), CLAUDE.md (Dependencias) agrega la s
+          +ubsección «Mis reservas y cancelar fijados en T09»: `canCancel
+          +` como única regla de la UI, `actionNow` en lugar de `useNow` 
+          +solo, invalidación de `agendaKeys.bookings`, errores desactual
+          +izados que cierran el diálogo, diálogos de confirmación con ca
+          +ndado, tarjetas de la agenda como botones, y cómo verificar re
+          +servas ya empezadas con `psql`, el estado de error (dos 5xx se
+          +guidos), las esperas largas y las credenciales de prueba | Sol
+          +o documentación; sin cambios de código | CLAUDE.md, docs/tarea
+          +s/T09.md §6, §7 y §8, B-147, B-149 |                          
+
+● El commit quedó hecho, pero git status muestra un archivo sin seguimiento
+  llamado main en la raíz. Lo reviso antes de decir nada sobre él.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Listo: el commit b8b0b76 («T09: CLAUDE.md con los desvíos de la tarea»)
+  incluye:
+
+  - CLAUDE.md: una subsección nueva, «Mis reservas y cancelar fijados en T09»,
+    al final de Dependencias. Fija lo siguiente:
+    - Qué botones muestra la UI: lo decide canCancel, solo para la experiencia
+      de uso; quien autoriza es la API.
+    - "Ahora" para decidir acciones: actionNow en lugar de useNow solo (B-147).
+    - Al cancelar: se invalida agendaKeys.bookings, que incluye Mis reservas.
+      T10a y T10b, que cancelan reservas en cascada, deben invalidar la misma
+      clave.
+    - Errores desactualizados: cierran el diálogo con un aviso; los demás
+      errores quedan en un banner con el requestId.
+    - Diálogos de confirmación: muestran la consecuencia, empiezan con el foco
+      en "Volver" y tienen candado contra el doble envío.
+    - Tarjetas de la agenda: son botones que abren el detalle de la reserva.
+    - Verificación: reservas ya empezadas insertadas con psql y borradas al
+      final; dos fallos 5xx seguidos para ver el estado de error, porque se
+      reintenta una vez; esperas largas repartidas en llamadas de menos de 45 s;
+      leer la credencial de prueba antes de usarla.
+    - Datos que quedaron de T09 en la base de desarrollo.
+  - Bitácora: la fila B-151, de tipo CORRECCIÓN.
+
+  En la raíz del repositorio apareció un archivo vacío llamado main, sin
+  seguimiento, creado a las 01:10. Ninguno de mis comandos escribe ese archivo,
+  así que no lo toqué. Si no es tuyo, se puede borrar sin problema; dime y lo
+  quito.
+
+  La siguiente tarea del backlog es T10 (Admin de salas). Sus dependencias, T04
+  y T07, ya están Hechas.
+
+✻ Brewed for 32s · done 1:11
