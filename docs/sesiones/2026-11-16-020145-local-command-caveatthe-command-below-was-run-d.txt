@@ -1,0 +1,3169 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+> /clear                                                                        
+
+> /ejecutar-tarea T10                                                           
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● Ahora reviso el diseño y el frontend existente.
+
+  Read 1 file, ran 6 shell commands (ctrl+o to expand)
+
+● Ya leí la tarea, el spec y el código existente; la DoR se cumple (T04 y T07 en
+  Hecha). Registro el inicio en la bitácora.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && echo '| B-152
+      | 2026-11-16 01:14 | Agente | 3-Ejecutar | AGENTE | Inicio de T10 (Admin
+      de salas). DoR…)
+  ⎿  77:| 19 | T10 | Admin de salas | T04, T07 | M | No | En curso | |
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77 -| 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      77 +| 19 | T10 | Admin de salas | T04, T07 | M | No | En curso | | 
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      153  | B-149 | 2026-11-16 01:07 | Yo | 3-Ejecutar | REVISIÓN | T09 
+           revisada, cumple la DoD | — | — |
+      154  | B-150 | 2026-11-16 01:08 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T09 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-149 | T09 Hecha |
+            docs/02-backlog.md, B-149 |
+      155  | B-151 | 2026-11-16 01:11 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T09, §
+           8 de docs/tareas/T09.md), CLAUDE.md (Dependencias) agrega la s
+           ubsección «Mis reservas y cancelar fijados en T09»: `canCancel
+           ` como única regla de la UI, `actionNow` en lugar de `useNow` 
+           solo, invalidación de `agendaKeys.bookings`, errores desactual
+           izados que cierran el diálogo, diálogos de confirmación con ca
+           ndado, tarjetas de la agenda como botones, y cómo verificar re
+           servas ya empezadas con `psql`, el estado de error (dos 5xx se
+           guidos), las esperas largas y las credenciales de prueba | Sol
+           o documentación; sin cambios de código | CLAUDE.md, docs/tarea
+           s/T09.md §6, §7 y §8, B-147, B-149 |
+      156 +| B-152 | 2026-11-16 01:14 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T10 (Admin de salas). DoR comprobada: dependencias T04
+          + y T07 en Hecha; tarea con objetivo, trazabilidad, alcance, fu
+          +era de alcance, CA1–CA8, seguridad, verificación y estimación 
+          +M | T10 En curso | docs/02-backlog.md (T10) |                 
+
+● Voy a mover el tipo Room, el equipamiento y useRooms a features/rooms/, luego
+  el formulario con validación y el modal, y después la página de administración
+  de salas en /admin/rooms. Al final verificaré con lint, build y Docker, y
+  haré commit. · summary
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Ahora creo los archivos del módulo rooms.
+
+● Write(src\web\src\features\rooms\types.ts)
+  ⎿  Wrote 31 lines to src\web\src\features\rooms\types.ts
+       1 /** Objeto `Room` del API (spec §8) y lista fija de equipamiento
+          (RN-22, D-25). La agenda los importa desde aquí. */
+       2 
+       3 export type Equipment = 'PROJECTOR' | 'VIDEOCONF' | 'WHITEBOARD'
+          | 'TV';
+       4 
+       5 /** Lista fija de equipos (RN-22, D-25), en el orden en que se m
+         uestran. */
+       6 export const EQUIPMENT: readonly Equipment[] = ['PROJECTOR', 'VI
+         DEOCONF', 'WHITEBOARD', 'TV'];
+     … +25 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\rooms\equipment-icons.tsx)
+  ⎿  Wrote 11 lines to src\web\src\features\rooms\equipment-icons.tsx
+       1 import { Presentation, Projector, Tv, Video } from 'lucide-react
+         ';
+       2 import type { ReactNode } from 'react';
+       3 import type { Equipment } from './types';
+       4 
+       5 /** Icono de cada equipo (DESIGN.md, Componentes 3: icono y text
+         o). Siempre decorativo: va junto a su etiqueta. */
+       6 export const EQUIPMENT_ICONS: Record<Equipment, ReactNode> = {
+       7   PROJECTOR: <Projector size={14} />,
+       8   VIDEOCONF: <Video size={14} />,
+     … +3 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\rooms\rooms-queries.ts)
+  ⎿  Wrote 48 lines to src\web\src\features\rooms\rooms-queries.ts
+       1 import { useMutation, useQuery, useQueryClient } from '@tanstack
+         /react-query';
+       2 import { apiClient } from '../../shared/apiClient';
+       3 import type { Equipment, Room } from './types';
+       4 
+       5 /**
+       6  * Salas (spec §8): una sola clave para la agenda y para `/admin
+         /rooms`. Crear, editar, desactivar o activar una sala
+       7  * invalida `roomKeys.all`, así la agenda deja de mostrar una sa
+         la desactivada sin recargar la página (T10 CA4).
+     … +41 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\rooms\room-form.ts)
+  ⎿  Wrote 71 lines to src\web\src\features\rooms\room-form.ts
+       1 /**
+       2  * Formulario de sala (T10 CA2, CA3, CA5 y CA6): validación del 
+         cliente igual a RN-22 y al DTO del API, y el mapa de
+       3  * errores del API a campos. La validación del cliente es comodi
+         dad: el API vuelve a validar.
+       4  */
+       5 import { z } from 'zod';
+       6 import type { ApiError } from '../../shared/apiClient';
+       7 import { EQUIPMENT, ROOM_LIMITS, type Equipment, type Room } fro
+         m './types';
+     … +64 lines (ctrl+o to expand)
+
+● Ahora actualizo la agenda para que use lo movido a features/rooms.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/bookings" && git rm -q
+      equipment-icons.tsx && sed -i "s#import { EQUIPMENT_ICONS } f…)
+  ⎿  AgendaGrid.tsx:16:import { EQUIPMENT_ICONS } from '../rooms/equipment-
+     icons';
+     RoomFilters.tsx:5:import { EQUIPMENT_ICONS } from '../rooms/equipment-
+     … +29 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\RoomFilters.tsx (+1 -1)
+      2  import { useId } from 'react';
+      3  import { Button, CheckboxGroup, Input } from '../../shared/ui';
+      4  import { hasFilters, NO_FILTERS, type RoomFilterValue } from './
+         agenda-logic';
+      5 -import { EQUIPMENT_ICONS } from './equipment-icons';            
+      5 +import { EQUIPMENT_ICONS } from '../rooms/equipment-icons';     
+      6  import { EQUIPMENT, EQUIPMENT_LABELS, type Equipment } from './t
+         ypes';
+      7  
+      8  const EQUIPMENT_OPTIONS = EQUIPMENT.map((e) => ({ value: e, labe
+         l: EQUIPMENT_LABELS[e], icon: EQUIPMENT_ICONS[e] }));
+  ⎿  Deleted src\web\src\features\bookings\equipment-icons.tsx (+0 -11)
+       1 -import { Presentation, Projector, Tv, Video } from 'lucide-reac
+         -t';                                                            
+       2 -import type { ReactNode } from 'react';                        
+       3 -import type { Equipment } from './types';                      
+       4 -                                                               
+       5 -/** Icono de cada equipo (DESIGN.md, Componentes 3: icono y tex
+         -to). Siempre decorativo: va junto a su etiqueta. */            
+       6 -export const EQUIPMENT_ICONS: Record<Equipment, ReactNode> = { 
+       7 -  PROJECTOR: <Projector size={14} />,                          
+       8 -  VIDEOCONF: <Video size={14} />,                              
+       9 -  WHITEBOARD: <Presentation size={14} />,                      
+      10 -  TV: <Tv size={14} />,                                        
+      11 -};                                                             
+  ⎿  … 1 more file changed
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/bookings" && node -e '
+      const fs=require("fs");…)
+  ⎿  /** Objetos del API que usa la agenda (spec §8). */
+
+     /** Salas y equipamiento: los define `features/rooms` (T10); se reexpo
+     … +14 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\types.ts (+2 -21)
+       1  /** Objetos del API que usa la agenda (spec §8). */
+       2  
+       3 -export type Equipment = 'PROJECTOR' | 'VIDEOCONF' | 'WHITEBOARD
+         -' | 'TV';                                                      
+       4 -                                                               
+       5 -/** Lista fija de equipos (RN-22, D-25), en el orden en que se 
+         -muestran. */                                                   
+       6 -export const EQUIPMENT: readonly Equipment[] = ['PROJECTOR', 'V
+         -IDEOCONF', 'WHITEBOARD', 'TV'];                                
+       7 -                                                               
+       8 -/** Etiquetas en español (notas de T08 en el backlog). */      
+       9 -export const EQUIPMENT_LABELS: Record<Equipment, string> = {   
+      10 -  PROJECTOR: 'Proyector',                                      
+      11 -  VIDEOCONF: 'Videoconferencia',                               
+      12 -  WHITEBOARD: 'Pizarra',                                       
+      13 -  TV: 'TV',                                                    
+      14 -};                                                             
+      15 -                                                               
+      16 -export interface Room {                                        
+      17 -  id: string;                                                  
+      18 -  name: string;                                                
+      19 -  capacity: number;                                            
+      20 -  location: string;                                            
+      21 -  equipment: Equipment[];                                      
+      22 -  isActive: boolean;                                           
+      23 -}                                                              
+       3 +/** Salas y equipamiento: los define `features/rooms` (T10); se
+         + reexportan para la agenda. */                                 
+       4 +export { EQUIPMENT, EQUIPMENT_LABELS, type Equipment, type Room
+         + } from '../rooms/types';                                      
+       5  
+       6  export interface BookingPerson {
+       7    id: string;
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/bookings" && node -e '
+      const fs=require("fs");…)
+  ⎿  import { useQuery } from '@tanstack/react-query';
+     import { apiClient } from '../../shared/apiClient';
+     import { roomKeys } from '../rooms/rooms-queries';
+     … +34 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\agenda-queries.ts (+7 -10)
+       1  import { useQuery } from '@tanstack/react-query';
+       2  import { apiClient } from '../../shared/apiClient';
+       3 -import type { Booking, Closure, Room } from './types';         
+       3 +import { roomKeys } from '../rooms/rooms-queries';             
+       4 +import type { Booking, Closure } from './types';               
+       5 +                                                               
+       6 +/** Salas de la agenda: la consulta es la de `features/rooms` (
+         +T10). Un `ADMIN` recibe también las inactivas: la agenda muestr
+         +a solo las activas (spec §9). */                               
+       7 +export { useRooms } from '../rooms/rooms-queries';             
+       8  
+       9  /**
+      10   * Datos de la agenda (F-02 paso 1): `GET /rooms`, `GET /bookin
+          gs?date=` y `GET /closures`. Las claves se exportan para
+      11   * que T08a (reservar) y T09 (cancelar) invaliden la agenda.
+      12   */
+      13  export const agendaKeys = {
+      10 -  rooms: ['rooms'] as const,                                   
+      14 +  /** La misma clave que `roomKeys.all`: `/admin/rooms` la inva
+         +lida al crear, editar o desactivar. */                         
+      15 +  rooms: roomKeys.all,                                         
+      16    bookingsOf: (date: string) => ['bookings', 'day', date] as co
+          nst,
+      17    bookings: ['bookings'] as const,
+      18    /** Mis reservas (T09). Cuelga de `bookings`: invalidar `agen
+          daKeys.bookings` recarga también esta lista. */
+     ...
+      20    closures: ['closures'] as const,
+      21  };
+      22  
+      18 -/** Salas de la agenda. Un `ADMIN` recibe también las inactivas
+         -: la agenda muestra solo las activas (spec §9). */             
+      19 -export function useRooms() {                                   
+      20 -  return useQuery({                                            
+      21 -    queryKey: agendaKeys.rooms,                                
+      22 -    queryFn: ({ signal }) => apiClient.get<Room[]>('/rooms', { 
+         -signal }),                                                     
+      23 -  });                                                          
+      24 -}                                                              
+      25 -                                                               
+      23  /** Reservas `CONFIRMED` del día (en `BUSINESS_TZ`). Cambiar la
+           fecha cambia la clave y vuelve a pedirlas (CA10). */
+      24  export function useBookings(date: string) {
+      25    return useQuery({
+
+● Ahora el modal del formulario.
+
+● Write(src\web\src\features\rooms\RoomFormModal.tsx)
+  ⎿  Wrote 170 lines to src\web\src\features\rooms\RoomFormModal.tsx
+      1 import { zodResolver } from '@hookform/resolvers/zod';
+      2 import { useId, useRef, useState, type FormEvent } from 'react';
+      3 import { Controller, useForm } from 'react-hook-form';
+      4 import { toApiError, type ApiError } from '../../shared/apiClient
+        ';
+      5 import { Banner, Button, CheckboxGroup, Field, Input, Modal, useT
+        oast } from '../../shared/ui';
+      6 import { EQUIPMENT_ICONS } from './equipment-icons';
+      7 import { EMPTY_ROOM, roomChanges, roomErrorField, roomSchema, roo
+        mToValues, toRoomInput, type RoomFormValues } from './room-form';
+     … +163 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/rooms" && sed -i 's/
+      maxLength={ROOM_LIMITS.nameMax}//; s/ maxLength={ROOM_LIMITS.lo…)
+  ⎿  0
+  ⎿  Updated src\web\src\features\rooms\RoomFormModal.tsx (+2 -2)
+      123          )}
+      124  
+      125          <Field label="Nombre" required error={errors.name?.mes
+           sage} hint={`Único, hasta ${ROOM_LIMITS.nameMax} caracteres.`}
+           >
+      126 -          {(p) => <Input {...p} autoComplete="off" maxLength={
+          -ROOM_LIMITS.nameMax} {...register('name')} />}                
+      126 +          {(p) => <Input {...p} autoComplete="off" {...registe
+          +r('name')} />}                                                
+      127          </Field>
+      128  
+      129          <div className="grid grid-cols-1 gap-gutter sm:grid-co
+           ls-[10rem_1fr]">
+     ...
+      147              )}
+      148            </Field>
+      149            <Field label="Ubicación" required error={errors.loca
+           tion?.message} hint="Por ejemplo: Piso 2.">
+      150 -            {(p) => <Input {...p} autoComplete="off" maxLength
+          -={ROOM_LIMITS.locationMax} {...register('location')} />}      
+      150 +            {(p) => <Input {...p} autoComplete="off" {...regis
+          +ter('location')} />}                                          
+      151            </Field>
+      152          </div>
+      153  
+
+● Write(src\web\src\features\rooms\AdminRoomsPage.tsx)
+  ⎿  Wrote 238 lines to src\web\src\features\rooms\AdminRoomsPage.tsx
+       1 import { DoorOpen, Pencil, Plus, Power, PowerOff } from 'lucide-
+         react';
+       2 import { useRef, useState } from 'react';
+       3 import { toApiError } from '../../shared/apiClient';
+       4 import {
+       5   Badge,
+       6   Button,
+       7   ConfirmDialog,
+       8   EmptyState,
+       9   ErrorState,
+     … +229 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web/src" &&
+      sed -i 's/Sus reservas existentes se mantienen: si hace falta, cancélalas
+      aparte. Puedes…)
+  ⎿  import { createContext, useContext } from 'react';
+
+     export type ToastTone = 'success' | 'error' | 'info';
+     … +26 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\rooms\AdminRoomsPage.tsx (+1 -1)
+      219        >
+      220          <p>Dejará de aparecer en la agenda y no admitirá reser
+           vas nuevas.</p>
+      221          <p className="mt-space-sm text-on-surface-variant">
+      222 -          Sus reservas existentes se mantienen: si hace falta,
+          - cancélalas aparte. Puedes volver a activarla cuando quieras. 
+      222 +          Sus reservas existentes no se cancelan. Puedes volve
+          +r a activarla cuando quieras.                                 
+      223          </p>
+      224        </ConfirmDialog>
+      225      </section>
+
+● Conecto la ruta en App.tsx y corro lint y build.
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web/src" &&
+      sed -i "s#<Route path=\"rooms\" element={<PlaceholderPage title=\"Salas\"
+      />} />#<Route p…)
+  ⎿  9:import { AdminRoomsPage } from './features/rooms/AdminRoomsPage';
+     19: * marcadores hasta sus tareas (T10a, T10b, T10c).
+     39:                    <Route path="rooms" element={<AdminRoomsPage />
+     … +15 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\App.tsx (+3 -2)
+       6  import { LoginPage } from './features/auth/LoginPage';
+       7  import { AgendaPage } from './features/bookings/AgendaPage';
+       8  import { MyBookingsPage } from './features/bookings/MyBookingsP
+          age';
+       9 +import { AdminRoomsPage } from './features/rooms/AdminRoomsPage
+         +';                                                             
+      10  import { ProtectedRoute } from './features/auth/ProtectedRoute'
+          ;
+      11  import { RequireRole } from './features/auth/RequireRole';
+      12  import { SessionLayout } from './features/auth/SessionLayout';
+     ...
+      16  
+      17  /**
+      18   * Rutas de spec §9. `/login` es pública; el resto exige sesión
+           y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son
+      18 - * marcadores hasta sus tareas (T09, T10…).                    
+      19 + * marcadores hasta sus tareas (T10a, T10b, T10c).             
+      20   */
+      21  export function App() {
+      22    const [queryClient] = useState(createQueryClient);
+     ...
+      36                    <Route path="/account" element={<AccountPage 
+          />} />
+      37                    <Route path="/admin" element={<RequireRole ro
+          le="ADMIN" />}>
+      38                      <Route index element={<Navigate to="/agenda
+          " replace />} />
+      38 -                    <Route path="rooms" element={<PlaceholderPa
+         -ge title="Salas" />} />                                        
+      39 +                    <Route path="rooms" element={<AdminRoomsPag
+         +e />} />                                                       
+      40                      <Route path="users" element={<PlaceholderPa
+          ge title="Usuarios" />} />
+      41                      <Route path="closures" element={<Placeholde
+          rPage title="Cierres" />} />
+      42                      <Route path="audit" element={<PlaceholderPa
+          ge title="Auditoría" />} />
+  ⎿  (timeout 5m)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lint sin errores y build correcto (aparece un aviso nuevo: el bundle pasó de
+  491 kB a 505 kB y supera el umbral de 500 kB de Vite; lo anoto). Levanto el
+  compose.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Compose arriba. Paso a la verificación manual en Chrome.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● CA1 se ve bien (ya existe una "Sala Prueba" inactiva de una verificación
+  anterior, así que uso "Sala Prueba T10"). Abro el modal de crear.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● First test client validation (CA6): submit empty, then with spaces / capacity
+  101.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Validación del cliente OK. Ahora relleno valores válidos, instalo un contador
+  de POST y hago doble clic en "Crear sala" para probar el candado.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA2 OK: un solo POST pese al doble clic, y la sala aparece. Ahora CA5: el
+  mismo nombre en minúsculas.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA5 OK: "Ya existe una sala con ese nombre." en el campo, con el foco en él.
+  Ahora CA3: editar la capacidad.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● CA3 OK (PATCH solo con capacity, y el foco vuelve a "Editar"). Para CA4
+  primero creo una reserva futura en esa sala, para comprobar que desactivarla
+  no la toca (D-14).
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● Desactivada con un solo PATCH y aviso visible. Compruebo que la reserva sigue
+  confirmada y luego entro como empleado1.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA4 (empleado no ve la sala en la agenda) y CA7 OK. Compruebo el 403 del API,
+  vuelvo como admin y reactivo.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Se vio el estado de carga ("Cargando las salas"). Busco de nuevo el botón.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Reactivación OK. Ahora CA8: simulo en la página que GET /api/rooms falle (dos
+  5xx, por el reintento) provocando una recarga con un POST duplicado, y luego
+  vacío y "Reintentar".
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● Estado de error OK (mensaje, requestId y "Reintentar"). Ahora el vacío: la
+  simulación devuelve [] y pulso "Reintentar".
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Vacío OK. Limpio los datos de prueba: cancelo la reserva y dejo "Sala Prueba
+  T10" inactiva (no hay DELETE de salas).
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Auditoría generada por la API (ROOM_UPDATED, etc.). Compruebo el ancho en
+  pantallas estrechas con iframes de tamaño fijo.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● A ≤768 px la página entera se desplaza en horizontal (804 px), aunque la tabla
+  tiene su propio desplazamiento. Busco qué elemento la ensancha.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Las entradas del menú quedan dentro de su propia barra, como en Mis reservas.
+  Probablemente la culpa es el span sr-only de "Acciones", que escapa del
+  contenedor; voy a ponerle relative al contenedor de Table. · summary
+
+● Update(src\web\src\shared\ui\Table.tsx)
+  ⎿  Added 2 lines, removed 1 line
+      25  /** Tabla administrativa: superficie blanca, encabezado `label-
+          xs` en mayúsculas y filas separadas por el borde. */
+      26  export function Table<T>({ caption, columns, rows, rowKey, clas
+          sName }: TableProps<T>) {
+      27    return (
+      28 -    <div className={cn('overflow-x-auto rounded-lg border borde
+         -r-divider bg-surface-container-lowest', className)}>           
+      28 +    // `relative`: los textos `sr-only` (posición absoluta) que
+         +dan dentro del desplazamiento de la tabla y no ensanchan la pág
+         +ina.                                                           
+      29 +    <div className={cn('relative overflow-x-auto rounded-lg bor
+         +der border-divider bg-surface-container-lowest', className)}>  
+      30        <table className="w-full border-collapse text-left text-b
+          ody-md">
+      31          <caption className="sr-only">{caption}</caption>
+      32          <thead className="bg-mist">
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Corregido: en todos los tamaños la página ya no supera el ancho de la ventana,
+  y la tabla se desplaza dentro de su contenedor. Cierro la pestaña y
+  documento.
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Antes de documentar, compruebo por curl los 400 del API que la pantalla ya no
+  deja provocar (regla de T07b).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Todo coincide. Escribo docs/tareas/T10.md.
+
+● Write(docs\tareas\T10.md)
+  ⎿  Wrote 184 lines to docs\tareas\T10.md
+       1 # T10 · Admin de salas
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha (pendiente de revisión) |
+       8 | Inicio – fin | 2026-11-16 01:14 – 01:25 (11 min) · estimado: M
+          |
+     … +176 lines (ctrl+o to expand)
+
+● Ajusto la salida de lint y build para que sea exactamente la real.
+
+● Update(docs\tareas\T10.md)
+  ⎿  Added 4 lines, removed 4 lines
+      71  docker compose ps
+      72  ```
+      73  ```
+      74 -> salalibre-web@0.1.0 lint                                     
+      75 -> eslint .                                                     
+      76 -(sin errores ni avisos)                                        
+      74 +npm notice run salalibre-web@0.1.0 lint                        
+      75 +npm notice run eslint .                                        
+      76 +(sin más salida: ningún error ni aviso)                        
+      77  
+      78 -dist/assets/index-CzbqQNQx.css                              36.
+         -17 kB │ gzip:   8.17 kB                                        
+      78  dist/assets/index-BFls4SEc.js                              505.
+          30 kB │ gzip: 153.49 kB
+      79 +[plugin builtin:vite-reporter]                                 
+      80  (!) Some chunks are larger than 500 kB after minification. Cons
+          ider: …
+      81  ✓ built in 387ms
+      82  
+
+● Ahora el backlog (resumen y ficha) y el commit.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^|
+      19 | T10 | Admin de salas | T04, T07 | M | No | En curso | |$/| 19 | T10 |
+      Admin de sala…)
+  ⎿  77:| 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+     | Estado | En revisión |
+      docs/02-backlog.md | 6 +++---
+      1 file changed, 3 insertions(+), 3 deletions(-)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      928  | Dependencias | T04, T07 |
+      929  | Estimación | M |
+      930  | Seguridad / auditoría | Roles: solo ADMIN (la API igual resp
+           onde 403). Auditoría: la genera la API (`ROOM_CREATED`, `ROOM_
+           UPDATED`, T06a) |
+      931 -| Estado | Pendiente |                                        
+      931 +| Estado | En revisión |                                      
+      932  
+      933  **Alcance (archivos o módulos):**
+      934  - `src/web/src/features/rooms/`: `AdminRoomsPage`, `RoomFormMo
+           dal`, hooks de lectura y escritura.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● El backlog en disco tiene ediciones que no hice yo (dos "RR. HH." pasaron a
+  "RRHH" y la fila 19 volvió a "Pendiente"), así que conservo esos cambios y
+  solo ajusto la fila 19. · summary
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77 -| 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
+      77 +| 19 | T10 | Admin de salas | T04, T07 | M | No | En revisión |
+         + [T10](tareas/T10.md) |                                        
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/|
+      Inicio – fin | 2026-11-16 01:14 – 01:25 (11 min) · estimado: M |/| Inicio
+      – fin | 2026-11…)
+  ⎿  8:| Inicio – fin | 2026-11-16 01:14 – 01:24 (10 min) · estimado: M |
+     M  docs/02-backlog.md
+     M  docs/03-bitacora.md
+     … +17 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      154  | B-150 | 2026-11-16 01:08 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T09 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-149 | T09 Hecha |
+            docs/02-backlog.md, B-149 |
+      155  | B-151 | 2026-11-16 01:11 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T09, §
+           8 de docs/tareas/T09.md), CLAUDE.md (Dependencias) agrega la s
+           ubsección «Mis reservas y cancelar fijados en T09»: `canCancel
+           ` como única regla de la UI, `actionNow` en lugar de `useNow` 
+           solo, invalidación de `agendaKeys.bookings`, errores desactual
+           izados que cierran el diálogo, diálogos de confirmación con ca
+           ndado, tarjetas de la agenda como botones, y cómo verificar re
+           servas ya empezadas con `psql`, el estado de error (dos 5xx se
+           guidos), las esperas largas y las credenciales de prueba | Sol
+           o documentación; sin cambios de código | CLAUDE.md, docs/tarea
+           s/T09.md §6, §7 y §8, B-147, B-149 |
+      156  | B-152 | 2026-11-16 01:14 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T10 (Admin de salas). DoR comprobada: dependencias T04
+            y T07 en Hecha; tarea con objetivo, trazabilidad, alcance, fu
+           era de alcance, CA1–CA8, seguridad, verificación y estimación 
+           M | T10 En curso | docs/02-backlog.md (T10) |
+      157 +| B-153 | 2026-11-16 01:24 | Agente | 3-Ejecutar | ERROR | T10
+          +: al medir `/admin/rooms` con iframes de 768, 390 y 360 px, la
+          + página entera se desplazaba en horizontal (`scrollWidth` 804–
+          +812): el `sr-only` del encabezado "Acciones" (posición absolut
+          +a) escapaba del contenedor `overflow-x-auto` de `shared/ui/Tab
+          +le`, que no estaba posicionado | Corregido antes del commit co
+          +n `relative` en el contenedor de `Table`; medido de nuevo de 1
+          +920 a 360 px sin desplazamiento de la página | docs/tareas/T10
+          +.md §5 y §6 |                                                 
+      158 +| B-154 | 2026-11-16 01:24 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T10 (Admin de salas): `AdminRoomsPage` en `/admin/rooms` 
+          +(tabla con todas las salas, estado Activa/Inactiva, esqueleto,
+          + vacío y error con `requestId` y "Reintentar"), `RoomFormModal
+          +` de 640 px para crear y editar (Zod igual a RN-22, `ROOM_NAME
+          +_TAKEN` en el campo, candado contra el doble envío, `PATCH` so
+          +lo con los cambios), desactivar con `ConfirmDialog` (D-14) y a
+          +ctivar directo; `Room`, equipamiento y `useRooms` movidos a `f
+          +eatures/rooms/` (la agenda los importa de ahí, misma clave `['
+          +rooms']`). Lint y build sin errores (aviso de Vite: bundle de 
+          +505 kB > 500 kB), compose healthy; CA1–CA8 comprobados en Chro
+          +me como admin y empleado1, 400/409 del API por `curl`, auditor
+          +ía generada por la API; "Sala Prueba T10" queda inactiva y su 
+          +reserva de prueba cancelada | T10 En revisión. Commit: `T10: A
+          +dmin de salas` (hash en `git log`). Ambigüedades: botones en v
+          +ez de interruptor, editar sin cambios no llama al API, reserva
+          +s futuras de una sala inactiva no se pueden cancelar desde la 
+          +UI | docs/tareas/T10.md, B-153 |                              
+  ⎿  Updated docs\tareas\T10.md (+1 -1)
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha (pendiente de revisión) |
+       8 -| Inicio – fin | 2026-11-16 01:14 – 01:25 (11 min) · estimado: 
+         -M |                                                            
+       8 +| Inicio – fin | 2026-11-16 01:14 – 01:24 (10 min) · estimado: 
+         +M |                                                            
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (exportación
+           pendiente de la persona) |
+      10  | Commit(s) | ver `git log` (`T10: Admin de salas`) |
+      11  | Trazabilidad | RN-09, RN-21, RN-22 · D-14, D-25 · spec §6 (F-
+          05), §9 (Salas) · DESIGN.md Componentes 6 y 7 · backlog T10 |
+
+● No quiero meter en mi commit los cambios "RRHH" del backlog que no son míos:
+  preparo en el índice solo mis dos líneas (fila 19 y Estado de la ficha).
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Terminé T10 y está en "En revisión" (commit a7b3aed T10: Admin de salas). Lint
+  y build pasan sin errores, docker compose up -d --build levanta todo en
+  healthy, y comprobé en Chrome los criterios CA1 a CA8 como admin y como
+  empleado1.
+
+  Qué hace la pantalla /admin/rooms:
+  - Muestra una tabla con todas las salas, activas e inactivas: nombre,
+    capacidad, ubicación, equipamiento y estado. Tiene estados de carga, vacío y
+    error; el de error muestra el requestId y "Reintentar".
+  - Crea y edita en un modal. La validación del formulario es la misma que la
+    del API (RN-22). Al editar solo se envían los campos que cambiaron.
+  - Un nombre repetido (también en minúsculas) muestra "Ya existe una sala con
+    ese nombre." en el campo del nombre.
+  - Desactivar pide confirmación; activar no. Desactivar no cancela las reservas
+    futuras (D-14): lo probé con una reserva real, que siguió confirmada, y la
+    sala dejó de aparecer en la agenda de empleado1.
+  - Un doble clic en crear, desactivar o activar manda una sola petición.
+  - Un EMPLOYEE que entra por URL ve "No tienes permiso para ver esta página", y
+    el API le responde 403.
+
+  Desvíos:
+  - Moví Room, el equipamiento y useRooms de features/bookings/ a
+    features/rooms/. La agenda los importa de ahí con la misma clave de caché,
+    así que se actualiza sola al desactivar una sala. Su comportamiento no
+    cambia.
+  - Corregí shared/ui/Table. En pantallas de 768 px o menos, la página entera se
+    desplazaba en horizontal por un texto oculto para lectores de pantalla en
+    la columna "Acciones". Queda registrado como B-153.
+  - Vite muestra ahora un aviso de tamaño: el bundle pasó de 491 kB a 505 kB y
+    supera su umbral de 500 kB. No es un error y no dividí el código porque la
+    tarea no lo pide.
+
+  Ambigüedades (detalle en docs/tareas/T10.md §7):
+  - Usé botones Desactivar/Activar en lugar del interruptor del prototipo.
+  - Si se guarda una edición sin cambios, el modal se cierra sin llamar al API,
+    para no dejar una fila de auditoría vacía.
+  - Necesita tu decisión: las reservas futuras de una sala inactiva no se pueden
+    cancelar desde la UI, porque la agenda no muestra salas inactivas. No
+    agregué nada para eso.
+
+  Datos que quedan en la base de desarrollo: "Sala Prueba T10" inactiva, su
+  reserva de prueba cancelada y sus filas de auditoría.
+
+  Cambios en el backlog que no son míos: en docs/02-backlog.md aparecieron
+  cambios que no hice ("RR. HH." → "RRHH" en las fichas de T10 y T10b) y un
+  archivo docs/02-backlog.md.bak. Mi cambio "En curso" de la fila 19 también se
+  había revertido. Supuse que eran ediciones tuyas: los dejé sin commitear y en
+  el commit solo entraron mis dos líneas de estado. ¿Los incorporas tú o eran
+  involuntarios?
+
+✻ Churned for 11m 36s · done 1:25
+
+> /bitacora T10 revisada, cumple la DoD                                         
+
+● User answered Claude's questions:
+  ⎿  · La primera palabra de "T10 revisada, cumple la DoD" es "T10", que no es 
+     un tipo de la bitácora. ¿Qué tipo lleva la fila? (Para "T09 revisada, 
+     cumple la DoD" se usó REVISIÓN, en B-149.) → REVISIÓN (Recommended)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-20 && D=$(date "+%Y-%m-%d %H:%M") && echo "|
+      B-155 | $D | Yo |…)
+  ⎿  | B-154 | 2026-11-16
+     | B-155 | 2026-11-16 01:26 | Yo | 3-Ejecutar | REVISIÓN | T10 revisada
+     , cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      156  | B-152 | 2026-11-16 01:14 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T10 (Admin de salas). DoR comprobada: dependencias T04
+            y T07 en Hecha; tarea con objetivo, trazabilidad, alcance, fu
+           era de alcance, CA1–CA8, seguridad, verificación y estimación 
+           M | T10 En curso | docs/02-backlog.md (T10) |
+      157  | B-153 | 2026-11-16 01:24 | Agente | 3-Ejecutar | ERROR | T10
+           : al medir `/admin/rooms` con iframes de 768, 390 y 360 px, la
+            página entera se desplazaba en horizontal (`scrollWidth` 804–
+           812): el `sr-only` del encabezado "Acciones" (posición absolut
+           a) escapaba del contenedor `overflow-x-auto` de `shared/ui/Tab
+           le`, que no estaba posicionado | Corregido antes del commit co
+           n `relative` en el contenedor de `Table`; medido de nuevo de 1
+           920 a 360 px sin desplazamiento de la página | docs/tareas/T10
+           .md §5 y §6 |
+      158  | B-154 | 2026-11-16 01:24 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10 (Admin de salas): `AdminRoomsPage` en `/admin/rooms` 
+           (tabla con todas las salas, estado Activa/Inactiva, esqueleto,
+            vacío y error con `requestId` y "Reintentar"), `RoomFormModal
+           ` de 640 px para crear y editar (Zod igual a RN-22, `ROOM_NAME
+           _TAKEN` en el campo, candado contra el doble envío, `PATCH` so
+           lo con los cambios), desactivar con `ConfirmDialog` (D-14) y a
+           ctivar directo; `Room`, equipamiento y `useRooms` movidos a `f
+           eatures/rooms/` (la agenda los importa de ahí, misma clave `['
+           rooms']`). Lint y build sin errores (aviso de Vite: bundle de 
+           505 kB > 500 kB), compose healthy; CA1–CA8 comprobados en Chro
+           me como admin y empleado1, 400/409 del API por `curl`, auditor
+           ía generada por la API; "Sala Prueba T10" queda inactiva y su 
+           reserva de prueba cancelada | T10 En revisión. Commit: `T10: A
+           dmin de salas` (hash en `git log`). Ambigüedades: botones en v
+           ez de interruptor, editar sin cambios no llama al API, reserva
+           s futuras de una sala inactiva no se pueden cancelar desde la 
+           UI | docs/tareas/T10.md, B-153 |
+      159 +| B-155 | 2026-11-16 01:26 | Yo | 3-Ejecutar | REVISIÓN | T10 
+          +revisada, cumple la DoD | — | — |                             
+
+● Fila agregada al final de docs/03-bitacora.md, sin commit:
+
+  | B-155 | 2026-11-16 01:26 | Yo | 3-Ejecutar | REVISIÓN | T10 revisada, cumple
+  la DoD | — | — |
+
+✻ Worked for 9s · done 1:26
+
+> pasa T10 a Hecha en el backlog                                                
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i '77s/|
+      En revisión |/| Hecha |/; 931s/| Estado | En revisión |/| Estado | Hecha
+      |/' docs/02-ba…)
+  ⎿  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10](tareas
+     /T10.md) |
+     | Estado | Hecha |
+     … +10 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Hecha 
+          | [T08](tareas/T08.md) |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77 -| 19 | T10 | Admin de salas | T04, T07 | M | No | En revisión |
+         - [T10](tareas/T10.md) |                                        
+      77 +| 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+         +(tareas/T10.md) |                                              
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+          e | |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+     ...
+      928  | Dependencias | T04, T07 |
+      929  | Estimación | M |
+      930  | Seguridad / auditoría | Roles: solo ADMIN (la API igual resp
+           onde 403). Auditoría: la genera la API (`ROOM_CREATED`, `ROOM_
+           UPDATED`, T06a) |
+      931 -| Estado | En revisión |                                      
+      931 +| Estado | Hecha |                                            
+      932  
+      933  **Alcance (archivos o módulos):**
+      934  - `src/web/src/features/rooms/`: `AdminRoomsPage`, `RoomFormMo
+           dal`, hooks de lectura y escritura.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      157  | B-153 | 2026-11-16 01:24 | Agente | 3-Ejecutar | ERROR | T10
+           : al medir `/admin/rooms` con iframes de 768, 390 y 360 px, la
+            página entera se desplazaba en horizontal (`scrollWidth` 804–
+           812): el `sr-only` del encabezado "Acciones" (posición absolut
+           a) escapaba del contenedor `overflow-x-auto` de `shared/ui/Tab
+           le`, que no estaba posicionado | Corregido antes del commit co
+           n `relative` en el contenedor de `Table`; medido de nuevo de 1
+           920 a 360 px sin desplazamiento de la página | docs/tareas/T10
+           .md §5 y §6 |
+      158  | B-154 | 2026-11-16 01:24 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10 (Admin de salas): `AdminRoomsPage` en `/admin/rooms` 
+           (tabla con todas las salas, estado Activa/Inactiva, esqueleto,
+            vacío y error con `requestId` y "Reintentar"), `RoomFormModal
+           ` de 640 px para crear y editar (Zod igual a RN-22, `ROOM_NAME
+           _TAKEN` en el campo, candado contra el doble envío, `PATCH` so
+           lo con los cambios), desactivar con `ConfirmDialog` (D-14) y a
+           ctivar directo; `Room`, equipamiento y `useRooms` movidos a `f
+           eatures/rooms/` (la agenda los importa de ahí, misma clave `['
+           rooms']`). Lint y build sin errores (aviso de Vite: bundle de 
+           505 kB > 500 kB), compose healthy; CA1–CA8 comprobados en Chro
+           me como admin y empleado1, 400/409 del API por `curl`, auditor
+           ía generada por la API; "Sala Prueba T10" queda inactiva y su 
+           reserva de prueba cancelada | T10 En revisión. Commit: `T10: A
+           dmin de salas` (hash en `git log`). Ambigüedades: botones en v
+           ez de interruptor, editar sin cambios no llama al API, reserva
+           s futuras de una sala inactiva no se pueden cancelar desde la 
+           UI | docs/tareas/T10.md, B-153 |
+      159  | B-155 | 2026-11-16 01:26 | Yo | 3-Ejecutar | REVISIÓN | T10 
+           revisada, cumple la DoD | — | — |
+      160 +| B-156 | 2026-11-16 01:26 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T10 pasa a Hecha en el resumen y en la f
+          +icha de 02-backlog.md, tras la revisión de B-155 | T10 Hecha |
+          + docs/02-backlog.md, B-155 |                                  
+
+● T10 quedó como Hecha en docs/02-backlog.md, en la fila 19 del resumen y en el
+  Estado de su ficha. También agregué la fila B-156 al final de la bitácora,
+  como hicimos con T09.
+
+  No hice commit.
+  - Backlog: sigue teniendo sin commitear los cambios "RR. HH." → "RRHH" que
+    mencioné antes.
+  - docs/tareas/T10.md: tiene cambios que no hice yo; supongo que completaste la
+    sección 8 "Revisión".
+
+  Si quieres, hago el commit T10: revisión aprobada y estado Hecha con la
+  bitácora, T10.md y el estado del backlog. Dime si incluyo también los cambios
+  "RRHH" o solo mis dos líneas.
+
+✻ Crunched for 13s · done 1:26
+> Actualizar Claude.md con las desviaciones y haz el commit, incluye los        
+  cambios RRHH                                                                  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿  | B-157 | 2026-11-16 01:27 | Agente | 3-Ejecutar | CORRECCIÓN | A pedi
+     do de la
+      CLAUDE.md           | 27 +++++++++++++++++++++++++++
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated CLAUDE.md (+27 -0)
+      504      (en T09 un login dio 401 por eso).
+      505  - **Datos que dejó la verificación de T09** en la base de desa
+           rrollo: el usuario `t09.vacia.<sufijo>@salalibre.local`
+      506    (activo, sin reservas) y reservas `T09 …` canceladas como hi
+           storial.
+      507 +                                                              
+      508 +### Admin de salas fijado en T10 (ver `docs/tareas/T10.md` §6 
+          +y §7; B-153)                                                  
+      509 +- **`features/rooms/` es dueño de las salas en el frontend:** 
+          +`types.ts` (`Room`, `Equipment`, `EQUIPMENT`,                 
+      510 +  `EQUIPMENT_LABELS`, `ROOM_LIMITS` igual al API), `equipment-
+          +icons.tsx` y `rooms-queries.ts` (`roomKeys`, `useRooms`,      
+      511 +  `useCreateRoom`, `useUpdateRoom`). La agenda los importa de 
+          +ahí (`bookings/types.ts` reexporta; `agendaKeys.rooms` es     
+      512 +  `roomKeys.all`). No volver a declarar `Room` ni el equipamie
+          +nto en otra feature. Las pantallas de T10a–T10c siguen        
+      513 +  el mismo criterio: los tipos y las consultas de una entidad 
+          +viven en su feature.                                          
+      514 +- **Toda mutación de salas invalida `roomKeys.all`** en `onSet
+          +tled` (también ante error): así la agenda deja de mostrar     
+      515 +  una sala desactivada sin recargar.                          
+      516 +- **Formularios de administración** (sala; después usuario y c
+          +ierre): modal `size="md"` (640 px), esquema Zod con los       
+      517 +  mismos límites que el DTO (texto obligatorio "no solo espaci
+          +os" con `trim()` en el `refine`, sin recortar el valor        
+      518 +  enviado), mapa de códigos del API a campos (`ROOM_NAME_TAKEN
+          +` → `name`; igual `EMAIL_TAKEN` en T10a) y candado síncrono   
+      519 +  (`useRef`) contra el doble envío, como `RoomFormModal`. Edit
+          +ar manda solo los campos cambiados; sin cambios, se cierra    
+      520 +  sin llamar al API (no deja una fila de auditoría vacía).    
+      521 +- **Activar/desactivar en tablas:** botones con texto en la co
+          +lumna de acciones (no interruptor). Desactivar pasa por       
+      522 +  `ConfirmDialog` con la consecuencia; activar es directo. Amb
+          +os con candado contra el doble clic y aviso del resultado.    
+      523 +  El estado `isActive` no se edita en el modal.               
+      524 +- **`shared/ui/Table` tiene `relative` en el contenedor:** sin
+          + él, los `sr-only` (posición absoluta) escapan del            
+      525 +  `overflow-x-auto` y la página entera se desplaza en horizont
+          +al en pantallas estrechas (B-153). No quitarlo. Toda tabla    
+      526 +  nueva se mide con iframes de 1920 a 360 px (`scrollWidth` de
+          +l documento ≤ ancho de la ventana).                           
+      527 +- **Tamaño del bundle:** desde T10 `vite build` avisa que el J
+          +S supera 500 kB (505 kB). Es un aviso, no un error; dividir   
+      528 +  el código no está pedido en ninguna tarea.                  
+      529 +- **Pendiente de decisión de la persona:** las reservas futura
+          +s de una sala inactiva no se pueden cancelar desde la UI      
+      530 +  (la agenda no muestra salas inactivas, D-14). No agregar nad
+          +a sin que lo diga el spec.                                    
+      531 +- **Datos que dejó la verificación de T10** en la base de desa
+          +rrollo: "Sala Prueba T10" **inactiva** y la reserva           
+      532 +  "T10 reserva futura" cancelada. "Sala Prueba" (inactiva) ya 
+          +existía antes. No hay `DELETE` de salas: en verificaciones    
+      533 +  nuevas, usar nombres únicos y dejarlas inactivas al terminar
+          + para no agregar columnas a la agenda.                        
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      158  | B-154 | 2026-11-16 01:24 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10 (Admin de salas): `AdminRoomsPage` en `/admin/rooms` 
+           (tabla con todas las salas, estado Activa/Inactiva, esqueleto,
+            vacío y error con `requestId` y "Reintentar"), `RoomFormModal
+           ` de 640 px para crear y editar (Zod igual a RN-22, `ROOM_NAME
+           _TAKEN` en el campo, candado contra el doble envío, `PATCH` so
+           lo con los cambios), desactivar con `ConfirmDialog` (D-14) y a
+           ctivar directo; `Room`, equipamiento y `useRooms` movidos a `f
+           eatures/rooms/` (la agenda los importa de ahí, misma clave `['
+           rooms']`). Lint y build sin errores (aviso de Vite: bundle de 
+           505 kB > 500 kB), compose healthy; CA1–CA8 comprobados en Chro
+           me como admin y empleado1, 400/409 del API por `curl`, auditor
+           ía generada por la API; "Sala Prueba T10" queda inactiva y su 
+           reserva de prueba cancelada | T10 En revisión. Commit: `T10: A
+           dmin de salas` (hash en `git log`). Ambigüedades: botones en v
+           ez de interruptor, editar sin cambios no llama al API, reserva
+           s futuras de una sala inactiva no se pueden cancelar desde la 
+           UI | docs/tareas/T10.md, B-153 |
+      159  | B-155 | 2026-11-16 01:26 | Yo | 3-Ejecutar | REVISIÓN | T10 
+           revisada, cumple la DoD | — | — |
+      160  | B-156 | 2026-11-16 01:26 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-155 | T10 Hecha |
+            docs/02-backlog.md, B-155 |
+      161 +| B-157 | 2026-11-16 01:27 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T10, §
+          +8 de docs/tareas/T10.md), CLAUDE.md (Dependencias) agrega la s
+          +ubsección «Admin de salas fijado en T10»: `features/rooms/` co
+          +mo dueño de `Room`, equipamiento y consultas; invalidación de 
+          +`roomKeys.all`; patrón de formularios de administración (modal
+          + de 640 px, Zod igual al DTO, errores por campo, candado, `PAT
+          +CH` solo con cambios); activar/desactivar con botones y confir
+          +mación; `relative` en `shared/ui/Table` (B-153); aviso de tama
+          +ño del bundle; pendiente sobre reservas de salas inactivas y d
+          +atos que dejó la verificación | Solo documentación; sin cambio
+          +s de código. Se incluyen en el commit los cambios «RR. HH.» → 
+          +«RRHH» de la persona en 02-backlog.md | CLAUDE.md, docs/tareas
+          +/T10.md §6, §7 y §8, B-153, B-155 |                           
+
+● Hice el commit 6de5fc2 T10: revisión aprobada, estado Hecha y CLAUDE.md con 
+  los desvíos.
+
+  Qué agregué a CLAUDE.md: una subsección nueva, «Admin de salas fijado en T10»,
+  con estas reglas:
+  - Los tipos y las consultas de las salas viven en features/rooms/. La agenda
+    los importa de ahí, y T10a a T10c siguen el mismo criterio con sus propias
+    entidades.
+  - Toda mutación de salas invalida roomKeys.all, también cuando falla.
+  - Los formularios de administración siguen un mismo patrón:
+    - modal de 640 px;
+    - validación Zod igual a la del API;
+    - errores del API en su campo;
+    - bloqueo contra el doble envío;
+    - al editar solo se envían los cambios.
+  - Activar y desactivar van con botones en la tabla, y desactivar pide
+    confirmación.
+  - No hay que quitar relative del contenedor de shared/ui/Table, porque sin él
+    la página se desplaza en horizontal en pantallas estrechas (B-153). Toda
+    tabla nueva se mide entre 1920 y 360 px.
+  - Queda anotado el aviso de Vite por el tamaño del bundle (505 kB).
+  - Queda pendiente de tu decisión que las reservas futuras de una sala inactiva
+    no se pueden cancelar desde la UI.
+  - Quedan anotados los datos que dejó la verificación en la base de desarrollo.
+
+  Qué entró en el commit:
+  - CLAUDE.md.
+  - docs/02-backlog.md, con T10 en Hecha y tus cambios «RR. HH.» → «RRHH».
+  - docs/03-bitacora.md, con B-155 a B-157 (B-157 registra este cambio de
+    CLAUDE.md).
+  - docs/tareas/T10.md, con tu revisión.
+
+  Sin commitear: siguen fuera docs/02-backlog.md.bak, la sesión exportada en
+  docs/sesiones/ y main. ¿Quieres que borre el .bak?
+
+✻ Sautéed for 28s · done 1:27
+
+> /ejecutar-tarea T10a                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● DoR cumplida (T05a y T07 en Hecha). Leo decisiones, DTOs del API y el
+  prototipo.
+
+  Read 1 file, ran 2 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && echo '| B-158
+      | 2026-11-16 01:28 | Agente | 3-Ejecutar | AGENTE | Inicio de T10a (Admin
+      de usuarios).…)
+  ⎿  78:| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendiente |
+     |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      159  | B-155 | 2026-11-16 01:26 | Yo | 3-Ejecutar | REVISIÓN | T10 
+           revisada, cumple la DoD | — | — |
+      160  | B-156 | 2026-11-16 01:26 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-155 | T10 Hecha |
+            docs/02-backlog.md, B-155 |
+      161  | B-157 | 2026-11-16 01:27 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10, §
+           8 de docs/tareas/T10.md), CLAUDE.md (Dependencias) agrega la s
+           ubsección «Admin de salas fijado en T10»: `features/rooms/` co
+           mo dueño de `Room`, equipamiento y consultas; invalidación de 
+           `roomKeys.all`; patrón de formularios de administración (modal
+            de 640 px, Zod igual al DTO, errores por campo, candado, `PAT
+           CH` solo con cambios); activar/desactivar con botones y confir
+           mación; `relative` en `shared/ui/Table` (B-153); aviso de tama
+           ño del bundle; pendiente sobre reservas de salas inactivas y d
+           atos que dejó la verificación | Solo documentación; sin cambio
+           s de código. Se incluyen en el commit los cambios «RR. HH.» → 
+           «RRHH» de la persona en 02-backlog.md | CLAUDE.md, docs/tareas
+           /T10.md §6, §7 y §8, B-153, B-155 |
+      162 +| B-158 | 2026-11-16 01:28 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T10a (Admin de usuarios). DoR comprobada: dependencias
+          + T05a y T07 en Hecha; tarea con objetivo, trazabilidad, alcanc
+          +e, fuera de alcance, CA1–CA8, seguridad (A07), verificación y 
+          +estimación M | T10a En curso | docs/02-backlog.md (T10a) |    
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(docs\02-backlog.md)
+  ⎿  Added 1 line, removed 1 line
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78 -| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendient
+         -e | |                                                          
+      78 +| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | En curso
+         + | |                                                           
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+
+● Muevo los tipos de usuario a features/users/types.ts, después las consultas y
+  mutaciones, y luego el formulario, los modales y la página de administración;
+  al final verificaré el flujo en Chrome. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features" && mkdir -p users && cat >
+      users/types.ts <<'EOF'
+      /** Objeto `User` del API (spec §…)
+  ⎿  12:const PASSWORD_MIN = 8;
+     16:  newPassword: z.string().min(PASSWORD_MIN, { error: `La nueva cont
+     raseña debe tener al menos ${PASSWORD_MIN} caracteres.` }),
+  ⎿  Updated src\web\src\features\auth\types.ts (+2 -16)
+       1 -/** Objeto `User` del API (spec §8). */                        
+       2 -export type Role = 'EMPLOYEE' | 'ADMIN';                       
+       3 -                                                               
+       4 -export interface User {                                        
+       5 -  id: string;                                                  
+       6 -  email: string;                                               
+       7 -  name: string;                                                
+       8 -  role: Role;                                                  
+       9 -  isActive: boolean;                                           
+      10 -}                                                              
+      11 -                                                               
+      12 -/** Nombre visible de cada rol (DESIGN.md, «Ajustes al llevar l
+         -os prototipos a SalaLibre»). */                                
+      13 -export const ROLE_LABELS: Record<Role, string> = {             
+      14 -  EMPLOYEE: 'Empleado',                                        
+      15 -  ADMIN: 'Administrador RRHH',                                 
+      16 -};                                                             
+       1 +/** Usuario y roles: los define `features/users` (T10a); se ree
+         +xportan para la sesión. */                                     
+       2 +export { ROLE_LABELS, type Role, type User } from '../users/typ
+         +es';                                                           
+  ⎿  Created src\web\src\features\users\types.ts (+22 -0)
+       1 +/** Objeto `User` del API (spec §8) y roles. Auth (sesión) los 
+         +importa desde aquí. */                                         
+       2 +export type Role = 'EMPLOYEE' | 'ADMIN';                       
+       3 +                                                               
+       4 +/** Roles en el orden en que se ofrecen en los formularios. */ 
+       5 +export const ROLES: readonly Role[] = ['EMPLOYEE', 'ADMIN'];   
+       6 +                                                               
+       7 +export interface User {                                        
+       8 +  id: string;                                                  
+       9 +  email: string;                                               
+      10 +  name: string;                                                
+      11 +  role: Role;                                                  
+      12 +  isActive: boolean;                                           
+      13 +}                                                              
+      14 +                                                               
+      15 +/** Nombre visible de cada rol (DESIGN.md, «Ajustes al llevar l
+         +os prototipos a SalaLibre»). */                                
+      16 +export const ROLE_LABELS: Record<Role, string> = {             
+      17 +  EMPLOYEE: 'Empleado',                                        
+      18 +  ADMIN: 'Administrador RRHH',                                 
+      19 +};                                                             
+      20 +                                                               
+      21 +/** Límites del API (`USER_LIMITS`, spec §7 y RN-18). */       
+      22 +export const USER_LIMITS = { nameMax: 100, passwordMin: 8 } as 
+         +const;                                                         
+
+● Ahora consultas, esquemas y modales.
+
+● Write(src\web\src\features\users\users-queries.ts)
+  ⎿  Wrote 68 lines to src\web\src\features\users\users-queries.ts
+       1 import { useMutation, useQuery, useQueryClient } from '@tanstack
+         /react-query';
+       2 import { apiClient } from '../../shared/apiClient';
+       3 import { ME_QUERY_KEY } from '../auth/auth-context';
+       4 import { agendaKeys } from '../bookings/agenda-queries';
+       5 import type { Role, User } from './types';
+       6 
+       7 /** Usuarios (spec §8, solo `ADMIN`). */
+       8 export const userKeys = {
+       9   all: ['users'] as const,
+     … +59 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\users\user-form.ts)
+  ⎿  Wrote 58 lines to src\web\src\features\users\user-form.ts
+      1 /**
+      2  * Formularios de usuario (T10a CA2, CA3 y CA5): validación del c
+        liente igual a los DTO del API (nombre 1–100 y no solo
+      3  * espacios, correo válido, contraseña ≥ 8 por RN-18, rol de la l
+        ista) y el mapa de errores del API a campos. La
+      4  * validación del cliente es comodidad: el API vuelve a validar.
+      5  */
+      6 import { z } from 'zod';
+      7 import type { ApiError } from '../../shared/apiClient';
+      8 import { ROLES, USER_LIMITS, type Role, type User } from './types
+     … +51 lines (~2 KB) (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/users" && sed -i "s/email:
+      z.string().trim().min(1, /email: z.string().min(1, /" use…)
+  ⎿  25:  email: z.string().min(1, { error: 'Escribe el correo.' }).pipe(z.
+     email({ error: 'Escribe un correo válido.' })),
+  ⎿  Updated src\web\src\features\users\user-form.ts (+1 -1)
+      22  
+      23  export const createUserSchema = z.object({
+      24    name,
+      25 -  email: z.string().trim().min(1, { error: 'Escribe el correo.'
+         - }).pipe(z.email({ error: 'Escribe un correo válido.' })),     
+      25 +  email: z.string().min(1, { error: 'Escribe el correo.' }).pip
+         +e(z.email({ error: 'Escribe un correo válido.' })),            
+      26    password,
+      27    role,
+      28  });
+
+● Write(src\web\src\features\users\UserFormModal.tsx)
+  ⎿  Wrote 225 lines to src\web\src\features\users\UserFormModal.tsx
+       1 import { zodResolver } from '@hookform/resolvers/zod';
+       2 import { useId, useRef, useState, type FormEvent } from 'react';
+       3 import { useForm, type FieldValues, type UseFormHandleSubmit } f
+         rom 'react-hook-form';
+       4 import { toApiError, type ApiError } from '../../shared/apiClien
+         t';
+       5 import { Banner, Button, Field, Input, Modal, Select, useToast }
+          from '../../shared/ui';
+       6 import { PasswordField } from '../auth/PasswordField';
+       7 import { ROLE_LABELS, ROLES, USER_LIMITS, type User } from './ty
+     … +219 lines (~7 KB) (ctrl+o to expand)
+
+● Write(src\web\src\features\users\ResetPasswordModal.tsx)
+  ⎿  Wrote 106 lines to src\web\src\features\users\ResetPasswordModal.tsx
+      1 import { zodResolver } from '@hookform/resolvers/zod';
+      2 import { useEffect, useId, useRef, useState, type FormEvent } fro
+        m 'react';
+      3 import { useForm } from 'react-hook-form';
+      4 import { toApiError, type ApiError } from '../../shared/apiClient
+        ';
+      5 import { Banner, Button, Field, Modal, useToast } from '../../sha
+        red/ui';
+      6 import { PasswordField } from '../auth/PasswordField';
+      7 import { USER_LIMITS, type User } from './types';
+     … +99 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\users\AdminUsersPage.tsx)
+  ⎿  Wrote 249 lines to src\web\src\features\users\AdminUsersPage.tsx
+       1 import { KeyRound, Pencil, Power, PowerOff, UserPlus, Users } fr
+         om 'lucide-react';
+       2 import { useRef, useState } from 'react';
+       3 import { toApiError } from '../../shared/apiClient';
+       4 import {
+       5   Avatar,
+       6   Badge,
+       7   Button,
+       8   ConfirmDialog,
+       9   EmptyState,
+     … +240 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && grep
+      -n "export function useAuth" src/features/auth/auth-context.ts && sed -i
+      "s#<Route path=…)
+  ⎿  24:export function useAuth(): AuthContextValue {
+     10:import { AdminUsersPage } from './features/users/AdminUsersPage';
+     20: * marcadores hasta sus tareas (T10b, T10c).
+     … +8 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\App.tsx (+3 -2)
+       7  import { AgendaPage } from './features/bookings/AgendaPage';
+       8  import { MyBookingsPage } from './features/bookings/MyBookingsP
+          age';
+       9  import { AdminRoomsPage } from './features/rooms/AdminRoomsPage
+          ';
+      10 +import { AdminUsersPage } from './features/users/AdminUsersPage
+         +';                                                             
+      11  import { ProtectedRoute } from './features/auth/ProtectedRoute'
+          ;
+      12  import { RequireRole } from './features/auth/RequireRole';
+      13  import { SessionLayout } from './features/auth/SessionLayout';
+     ...
+      17  
+      18  /**
+      19   * Rutas de spec §9. `/login` es pública; el resto exige sesión
+           y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son
+      19 - * marcadores hasta sus tareas (T10a, T10b, T10c).             
+      20 + * marcadores hasta sus tareas (T10b, T10c).                   
+      21   */
+      22  export function App() {
+      23    const [queryClient] = useState(createQueryClient);
+     ...
+      38                    <Route path="/admin" element={<RequireRole ro
+          le="ADMIN" />}>
+      39                      <Route index element={<Navigate to="/agenda
+          " replace />} />
+      40                      <Route path="rooms" element={<AdminRoomsPag
+          e />} />
+      40 -                    <Route path="users" element={<PlaceholderPa
+         -ge title="Usuarios" />} />                                     
+      41 +                    <Route path="users" element={<AdminUsersPag
+         +e />} />                                                       
+      42                      <Route path="closures" element={<Placeholde
+          rPage title="Cierres" />} />
+      43                      <Route path="audit" element={<PlaceholderPa
+          ge title="Auditoría" />} />
+      44                    </Route>
+  ⎿  (timeout 5m)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Lint y build sin errores, compose levantado. Ahora verifico en Chrome: genero
+  contraseñas de prueba en un archivo del scratchpad (no las escribo en el chat
+  ni en los documentos).
+
+  Called claude-in-chrome 3 times, ran 1 shell command (ctrl+o to expand)
+
+● La captura de pantalla falla (la pestaña parece estar en segundo plano); sigo
+  con lectura del DOM y lo reintento después.
+
+  Called claude-in-chrome (ctrl+o to expand)
+● CA1 OK (ordenados por nombre, con "(tú)" en la fila propia). Abro el alta con
+  un correo repetido.
+
+  Read 1 file, called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA2 (409): "Ya existe un usuario con ese correo." aparece en el campo, que
+  queda con el foco. Cambio al correo nuevo y envío con doble Enter para probar
+  el candado.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Alta OK con un solo POST pese a tres envíos. Ahora, en una sesión aparte
+  (curl, otra "ventana"), el usuario nuevo entra y reserva para mañana.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora como admin: desactivo a "Prueba Dos" con el diálogo.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● Desactivado con un solo PATCH. Compruebo su sesión abierta y su reserva.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Sesión abierta → 401, reserva cancelada con cause: USER_DEACTIVATED, y la
+  auditoría no tiene contraseñas. Ahora restablezco su contraseña (primero una
+  corta para la validación).
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+  ⎿  2 actions not run · auto mode's check had no usable answer
+
+● El verificador de permisos no responde por ahora; pruebo con un paso más
+  simple.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+  ⎿  2 actions not run · auto mode's check had no usable answer
+
+● T10a está a medias: tuve que detenerme porque el verificador de permisos del
+  modo automático dejó de responder. Cuatro acciones seguidas quedaron sin
+  veredicto, entre ellas un clic en el navegador. Si llega a 10 seguidas, el
+  turno se corta.
+
+  Lo que ya funciona:
+  - Código: los componentes, hooks, tipos y la ruta están en
+    src/web/src/features/users/ y App.tsx. User, Role y ROLE_LABELS pasaron a
+    features/users y auth los reexporta.
+  - Compilación: lint y build pasan sin errores, y docker compose up -d --build
+    levantó todo. Queda el aviso de tamaño de Vite: el bundle mide ahora 517 kB.
+
+  Comprobado en Chrome y con curl:
+  - CA1: la tabla muestra a todos los usuarios ordenados por nombre, y la fila
+    propia lleva "(tú)".
+  - CA6, primera parte: en la fila del admin, "Desactivar" está deshabilitado
+    con el texto "No puedes desactivar tu propia cuenta". Falta provocar el 422
+    CANNOT_DEACTIVATE_SELF para ver el mensaje.
+  - CA2:
+    - Un correo repetido devuelve 409 y muestra "Ya existe un usuario con ese
+      correo." en el campo.
+    - El alta de "Prueba Dos" funcionó con un solo POST, aunque envié el
+      formulario tres veces.
+  - CA4:
+    - El diálogo avisa que se cancelarán sus reservas futuras, y al confirmar se
+      manda un solo PATCH.
+    - La sesión abierta de ese usuario recibe 401.
+    - Su reserva de mañana quedó CANCELLED con cause: USER_DEACTIVATED.
+    - La auditoría no guarda ninguna contraseña.
+
+  Pendiente:
+  - CA5: restablecer la contraseña, primero con una corta y después con una
+    válida.
+  - Reactivar al usuario y comprobar que entra con la contraseña nueva y que su
+    reserva sigue cancelada.
+  - CA3: editar el nombre y el rol, con el correo no editable.
+  - CA7: comprobar que la contraseña no queda en la página después de enviarla.
+  - CA8: estados de carga y error, y la vista de un EMPLOYEE.
+  - Medir el ancho de la página en pantallas estrechas.
+  - Escribir docs/tareas/T10a.md, cerrar la bitácora, pasar el backlog a "En
+    revisión" y hacer el commit.
+
+  En la base de desarrollo quedan "Prueba Dos" inactivo y su reserva cancelada.
+  Las contraseñas de prueba están en el archivo
+  C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\0af1fdd8-0af1
+  -4528-b67b-3355d43b924c\scratchpad\t10a-cred.json.
+
+  Escribe "continúa" cuando quieras que retome desde el restablecimiento de
+  contraseña.
+
+✻ Crunched for 6m 0s · done 1:33
+
+> continua                                                                      
+
+  Called claude-in-chrome 3 times, ran 1 shell command (ctrl+o to expand)
+  ⎿  1 action not run · permission denied
+     │ Reason: Couldn't determine which page this action targets. Re-read tabs_context_mcp and try again.
+  ⎿  3 actions not run · auto mode's check had no usable answer
+
+● Updated plan
+  ⎿  /plan to preview
+
+● Retomo T10a según el plan: primero recupero la pestaña del navegador.
+
+  Called claude-in-chrome 6 times (ctrl+o to expand)
+  ⎿  1 action not run · auto mode's check had no usable answer
+
+● Restablecimiento OK: un solo POST, el modal se cerró y la contraseña no queda
+  en la página ni en el almacenamiento. Compruebo que el aviso de éxito se
+  muestra.
+
+  Searched for 1 pattern, called claude-in-chrome (ctrl+o to expand)
+
+● El aviso dura 4 s y ya había desaparecido cuando leí la página. Instalo un
+  observador que registre los avisos y reactivo a "Prueba Dos".
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Reactivación y aviso de restablecimiento OK. Ahora compruebo por curl el login
+  con la contraseña nueva y que la reserva sigue cancelada.
+
+  Ran 1 shell command (ctrl+o to expand)
+  ⎿  Not run · auto mode's check had no usable answer
+
+● Bash vuelve a quedarse sin veredicto; hago la misma comprobación desde la
+  página (y luego vuelvo a entrar como admin).
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Todo como espera la verificación del backlog. Sigo con CA3: editar a "Prueba
+  Dos".
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+  ⎿  1 action not run · auto mode's check had no usable answer
+
+● El correo aparece deshabilitado y el foco va al nombre. Cambio el nombre y el
+  rol.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● CA3 OK (PATCH solo con name y role). Devuelvo el rol a Empleado; ese PATCH
+  debe llevar solo role.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Ahora CA6, segunda parte: simulo en la página la respuesta 422
+  CANNOT_DEACTIVATE_SELF al desactivar y compruebo el aviso. Aparte, pido al API
+  real que el admin se desactive a sí mismo.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+  ⎿  3 actions not run · auto mode's check had no usable answer
+
+● CA6 OK: el aviso muestra el mensaje del API y su código de seguimiento. Ahora
+  CA8: desactivo de verdad a "Prueba Dos" (limpieza) con GET /api/users simulado
+  en error, y luego pulso "Reintentar".
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Error y "Reintentar" OK, y "Prueba Dos" queda inactivo. Ahora el estado de
+  carga y el ancho en varias pantallas, con iframes.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Carga, ancho y ausencia de filtros OK. Ahora la vista de un EMPLOYEE
+  (empleado1) y el 403 del API; al final vuelvo a entrar como admin.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Todos los criterios están comprobados. Reviso la auditoría de "Prueba Dos"
+  (sin contraseñas) y cierro la pestaña.
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+
+● Bash responde de nuevo. La auditoría no guarda contraseñas
+  (USER_PASSWORD_RESET con data vacío). Escribo docs/tareas/T10a.md.
+
+● Write(docs\tareas\T10a.md)
+  ⎿  Wrote 165 lines to docs\tareas\T10a.md
+       1 # T10a · Admin de usuarios
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha (pendiente de revisión) |
+       8 | Inicio – fin | 2026-11-16 01:28 – 01:42 (14 min) · estimado: M
+          |
+     … +157 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i
+      's/tampoco da el número, aunque la respuesta de la auditoría lo
+      guarda./tampoco da el número (…)
+  ⎿  2026-11-16 01:41
+     78:| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | En revisión
+     | [T10a](tareas/T10a.md) |
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78 -| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | En curso
+         - | |                                                           
+      78 +| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | En revis
+         +ión | [T10a](tareas/T10a.md) |                                 
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+     ...
+      968  | Dependencias | T05a, T07 |
+      969  | Estimación | M |
+      970  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: la gen
+           era la API (`USER_CREATED`, `USER_UPDATED`, `USER_PASSWORD_RES
+           ET` y las cancelaciones, T06a). OWASP A07: ninguna contraseña 
+           se muestra ni se guarda tras enviarla |
+      971 -| Estado | Pendiente |                                        
+      971 +| Estado | En revisión |                                      
+      972  
+      973  **Alcance (archivos o módulos):**
+      974  - `src/web/src/features/users/`: `AdminUsersPage`, `UserFormMo
+           dal`, `ResetPasswordModal`, hooks.
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      160  | B-156 | 2026-11-16 01:26 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-155 | T10 Hecha |
+            docs/02-backlog.md, B-155 |
+      161  | B-157 | 2026-11-16 01:27 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10, §
+           8 de docs/tareas/T10.md), CLAUDE.md (Dependencias) agrega la s
+           ubsección «Admin de salas fijado en T10»: `features/rooms/` co
+           mo dueño de `Room`, equipamiento y consultas; invalidación de 
+           `roomKeys.all`; patrón de formularios de administración (modal
+            de 640 px, Zod igual al DTO, errores por campo, candado, `PAT
+           CH` solo con cambios); activar/desactivar con botones y confir
+           mación; `relative` en `shared/ui/Table` (B-153); aviso de tama
+           ño del bundle; pendiente sobre reservas de salas inactivas y d
+           atos que dejó la verificación | Solo documentación; sin cambio
+           s de código. Se incluyen en el commit los cambios «RR. HH.» → 
+           «RRHH» de la persona en 02-backlog.md | CLAUDE.md, docs/tareas
+           /T10.md §6, §7 y §8, B-153, B-155 |
+      162  | B-158 | 2026-11-16 01:28 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T10a (Admin de usuarios). DoR comprobada: dependencias
+            T05a y T07 en Hecha; tarea con objetivo, trazabilidad, alcanc
+           e, fuera de alcance, CA1–CA8, seguridad (A07), verificación y 
+           estimación M | T10a En curso | docs/02-backlog.md (T10a) |
+      163 +| B-159 | 2026-11-16 01:41 | Agente | 3-Ejecutar | ERROR | T10
+          +a: durante la verificación, el verificador de permisos del mod
+          +o automático dejó de dar veredicto (Chrome, Bash y `tabs_conte
+          +xt_mcp`) varias veces seguidas; el agente se detuvo para no ag
+          +otar el límite de intentos | Se retomó a pedido de la persona 
+          +en una pestaña nueva; los pasos con `curl` que fallaron se hic
+          +ieron desde la página; sin cambios de código | docs/tareas/T10
+          +a.md §6 |                                                     
+      164 +| B-160 | 2026-11-16 01:41 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T10a (Admin de usuarios): `AdminUsersPage` en `/admin/use
+          +rs` (tabla ordenada por nombre con rol y estado, carga, vacío 
+          +y error con `requestId` y "Reintentar"), `UserFormModal` (alta
+          + con contraseña inicial y `EMAIL_TAKEN` en el campo; edición s
+          +olo de nombre y rol, correo no editable), `ResetPasswordModal`
+          +, desactivar con aviso de RN-15 y deshabilitado en la fila pro
+          +pia, activar sin restaurar reservas; mutaciones con contraseña
+          + con `gcTime: 0` y `reset()`; `User`/`Role` movidos a `feature
+          +s/users/`. Lint y build sin errores (bundle 517 kB), compose h
+          +ealthy; CA1–CA8 comprobados en Chrome con el flujo completo de
+          +l backlog (alta, reserva, desactivar → 401 y reserva cancelada
+          +, restablecer, reactivar, login con la nueva), 422 `CANNOT_DEA
+          +CTIVATE_SELF` real y simulado, auditoría sin contraseñas; "Pru
+          +eba Dos Editada" queda inactivo | T10a En revisión. Commit: `T
+          +10a: Admin de usuarios` (hash en `git log`). Ambigüedades: un 
+          +ADMIN puede quitarse el rol (pendiente desde T05a), editar sin
+          + cambios no llama al API, aviso sin número de reservas | docs/
+          +tareas/T10a.md, B-159 |                                       
+  ⎿  Updated docs\tareas\T10a.md (+1 -1)
+      155    "Se guarda en minúsculas.".
+      156  - **Editar sin cambios** no llama al API (no deja una fila `US
+           ER_UPDATED` vacía), como en T10.
+      157  - **Aviso de desactivar** sin número de reservas (nota del bac
+           klog: no hay endpoint para contarlas). El aviso de éxito
+      158 -  tampoco da el número, aunque la respuesta de la auditoría lo
+          - guarda.                                                      
+      158 +  tampoco da el número (la auditoría sí lo guarda en `cancelle
+          +dBookings`).                                                  
+      159  - **Vacío:** "No hay usuarios registrados" (en la práctica nun
+           ca se ve: siempre existe al menos el ADMIN con sesión).
+      160  
+      161  ## 8. Revisión (la escribo yo)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/|
+      Inicio – fin | 2026-11-16 01:28 – 01:42 (14 min) · estimado: M |/| Inicio
+      – fin | 2026-11…)
+  ⎿  1
+     d498301 T10a: Admin de usuarios
+     ?? docs/sesiones/2026-11-16-011140-T08-T09-fallasEnMaquinaReinicio.txt
+     ?? main
+  ⎿  Updated docs\tareas\T10a.md (+1 -1)
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha (pendiente de revisión) |
+       8 -| Inicio – fin | 2026-11-16 01:28 – 01:42 (14 min) · estimado: 
+         -M |                                                            
+       8 +| Inicio – fin | 2026-11-16 01:28 – 01:41 (13 min) · estimado: 
+         +M |                                                            
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (exportación
+           pendiente de la persona) |
+      10  | Commit(s) | ver `git log` (`T10a: Admin de usuarios`) |
+      11  | Trazabilidad | RN-15, RN-18, RN-21, RN-23, RN-26 · D-08, D-16
+          , D-19, S-03 · spec §6 (F-06), §9 (Usuarios) · DESIGN.md Compon
+          entes 6 y 7 · backlog T10a |
+
+● T10a está terminada y en "En revisión": hice el commit d498301 T10a: Admin de 
+  usuarios. Lint y build pasan sin errores, docker compose está healthy y
+  comprobé en Chrome los criterios CA1 a CA8.
+
+  Qué hace /admin/users:
+  - Tabla: muestra los usuarios ordenados por nombre, con correo, rol y estado.
+    Tiene estados de carga, vacío y error; el de error muestra el requestId y
+    "Reintentar". No hay filtros, paginación ni borrado.
+  - Alta: pide nombre, correo, contraseña inicial y rol. Un correo repetido
+    muestra el 409 en el campo del correo.
+  - Edición: solo cambia nombre y rol; el correo se ve pero no se puede editar.
+  - Restablecer contraseña: acepta una nueva de al menos 8 caracteres y muestra
+    un aviso de éxito.
+  - Desactivar: pide confirmación y avisa que se cancelarán sus reservas
+    futuras. En tu propia fila el botón está deshabilitado; si el API responde
+    422, se muestra su mensaje.
+  - Activar: reactiva al usuario sin restaurar sus reservas.
+  - Contraseñas: no quedan en la página, en el almacenamiento del navegador ni
+    en la caché, y la auditoría tampoco las guarda.
+
+  Flujo del backlog completo:
+  1. Creé un usuario nuevo y reservó para mañana.
+  2. Al desactivarlo, su sesión abierta recibió 401 y su reserva quedó
+     cancelada.
+  3. Restablecí su contraseña y lo reactivé.
+  4. Entra con la contraseña nueva, la inicial da 401 y la reserva sigue
+     cancelada.
+
+  Desvíos:
+  - Moví User y Role a features/users/; auth los reexporta, con el mismo
+    criterio que salas en T10.
+  - El verificador de permisos del modo automático volvió a fallar a mitad de la
+    verificación. Me detuve, retomé cuando lo pediste e hice desde la página
+    los pasos de curl que fallaban. Queda registrado en B-159.
+  - El bundle llega a 517 kB; sigue saliendo solo el aviso de tamaño de Vite.
+
+  Ambigüedades:
+  - Necesita tu decisión (pendiente desde T05a): un ADMIN puede quitarse a sí
+    mismo el rol de ADMIN. Si lo hace, su sesión se actualiza al momento y
+    pierde el acceso a /admin.
+  - Si se guarda una edición sin cambios, el modal se cierra sin llamar al API.
+  - El aviso de desactivar no dice cuántas reservas se cancelarán, porque no hay
+    endpoint que las cuente (lo indica la nota del backlog).
+
+  Datos que quedan en la base de desarrollo: "Prueba Dos Editada" inactivo, su
+  reserva cancelada y sus filas de auditoría.
+
+  Quedo a la espera de tu revisión.
+
+✻ Churned for 6m 23s · done 1:42
+
+> /bitacora REVISIÓN T10a revisada, cumple la DoD                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-12 && D=$(date "+%Y-%m-%d %H:%M") && echo "|
+      B-161 | $D | Yo |…)
+  ⎿  | B-160 | 20
+     | B-161 | 2026-11-16 01:43 | Yo | 3-Ejecutar | REVISIÓN | T10a revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      162  | B-158 | 2026-11-16 01:28 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T10a (Admin de usuarios). DoR comprobada: dependencias
+            T05a y T07 en Hecha; tarea con objetivo, trazabilidad, alcanc
+           e, fuera de alcance, CA1–CA8, seguridad (A07), verificación y 
+           estimación M | T10a En curso | docs/02-backlog.md (T10a) |
+      163  | B-159 | 2026-11-16 01:41 | Agente | 3-Ejecutar | ERROR | T10
+           a: durante la verificación, el verificador de permisos del mod
+           o automático dejó de dar veredicto (Chrome, Bash y `tabs_conte
+           xt_mcp`) varias veces seguidas; el agente se detuvo para no ag
+           otar el límite de intentos | Se retomó a pedido de la persona 
+           en una pestaña nueva; los pasos con `curl` que fallaron se hic
+           ieron desde la página; sin cambios de código | docs/tareas/T10
+           a.md §6 |
+      164  | B-160 | 2026-11-16 01:41 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10a (Admin de usuarios): `AdminUsersPage` en `/admin/use
+           rs` (tabla ordenada por nombre con rol y estado, carga, vacío 
+           y error con `requestId` y "Reintentar"), `UserFormModal` (alta
+            con contraseña inicial y `EMAIL_TAKEN` en el campo; edición s
+           olo de nombre y rol, correo no editable), `ResetPasswordModal`
+           , desactivar con aviso de RN-15 y deshabilitado en la fila pro
+           pia, activar sin restaurar reservas; mutaciones con contraseña
+            con `gcTime: 0` y `reset()`; `User`/`Role` movidos a `feature
+           s/users/`. Lint y build sin errores (bundle 517 kB), compose h
+           ealthy; CA1–CA8 comprobados en Chrome con el flujo completo de
+           l backlog (alta, reserva, desactivar → 401 y reserva cancelada
+           , restablecer, reactivar, login con la nueva), 422 `CANNOT_DEA
+           CTIVATE_SELF` real y simulado, auditoría sin contraseñas; "Pru
+           eba Dos Editada" queda inactivo | T10a En revisión. Commit: `T
+           10a: Admin de usuarios` (hash en `git log`). Ambigüedades: un 
+           ADMIN puede quitarse el rol (pendiente desde T05a), editar sin
+            cambios no llama al API, aviso sin número de reservas | docs/
+           tareas/T10a.md, B-159 |
+      165 +| B-161 | 2026-11-16 01:43 | Yo | 3-Ejecutar | REVISIÓN | T10a
+          + revisada, cumple la DoD | — | — |                            
+
+● Fila agregada al final de docs/03-bitacora.md, sin commit:
+
+  | B-161 | 2026-11-16 01:43 | Yo | 3-Ejecutar | REVISIÓN | T10a revisada, 
+  cumple la DoD | — | — |
+
+✻ Churned for 5s · done 1:43
+
+> pasa T10a a Hecha en el backlog                                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^|
+      20 | T10a | Admin de usuarios | T05a, T07 | M | No | En revisión |
+      \[T10a\](tareas\/T10a…)
+  ⎿  78:| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | [T10
+     a](tareas/T10a.md) |
+     | Estado | Hecha |
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78 -| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | En revis
+         -ión | [T10a](tareas/T10a.md) |                                 
+      78 +| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+         +[T10a](tareas/T10a.md) |                                       
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+           | |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+     ...
+      968  | Dependencias | T05a, T07 |
+      969  | Estimación | M |
+      970  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: la gen
+           era la API (`USER_CREATED`, `USER_UPDATED`, `USER_PASSWORD_RES
+           ET` y las cancelaciones, T06a). OWASP A07: ninguna contraseña 
+           se muestra ni se guarda tras enviarla |
+      971 -| Estado | En revisión |                                      
+      971 +| Estado | Hecha |                                            
+      972  
+      973  **Alcance (archivos o módulos):**
+      974  - `src/web/src/features/users/`: `AdminUsersPage`, `UserFormMo
+           dal`, `ResetPasswordModal`, hooks.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      163  | B-159 | 2026-11-16 01:41 | Agente | 3-Ejecutar | ERROR | T10
+           a: durante la verificación, el verificador de permisos del mod
+           o automático dejó de dar veredicto (Chrome, Bash y `tabs_conte
+           xt_mcp`) varias veces seguidas; el agente se detuvo para no ag
+           otar el límite de intentos | Se retomó a pedido de la persona 
+           en una pestaña nueva; los pasos con `curl` que fallaron se hic
+           ieron desde la página; sin cambios de código | docs/tareas/T10
+           a.md §6 |
+      164  | B-160 | 2026-11-16 01:41 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10a (Admin de usuarios): `AdminUsersPage` en `/admin/use
+           rs` (tabla ordenada por nombre con rol y estado, carga, vacío 
+           y error con `requestId` y "Reintentar"), `UserFormModal` (alta
+            con contraseña inicial y `EMAIL_TAKEN` en el campo; edición s
+           olo de nombre y rol, correo no editable), `ResetPasswordModal`
+           , desactivar con aviso de RN-15 y deshabilitado en la fila pro
+           pia, activar sin restaurar reservas; mutaciones con contraseña
+            con `gcTime: 0` y `reset()`; `User`/`Role` movidos a `feature
+           s/users/`. Lint y build sin errores (bundle 517 kB), compose h
+           ealthy; CA1–CA8 comprobados en Chrome con el flujo completo de
+           l backlog (alta, reserva, desactivar → 401 y reserva cancelada
+           , restablecer, reactivar, login con la nueva), 422 `CANNOT_DEA
+           CTIVATE_SELF` real y simulado, auditoría sin contraseñas; "Pru
+           eba Dos Editada" queda inactivo | T10a En revisión. Commit: `T
+           10a: Admin de usuarios` (hash en `git log`). Ambigüedades: un 
+           ADMIN puede quitarse el rol (pendiente desde T05a), editar sin
+            cambios no llama al API, aviso sin número de reservas | docs/
+           tareas/T10a.md, B-159 |
+      165  | B-161 | 2026-11-16 01:43 | Yo | 3-Ejecutar | REVISIÓN | T10a
+            revisada, cumple la DoD | — | — |
+      166 +| B-162 | 2026-11-16 01:43 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T10a pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-161 | T10a Hecha
+          + | docs/02-backlog.md, B-161 |                                
+
+● T10a quedó como Hecha en docs/02-backlog.md, en la fila 20 del resumen y en el
+  Estado de su ficha. También agregué la fila B-162 al final de la bitácora.
+
+  No hice commit. docs/tareas/T10a.md tiene cambios que no son míos; supongo que
+  completaste la sección 8 "Revisión".
+
+  Si quieres, actualizo CLAUDE.md con los desvíos de T10a y hago el commit, como
+  en T10.
+
+✻ Churned for 7s · done 1:43
+
+> Actualizar Claude.md con las desviaciones y haz el commit                     
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿   CLAUDE.md           | 28 ++++++++++++++++++++++++++++
+      docs/02-backlog.md  |  4 ++--
+      docs/03-bitacora.md |  3 +++
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated CLAUDE.md (+28 -0)
+      531  - **Datos que dejó la verificación de T10** en la base de desa
+           rrollo: "Sala Prueba T10" **inactiva** y la reserva
+      532    "T10 reserva futura" cancelada. "Sala Prueba" (inactiva) ya 
+           existía antes. No hay `DELETE` de salas: en verificaciones
+      533    nuevas, usar nombres únicos y dejarlas inactivas al terminar
+            para no agregar columnas a la agenda.
+      534 +                                                              
+      535 +### Admin de usuarios fijado en T10a (ver `docs/tareas/T10a.md
+          +` §6 y §7; B-159)                                             
+      536 +- **`features/users/` es dueño del usuario en el frontend:** `
+          +types.ts` (`User`, `Role`, `ROLES`, `ROLE_LABELS`,            
+      537 +  `USER_LIMITS` igual al API); `features/auth/types.ts` solo l
+          +os reexporta para la sesión. No volver a declararlos en auth. 
+      538 +- **Consultas y mutaciones en `users-queries.ts`** (`userKeys`
+          +, `useUsers`, `useCreateUser`, `useUpdateUser`,               
+      539 +  `useResetPassword`). Toda mutación invalida `userKeys.all`; 
+          +desactivar invalida además `agendaKeys.bookings` (cascada     
+      540 +  de RN-15, como pide la regla de T09); si el ADMIN se edita a
+          + sí mismo, se recarga `ME_QUERY_KEY` para que la sesión       
+      541 +  tenga el rol de la base. T10b (cierres que cancelan reservas
+          +) invalida `agendaKeys.bookings` igual.                       
+      542 +- **Mutaciones con contraseña** (alta y restablecer): `gcTime:
+          + 0` en el hook y `reset()` de la mutación en `onSettled`      
+      543 +  del `mutate`; el modal se desmonta al terminar y los avisos 
+          +nunca muestran la contraseña. Campos con `PasswordField`      
+      544 +  y `autoComplete="new-password"`. La auditoría de `USER_PASSW
+          +ORD_RESET` va con `data` vacío.                               
+      545 +- **Edición de usuario:** solo nombre y rol; el correo se mues
+          +tra deshabilitado. El correo del alta no se recorta ni se     
+      546 +  pasa a minúsculas en el cliente (lo normaliza el API, RN-23)
+          +. Mismo patrón de formulario que T10 (modal de 640 px,        
+      547 +  candado, errores por campo: `EMAIL_TAKEN` → `email`; editar 
+          +sin cambios no llama al API). Restablecer usa el modal de     
+      548 +  480 px.                                                     
+      549 +- **Acción propia prohibida (RN-26):** en la fila del ADMIN co
+          +n sesión, "Desactivar" va `disabled` con la etiqueta "No      
+      550 +  puedes desactivar tu propia cuenta"; un error del API al act
+          +ivar/desactivar se muestra en un aviso con su `requestId`.    
+      551 +  Para probar el 422 desde la pantalla se simula la respuesta 
+          +con `window.fetch` y se confirma aparte contra el API real.   
+      552 +- **Avisos (toasts) en las verificaciones:** duran 4 s (éxito)
+          + u 8 s (error), así que se capturan con un                    
+      553 +  `MutationObserver` sobre las regiones `aria-live` instalado 
+          +antes de la acción; leer la página después no alcanza.        
+      554 +- **Si el verificador de permisos del modo automático deja de 
+          +dar veredicto** varias veces seguidas (B-159), detenerse      
+      555 +  y avisar a la persona antes de llegar al límite de intentos;
+          + al retomar, pedir de nuevo `tabs_context_mcp`.               
+      556 +- **Credenciales de prueba generadas:** en un archivo del scra
+          +tchpad, nunca en el repositorio, el chat ni                   
+      557 +  `docs/tareas/Txx.md`.                                       
+      558 +- **Pendiente de decisión de la persona** (sigue desde T05a): 
+          +un ADMIN puede quitarse el rol de ADMIN; la pantalla lo       
+      559 +  permite, como el API.                                       
+      560 +- **Datos que dejó la verificación de T10a** en la base de des
+          +arrollo: `t10a.prueba.mwiy29he@salalibre.local` ("Prueba      
+      561 +  Dos Editada", Empleado) **inactivo** y su reserva cancelada.
+          + Bundle del frontend: 517 kB (aviso de Vite).                 
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      164  | B-160 | 2026-11-16 01:41 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10a (Admin de usuarios): `AdminUsersPage` en `/admin/use
+           rs` (tabla ordenada por nombre con rol y estado, carga, vacío 
+           y error con `requestId` y "Reintentar"), `UserFormModal` (alta
+            con contraseña inicial y `EMAIL_TAKEN` en el campo; edición s
+           olo de nombre y rol, correo no editable), `ResetPasswordModal`
+           , desactivar con aviso de RN-15 y deshabilitado en la fila pro
+           pia, activar sin restaurar reservas; mutaciones con contraseña
+            con `gcTime: 0` y `reset()`; `User`/`Role` movidos a `feature
+           s/users/`. Lint y build sin errores (bundle 517 kB), compose h
+           ealthy; CA1–CA8 comprobados en Chrome con el flujo completo de
+           l backlog (alta, reserva, desactivar → 401 y reserva cancelada
+           , restablecer, reactivar, login con la nueva), 422 `CANNOT_DEA
+           CTIVATE_SELF` real y simulado, auditoría sin contraseñas; "Pru
+           eba Dos Editada" queda inactivo | T10a En revisión. Commit: `T
+           10a: Admin de usuarios` (hash en `git log`). Ambigüedades: un 
+           ADMIN puede quitarse el rol (pendiente desde T05a), editar sin
+            cambios no llama al API, aviso sin número de reservas | docs/
+           tareas/T10a.md, B-159 |
+      165  | B-161 | 2026-11-16 01:43 | Yo | 3-Ejecutar | REVISIÓN | T10a
+            revisada, cumple la DoD | — | — |
+      166  | B-162 | 2026-11-16 01:43 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-161 | T10a Hecha
+            | docs/02-backlog.md, B-161 |
+      167 +| B-163 | 2026-11-16 01:44 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T10a, 
+          +§8 de docs/tareas/T10a.md), CLAUDE.md (Dependencias) agrega la
+          + subsección «Admin de usuarios fijado en T10a»: `features/user
+          +s/` como dueño de `User`/`Role`; invalidaciones (`userKeys.all
+          +`, `agendaKeys.bookings` al desactivar, `ME_QUERY_KEY` al edit
+          +arse a sí mismo); mutaciones con contraseña (`gcTime: 0` y `re
+          +set()`); edición solo de nombre y rol; RN-26 en la fila propia
+          +; cómo capturar los avisos en la verificación; qué hacer si el
+          + verificador de permisos no responde (B-159); credenciales de 
+          +prueba fuera del repositorio; pendiente del rol propio y datos
+          + que dejó la verificación | Solo documentación; sin cambios de
+          + código | CLAUDE.md, docs/tareas/T10a.md §6, §7 y §8, B-159, B
+          +-161 |                                                        
+
+● Hice el commit 628b937 T10a: revisión aprobada, estado Hecha y CLAUDE.md con 
+  los desvíos.
+
+  Qué agregué a CLAUDE.md: una subsección nueva, «Admin de usuarios fijado en
+  T10a», con estas reglas:
+  - User y Role viven en features/users/; auth solo los reexporta.
+  - Toda mutación invalida la lista de usuarios. Desactivar también invalida
+    agendaKeys.bookings, y si el ADMIN se edita a sí mismo se recarga su sesión.
+    T10b debe invalidar agendaKeys.bookings igual.
+  - Las mutaciones que llevan contraseña usan gcTime: 0 y reset(), y la
+    contraseña nunca aparece en los avisos.
+  - La edición solo cambia nombre y rol, y el correo no se recorta ni se pasa a
+    minúsculas en el cliente.
+  - En la fila propia, "Desactivar" está deshabilitado (RN-26), y para probar el
+    422 se simula la respuesta en la página y se confirma aparte contra el API.
+  - En las verificaciones, los avisos se capturan con un observador instalado
+    antes de la acción, porque desaparecen a los 4 u 8 s.
+  - Si el verificador de permisos deja de responder (B-159), hay que detenerse y
+    avisar.
+  - Las credenciales de prueba van en el scratchpad, nunca en el repositorio, el
+    chat ni los documentos.
+  - Queda pendiente tu decisión sobre si un ADMIN puede quitarse el rol de
+    ADMIN.
+  - Quedan anotados los datos que dejó la verificación en la base de desarrollo.
+
+  Qué entró en el commit:
+  - CLAUDE.md.
+  - docs/02-backlog.md, con T10a en Hecha.
+  - docs/03-bitacora.md, con B-161 a B-163.
+  - docs/tareas/T10a.md, con tu revisión.
+
+  Siguen sin commitear la sesión exportada en docs/sesiones/ y main.
+
+✻ Worked for 26s · done 1:44
+
+> haz commit de lo pendiente                                                    
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● main es un archivo vacío en la raíz del repositorio, creado a las 01:10;
+  parece accidental. Hago el commit solo de la sesión exportada, como las
+  anteriores en docs/sesiones/.
+
+  Ran 1 shell command (ctrl+o to expand)
+● Hice el commit 80fa243 con la sesión exportada
+  docs/sesiones/2026-11-16-011140-T08-T09-fallasEnMaquinaReinicio.txt, igual que
+  las sesiones anteriores.
+
+  Dejé fuera main: es un archivo vacío (0 bytes) en la raíz del repositorio,
+  creado a las 01:10. Parece accidental, quizá de un comando de git mal escrito.
+  ¿Lo borro, o tenía algún propósito?
+
+✻ Cooked for 13s · done 1:45
+
+> /ejecutar-tarea T10b                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● DoR cumplida (T05b y T07 en Hecha). Reviso el API de cierres y el de reservas
+  por fecha.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && grep -n
+      "IN_PAST_MESSAGE =" src/api/src/modules/closures/closures.service.ts; sed
+      -n 40,55p src/api/s…)
+  ⎿  13:const IN_PAST_MESSAGE = 'Solo se puede registrar o eliminar un cier
+     re con fecha posterior a hoy.';
+       attendees!: number;
+     … +35 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+          [T10a](tareas/T10a.md) |
+      79 -| 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente
+         - | |                                                           
+      79 +| 21 | T10b | Admin de cierres | T05b, T07 | M | No | En curso 
+         +| |                                                            
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+      82  
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      165  | B-161 | 2026-11-16 01:43 | Yo | 3-Ejecutar | REVISIÓN | T10a
+            revisada, cumple la DoD | — | — |
+      166  | B-162 | 2026-11-16 01:43 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-161 | T10a Hecha
+            | docs/02-backlog.md, B-161 |
+      167  | B-163 | 2026-11-16 01:44 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10a, 
+           §8 de docs/tareas/T10a.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Admin de usuarios fijado en T10a»: `features/user
+           s/` como dueño de `User`/`Role`; invalidaciones (`userKeys.all
+           `, `agendaKeys.bookings` al desactivar, `ME_QUERY_KEY` al edit
+           arse a sí mismo); mutaciones con contraseña (`gcTime: 0` y `re
+           set()`); edición solo de nombre y rol; RN-26 en la fila propia
+           ; cómo capturar los avisos en la verificación; qué hacer si el
+            verificador de permisos no responde (B-159); credenciales de 
+           prueba fuera del repositorio; pendiente del rol propio y datos
+            que dejó la verificación | Solo documentación; sin cambios de
+            código | CLAUDE.md, docs/tareas/T10a.md §6, §7 y §8, B-159, B
+           -161 |
+      168 +| B-164 | 2026-11-16 01:45 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T10b (Admin de cierres). DoR comprobada: dependencias 
+          +T05b y T07 en Hecha; tarea con objetivo, trazabilidad, alcance
+          +, fuera de alcance, CA1–CA7, seguridad, verificación y estimac
+          +ión M | T10b En curso | docs/02-backlog.md (T10b) |           
+
+● Plan listo: creo los tipos y hooks de cierres, el formulario Zod y el modal de
+  dos pasos que cuenta las reservas a cancelar, luego la página de
+  administración y la verificación en Chrome con commit. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features" && mkdir -p closures && cat >
+      closures/types.ts <<'EOF'
+      /** Objeto `Closure` del AP…)
+  ⎿    isMine: boolean;
+     }
+     … +36 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\agenda-queries.ts (+7 -9)
+      1  import { useQuery } from '@tanstack/react-query';
+      2  import { apiClient } from '../../shared/apiClient';
+      3 +import { closureKeys } from '../closures/types';                
+      4  import { roomKeys } from '../rooms/rooms-queries';
+      4 -import type { Booking, Closure } from './types';                
+      5 +import type { Booking } from './types';                         
+      6  
+      7  /** Salas de la agenda: la consulta es la de `features/rooms` (T
+         10). Un `ADMIN` recibe también las inactivas: la agenda muestra 
+         solo las activas (spec §9). */
+      8  export { useRooms } from '../rooms/rooms-queries';
+     ...
+      18    bookings: ['bookings'] as const,
+      19    /** Mis reservas (T09). Cuelga de `bookings`: invalidar `agen
+          daKeys.bookings` recarga también esta lista. */
+      20    mine: ['bookings', 'mine'] as const,
+      20 -  closures: ['closures'] as const,                             
+      21 +  /** La misma clave que `closureKeys.all`: `/admin/closures` l
+         +a invalida al crear o eliminar un cierre. */                   
+      22 +  closures: closureKeys.all,                                   
+      23  };
+      24  
+      25  /** Reservas `CONFIRMED` del día (en `BUSINESS_TZ`). Cambiar la
+           fecha cambia la clave y vuelve a pedirlas (CA10). */
+     ...
+      30    });
+      31  }
+      32  
+      31 -/** Cierres con fecha ≥ hoy (RN-10, D-23). */                  
+      32 -export function useClosures() {                                
+      33 -  return useQuery({                                            
+      34 -    queryKey: agendaKeys.closures,                             
+      35 -    queryFn: ({ signal }) => apiClient.get<Closure[]>('/closure
+         -s', { signal }),                                               
+      36 -  });                                                          
+      37 -}                                                              
+      33 +                                                               
+      34 +/** Cierres con fecha ≥ hoy: la consulta es la de `features/clo
+         +sures` (T10b). */                                              
+      35 +export { useClosures } from '../closures/closures-queries';    
+  ⎿  Updated src\web\src\features\bookings\types.ts (+2 -6)
+      24    isMine: boolean;
+      25  }
+      26  
+      27 -export interface Closure {                                     
+      28 -  id: string;                                                  
+      29 -  /** Día de calendario `AAAA-MM-DD` en `BUSINESS_TZ`. */      
+      30 -  date: string;                                                
+      31 -  reason: string;                                              
+      32 -}                                                              
+      27 +/** Cierres: los define `features/closures` (T10b); se reexport
+         +an para la agenda. */                                          
+      28 +export type { Closure } from '../closures/types';              
+  ⎿  Created src\web\src\features\closures\types.ts (+19 -0)
+       1 +/** Objeto `Closure` del API (spec §8), sus límites y su clave 
+         +de caché. La agenda los importa desde aquí. */                 
+       2 +                                                               
+       3 +export interface Closure {                                     
+       4 +  id: string;                                                  
+       5 +  /** Día de calendario `AAAA-MM-DD` en `BUSINESS_TZ`. */      
+       6 +  date: string;                                                
+       7 +  reason: string;                                              
+       8 +}                                                              
+       9 +                                                               
+      10 +/** Límite de `reason` del API (`CLOSURE_LIMITS`, spec §7). */ 
+      11 +export const CLOSURE_LIMITS = { reasonMax: 100 } as const;     
+      12 +                                                               
+      13 +/**                                                            
+      14 + * Clave de los cierres (`GET /closures`), compartida con la ag
+         +enda (`agendaKeys.closures`). Vive aquí, en un archivo sin     
+      15 + * imports, para que `features/bookings` y `features/closures` 
+         +la usen sin un ciclo de imports.                               
+      16 + */                                                            
+      17 +export const closureKeys = {                                   
+      18 +  all: ['closures'] as const,                                  
+      19 +};                                                             
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Para no crear un ciclo de imports, la agenda importará useClosures
+  directamente de features/closures en vez de reexportarlo.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features" && node -e '
+      const fs=require("fs");…)
+  ⎿      queryFn: ({ signal }) => apiClient.get<Booking[]>(`/bookings?date=
+     ${encodeURIComponent(date)}`, { signal }),
+       });
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\AgendaPage.tsx (+2 -1)
+       5  import { Banner, Button, EmptyState, ErrorState, Skeleton } fro
+          m '../../shared/ui';
+       6  import { useAuth } from '../auth/auth-context';
+       7  import { agendaDays, hasFilters, NO_FILTERS, visibleRooms, type
+           RoomFilterValue } from './agenda-logic';
+       8 -import { useBookings, useClosures, useRooms } from './agenda-qu
+         -eries';                                                        
+       8 +import { useClosures } from '../closures/closures-queries';    
+       9 +import { useBookings, useRooms } from './agenda-queries';      
+      10  import { AgendaGrid } from './AgendaGrid';
+      11  import { actionNow, canCancel } from './booking-actions';
+      12  import { BookingDetailDialog } from './BookingDetailDialog';
+  ⎿  Updated src\web\src\features\bookings\agenda-queries.ts (+0 -4)
+      29      queryFn: ({ signal }) => apiClient.get<Booking[]>(`/booking
+          s?date=${encodeURIComponent(date)}`, { signal }),
+      30    });
+      31  }
+      32 -                                                               
+      33 -                                                               
+      34 -/** Cierres con fecha ≥ hoy: la consulta es la de `features/clo
+         -sures` (T10b). */                                              
+      35 -export { useClosures } from '../closures/closures-queries';    
+
+● Write(src\web\src\features\closures\closures-queries.ts)
+  ⎿  Wrote 46 lines to src\web\src\features\closures\closures-queries.ts
+       1 import { useMutation, useQuery, useQueryClient } from '@tanstack
+         /react-query';
+       2 import { apiClient } from '../../shared/apiClient';
+       3 import { agendaKeys } from '../bookings/agenda-queries';
+       4 import { closureKeys, type Closure } from './types';
+       5 
+       6 /** `GET /closures`: cierres con fecha ≥ hoy, ordenados por fech
+         a (RN-10, D-23). Los usan la agenda y `/admin/closures`. */
+       7 export function useClosures() {
+       8   return useQuery({
+     … +38 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\closures\closure-form.ts)
+  ⎿  Wrote 54 lines to src\web\src\features\closures\closure-form.ts
+      1 /**
+      2  * Formulario de cierre (T10b CA2 y CA4): validación del cliente 
+        igual a RN-24 y al DTO (fecha `AAAA-MM-DD` válida y
+      3  * posterior a hoy en `BUSINESS_TZ`; motivo de 1 a 100 caracteres
+        , no solo espacios y sin recortar) y el mapa de errores
+      4  * del API. La validación del cliente es comodidad: el API vuelve
+         a decidir con su propio "hoy".
+      5  */
+      6 import { z } from 'zod';
+      7 import type { ApiError } from '../../shared/apiClient';
+     … +47 lines (ctrl+o to expand)
+
+● Ahora el modal en dos pasos. Para contar las reservas siempre con datos
+  frescos, agrego a useBookings una opción que fuerza la recarga.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features" && node -e '
+      const fs=require("fs");…)
+  ⎿  27: * Con `fresh`, siempre las vuelve a pedir al montarse (T10b: el av
+     iso de cuántas reservas cancela un cierre).
+     29:export function useBookings(date: string, { fresh = false }: { fres
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\bookings\agenda-queries.ts (+6 -2)
+      22    closures: closureKeys.all,
+      23  };
+      24  
+      25 -/** Reservas `CONFIRMED` del día (en `BUSINESS_TZ`). Cambiar la
+         - fecha cambia la clave y vuelve a pedirlas (CA10). */          
+      26 -export function useBookings(date: string) {                    
+      25 +/**                                                            
+      26 + * Reservas `CONFIRMED` del día (en `BUSINESS_TZ`). Cambiar la 
+         +fecha cambia la clave y vuelve a pedirlas (CA10).              
+      27 + * Con `fresh`, siempre las vuelve a pedir al montarse (T10b: e
+         +l aviso de cuántas reservas cancela un cierre).                
+      28 + */                                                            
+      29 +export function useBookings(date: string, { fresh = false }: { 
+         +fresh?: boolean } = {}) {                                      
+      30    return useQuery({
+      31      queryKey: agendaKeys.bookingsOf(date),
+      32 +    staleTime: fresh ? 0 : undefined,                          
+      33      queryFn: ({ signal }) => apiClient.get<Booking[]>(`/booking
+          s?date=${encodeURIComponent(date)}`, { signal }),
+      34    });
+      35  }
+
+● Write(src\web\src\features\closures\ClosureFormModal.tsx)
+  ⎿  Wrote 229 lines to src\web\src\features\closures\ClosureFormModal.tsx
+       1 import { zodResolver } from '@hookform/resolvers/zod';
+       2 import { CalendarX2, TriangleAlert } from 'lucide-react';
+       3 import { useId, useMemo, useRef, useState, type FormEvent } from
+          'react';
+       4 import { useForm, type Resolver } from 'react-hook-form';
+       5 import { toApiError, type ApiError } from '../../shared/apiClien
+         t';
+       6 import { addDays, formatLongDate, localDate, useNow } from '../.
+         ./shared/datetime';
+       7 import { Banner, Button, ErrorState, Field, Input, Modal, Spinne
+     … +223 lines (~7 KB) (ctrl+o to expand)
+
+● Corrijo dos detalles: el error de campo se aplica en un efecto después de
+  volver al paso 1, y uso los tonos que existen en Banner.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/closures" && node -e '
+      const fs=require("fs");let t=fs.readFileSync("ClosureFormModa…)
+  ⎿  31:  const [dateError, setDateError] = useState<string | null>(null);
+     49:    if (step !== 'form' || dateError === null) return;
+     50:    setError('date', { message: dateError }, { shouldFocus: true })
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\closures\ClosureFormModal.tsx (+13 -10)
+      1  import { zodResolver } from '@hookform/resolvers/zod';
+      2  import { CalendarX2, TriangleAlert } from 'lucide-react';
+      3 -import { useId, useMemo, useRef, useState, type FormEvent } from
+        - 'react';                                                       
+      3 +import { useEffect, useId, useMemo, useRef, useState, type FormE
+        +vent } from 'react';                                            
+      4  import { useForm, type Resolver } from 'react-hook-form';
+      5  import { toApiError, type ApiError } from '../../shared/apiClien
+         t';
+      6  import { addDays, formatLongDate, localDate, useNow } from '../.
+         ./shared/datetime';
+     ...
+      27    const [step, setStep] = useState<'form' | 'confirm'>('form');
+      28    const [values, setValues] = useState<ClosureFormValues | null
+          >(null);
+      29    const [formError, setFormError] = useState<ApiError | null>(n
+          ull);
+      30 +  // Error del API para la fecha: se aplica cuando el paso 1 vu
+         +elve a estar montado (para poder enfocar el campo).            
+      31 +  const [dateError, setDateError] = useState<string | null>(nul
+         +l);                                                            
+      32    const createClosure = useCreateClosure();
+      33    const pending = createClosure.isPending;
+      34  
+     ...
+      42      register,
+      43      handleSubmit,
+      44      setError,
+      43 -    getValues,                                                 
+      45      formState: { errors },
+      46    } = useForm<ClosureFormValues>({ resolver, defaultValues: { d
+          ate: '', reason: '' } });
+      47  
+      48 +  useEffect(() => {                                            
+      49 +    if (step !== 'form' || dateError === null) return;         
+      50 +    setError('date', { message: dateError }, { shouldFocus: tru
+         +e });                                                          
+      51 +    setDateError(null);                                        
+      52 +  }, [step, dateError, setError]);                             
+      53 +                                                               
+      54    const toConfirm = handleSubmit((v) => {
+      55      setFormError(null);
+      56      setValues(v);
+     ...
+      77          const apiError = toApiError(error);
+      78          const field = closureErrorField(apiError);
+      79          setStep('form');
+      73 -        if (field) {                                           
+      74 -          // El formulario se vuelve a montar al pasar al paso 
+         -1: el error se aplica después.                                 
+      75 -          queueMicrotask(() => setError(field, { message: apiEr
+         -ror.message }, { shouldFocus: true }));                        
+      76 -        } else {                                               
+      77 -          setFormError(apiError);                              
+      78 -        }                                                      
+     … 21 more lines (ctrl+o to expand)
+
+● Ahora la página.
+
+● Write(src\web\src\features\closures\AdminClosuresPage.tsx)
+  ⎿  Wrote 180 lines to src\web\src\features\closures\AdminClosuresPage.tsx
+       1 import { CalendarOff, CalendarPlus, Trash2 } from 'lucide-react'
+         ;
+       2 import { useRef, useState } from 'react';
+       3 import { toApiError } from '../../shared/apiClient';
+       4 import { formatLongDate, localDate, useNow } from '../../shared/
+         datetime';
+       5 import {
+       6   Badge,
+       7   Button,
+       8   ConfirmDialog,
+     … +172 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && sed -i
+      "s#<Route path=\"closures\" element={<PlaceholderPage title=\"Cierres\"
+      />} />#<Route…)
+  ⎿  9:import { AdminClosuresPage } from './features/closures/AdminClosures
+     Page';
+     21: * marcadores hasta sus tareas (T10c).
+     … +20 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\App.tsx (+3 -2)
+       6  import { LoginPage } from './features/auth/LoginPage';
+       7  import { AgendaPage } from './features/bookings/AgendaPage';
+       8  import { MyBookingsPage } from './features/bookings/MyBookingsP
+          age';
+       9 +import { AdminClosuresPage } from './features/closures/AdminClo
+         +suresPage';                                                    
+      10  import { AdminRoomsPage } from './features/rooms/AdminRoomsPage
+          ';
+      11  import { AdminUsersPage } from './features/users/AdminUsersPage
+          ';
+      12  import { ProtectedRoute } from './features/auth/ProtectedRoute'
+          ;
+     ...
+      18  
+      19  /**
+      20   * Rutas de spec §9. `/login` es pública; el resto exige sesión
+           y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son
+      20 - * marcadores hasta sus tareas (T10b, T10c).                   
+      21 + * marcadores hasta sus tareas (T10c).                         
+      22   */
+      23  export function App() {
+      24    const [queryClient] = useState(createQueryClient);
+     ...
+      40                      <Route index element={<Navigate to="/agenda
+          " replace />} />
+      41                      <Route path="rooms" element={<AdminRoomsPag
+          e />} />
+      42                      <Route path="users" element={<AdminUsersPag
+          e />} />
+      42 -                    <Route path="closures" element={<Placeholde
+         -rPage title="Cierres" />} />                                   
+      43 +                    <Route path="closures" element={<AdminClosu
+         +resPage />} />                                                 
+      44                      <Route path="audit" element={<PlaceholderPa
+          ge title="Auditoría" />} />
+      45                    </Route>
+      46                    <Route path="*" element={<Navigate to="/agend
+          a" replace />} />
+  ⎿  (timeout 5m)
+
+● Lint marca setState dentro de un efecto. Cambio el error pendiente a un
+  useRef.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/closures" && node -e '
+      const fs=require("fs");let t=fs.readFileSync("ClosureFormModa…)
+  ⎿  31:  const dateError = useRef<string | null>(null);
+     49:    if (step !== 'form' || dateError.current === null) return;
+     50:    setError('date', { message: dateError.current }, { shouldFocus:
+     … +14 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\closures\ClosureFormModal.tsx (+7 -7)
+      28    const [values, setValues] = useState<ClosureFormValues | null
+          >(null);
+      29    const [formError, setFormError] = useState<ApiError | null>(n
+          ull);
+      30    // Error del API para la fecha: se aplica cuando el paso 1 vu
+          elve a estar montado (para poder enfocar el campo).
+      31 -  const [dateError, setDateError] = useState<string | null>(nul
+         -l);                                                            
+      31 +  const dateError = useRef<string | null>(null);               
+      32    const createClosure = useCreateClosure();
+      33    const pending = createClosure.isPending;
+      34  
+     ...
+      46    } = useForm<ClosureFormValues>({ resolver, defaultValues: { d
+          ate: '', reason: '' } });
+      47  
+      48    useEffect(() => {
+      49 -    if (step !== 'form' || dateError === null) return;         
+      50 -    setError('date', { message: dateError }, { shouldFocus: tru
+         -e });                                                          
+      51 -    setDateError(null);                                        
+      52 -  }, [step, dateError, setError]);                             
+      49 +    if (step !== 'form' || dateError.current === null) return; 
+      50 +    setError('date', { message: dateError.current }, { shouldFo
+         +cus: true });                                                  
+      51 +    dateError.current = null;                                  
+      52 +  }, [step, setError]);                                        
+      53  
+      54    const toConfirm = handleSubmit((v) => {
+      55      setFormError(null);
+     ...
+      76        onError: (error) => {
+      77          const apiError = toApiError(error);
+      78          const field = closureErrorField(apiError);
+      79 -        setStep('form');                                       
+      80 -        if (field === 'date') setDateError(apiError.message);  
+      79 +        if (field === 'date') dateError.current = apiError.mess
+         +age;                                                           
+      80          else setFormError(apiError);
+      81 +        setStep('form');                                       
+      82        },
+      83        onSettled: () => {
+      84          locked.current = false;
+  ⎿  (timeout 10m)
+
+● Lint (corregido), build y compose OK. Preparo los datos: empleado1 reserva el
+  miércoles 2026-11-18, y antes reviso que no haya cierres.
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+● Estado vacío OK. Abro "Nuevo cierre" y pruebo la validación (vacío y la fecha
+  de hoy).
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Validación del cliente OK. Ahora el miércoles 2026-11-18 con un motivo, y
+  "Continuar".
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Funciona, pero el texto dice "1 reserva confirmadas". Lo corrijo (singular y
+  plural) antes de confirmar y reconstruyo.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/closures" && node -e '
+      const fs=require("fs");let t=fs.readFileSync("ClosureFormModa…)
+  ⎿  npm notice run salalibre-web@0.1.0 lint
+     npm notice run eslint .
+     [plugin builtin:vite-reporter]
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\closures\ClosureFormModal.tsx (+3 -2)
+      173        <Banner tone={count > 0 ? 'error' : 'info'}>
+      174          {count > 0 ? (
+      175            <>
+      176 -            Se cancelarán <strong className="tnum">{bookingsLa
+          -bel(count)}</strong> confirmadas de ese día, en todas las     
+      177 -            salas. No se pueden restaurar.                    
+      176 +            {count === 1 ? 'Se cancelará ' : 'Se cancelarán '}
+      177 +            <strong className="tnum">{bookingsLabel(count)}</s
+          +trong>                                                        
+      178 +            {count === 1 ? ' confirmada' : ' confirmadas'} de 
+          +ese día, en todas las salas. No se pueden restaurar.          
+      179            </>
+      180          ) : (
+      181            'No hay reservas confirmadas ese día: no se cancelar
+           á ninguna.'
+  ⎿  (timeout 10m)
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Texto corregido. Confirmo con doble clic en "Cerrar el día".
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA3 OK (un solo POST). Ahora CA4: repito la misma fecha.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● 409 OK en el campo de la fecha, con el foco. Para el 422 pido primero al API
+  real un cierre para hoy y luego simulo esa respuesta en la página.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● CA4 OK. Ahora CA6: la agenda del miércoles debe mostrar el banner con el
+  motivo.
+
+  Searched for 1 pattern, called claude-in-chrome 2 times (ctrl+o to expand)
+
+● CA6 OK: banner con el motivo y ningún hueco libre. Ahora CA5: elimino el
+  cierre desde la pantalla.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● CA5 OK. Compruebo con psql que la reserva sigue cancelada y la auditoría;
+  luego inserto un cierre de hoy para ver su fila (lo borro al final).
+
+  Called claude-in-chrome, ran 2 shell commands (ctrl+o to expand)
+
+● Fila de hoy OK: insignia "Hoy" y "Eliminar" deshabilitado. Compruebo el 422
+  real de DELETE y borro el cierre insertado.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora CA7: estado de error (simulado, con dos 500 seguidos) y "Reintentar",
+  carga, ancho de pantalla y la vista de un EMPLOYEE.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Carga y ancho OK. Por último, la vista de empleado1 y vuelvo a entrar como
+  admin.
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+
+● Todo verificado. Escribo docs/tareas/T10b.md.
+
+● Write(docs\tareas\T10b.md)
+  ⎿  Wrote 177 lines to docs\tareas\T10b.md
+       1 # T10b · Admin de cierres
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha (pendiente de revisión) |
+       8 | Inicio – fin | 2026-11-16 01:45 – 01:54 (9 min) · estimado: M 
+         |
+     … +169 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && D=$(date
+      "+%Y-%m-%d %H:%M") && echo "$D" && cat >> docs/03-bitacora.md <<EOF
+      | B-165 | $D | Agente |…)
+  ⎿  2026-11-16 01:54
+     8:| Inicio – fin | 2026-11-16 01:45 – 01:54 (9 min) · estimado: M |
+     79:| 21 | T10b | Admin de cierres | T05b, T07 | M | No | En revisión |
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+          [T10a](tareas/T10a.md) |
+      79 -| 21 | T10b | Admin de cierres | T05b, T07 | M | No | En curso 
+         -| |                                                            
+      79 +| 21 | T10b | Admin de cierres | T05b, T07 | M | No | En revisi
+         +ón | [T10b](tareas/T10b.md) |                                  
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+      82  
+     ...
+      1010  | Dependencias | T05b, T07 |
+      1011  | Estimación | M |
+      1012  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: la ge
+            nera la API (`CLOSURE_CREATED`, `CLOSURE_DELETED`, `BOOKING_C
+            ANCELLED`, T06a) |
+      1013 -| Estado | Pendiente |                                       
+      1013 +| Estado | En revisión |                                     
+      1014  
+      1015  **Alcance (archivos o módulos):**
+      1016  - `src/web/src/features/closures/`: `AdminClosuresPage`, `Clo
+            sureFormModal`, hooks sobre `GET`, `POST` y `DELETE /api/clos
+            ures` y `GET /api/bookings?date=`.
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      166  | B-162 | 2026-11-16 01:43 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-161 | T10a Hecha
+            | docs/02-backlog.md, B-161 |
+      167  | B-163 | 2026-11-16 01:44 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10a, 
+           §8 de docs/tareas/T10a.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Admin de usuarios fijado en T10a»: `features/user
+           s/` como dueño de `User`/`Role`; invalidaciones (`userKeys.all
+           `, `agendaKeys.bookings` al desactivar, `ME_QUERY_KEY` al edit
+           arse a sí mismo); mutaciones con contraseña (`gcTime: 0` y `re
+           set()`); edición solo de nombre y rol; RN-26 en la fila propia
+           ; cómo capturar los avisos en la verificación; qué hacer si el
+            verificador de permisos no responde (B-159); credenciales de 
+           prueba fuera del repositorio; pendiente del rol propio y datos
+            que dejó la verificación | Solo documentación; sin cambios de
+            código | CLAUDE.md, docs/tareas/T10a.md §6, §7 y §8, B-159, B
+           -161 |
+      168  | B-164 | 2026-11-16 01:45 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T10b (Admin de cierres). DoR comprobada: dependencias 
+           T05b y T07 en Hecha; tarea con objetivo, trazabilidad, alcance
+           , fuera de alcance, CA1–CA7, seguridad, verificación y estimac
+           ión M | T10b En curso | docs/02-backlog.md (T10b) |
+      169 +| B-165 | 2026-11-16 01:54 | Agente | 3-Ejecutar | ERROR | T10
+          +b: `npm run lint` falló con `react-hooks/set-state-in-effect` 
+          +en `ClosureFormModal` (el error de la fecha devuelto por el AP
+          +I se aplicaba con un `setState` dentro de un efecto); además, 
+          +en la verificación el aviso de conteo decía "1 reserva confirm
+          +adas" | Corregidos antes del commit: el error pendiente pasa a
+          + un `useRef` y el texto separa singular y plural; lint y build
+          + sin errores y verificación repetida | docs/tareas/T10b.md §6 
+          +|                                                             
+      170 +| B-166 | 2026-11-16 01:54 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T10b (Admin de cierres): `AdminClosuresPage` en `/admin/c
+          +losures` (tabla de cierres con insignia "Hoy", vacío "No hay c
+          +ierres programados", carga y error con `requestId` y "Reintent
+          +ar"), `ClosureFormModal` en dos pasos (fecha posterior a hoy y
+          + motivo; confirmación con cuántas reservas se cancelarán según
+          + `GET /bookings?date=`; aviso con `cancelledBookings`; `CLOSUR
+          +E_EXISTS`/`CLOSURE_IN_PAST` en el campo), eliminar con diálogo
+          + que aclara que no se restauran reservas (deshabilitado para h
+          +oy); `Closure`, `closureKeys` y `useClosures` movidos a `featu
+          +res/closures/`. Lint y build sin errores (bundle 527 kB), comp
+          +ose healthy; CA1–CA7 comprobados en Chrome con el flujo del ba
+          +cklog (reserva del miércoles, aviso "1 reserva", cierre, 409, 
+          +banner en la agenda, eliminar y reserva aún cancelada), 422 re
+          +al y simulado, cierre de hoy insertado y borrado con `psql`; s
+          +in cierres en la base al terminar | T10b En revisión. Commit: 
+          +`T10b: Admin de cierres` (hash en `git log`). Ambigüedades: co
+          +nfirmación en dos pasos en el mismo modal, tono rojo del aviso
+          +, confirmar bloqueado si falla el conteo, fines de semana perm
+          +itidos | docs/tareas/T10b.md, B-165 |                         
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● T10b está terminada y en "En revisión": hice el commit de32951 T10b: Admin de 
+  cierres. Lint y build pasan sin errores, docker compose está healthy y
+  comprobé en Chrome los criterios CA1 a CA7.
+
+  Qué hace /admin/closures:
+  - Lista: muestra los cierres de hoy en adelante, con fecha y motivo. Sin
+    cierres se lee "No hay cierres programados", y tiene estados de carga y de
+    error con requestId y "Reintentar".
+  - Alta en dos pasos:
+    - Primero se elige la fecha (posterior a hoy) y el motivo.
+    - Después se confirma: la pantalla dice cuántas reservas se cancelarán,
+      contadas con GET /bookings?date=.
+    - Tras confirmar aparece "<fecha> quedó cerrado. Se canceló 1 reserva.", con
+      el número que devuelve el API.
+  - Errores: una fecha repetida (409) o de hoy o pasada (422) vuelve al primer
+    paso con el mensaje en el campo de la fecha.
+  - Eliminar: el diálogo aclara que las reservas canceladas no se restauran.
+    Para el cierre de hoy el botón está deshabilitado.
+
+  Flujo del backlog completo:
+  1. empleado1 reservó el miércoles 18.
+  2. La confirmación avisó "1 reserva" y, al confirmar, esa reserva quedó
+     cancelada.
+  3. Repetir la fecha mostró "ya está registrada".
+  4. La agenda del miércoles muestra el banner con el motivo.
+  5. Al eliminar el cierre, la reserva sigue cancelada.
+
+  Al terminar no queda ningún cierre en la base, así que no bloquea reservas en
+  las tareas siguientes.
+
+  Desvíos:
+  - Moví Closure y useClosures a features/closures/. La clave de caché va en un
+    archivo sin imports para evitar un ciclo de imports con la agenda.
+  - useBookings acepta ahora { fresh }, para que el conteo del aviso se pida
+    siempre de nuevo.
+  - Corregí dos cosas antes del commit (B-165): un error de lint (setState
+    dentro de un efecto) y el texto "1 reserva confirmadas".
+  - El bundle llega a 527 kB; sigue saliendo solo el aviso de tamaño de Vite.
+
+  Ambigüedades:
+  - La confirmación son dos pasos dentro del mismo modal, en vez de abrir un
+    segundo diálogo encima.
+  - Banner no tiene tono de advertencia, así que el aviso del conteo sale en
+    rojo cuando hay reservas que se cancelarán.
+  - Si falla el conteo, no se puede confirmar hasta pulsar "Reintentar".
+  - Se pueden cerrar sábados y domingos, porque el spec no lo impide.
+
+  Archivo nuevo sin commitear: apareció docs/04-cierre.md, que no creé yo, y lo
+  dejé fuera del commit. El archivo main ya no está.
+
+  Quedo a la espera de tu revisión.
+
+✻ Brewed for 9m 32s · done 1:55
+
+> /bitacora REVISIÓN T10b revisada, cumple la DoD                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-12 && D=$(date "+%Y-%m-%d %H:%M") && echo "|
+      B-167 | $D | Yo |…)
+  ⎿  | B-166 | 20
+     | B-167 | 2026-11-16 01:56 | Yo | 3-Ejecutar | REVISIÓN | T10b revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      168  | B-164 | 2026-11-16 01:45 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T10b (Admin de cierres). DoR comprobada: dependencias 
+           T05b y T07 en Hecha; tarea con objetivo, trazabilidad, alcance
+           , fuera de alcance, CA1–CA7, seguridad, verificación y estimac
+           ión M | T10b En curso | docs/02-backlog.md (T10b) |
+      169  | B-165 | 2026-11-16 01:54 | Agente | 3-Ejecutar | ERROR | T10
+           b: `npm run lint` falló con `react-hooks/set-state-in-effect` 
+           en `ClosureFormModal` (el error de la fecha devuelto por el AP
+           I se aplicaba con un `setState` dentro de un efecto); además, 
+           en la verificación el aviso de conteo decía "1 reserva confirm
+           adas" | Corregidos antes del commit: el error pendiente pasa a
+            un `useRef` y el texto separa singular y plural; lint y build
+            sin errores y verificación repetida | docs/tareas/T10b.md §6 
+           |
+      170  | B-166 | 2026-11-16 01:54 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10b (Admin de cierres): `AdminClosuresPage` en `/admin/c
+           losures` (tabla de cierres con insignia "Hoy", vacío "No hay c
+           ierres programados", carga y error con `requestId` y "Reintent
+           ar"), `ClosureFormModal` en dos pasos (fecha posterior a hoy y
+            motivo; confirmación con cuántas reservas se cancelarán según
+            `GET /bookings?date=`; aviso con `cancelledBookings`; `CLOSUR
+           E_EXISTS`/`CLOSURE_IN_PAST` en el campo), eliminar con diálogo
+            que aclara que no se restauran reservas (deshabilitado para h
+           oy); `Closure`, `closureKeys` y `useClosures` movidos a `featu
+           res/closures/`. Lint y build sin errores (bundle 527 kB), comp
+           ose healthy; CA1–CA7 comprobados en Chrome con el flujo del ba
+           cklog (reserva del miércoles, aviso "1 reserva", cierre, 409, 
+           banner en la agenda, eliminar y reserva aún cancelada), 422 re
+           al y simulado, cierre de hoy insertado y borrado con `psql`; s
+           in cierres en la base al terminar | T10b En revisión. Commit: 
+           `T10b: Admin de cierres` (hash en `git log`). Ambigüedades: co
+           nfirmación en dos pasos en el mismo modal, tono rojo del aviso
+           , confirmar bloqueado si falla el conteo, fines de semana perm
+           itidos | docs/tareas/T10b.md, B-165 |
+      171 +| B-167 | 2026-11-16 01:56 | Yo | 3-Ejecutar | REVISIÓN | T10b
+          + revisada, cumple la DoD | — | — |                            
+
+● Fila agregada al final de docs/03-bitacora.md, sin commit:
+
+  | B-167 | 2026-11-16 01:56 | Yo | 3-Ejecutar | REVISIÓN | T10b revisada, 
+  cumple la DoD | — | — |
+✻ Cooked for 5s · done 1:56
+
+> pasa T10b a Hecha en el backlog                                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^|
+      21 | T10b | Admin de cierres | T05b, T07 | M | No | En revisión |
+      \[T10b\](tareas\/T10b.…)
+  ⎿  79:| 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [T10b
+     ](tareas/T10b.md) |
+     | Estado | Hecha |
+     … +8 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T0
+          9.md) |
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+          [T10a](tareas/T10a.md) |
+      79 -| 21 | T10b | Admin de cierres | T05b, T07 | M | No | En revisi
+         -ón | [T10b](tareas/T10b.md) |                                  
+      79 +| 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [
+         +T10b](tareas/T10b.md) |                                        
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Pendiente | |
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+      82  
+     ...
+      1010  | Dependencias | T05b, T07 |
+      1011  | Estimación | M |
+      1012  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: la ge
+            nera la API (`CLOSURE_CREATED`, `CLOSURE_DELETED`, `BOOKING_C
+            ANCELLED`, T06a) |
+      1013 -| Estado | En revisión |                                     
+      1013 +| Estado | Hecha |                                           
+      1014  
+      1015  **Alcance (archivos o módulos):**
+      1016  - `src/web/src/features/closures/`: `AdminClosuresPage`, `Clo
+            sureFormModal`, hooks sobre `GET`, `POST` y `DELETE /api/clos
+            ures` y `GET /api/bookings?date=`.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      169  | B-165 | 2026-11-16 01:54 | Agente | 3-Ejecutar | ERROR | T10
+           b: `npm run lint` falló con `react-hooks/set-state-in-effect` 
+           en `ClosureFormModal` (el error de la fecha devuelto por el AP
+           I se aplicaba con un `setState` dentro de un efecto); además, 
+           en la verificación el aviso de conteo decía "1 reserva confirm
+           adas" | Corregidos antes del commit: el error pendiente pasa a
+            un `useRef` y el texto separa singular y plural; lint y build
+            sin errores y verificación repetida | docs/tareas/T10b.md §6 
+           |
+      170  | B-166 | 2026-11-16 01:54 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10b (Admin de cierres): `AdminClosuresPage` en `/admin/c
+           losures` (tabla de cierres con insignia "Hoy", vacío "No hay c
+           ierres programados", carga y error con `requestId` y "Reintent
+           ar"), `ClosureFormModal` en dos pasos (fecha posterior a hoy y
+            motivo; confirmación con cuántas reservas se cancelarán según
+            `GET /bookings?date=`; aviso con `cancelledBookings`; `CLOSUR
+           E_EXISTS`/`CLOSURE_IN_PAST` en el campo), eliminar con diálogo
+            que aclara que no se restauran reservas (deshabilitado para h
+           oy); `Closure`, `closureKeys` y `useClosures` movidos a `featu
+           res/closures/`. Lint y build sin errores (bundle 527 kB), comp
+           ose healthy; CA1–CA7 comprobados en Chrome con el flujo del ba
+           cklog (reserva del miércoles, aviso "1 reserva", cierre, 409, 
+           banner en la agenda, eliminar y reserva aún cancelada), 422 re
+           al y simulado, cierre de hoy insertado y borrado con `psql`; s
+           in cierres en la base al terminar | T10b En revisión. Commit: 
+           `T10b: Admin de cierres` (hash en `git log`). Ambigüedades: co
+           nfirmación en dos pasos en el mismo modal, tono rojo del aviso
+           , confirmar bloqueado si falla el conteo, fines de semana perm
+           itidos | docs/tareas/T10b.md, B-165 |
+      171  | B-167 | 2026-11-16 01:56 | Yo | 3-Ejecutar | REVISIÓN | T10b
+            revisada, cumple la DoD | — | — |
+      172 +| B-168 | 2026-11-16 01:56 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T10b pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-167 | T10b Hecha
+          + | docs/02-backlog.md, B-167 |                                
+
+● T10b quedó como Hecha en docs/02-backlog.md, en la fila 21 del resumen y en el
+  Estado de su ficha. También agregué la fila B-168 al final de la bitácora.
+
+  No hice commit. Siguen sin commitear docs/tareas/T10b.md (supongo que con tu
+  revisión en la sección 8) y docs/04-cierre.md.
+
+  Si quieres, actualizo CLAUDE.md con los desvíos de T10b y hago el commit. Dime
+  también si incluyo docs/04-cierre.md.
+
+✻ Baked for 8s · done 1:56
+
+> Actualizar Claude.md con las desviaciones y haz el commit                     
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿   CLAUDE.md           | 29 +++++++++++++++++++++++++++++
+      docs/02-backlog.md  |  4 ++--
+      docs/03-bitacora.md |  3 +++
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated CLAUDE.md (+29 -0)
+      559    permite, como el API.
+      560  - **Datos que dejó la verificación de T10a** en la base de des
+           arrollo: `t10a.prueba.mwiy29he@salalibre.local` ("Prueba
+      561    Dos Editada", Empleado) **inactivo** y su reserva cancelada.
+            Bundle del frontend: 517 kB (aviso de Vite).
+      562 +                                                              
+      563 +### Admin de cierres fijado en T10b (ver `docs/tareas/T10b.md`
+          + §6 y §7; B-165)                                              
+      564 +- **`features/closures/` es dueño de los cierres en el fronten
+          +d:** `types.ts` (`Closure`, `CLOSURE_LIMITS` y                
+      565 +  `closureKeys`) y `closures-queries.ts` (`useClosures`, `useC
+          +reateClosure`, `useDeleteClosure`). `bookings/types.ts`       
+      566 +  reexporta `Closure`; `agendaKeys.closures` es `closureKeys.a
+          +ll`; `AgendaPage` importa `useClosures` de `features/closures`
+          +.                                                             
+      567 +- **Sin ciclos de imports entre features:** si dos features se
+          + necesitan (aquí `closures-queries` usa `agendaKeys` y la     
+      568 +  agenda usa la clave de cierres), la clave compartida va en u
+          +n archivo sin imports (`closures/types.ts`) y no se           
+      569 +  reexportan hooks en la dirección contraria. Un ciclo con uso
+          + en el nivel del módulo rompe según el orden de carga.        
+      570 +- **Invalidaciones:** crear un cierre invalida `closureKeys.al
+          +l` y `agendaKeys.bookings` (cascada de RN-16); eliminarlo     
+      571 +  solo `closureKeys.all` (no restaura reservas, S-05).        
+      572 +- **Aviso previo con datos frescos:** `useBookings(date, { fre
+          +sh: true })` (`staleTime: 0`) para contar las reservas que    
+      573 +  se cancelarán; la acción que las cancela queda deshabilitada
+          + hasta tener el número (si el conteo falla, error con         
+      574 +  `requestId` y "Reintentar"). No inventar un endpoint de cont
+          +eo.                                                           
+      575 +- **Confirmación de acciones que cancelan reservas en un formu
+          +lario:** dos pasos dentro del mismo `Modal` (datos →          
+      576 +  confirmación con la consecuencia), no un `ConfirmDialog` enc
+          +ima de otro modal. Un error del API que corresponde a un      
+      577 +  campo del paso 1 vuelve a ese paso y se aplica en un efecto 
+          +con el mensaje guardado en un `useRef`.                       
+      578 +- **No llamar a `setState` dentro de un `useEffect`:** la regl
+          +a `react-hooks/set-state-in-effect` de ESLint lo marca como   
+      579 +  error (B-165). Para un valor que solo se consume en el efect
+          +o, usar `useRef`.                                             
+      580 +- **Textos con número:** separar singular y plural ("Se cancel
+          +ó 1 reserva." / "Se cancelaron N reservas."), también en      
+      581 +  las etiquetas (`bookingsLabel`).                            
+      582 +- **Fechas de calendario en formularios:** `input type="date"`
+          + con `min` = `addDays(hoy, 1)` y validación Zod con "hoy"     
+      583 +  de `localDate(useNow())`, comparando texto `AAAA-MM-DD`; una
+          + fecha válida se comprueba con `addDays(d, 0) === d`. En      
+      584 +  las verificaciones, el valor se fija con el `setter` nativo 
+          +de `HTMLInputElement.value` y un evento `input`.              
+      585 +- **`Banner` no tiene tono de advertencia:** un aviso de conse
+          +cuencia destructiva usa `error`; uno neutro, `info`. No       
+      586 +  agregar tonos ni colores nuevos sin pasar por los tokens.   
+      587 +- **Verificación de cierres de hoy:** se insertan con `psql` i
+          +ncluyendo `created_by_id` (`NOT NULL`), se comprueba que      
+      588 +  no tengan filas en `audit_logs` y se borran en el mismo scri
+          +pt. Al terminar no quedan cierres en la base.                 
+      589 +- **Datos que dejó la verificación de T10b** en la base de des
+          +arrollo: la reserva "T10b reserva del miercoles" de           
+      590 +  empleado1 cancelada como historial. Bundle del frontend: 527
+          + kB (aviso de Vite).                                          
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      170  | B-166 | 2026-11-16 01:54 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T10b (Admin de cierres): `AdminClosuresPage` en `/admin/c
+           losures` (tabla de cierres con insignia "Hoy", vacío "No hay c
+           ierres programados", carga y error con `requestId` y "Reintent
+           ar"), `ClosureFormModal` en dos pasos (fecha posterior a hoy y
+            motivo; confirmación con cuántas reservas se cancelarán según
+            `GET /bookings?date=`; aviso con `cancelledBookings`; `CLOSUR
+           E_EXISTS`/`CLOSURE_IN_PAST` en el campo), eliminar con diálogo
+            que aclara que no se restauran reservas (deshabilitado para h
+           oy); `Closure`, `closureKeys` y `useClosures` movidos a `featu
+           res/closures/`. Lint y build sin errores (bundle 527 kB), comp
+           ose healthy; CA1–CA7 comprobados en Chrome con el flujo del ba
+           cklog (reserva del miércoles, aviso "1 reserva", cierre, 409, 
+           banner en la agenda, eliminar y reserva aún cancelada), 422 re
+           al y simulado, cierre de hoy insertado y borrado con `psql`; s
+           in cierres en la base al terminar | T10b En revisión. Commit: 
+           `T10b: Admin de cierres` (hash en `git log`). Ambigüedades: co
+           nfirmación en dos pasos en el mismo modal, tono rojo del aviso
+           , confirmar bloqueado si falla el conteo, fines de semana perm
+           itidos | docs/tareas/T10b.md, B-165 |
+      171  | B-167 | 2026-11-16 01:56 | Yo | 3-Ejecutar | REVISIÓN | T10b
+            revisada, cumple la DoD | — | — |
+      172  | B-168 | 2026-11-16 01:56 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10b pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-167 | T10b Hecha
+            | docs/02-backlog.md, B-167 |
+      173 +| B-169 | 2026-11-16 01:57 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T10b, 
+          +§8 de docs/tareas/T10b.md), CLAUDE.md (Dependencias) agrega la
+          + subsección «Admin de cierres fijado en T10b»: `features/closu
+          +res/` como dueño de `Closure` y sus consultas; claves comparti
+          +das en archivos sin imports para evitar ciclos entre features;
+          + invalidaciones; conteo previo con `useBookings(date, { fresh:
+          + true })`; confirmación en dos pasos dentro del mismo modal; n
+          +o usar `setState` en efectos (B-165); singular y plural en tex
+          +tos con número; fechas de calendario en formularios; tonos de 
+          +`Banner`; cierres de hoy con `psql` y datos que dejó la verifi
+          +cación | Solo documentación; sin cambios de código. `docs/04-c
+          +ierre.md` (de la persona) queda fuera del commit | CLAUDE.md, 
+          +docs/tareas/T10b.md §6, §7 y §8, B-165, B-167 |               
+
+● Hice el commit 97f6a5e T10b: revisión aprobada, estado Hecha y CLAUDE.md con 
+  los desvíos.
+
+  Qué agregué a CLAUDE.md: una subsección nueva, «Admin de cierres fijado en
+  T10b», con estas reglas:
+  - Closure y sus consultas viven en features/closures/. La agenda importa
+    useClosures desde ahí.
+  - Si dos features se necesitan, la clave de caché que comparten va en un
+    archivo sin imports, para que no haya ciclos de imports entre ellas.
+  - Crear un cierre invalida los cierres y agendaKeys.bookings; eliminarlo, solo
+    los cierres.
+  - El aviso de cuántas reservas se cancelarán se calcula con useBookings(date, 
+    { fresh: true }), y no se puede confirmar hasta tener el número.
+  - Cuando una acción de un formulario cancela reservas, la confirmación son dos
+    pasos dentro del mismo modal.
+  - No hay que llamar a setState dentro de un useEffect, porque ESLint lo marca
+    como error (B-165).
+  - Los textos con número separan singular y plural.
+  - Queda descrito cómo se manejan las fechas de calendario en los formularios y
+    cómo fijarlas en las verificaciones.
+  - Banner no tiene tono de advertencia: una consecuencia destructiva usa error.
+  - Los cierres de hoy se insertan con psql, incluyendo created_by_id, y se
+    borran en el mismo script.
+  - Quedan anotados los datos que dejó la verificación en la base de desarrollo.
+
+  Qué entró en el commit:
+  - CLAUDE.md.
+  - docs/02-backlog.md, con T10b en Hecha.
+  - docs/03-bitacora.md, con B-167 a B-169.
+  - docs/tareas/T10b.md, con tu revisión.
+
+  Dejé fuera docs/04-cierre.md, que es tuyo y no está commiteado.
+
+✻ Sautéed for 27s · done 1:57
+
+> Documenta que recortare T10c                                                  
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● User answered Claude's questions:
+  ⎿  · ¿Cuál es el motivo del recorte de T10c? Va en la decisión nueva (D-34) y 
+     luego en 04-cierre.md; no quiero inventarlo. → Falta de tiempo
+     · Hoy la app muestra a los ADMIN el enlace "Auditoría" que lleva a 
+     /admin/audit, con una página de marcador vacía. ¿Qué hago con él? → Solo 
+     documentarlo (Recommended)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && D=$(date
+      "+%Y-%m-%d %H:%M") && echo $D && node -e '
+      const fs=require("fs");…)
+  ⎿  2026-11-16 02:00
+     | B-170 | 2026-11-16 02:00 | Yo | 3-Ejecutar | DECISIÓN | La persona d
+     ecide recortar T10c (Auditoría: pantalla de cons
+     … +4 lines (ctrl+o to expand)
+  ⎿  Updated docs\00-decisiones.md (+8 -0)
+      39  | D-31 | Eliminar un cierre de hoy o pasado: 422 `CLOSURE_IN_PA
+          ST` |
+      40  | D-32 | Orden de validación de los errores |
+      41  | D-33 | Swagger (`/api/docs`) solo fuera de producción |
+      42 +| D-34 | Se recorta T10c (pantalla de auditoría) |             
+      43  
+      44  ---
+      45  
+     ...
+      308  - **Costo/riesgo:** Con `docker compose up` la documentación i
+           nteractiva no está disponible; hay que correr la API fuera de 
+           producción para verla.
+      309  - **Afecta a:** `docs/02-backlog.md` (T03: alcance, seguridad,
+            CA8, verificación y notas), `CLAUDE.md` (Plataforma transvers
+           al fijada en T02a), `docs/tareas/T02a.md` §7
+      310  
+      311 +## D-34 · Se recorta T10c (pantalla de auditoría)             
+      312 +- **Duda:** T10c (pantalla `/admin/audit`, consulta paginada d
+          +e la auditoría) está marcada como recortable en el backlog. ¿S
+          +e ejecuta?                                                    
+      313 +- **Opciones:** A) Ejecutarla. B) Recortarla y declararlo en `
+          +04-cierre.md`.                                                
+      314 +- **Decisión:** B) La persona decidió recortar T10c el 2026-11
+          +-16 por **falta de tiempo** (B-170).                          
+      315 +- **Por qué:** Prioriza cerrar el proyecto con T11 (README y v
+          +erificación desde un clon limpio).                            
+      316 +- **Costo/riesgo:** No hay pantalla de auditoría: se pierde F-
+          +08 en la UI y la fila "Auditoría" de spec §9 no se implementa.
+          + La auditoría sí se escribe en toda escritura de negocio, en l
+          +a misma transacción y con su request ID (T06a: O4, RN-25, P-12
+          + y P-15 se mantienen), y se consulta con `POST /api/audit-logs
+          +/search` (solo ADMIN). Con `docker compose up` Swagger no está
+          + disponible (D-33), así que la consulta es por `curl` o desde 
+          +la consola del navegador con la sesión de un ADMIN. El enlace 
+          +"Auditoría" de la navegación del ADMIN sigue llevando a `/admi
+          +n/audit`, que muestra una página de marcador vacía (`Placehold
+          +erPage`); por decisión de la persona, solo se documenta y se d
+          +ecide en T11.                                                 
+      317 +- **Afecta a:** `docs/02-backlog.md` (T10c: estado Recortada; 
+          +T11: dependencia), `docs/04-cierre.md` (se declara en T11), `C
+          +LAUDE.md`                                                     
+  ⎿  Updated docs\02-backlog.md (+5 -3)
+      29  - [ ] Hay un commit `Txx: <título>`.
+      30  
+      31  ## Estados
+      32 -`Pendiente → Lista (cumple DoR) → En curso → En revisión (la re
+         -viso yo) → Hecha` · o `Bloqueada (motivo)`                     
+      32 +`Pendiente → Lista (cumple DoR) → En curso → En revisión (la re
+         +viso yo) → Hecha` · o `Bloqueada (motivo)` · o `Recortada (D-xx
+         +)` (solo tareas recortables, por decisión de la persona; se dec
+         +lara en `04-cierre.md`)                                        
+      33  
+      34  ## Convenciones de verificación
+      35  
+     ...
+      77  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10]
+          (tareas/T10.md) |
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+          [T10a](tareas/T10a.md) |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [
+          T10b](tareas/T10b.md) |
+      80 -| 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+         -T07 | M | **Sí** | Pendiente | |                               
+      80 +| 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+         +T07 | M | **Sí** | Recortada (D-34) | |                        
+      81  | 23 | T11 | README final y verificación desde un clon limpio |
+           todas | S | No | Pendiente | |
+      82  
+      83  **Esfuerzo total estimado:** 4 L + 16 M + 3 S ≈ 12,75 h de ejec
+          ución del agente, sin contar la revisión. Si se recortan T06a y
+           T10c se ahorra ≈ 1 h, pero se pierde O4 (auditoría), P-12, P-1
+          5, F-08 y parte de D-05: habría que declararlo en `04-cierre.md
+          `. Recortar T07c ahorra ≈ 1 h más y solo afecta a lo visual: el
+           login funcional queda en T07.
+     ...
+      1049  | Dependencias | T06a, T07 |
+      1050  | Estimación | M |
+      1051  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: solo 
+            lectura (esta pantalla no genera filas). OWASP A09 |
+      1052 -| Estado | Pendiente |                                       
+      1052 +| Estado | Recortada (D-34) |                                
+      1053  
+      1054  **Alcance (archivos o módulos):**
+      1055  - `src/web/src/features/audit/`: `AuditPage`, filtros, tabla,
+             paginación, hook `useAuditSearch` sobre `POST /api/audit-log
+            s/search`.
+     ...
+      1078  
+      1079  **Notas para el agente:** **Recortable** junto con T06a. Si T
+            06a no se hizo, esta tarea no se ejecuta.
+      1080  
+      1081 +**Recorte (D-34, B-170):** la persona recortó esta tarea el 2
+           +026-11-16 por falta de tiempo. **No se ejecuta.** La auditorí
+           +a se sigue escribiendo (T06a) y se consulta con `POST /api/au
+           +dit-logs/search`. El enlace "Auditoría" del ADMIN sigue mostr
+           +ando la página de marcador de `/admin/audit`; qué hacer con é
+           +l se decide en T11. Se declara en `docs/04-cierre.md`.       
+      1082 +                                                             
+      1083  ---
+      1084  
+      1085  ## T11 · README final y verificación desde un clon limpio
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      171  | B-167 | 2026-11-16 01:56 | Yo | 3-Ejecutar | REVISIÓN | T10b
+            revisada, cumple la DoD | — | — |
+      172  | B-168 | 2026-11-16 01:56 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10b pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-167 | T10b Hecha
+            | docs/02-backlog.md, B-167 |
+      173  | B-169 | 2026-11-16 01:57 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10b, 
+           §8 de docs/tareas/T10b.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Admin de cierres fijado en T10b»: `features/closu
+           res/` como dueño de `Closure` y sus consultas; claves comparti
+           das en archivos sin imports para evitar ciclos entre features;
+            invalidaciones; conteo previo con `useBookings(date, { fresh:
+            true })`; confirmación en dos pasos dentro del mismo modal; n
+           o usar `setState` en efectos (B-165); singular y plural en tex
+           tos con número; fechas de calendario en formularios; tonos de 
+           `Banner`; cierres de hoy con `psql` y datos que dejó la verifi
+           cación | Solo documentación; sin cambios de código. `docs/04-c
+           ierre.md` (de la persona) queda fuera del commit | CLAUDE.md, 
+           docs/tareas/T10b.md §6, §7 y §8, B-165, B-167 |
+      174 +| B-170 | 2026-11-16 02:00 | Yo | 3-Ejecutar | DECISIÓN | La p
+          +ersona decide recortar T10c (Auditoría: pantalla de consulta p
+          +aginada) por falta de tiempo; el agente lo documenta en 00-dec
+          +isiones.md (D-34), 02-backlog.md (estado `Recortada (D-34)`, n
+          +ota en la ficha y estado `Recortada` agregado al flujo de esta
+          +dos) y CLAUDE.md | T10c Recortada; no se ejecuta. La auditoría
+          + se sigue escribiendo y se consulta por `POST /api/audit-logs/
+          +search`. El enlace "Auditoría" con su página de marcador queda
+          + como está, a decidir en T11; se declara en 04-cierre.md | D-3
+          +4, docs/02-backlog.md (T10c) |                                
+
+● Ahora la nota en CLAUDE.md, para que ningún agente ejecute T10c.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿   CLAUDE.md             | 7 +++++++
+      docs/00-decisiones.md | 8 ++++++++
+      docs/02-backlog.md    | 8 +++++---
+     … +7 lines (ctrl+o to expand)
+  ⎿  Updated CLAUDE.md (+7 -0)
+      588    no tengan filas en `audit_logs` y se borran en el mismo scri
+           pt. Al terminar no quedan cierres en la base.
+      589  - **Datos que dejó la verificación de T10b** en la base de des
+           arrollo: la reserva "T10b reserva del miercoles" de
+      590    empleado1 cancelada como historial. Bundle del frontend: 527
+            kB (aviso de Vite).
+      591 +                                                              
+      592 +### T10c recortada (D-34, B-170)                              
+      593 +- **T10c (pantalla de auditoría `/admin/audit`) no se ejecuta:
+          +** la persona la recortó por falta de tiempo. No crear        
+      594 +  `features/audit/` ni la pantalla, aunque el spec §9 la liste
+          +; el recorte se declara en `docs/04-cierre.md` (T11).         
+      595 +- La auditoría sigue completa en la API (T06a) y se consulta c
+          +on `POST /api/audit-logs/search` (solo ADMIN).                
+      596 +- El enlace "Auditoría" del ADMIN y su `PlaceholderPage` en `/
+          +admin/audit` quedan como están hasta que la persona decida    
+      597 +  en T11; no quitarlos ni cambiarlos sin que lo pida.         
+
+● Dejé documentado el recorte de T10c en cuatro archivos:
+
+  - docs/00-decisiones.md: decisión nueva D-34 · Se recorta T10c (pantalla de 
+    auditoría), con su fila en el índice.
+    - Motivo: falta de tiempo.
+    - Qué se pierde: la pantalla de auditoría (F-08 en la UI y la fila
+      "Auditoría" de spec §9).
+    - Qué se mantiene: la auditoría se sigue escribiendo en cada escritura
+      (T06a) y se consulta con POST /api/audit-logs/search, por curl o desde la
+      consola del navegador, porque Swagger no está disponible en el compose
+      (D-33).
+    - Enlace "Auditoría": queda como está, a decidir en T11.
+  - docs/02-backlog.md:
+    - T10c pasa a Recortada (D-34), en la fila 22 y en su ficha.
+    - La ficha lleva una nota de que no se ejecuta.
+    - Agregué al flujo de estados Recortada (D-xx), para tareas recortables y
+      por tu decisión, porque el flujo no tenía un estado para esto. Revísalo.
+  - docs/03-bitacora.md: fila B-170 de tipo DECISIÓN, con actor Yo porque la
+    decisión es tuya.
+  - CLAUDE.md: subsección «T10c recortada». Indica no crear la pantalla aunque
+    el spec §9 la liste, y no tocar el enlace ni su página de marcador hasta que
+    decidas en T11.
+
+  docs/04-cierre.md no lo toqué: el archivo actual es el ejemplo ilustrativo y
+  el recorte se declara en el reporte real, en T11.
+
+  No hice commit. ¿Lo hago con estos cuatro archivos?
+
+✻ Worked for 1m 6s · done 2:01
+
+> si realiza el commit                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hice el commit 1d3cf83 T10c: recortada por falta de tiempo (D-34) con
+  CLAUDE.md, docs/00-decisiones.md, docs/02-backlog.md y docs/03-bitacora.md.
+
+  Solo queda sin commitear docs/04-cierre.md, el ejemplo que es tuyo.
+
+  La siguiente tarea es T11 (README final y verificación desde un clon limpio).
+  En ella tienes que decidir qué hacer con el enlace "Auditoría", que hoy lleva
+  a una página vacía, y ahí se declara el recorte en el reporte de cierre.
+
+✻ Baked for 7s · done 2:01

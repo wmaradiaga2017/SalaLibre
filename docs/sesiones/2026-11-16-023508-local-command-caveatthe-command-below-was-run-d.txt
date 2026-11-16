@@ -1,0 +1,1683 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+> /clear                                                                        
+
+> /ejecutar-tarea T11                                                           
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● Add the start row.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -c 1
+      docs/03-bitacora.md | od -c | head -2 && cat >> docs/03-bitacora.md
+      <<'EOF'
+      | B-171 | 2026-…)
+  ⎿  0000000  \n
+     0000001
+     | B-170 | 2026-11-16 02:00 | Yo | 3-Ejecutar | DECISIÓN | La persona d
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      172  | B-168 | 2026-11-16 01:56 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T10b pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-167 | T10b Hecha
+            | docs/02-backlog.md, B-167 |
+      173  | B-169 | 2026-11-16 01:57 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10b, 
+           §8 de docs/tareas/T10b.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Admin de cierres fijado en T10b»: `features/closu
+           res/` como dueño de `Closure` y sus consultas; claves comparti
+           das en archivos sin imports para evitar ciclos entre features;
+            invalidaciones; conteo previo con `useBookings(date, { fresh:
+            true })`; confirmación en dos pasos dentro del mismo modal; n
+           o usar `setState` en efectos (B-165); singular y plural en tex
+           tos con número; fechas de calendario en formularios; tonos de 
+           `Banner`; cierres de hoy con `psql` y datos que dejó la verifi
+           cación | Solo documentación; sin cambios de código. `docs/04-c
+           ierre.md` (de la persona) queda fuera del commit | CLAUDE.md, 
+           docs/tareas/T10b.md §6, §7 y §8, B-165, B-167 |
+      174  | B-170 | 2026-11-16 02:00 | Yo | 3-Ejecutar | DECISIÓN | La p
+           ersona decide recortar T10c (Auditoría: pantalla de consulta p
+           aginada) por falta de tiempo; el agente lo documenta en 00-dec
+           isiones.md (D-34), 02-backlog.md (estado `Recortada (D-34)`, n
+           ota en la ficha y estado `Recortada` agregado al flujo de esta
+           dos) y CLAUDE.md | T10c Recortada; no se ejecuta. La auditoría
+            se sigue escribiendo y se consulta por `POST /api/audit-logs/
+           search`. El enlace "Auditoría" con su página de marcador queda
+            como está, a decidir en T11; se declara en 04-cierre.md | D-3
+           4, docs/02-backlog.md (T10c) |
+      175 +| B-171 | 2026-11-16 02:03 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T11 (README final y verificación desde un clon limpio)
+          +. DoR comprobada: T01 a T10b en Hecha y T10c `Recortada (D-34)
+          +`, que la tarea admite si se declara; tarea con objetivo, traz
+          +abilidad, alcance, fuera de alcance, CA1–CA7, seguridad, verif
+          +icación y estimación S | T11 En curso | docs/02-backlog.md (T1
+          +1), D-34 |                                                    
+
+● Mi plan para T11: reunir lo necesario para el README, escribirlo con la
+  instrucción de arranque, las credenciales del seed y lo recortado, y luego
+  verificar todo desde un clon limpio. Después revisaré docs/tareas/ y
+  documentaré T11 con su commit. · summary
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Hago un clon limpio y luego lanzo la verificación de T11, que incluye docker 
+  compose down -v y borrará la base de desarrollo con los datos de prueba de las
+  tareas. · summary
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Mientras construye, escribo el README.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(README.md)
+  ⎿  Wrote 109 lines to README.md
+       1 # SalaLibre
+       2 
+       3 App interna para reservar las salas de reunión de la oficina (80
+          personas, 5 salas) sin choques de horario.
+       4 Cualquier persona ve la agenda del día y reserva un hueco libre;
+          RRHH (rol `ADMIN`) administra salas, usuarios y
+       5 días cerrados. Corre **solo en local** con Docker Compose; no ha
+         y despliegue en la nube.
+       6 
+       7 **Stack:** Node 24 LTS · NestJS · Prisma · PostgreSQL 16 · React
+     … +103 lines (~6 KB) (ctrl+o to expand)
+
+● Reviso la cobertura de docs/tareas/ y la secuencia de la bitácora mientras
+  termina el build.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Background command "Build and start stack from clean clone" completed (exit
+code 0)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● El build usó la caché de Docker (28 s). Para que la prueba de clon limpio sea
+  real, reconstruyo sin caché.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Las unitarias fallan en el clon limpio: necesitan el cliente Prisma generado
+  (src/api/src/generated/, que no se versiona). En la copia de trabajo pasaban
+  porque ya existía. Pruebo generarlo:
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Funciona. Para que el comando de CA4 (npm --prefix src/api test) pase tal cual
+  en un clon limpio, agrego un pretest que genera el cliente (cambio mínimo; no
+  toca el script test).
+
+● Update(src\api\package.json)
+  ⎿  Added 1 line
+      11      "build": "prisma generate && tsc -p tsconfig.build.json && 
+          tsc -p tsconfig.seed.json",
+      12      "start": "node dist/main.js",
+      13      "lint": "eslint .",
+      14 +    "pretest": "prisma generate",                              
+      15      "test": "node --experimental-vm-modules --no-warnings=Exper
+          imentalWarning node_modules/jest/bin/jest.js",
+      16      "test:int": "node --experimental-vm-modules --no-warnings=E
+          xperimentalWarning node_modules/jest/bin/jest.js --config test/
+          integration/jest.config.json --runInBand"
+      17    },
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Update(README.md)
+  ⎿  Added 1 line, removed 1 line
+      60  ## Pruebas
+      61  | Qué | Comando | Requisitos |
+      62  |---|---|---|
+      63 -| Unitarias (sin base de datos) | `npm --prefix src/api ci` y l
+         -uego `npm --prefix src/api test` | Node 24 en la máquina |     
+      63 +| Unitarias (sin base de datos) | `npm --prefix src/api ci` y l
+         +uego `npm --prefix src/api test` (genera antes el cliente Prism
+         +a, que no se versiona) | Node 24 en la máquina |               
+      64  | Integración contra PostgreSQL real | `docker compose --profil
+          e test run --rm api-test` | Solo Docker; usa su propia base `sa
+          lalibre_test` y la recrea en cada corrida (la de la app no se t
+          oca) |
+      65  | Lint | `npm --prefix src/api run lint` y `npm --prefix src/we
+          b run lint` (tras `npm --prefix src/web ci`) | Node 24 |
+      66  
+
+● Espero a que termine el build sin caché.
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Background command "Rebuild without cache from clean clone and start"
+completed (exit code 0)
+
+● Build sin caché correcto (6 min 10 s), todo healthy. Ahora health, login,
+  reinicios (P-18) y conteos.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Ahora el flujo de humo (CA7) por la API, con un script en el scratchpad.
+
+  Made 1 scratchpad edit +59, ran 1 shell command (ctrl+o to expand)
+
+● Flujo de humo correcto. Compruebo en el navegador que la pantalla de login se
+  ve (CA1) y que el login lleva a la agenda.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+  ⎿  1 action not run · permission denied
+     │ Reason: Can't interact with browser-internal or unparseable URLs. Navigate to a web page first.
+  ⎿  1 action not run · auto mode's check had no usable answer
+● Login visible en / (redirige a /login). Cierro la pestaña y corro las pruebas
+  de integración en el clon.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Integración: 78/78. Ahora búsqueda de secretos, lint y volver a levantar desde
+  la copia de trabajo.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● En la copia de trabajo fallan 2 suites. Reviso por qué.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Esta vez pasaron las 14. Lo repito varias veces para ver si es intermitente y
+  en qué suites.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && for i in 1 2 3
+      4; do npm --prefix src/api test > /tmp/u$i.log 2>&1; echo "corrida $i:
+      $(grep -E '^Tes…)
+  ⎿  corrida 1: Tests:       159 passed, 159 total |
+     corrida 2: Tests:       159 passed, 159 total |
+     corrida 3: Tests:       159 passed, 159 total |
+     corrida 4: Tests:       159 passed, 159 total |
+  ⎿  Updated docs\04-cierre.md (+40 -65)
+       1 -# 04 · Reporte de cierre · Ejemplo                             
+       1 +# 04 · Reporte de cierre                                       
+       2  
+       3 -> Ejemplo de cómo se ve `04-cierre.md` completo. La plantilla v
+         -acía está en `04-cierre.md`.                                   
+       4 ->                                                              
+       5 -> **Ejemplo ilustrativo:** los hashes, horas, números y referen
+         -cias B-xx son inventados para mostrar el nivel                 
+       6 -> de detalle esperado. En el reporte real, cada fecha y hora sa
+         -le del sistema (`date "+%Y-%m-%d %H:%M"`) y cada               
+       7 -> salida se pega tal como la devolvió la terminal.             
+       3 +> reporte de cierre con la DoD marcada y su evidencia          
+       4  
+       9 -> **Fecha de cierre:** <AAAA-MM-DD 17:42> · **Commit final:** `
+         -9f3c2e1` · **Tiempo total:** 7:35 (detalle en `03-bitacora.md`)
+       5 +> **Fecha de cierre:** <16/11/2026 02:00 AM>                   
+       6  
+       7  ## 1. Definition of Done de la prueba
+       8  | # | Requisito | Estado | Evidencia |
+       9  |---|---|---|---|
+      10  | 1 | `docker compose up` levanta la base de datos, la API y el
+           frontend desde un clon limpio, sin pasos manuales | ✅ | Clon 
+          en carpeta nueva, `docker compose up -d --build`, 3 servicios s
+          anos (salida abajo); captura `docs/evidencia/compose-ps.png` |
+      15 -| 2 | Cada tarea del backlog tiene su documento en `/docs/tarea
+         -s` | ✅ | 14 de 14: [T01](tareas/T01.md) · [T02](tareas/T02.md)
+         - · [T02a](tareas/T02a.md) · [T03](tareas/T03.md) · [T04](tareas
+         -/T04.md) · [T05](tareas/T05.md) · [T06](tareas/T06.md) · [T06a]
+         -(tareas/T06a.md) · [T07a](tareas/T07a.md) · [T07](tareas/T07.md
+         -) · [T08](tareas/T08.md) · [T09](tareas/T09.md) · [T10](tareas/
+         -T10.md) · [T11](tareas/T11.md) |                               
+      11 +| 2 | Cada tarea del backlog tiene su documento en `/docs/tarea
+         +s`                                                             
+      12  | 3 | El README explica cómo levantar el proyecto | ✅ | `READM
+          E.md` § Cómo levantar (probado al pie de la letra en el clon li
+          mpio) |
+      13  
+      18 -### Verificación desde un clon limpio                          
+      19 -```bash                                                        
+      20 -git clone <repo> /tmp/verificacion && cd /tmp/verificacion     
+      21 -docker compose up -d --build                                   
+      22 -docker compose ps          # → db (healthy), api (healthy), web
+         - (running)                                                     
+      23 -curl localhost:8080/api/health   # → {"status":"ok","db":"up"} 
+      24 -docker compose exec api npm test # → todos los tests pasan     
+      25 -```                                                            
+      26 -```                                                            
+      27 -NAME                 SERVICE   STATUS                    PORTS 
+      28 -verificacion-db-1    db        Up 41 seconds (healthy)   5432/t
+         -cp                                                             
+      29 -verificacion-api-1   api       Up 30 seconds (healthy)   3000/t
+         -cp                                                             
+      30 -verificacion-web-1   web       Up 18 seconds             0.0.0.
+         -0:8080->80/tcp                                                 
+      31 -                                                               
+      32 -{"status":"ok","db":"up"}                                      
+      33 -                                                               
+      34 -Test Suites: 9 passed, 9 total                                 
+      35 -Tests:       87 passed, 87 total                               
+      36 -Time:        14.218 s                                          
+     … 93 more lines (ctrl+o to expand)
+  ⎿  Created docs\04-cierre.md.bak (+93 -0)
+       1 +# 04 · Reporte de cierre · Ejemplo                             
+       2 +                                                               
+       3 +> Ejemplo de cómo se ve `04-cierre.md` completo. La plantilla v
+         +acía está en `04-cierre.md`.                                   
+       4 +>                                                              
+       5 +> **Ejemplo ilustrativo:** los hashes, horas, números y referen
+         +cias B-xx son inventados para mostrar el nivel                 
+       6 +> de detalle esperado. En el reporte real, cada fecha y hora sa
+         +le del sistema (`date "+%Y-%m-%d %H:%M"`) y cada               
+       7 +> salida se pega tal como la devolvió la terminal.             
+       8 +                                                               
+       9 +> **Fecha de cierre:** <AAAA-MM-DD 17:42> · **Commit final:** `
+         +9f3c2e1` · **Tiempo total:** 7:35 (detalle en `03-bitacora.md`)
+      10 +                                                               
+      11 +## 1. Definition of Done de la prueba                          
+      12 +| # | Requisito | Estado | Evidencia |                         
+      13 +|---|---|---|---|                                              
+      14 +| 1 | `docker compose up` levanta la base de datos, la API y el
+         + frontend desde un clon limpio, sin pasos manuales | ✅ | Clon 
+         +en carpeta nueva, `docker compose up -d --build`, 3 servicios s
+         +anos (salida abajo); captura `docs/evidencia/compose-ps.png` | 
+      15 +| 2 | Cada tarea del backlog tiene su documento en `/docs/tarea
+         +s` | ✅ | 14 de 14: [T01](tareas/T01.md) · [T02](tareas/T02.md)
+         + · [T02a](tareas/T02a.md) · [T03](tareas/T03.md) · [T04](tareas
+         +/T04.md) · [T05](tareas/T05.md) · [T06](tareas/T06.md) · [T06a]
+         +(tareas/T06a.md) · [T07a](tareas/T07a.md) · [T07](tareas/T07.md
+         +) · [T08](tareas/T08.md) · [T09](tareas/T09.md) · [T10](tareas/
+         +T10.md) · [T11](tareas/T11.md) |                               
+      16 +| 3 | El README explica cómo levantar el proyecto | ✅ | `READM
+         +E.md` § Cómo levantar (probado al pie de la letra en el clon li
+         +mpio) |                                                        
+      17 +                                                               
+      18 +### Verificación desde un clon limpio                          
+      19 +```bash                                                        
+      20 +git clone <repo> /tmp/verificacion && cd /tmp/verificacion     
+      21 +docker compose up -d --build                                   
+      22 +docker compose ps          # → db (healthy), api (healthy), web
+         + (running)                                                     
+      23 +curl localhost:8080/api/health   # → {"status":"ok","db":"up"} 
+      24 +docker compose exec api npm test # → todos los tests pasan     
+      25 +```                                                            
+      26 +```                                                            
+      27 +NAME                 SERVICE   STATUS                    PORTS 
+      28 +verificacion-db-1    db        Up 41 seconds (healthy)   5432/t
+         +cp                                                             
+      29 +verificacion-api-1   api       Up 30 seconds (healthy)   3000/t
+         +cp                                                             
+      30 +verificacion-web-1   web       Up 18 seconds             0.0.0.
+         +0:8080->80/tcp                                                 
+      31 +                                                               
+      32 +{"status":"ok","db":"up"}                                      
+      33 +                                                               
+      34 +Test Suites: 9 passed, 9 total                                 
+      35 +Tests:       87 passed, 87 total                               
+      36 +Time:        14.218 s                                          
+      37 +```                                                            
+      38 +                                                               
+      39 +### Ensayo de reconstrucción (instrucción única del README)    
+      40 +| Campo | Resultado |                                          
+     … 53 more lines (ctrl+o to expand)
+  ⎿  (timeout 10m)
+
+● No se reproduce. Pruebo la hipótesis de que el fallo vino de la primera
+  corrida tras regenerar el cliente (borrando la caché de Jest):
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Tampoco. Último intento: unitarias en paralelo con carga (la suite de
+  integración corriendo en Docker), parecido a cuando falló.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● No se reproduce en 6 corridas más (ni con carga). Lo registro como ERROR
+  intermitente. Ahora la documentación.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(docs\tareas\T11.md)
+  ⎿  Wrote 225 lines to docs\tareas\T11.md
+       1 # T11 · README final y verificación desde un clon limpio
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha con observaciones |
+       8 | Inicio – fin | 2026-11-16 02:03 – 02:20 (17 min) · estimado: S
+          |
+     … +217 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i
+      '1093s/| Estado | Pendiente |/| Estado | En revisión |/'
+      docs/02-backlog.md && sed -i 's/^| 23…)
+  ⎿   docs/02-backlog.md | 4 ++--
+      1 file changed, 2 insertions(+), 2 deletions(-)
+     81:| 23 | T11 | README final y verificación desde un clon limpio | tod
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+          [T10a](tareas/T10a.md) |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [
+          T10b](tareas/T10b.md) |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Recortada (D-34) | |
+      81 -| 23 | T11 | README final y verificación desde un clon limpio |
+         - todas | S | No | Pendiente | |                                
+      81 +| 23 | T11 | README final y verificación desde un clon limpio |
+         + todas | S | No | En revisión | [T11](tareas/T11.md) |         
+      82  
+      83  **Esfuerzo total estimado:** 4 L + 16 M + 3 S ≈ 12,75 h de ejec
+          ución del agente, sin contar la revisión. Si se recortan T06a y
+           T10c se ahorra ≈ 1 h, pero se pierde O4 (auditoría), P-12, P-1
+          5, F-08 y parte de D-05: habría que declararlo en `04-cierre.md
+          `. Recortar T07c ahorra ≈ 1 h más y solo afecta a lo visual: el
+           login funcional queda en T07.
+      84  
+     ...
+      1090  | Dependencias | T01 a T10c (si T06a y T10c se recortaron, se
+             declara) |
+      1091  | Estimación | S |
+      1092  | Seguridad / auditoría | Roles: no aplica. Auditoría: no apl
+            ica. Verifica que el repositorio solo contiene valores por de
+            fecto de desarrollo, sin secretos reales |
+      1093 -| Estado | Pendiente |                                       
+      1093 +| Estado | En revisión |                                     
+      1094  
+      1095  **Alcance (archivos o módulos):**
+      1096  - `README.md`: qué es SalaLibre, la instrucción `docker compo
+            se up`, la URL, las credenciales del seed, cómo correr las pr
+            uebas, el mapa de `docs/` y cómo se trabajó con el agente.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      docs/03-bitacora.md <<'EOF'
+      | B-172 | 2026-11-16 02:20 | Agente | 3-Ejecutar | ERROR | T11: (1…)
+  ⎿  76385b1 T11: README final y verificación desde un clon limpio
+     ?? docs/04-cierre.md
+     ?? docs/04-cierre.md.bak
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      173  | B-169 | 2026-11-16 01:57 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T10b, 
+           §8 de docs/tareas/T10b.md), CLAUDE.md (Dependencias) agrega la
+            subsección «Admin de cierres fijado en T10b»: `features/closu
+           res/` como dueño de `Closure` y sus consultas; claves comparti
+           das en archivos sin imports para evitar ciclos entre features;
+            invalidaciones; conteo previo con `useBookings(date, { fresh:
+            true })`; confirmación en dos pasos dentro del mismo modal; n
+           o usar `setState` en efectos (B-165); singular y plural en tex
+           tos con número; fechas de calendario en formularios; tonos de 
+           `Banner`; cierres de hoy con `psql` y datos que dejó la verifi
+           cación | Solo documentación; sin cambios de código. `docs/04-c
+           ierre.md` (de la persona) queda fuera del commit | CLAUDE.md, 
+           docs/tareas/T10b.md §6, §7 y §8, B-165, B-167 |
+      174  | B-170 | 2026-11-16 02:00 | Yo | 3-Ejecutar | DECISIÓN | La p
+           ersona decide recortar T10c (Auditoría: pantalla de consulta p
+           aginada) por falta de tiempo; el agente lo documenta en 00-dec
+           isiones.md (D-34), 02-backlog.md (estado `Recortada (D-34)`, n
+           ota en la ficha y estado `Recortada` agregado al flujo de esta
+           dos) y CLAUDE.md | T10c Recortada; no se ejecuta. La auditoría
+            se sigue escribiendo y se consulta por `POST /api/audit-logs/
+           search`. El enlace "Auditoría" con su página de marcador queda
+            como está, a decidir en T11; se declara en 04-cierre.md | D-3
+           4, docs/02-backlog.md (T10c) |
+      175  | B-171 | 2026-11-16 02:03 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T11 (README final y verificación desde un clon limpio)
+           . DoR comprobada: T01 a T10b en Hecha y T10c `Recortada (D-34)
+           `, que la tarea admite si se declara; tarea con objetivo, traz
+           abilidad, alcance, fuera de alcance, CA1–CA7, seguridad, verif
+           icación y estimación S | T11 En curso | docs/02-backlog.md (T1
+           1), D-34 |
+      176 +| B-172 | 2026-11-16 02:20 | Agente | 3-Ejecutar | ERROR | T11
+          +: (1) en el clon limpio, `npm --prefix src/api test` falló en 
+          +9 de 14 suites porque el cliente Prisma generado (`src/api/src
+          +/generated/`) no se versiona y las pruebas lo importan; en la 
+          +copia de trabajo pasaba porque ya existía. (2) De vuelta en la
+          + copia de trabajo, la primera corrida de las unitarias dio 2 s
+          +uites y 33 pruebas fallidas; no se guardó el detalle y no se r
+          +eprodujo en 6 corridas más (una con la caché de Jest borrada y
+          + otra en paralelo con `api-test`) | (1) Corregido con `"pretes
+          +t": "prisma generate"` en `src/api/package.json`: 159/159 en e
+          +l clon con el cliente borrado. (2) Queda como fallo intermiten
+          +te sin causa confirmada, para la revisión | docs/tareas/T11.md
+          + §5 y §6 |                                                    
+      177 +| B-173 | 2026-11-16 02:20 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T11 (README final y verificación desde un clon limpio): `
+          +README.md` nuevo (instrucción única `docker compose up --build
+          +`, URL, credenciales del seed, pantallas, recorte de T10c, pru
+          +ebas, mapa de `docs/`, trabajo con el agente y reconstrucción 
+          +con `/ejecutar-tarea`). Verificación en un clon nuevo tras `do
+          +wn -v`, con build sin caché (6 min 10 s): todo healthy, login 
+          +visible, admin y empleado1 entran, seed idempotente tras dos r
+          +einicios (4 usuarios, 5 salas), unitarias 159/159, integración
+          + 78/78, humo (reservar → Mis reservas → cancelar → ADMIN crea 
+          +sala) correcto, sin secretos, lint sin errores; compose de la 
+          +copia de trabajo healthy | T11 En revisión. Commit: `T11: READ
+          +ME final y verificación desde un clon limpio` (hash en `git lo
+          +g`). Pendientes para la persona: qué hacer con el enlace "Audi
+          +toría" (D-34), archivos sin versionar de la persona (`04-cierr
+          +e.md`, su `.bak` y la sesión exportada); `down -v` borró los d
+          +atos de verificación de tareas anteriores | docs/tareas/T11.md
+          +, B-172 |                                                     
+
+● Terminé T11 y quedó En revisión (commit 76385b1). Los criterios CA1 a CA7 se
+  cumplen en un clon limpio. Quedan un fallo intermitente de las pruebas
+  unitarias sin causa encontrada y una decisión pendiente tuya.
+
+  Qué hice
+  - README.md nuevo: cómo levantar con un solo comando (docker compose up 
+    --build), la URL, las credenciales del seed, las pantallas por rol, el
+    recorte de T10c, cómo correr las pruebas, el mapa de docs/, cómo se trabajó
+    con el agente y cómo reconstruir el proyecto con /ejecutar-tarea.
+  - Verificación en un clon nuevo: cloné el repositorio en una carpeta aparte,
+    sin volúmenes ni .env, y construí las imágenes sin caché (6 min 10 s).
+    Resultados:
+    - db, api y web quedan healthy y http://localhost:8080 muestra el login
+      (comprobado en Chrome).
+    - Entran tanto el admin como empleado1.
+    - Tras dos reinicios de api, el seed no duplica datos: siguen 4 usuarios y 5
+      salas.
+    - Unitarias 159/159 e integración 78/78.
+    - El flujo de humo funciona: reservar → Mis reservas → cancelar → el admin
+      crea una sala.
+    - No hay secretos en el repositorio y el lint no da errores.
+
+  Desvíos
+  - Cambio de código: en el clon limpio, npm --prefix src/api test fallaba en 9
+    de 14 suites porque las pruebas necesitan el cliente Prisma generado, que no
+    se versiona. Agregué "pretest": "prisma generate" en src/api/package.json
+    (B-172). El script test no cambia.
+  - Datos de desarrollo borrados: la verificación de la tarea pide docker 
+    compose down -v, así que se perdieron los datos que dejaron las
+    verificaciones de T05a a T10b. En la base solo quedan una sala de prueba de
+    T11, inactiva, y una reserva cancelada.
+  - Fallo intermitente sin explicar: de vuelta en la carpeta del proyecto, la
+    primera corrida de las unitarias falló (2 suites, 33 pruebas). No guardé el
+    detalle y no se repitió en 6 corridas más. Lo dejé registrado como ERROR en
+    B-172 para tu revisión.
+
+  Pendientes y ambigüedades (detalle en §7 de docs/tareas/T11.md)
+  - Enlace "Auditoría": D-34 dice que se decide en T11, pero CLAUDE.md me
+    prohíbe cambiarlo sin que lo pidas. Lo dejé como está y el README lo
+    declara. Tienes que decidir si se quita, se deja o muestra un aviso.
+  - git status no queda vacío: quedan sin versionar docs/04-cierre.md,
+    docs/04-cierre.md.bak (copia del editor) y la sesión exportada. Son tuyos,
+    así que no los incluí en el commit.
+  - Ruta en el spec: §12 dice npm --prefix api en vez de src/api. No toqué el
+    spec.
+  - Estado en los documentos de tareas: el encabezado de varios
+    docs/tareas/Txx.md dice "En revisión" aunque en el backlog están Hechas. No
+    los edité.
+
+  Me detengo aquí a la espera de tu revisión.
+
+✻ Cogitated for 17m 34s · done 2:20
+
+> muestra un aviso que se recorto la seccion para que funcione el enlace        
+  "Auditoria". Repara la ruta en el spec. Actualiza el estado de los archivos   
+  de tareas                                                                     
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Write(src\web\src\shared\layout\PlaceholderPage.tsx)
+  ⎿  Added 18 lines, removed 6 lines
+       1 -import { EmptyState } from '../ui';                            
+       1 +import type { ReactNode } from 'react';                        
+       2 +import { Banner } from '../ui';                                
+       3  
+       3 -/** Marcador de una ruta cuyo contenido llega en una tarea post
+         -erior (T07: solo rutas y navegación). */                       
+       4 -export function PlaceholderPage({ title }: { title: string }) {
+       4 +interface PlaceholderPageProps {                               
+       5 +  title: string;                                               
+       6 +  /** Título del aviso. */                                     
+       7 +  notice: string;                                              
+       8 +  /** Explicación del aviso. */                                
+       9 +  children?: ReactNode;                                        
+      10 +}                                                              
+      11 +                                                               
+      12 +/**                                                            
+      13 + * Página de una sección que existe en la navegación pero no ti
+         +ene pantalla. Hoy solo la usa `/admin/audit`, porque           
+      14 + * T10c se recortó (D-34): muestra un aviso en lugar de una pan
+         +talla vacía.                                                   
+      15 + */                                                            
+      16 +export function PlaceholderPage({ title, notice, children }: Pl
+         +aceholderPageProps) {                                          
+      17    return (
+      18      <section aria-labelledby="titulo-pagina" className="mx-auto
+           flex max-w-5xl flex-col gap-space-lg">
+      19        <h1 id="titulo-pagina" className="text-headline-lg text-i
+          nk">
+      20          {title}
+      21        </h1>
+      10 -      <div className="rounded-lg border border-divider bg-surfa
+         -ce-container-lowest">                                          
+      11 -        <EmptyState title="Pantalla en construcción" />        
+      12 -      </div>                                                   
+      22 +      <Banner tone="info" title={notice}>                      
+      23 +        {children}                                             
+      24 +      </Banner>                                                
+      25      </section>
+      26    );
+      27  }
+
+● Update(src\web\src\App.tsx)
+  ⎿  Added 9 lines, removed 1 line
+      41                      <Route path="rooms" element={<AdminRoomsPag
+          e />} />
+      42                      <Route path="users" element={<AdminUsersPag
+          e />} />
+      43                      <Route path="closures" element={<AdminClosu
+          resPage />} />
+      44 -                    <Route path="audit" element={<PlaceholderPa
+         -ge title="Auditoría" />} />                                    
+      44 +                    <Route                                     
+      45 +                      path="audit"                             
+      46 +                      element={                                
+      47 +                        <PlaceholderPage title="Auditoría" noti
+         +ce="Esta sección se recortó de esta versión">                  
+      48 +                          La pantalla de consulta de la auditor
+         +ía no se incluyó por falta de tiempo. Todas las                
+      49 +                          operaciones se siguen registrando en 
+         +la auditoría y se pueden consultar a través del API.           
+      50 +                        </PlaceholderPage>                     
+      51 +                      }                                        
+      52 +                    />                                         
+      53                    </Route>
+      54                    <Route path="*" element={<Navigate to="/agend
+          a" replace />} />
+      55                  </Route>
+
+● Update(src\web\src\App.tsx)
+  ⎿  Added 2 lines, removed 2 lines
+      17  import { ToastProvider } from './shared/ui';
+      18  
+      19  /**
+      20 - * Rutas de spec §9. `/login` es pública; el resto exige sesión
+         - y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son         
+      21 - * marcadores hasta sus tareas (T10c).                         
+      20 + * Rutas de spec §9. `/login` es pública; el resto exige sesión
+         + y `/admin/*` exige `ADMIN` (RN-21). `/admin/audit`            
+      21 + * muestra un aviso: su pantalla (T10c) se recortó (D-34).     
+      22   */
+      23  export function App() {
+      24    const [queryClient] = useState(createQueryClient);
+
+● Ahora el spec §12 y el estado de los documentos de tareas.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i
+      '456s/npm --prefix api test/npm --prefix src\/api test/; 458s/npm --prefix
+      api run lint/npm --…)
+  ⎿  **Comandos**
+     - Unitarias (dominio, sin base): `npm --prefix src/api test`.
+     - Integración contra PostgreSQL real: `docker compose --profile test r
+     … +40 lines (ctrl+o to expand)
+  ⎿  Updated docs\01-spec.md (+2 -2)
+      453  ## 12. Estrategia de pruebas
+      454  
+      455  **Comandos**
+      456 -- Unitarias (dominio, sin base): `npm --prefix api test`.     
+      456 +- Unitarias (dominio, sin base): `npm --prefix src/api test`. 
+      457  - Integración contra PostgreSQL real: `docker compose --profil
+           e test run --rm api-test` (S-08).
+      458 -- Lint: `npm --prefix api run lint` y `npm --prefix web run li
+          -nt`.                                                          
+      458 +- Lint: `npm --prefix src/api run lint` y `npm --prefix src/we
+          +b run lint`.                                                  
+      459  - Humo: `docker compose up` desde un clon limpio y login con e
+           l seed en `http://localhost:8080`.
+      460  
+      461  Los nombres de prueba incluyen la regla, por ejemplo `it('RN-0
+           1 · …')`.
+  ⎿  Updated docs\tareas\T06a.md (+1 -1)
+       4  
+       5  | Campo | Valor |
+       6  |---|---|
+       7 -| Estado | En revisión |                                       
+       7 +| Estado | Hecha |                                             
+       8  | Inicio – fin | 2026-11-15 22:05 – 22:19 (14 min) · estimado: 
+          M |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | `ae72b59` (código y documentación) + commit de re
+          gistro del hash |
+  ⎿  Updated docs\tareas\T07.md (+1 -1)
+       4  
+       5  | Campo | Valor |
+       6  |---|---|
+       7 -| Estado | En revisión |                                       
+       7 +| Estado | Hecha |                                             
+       8  | Inicio – fin | 2026-11-15 22:49 – 23:04 (15 min) · estimado: 
+          M |
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta 
+          al cerrar la sesión) |
+      10  | Commit(s) | `669b847` (registrado en B-113) |
+  ⎿  Updated docs\tareas\T07a.md (+1 -1)
+       4  
+       5  | Campo | Valor |
+       6  |---|---|
+       7 -| Estado | En revisión |                                       
+       7 +| Estado | Hecha |                                             
+       8  | Inicio – fin | 2026-11-15 22:30 – 22:41 (11 min) · estimado: 
+          M |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | `b5df650` (código y documentación) + commit de re
+          gistro del hash |
+  ⎿  Updated docs\tareas\T07b.md (+1 -1)
+       4  
+       5  | Campo | Valor |
+       6  |---|---|
+       7 -| Estado | En revisión |                                       
+       7 +| Estado | Hecha |                                             
+       8  | Inicio – fin | 2026-11-15 23:12 – 23:17 (5 min) · estimado: S
+           |
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta 
+          al cerrar la sesión) |
+      10  | Commit(s) | `af4d0db` (registrado en B-119) |
+  ⎿  … 8 more files changed
+
+● Lint, build y compose, luego reviso el aviso en el navegador.
+
+  Called claude-in-chrome 5 times, ran 1 shell command (ctrl+o to expand)
+
+● Aviso visible. Cierro la pestaña y actualizo la documentación que mencionaba
+  la página de marcador.
+
+  Called claude-in-chrome, ran 2 shell commands (ctrl+o to expand)
+● Update(README.md)
+  ⎿  Added 2 lines, removed 2 lines
+      53  Las reglas de negocio (horario 07:00–20:00 de lunes a viernes e
+          n `America/Tegucigalpa`, bloques de 15 min,
+      54  hasta 4 h, hasta 30 días de anticipación, sin choques ni con co
+          ncurrencia) están en `docs/01-spec.md` §5.
+      55  
+      56 -**Recortado:** la pantalla de auditoría (`/admin/audit`, tarea 
+         -T10c) no se construyó (D-34); el enlace muestra una            
+      57 -página de marcador. La auditoría sí se registra en cada escritu
+         -ra y un ADMIN la consulta por la API con                       
+      56 +**Recortado:** la pantalla de auditoría (`/admin/audit`, tarea 
+         +T10c) no se construyó (D-34); el enlace lleva a un             
+      57 +aviso que lo explica. La auditoría sí se registra en cada escri
+         +tura y un ADMIN la consulta por la API con                     
+      58  `POST /api/audit-logs/search`.
+      59  
+      60  ## Pruebas
+
+● Update(CLAUDE.md)
+  ⎿  Added 3 lines, removed 2 lines
+      593  - **T10c (pantalla de auditoría `/admin/audit`) no se ejecuta:
+           ** la persona la recortó por falta de tiempo. No crear
+      594    `features/audit/` ni la pantalla, aunque el spec §9 la liste
+           ; el recorte se declara en `docs/04-cierre.md` (T11).
+      595  - La auditoría sigue completa en la API (T06a) y se consulta c
+           on `POST /api/audit-logs/search` (solo ADMIN).
+      596 -- El enlace "Auditoría" del ADMIN y su `PlaceholderPage` en `/
+          -admin/audit` quedan como están hasta que la persona decida    
+      597 -  en T11; no quitarlos ni cambiarlos sin que lo pida.         
+      596 +- Decidido en T11 (B-174): el enlace "Auditoría" del ADMIN se 
+          +mantiene y `/admin/audit` muestra `PlaceholderPage` con       
+      597 +  un aviso (`Banner` `info`) de que la sección se recortó y la
+          + auditoría se sigue registrando. No quitarlo ni cambiarlo     
+      598 +  sin que la persona lo pida.                                 
+
+● Update(docs\tareas\T11.md)
+  ⎿  Added 2 lines, removed 1 line
+      203  ## 7. Ambigüedades encontradas
+      204  - **Enlace "Auditoría" y su página de marcador (`/admin/audit`
+           ):** D-34 dice que se decide en T11, pero `CLAUDE.md`
+      205    prohíbe cambiarlo sin que la persona lo pida. Opción conserv
+           adora: quedan como están; el README lo declara.
+      206 -  **Pendiente de decisión de la persona** (quitar el enlace, d
+          -ejarlo o mostrar un aviso).                                   
+      206 +  **Resuelto tras la entrega (B-174):** la persona pidió mostr
+          +ar un aviso; `/admin/audit` muestra "Esta sección se          
+      207 +  recortó de esta versión" con la explicación (`PlaceholderPag
+          +e` con `Banner` `info`), comprobado en Chrome como ADMIN.     
+      208  - **`git status` (CA6):** quedan sin versionar `docs/04-cierre
+           .md`, `docs/04-cierre.md.bak` y la sesión exportada
+      209    `docs/sesiones/2026-11-16-020145-….txt`. Son de la persona (
+           el cierre lo redacta ella, B-169), así que no entran en
+      210    el commit; el `.bak` es del editor y conviene borrarlo o ign
+           orarlo. Los archivos del agente quedan versionados.
+
+● Update(docs\tareas\T11.md)
+  ⎿  Added 2 lines, removed 1 line
+      209    `docs/sesiones/2026-11-16-020145-….txt`. Son de la persona (
+           el cierre lo redacta ella, B-169), así que no entran en
+      210    el commit; el `.bak` es del editor y conviene borrarlo o ign
+           orarlo. Los archivos del agente quedan versionados.
+      211  - **Rutas de los comandos en el spec §12:** dice `npm --prefix
+            api test`; la estructura real (D-29, `CLAUDE.md`) es
+      212 -  `src/api`. El README y el backlog usan `src/api`. No se camb
+          -ió el spec.                                                   
+      212 +  `src/api`. El README y el backlog usan `src/api`. No se camb
+          +ió el spec. **Resuelto (B-174):** a pedido de la persona,     
+      213 +  el spec §12 usa `src/api` y `src/web`.                      
+      214  - **Unitarias sin Node:** las unitarias necesitan Node 24 en l
+           a máquina (no hay servicio Docker para ellas). El README
+      215    lo indica; la integración sí corre solo con Docker.
+      216  - **"Estado" en el encabezado de los `docs/tareas/Txx.md`:** v
+           arios quedaron como "En revisión" o "Hecha (pendiente
+
+● Update(docs\tareas\T11.md)
+  ⎿  Added 2 lines, removed 1 line
+      215    lo indica; la integración sí corre solo con Docker.
+      216  - **"Estado" en el encabezado de los `docs/tareas/Txx.md`:** v
+           arios quedaron como "En revisión" o "Hecha (pendiente
+      217    de revisión)" aunque el backlog los tiene en Hecha y la secc
+           ión 8 dice "Sí". No se editaron (son documentos ya
+      218 -  revisados); el backlog es el que manda.                     
+      218 +  revisados); el backlog es el que manda. **Resuelto (B-174):*
+          +* a pedido de la persona, T06a a T10b dicen "Hecha" (las      
+      219 +  "Hecha con observaciones" se conservan) y T11 dice "En revis
+          +ión".                                                         
+      220  - **Reconstrucción por un agente:** el README explica que se e
+           jecuta `/ejecutar-tarea` en el orden del backlog. Si se
+      221    parte de un repositorio sin código pero con el backlog en "H
+           echa", la DoR se cumple igual; no se probó un ensayo
+      222    real de reconstrucción (lo hace el evaluador o la persona en
+            `04-cierre.md`).
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && T=$(date
+      "+%Y-%m-%d %H:%M") && echo $T && sed -i '317a - **Resolución en T11
+      (B-174):** la persona de…)
+  ⎿  2026-11-16 02:26
+     - **Costo/riesgo:** No hay pantalla de auditoría: se pierde F-08 en la
+      UI y la fila "Auditoría" de spec §9 no se implementa. La auditoría sí
+     … +18 lines (ctrl+o to expand)
+  ⎿  Updated docs\00-decisiones.md (+1 -0)
+      315  - **Por qué:** Prioriza cerrar el proyecto con T11 (README y v
+           erificación desde un clon limpio).
+      316  - **Costo/riesgo:** No hay pantalla de auditoría: se pierde F-
+           08 en la UI y la fila "Auditoría" de spec §9 no se implementa.
+            La auditoría sí se escribe en toda escritura de negocio, en l
+           a misma transacción y con su request ID (T06a: O4, RN-25, P-12
+            y P-15 se mantienen), y se consulta con `POST /api/audit-logs
+           /search` (solo ADMIN). Con `docker compose up` Swagger no está
+            disponible (D-33), así que la consulta es por `curl` o desde 
+           la consola del navegador con la sesión de un ADMIN. El enlace 
+           "Auditoría" de la navegación del ADMIN sigue llevando a `/admi
+           n/audit`, que muestra una página de marcador vacía (`Placehold
+           erPage`); por decisión de la persona, solo se documenta y se d
+           ecide en T11.
+      317  - **Afecta a:** `docs/02-backlog.md` (T10c: estado Recortada; 
+           T11: dependencia), `docs/04-cierre.md` (se declara en T11), `C
+           LAUDE.md`
+      318 +- **Resolución en T11 (B-174):** la persona decidió mantener e
+          +l enlace "Auditoría" y que `/admin/audit` muestre un aviso de 
+          +que la sección se recortó en esta versión y la auditoría se si
+          +gue registrando.                                              
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      1078  
+      1079  **Notas para el agente:** **Recortable** junto con T06a. Si T
+            06a no se hizo, esta tarea no se ejecuta.
+      1080  
+      1081 -**Recorte (D-34, B-170):** la persona recortó esta tarea el 2
+           -026-11-16 por falta de tiempo. **No se ejecuta.** La auditorí
+           -a se sigue escribiendo (T06a) y se consulta con `POST /api/au
+           -dit-logs/search`. El enlace "Auditoría" del ADMIN sigue mostr
+           -ando la página de marcador de `/admin/audit`; qué hacer con é
+           -l se decide en T11. Se declara en `docs/04-cierre.md`.       
+      1081 +**Recorte (D-34, B-170):** la persona recortó esta tarea el 2
+           +026-11-16 por falta de tiempo. **No se ejecuta.** La auditorí
+           +a se sigue escribiendo (T06a) y se consulta con `POST /api/au
+           +dit-logs/search`. El enlace "Auditoría" del ADMIN sigue mostr
+           +ando la página de marcador de `/admin/audit`; qué hacer con é
+           +l se decide en T11. **Decidido en T11 (B-174):** la página mu
+           +estra un aviso de que la sección se recortó. Se declara en `d
+           +ocs/04-cierre.md`.                                           
+      1082  
+      1083  ---
+      1084  
+  ⎿  Updated docs\tareas\T11.md (+2 -0)
+      39  | `docs/tareas/T11.md` | Creado |
+      40  | `docs/03-bitacora.md` | Filas B-171 a B-173 |
+      41  | `docs/02-backlog.md` | T11 → En revisión (resumen y ficha) |
+      42 +| `src/web/src/shared/layout/PlaceholderPage.tsx`, `src/web/src
+         +/App.tsx` | Modificados tras la entrega (B-174): `/admin/audit`
+         + muestra el aviso de sección recortada |                       
+      43 +| `docs/01-spec.md`, `docs/00-decisiones.md`, `CLAUDE.md`, `doc
+         +s/tareas/T06a.md` a `T10b.md` | Modificados tras la entrega (B-
+         +174): rutas del spec §12, resolución de D-34 y estado de los do
+         +cumentos de tareas |                                           
+      44  
+      45  ## 4. Criterios de aceptación
+      46  | CA | Resultado | Evidencia |
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      docs/03-bitacora.md <<'EOF'
+      | B-174 | 2026-11-16 02:26 | Agente | 3-Ejecutar | CORRECCIÓN | A…)
+  ⎿  16f1026 T11: aviso de sección recortada en Auditoría, rutas del spec y
+      estado de las tareas
+     76385b1 T11: README final y verificación desde un clon limpio
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      175  | B-171 | 2026-11-16 02:03 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T11 (README final y verificación desde un clon limpio)
+           . DoR comprobada: T01 a T10b en Hecha y T10c `Recortada (D-34)
+           `, que la tarea admite si se declara; tarea con objetivo, traz
+           abilidad, alcance, fuera de alcance, CA1–CA7, seguridad, verif
+           icación y estimación S | T11 En curso | docs/02-backlog.md (T1
+           1), D-34 |
+      176  | B-172 | 2026-11-16 02:20 | Agente | 3-Ejecutar | ERROR | T11
+           : (1) en el clon limpio, `npm --prefix src/api test` falló en 
+           9 de 14 suites porque el cliente Prisma generado (`src/api/src
+           /generated/`) no se versiona y las pruebas lo importan; en la 
+           copia de trabajo pasaba porque ya existía. (2) De vuelta en la
+            copia de trabajo, la primera corrida de las unitarias dio 2 s
+           uites y 33 pruebas fallidas; no se guardó el detalle y no se r
+           eprodujo en 6 corridas más (una con la caché de Jest borrada y
+            otra en paralelo con `api-test`) | (1) Corregido con `"pretes
+           t": "prisma generate"` en `src/api/package.json`: 159/159 en e
+           l clon con el cliente borrado. (2) Queda como fallo intermiten
+           te sin causa confirmada, para la revisión | docs/tareas/T11.md
+            §5 y §6 |
+      177  | B-173 | 2026-11-16 02:20 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T11 (README final y verificación desde un clon limpio): `
+           README.md` nuevo (instrucción única `docker compose up --build
+           `, URL, credenciales del seed, pantallas, recorte de T10c, pru
+           ebas, mapa de `docs/`, trabajo con el agente y reconstrucción 
+           con `/ejecutar-tarea`). Verificación en un clon nuevo tras `do
+           wn -v`, con build sin caché (6 min 10 s): todo healthy, login 
+           visible, admin y empleado1 entran, seed idempotente tras dos r
+           einicios (4 usuarios, 5 salas), unitarias 159/159, integración
+            78/78, humo (reservar → Mis reservas → cancelar → ADMIN crea 
+           sala) correcto, sin secretos, lint sin errores; compose de la 
+           copia de trabajo healthy | T11 En revisión. Commit: `T11: READ
+           ME final y verificación desde un clon limpio` (hash en `git lo
+           g`). Pendientes para la persona: qué hacer con el enlace "Audi
+           toría" (D-34), archivos sin versionar de la persona (`04-cierr
+           e.md`, su `.bak` y la sesión exportada); `down -v` borró los d
+           atos de verificación de tareas anteriores | docs/tareas/T11.md
+           , B-172 |
+      178 +| B-174 | 2026-11-16 02:26 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona, sobre la entrega de T11: (1) `/admin
+          +/audit` deja de ser una página vacía y muestra el aviso "Esta 
+          +sección se recortó de esta versión" con la explicación (`Place
+          +holderPage` con `Banner` `info`); el enlace "Auditoría" se man
+          +tiene; (2) el spec §12 usa las rutas reales `src/api` y `src/w
+          +eb`; (3) el campo "Estado" de `docs/tareas/T06a.md` a `T10b.md
+          +` pasa a "Hecha" y el de T11 a "En revisión". Se anota la reso
+          +lución en D-34, la ficha de T10c, CLAUDE.md, el README y `docs
+          +/tareas/T11.md` | Lint y build del frontend sin errores (bundl
+          +e 527 kB, aviso de Vite), compose healthy; aviso comprobado en
+          + Chrome como ADMIN. T11 sigue En revisión | D-34, docs/tareas/
+          +T11.md §3 y §7, B-173 |                                       
+
+● Hice los tres cambios en el commit 16f1026 y los registré en la bitácora como
+  B-174. T11 sigue En revisión.
+
+  1. Aviso en "Auditoría": al entrar en /admin/audit se ve un aviso informativo:
+     "Esta sección se recortó de esta versión". Debajo explica que la pantalla
+     de consulta no se incluyó por falta de tiempo y que la auditoría se sigue
+     registrando y se puede consultar por la API. El enlace del menú se
+     mantiene. Lo comprobé en Chrome entrando como admin. El lint y el build del
+     frontend no dan errores y el compose está healthy. Anoté la decisión en
+     D-34, en la ficha de T10c, en CLAUDE.md, en el README y en
+     docs/tareas/T11.md.
+  2. Rutas del spec §12: ahora dice npm --prefix src/api test y npm --prefix 
+     src/api run lint / npm --prefix src/web run lint.
+  3. Estado de las tareas: el encabezado de T06a a T10b pasa a "Hecha" y el de
+     T11 a "En revisión". Las que decían "Hecha con observaciones" (T01, T02,
+     T02a, T03, T04 y T05) las dejé así, porque es un estado válido.
+
+  docs/04-cierre.md y la sesión exportada siguen sin versionar porque son tuyos.
+  El docs/04-cierre.md.bak ya no aparece en git status.
+
+✻ Brewed for 2m 30s · done 2:27
+
+> /bitacora REVISIÓN T11 revisada, cumple la DoD                                
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && T=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-12 && echo "|
+      B-175 | $T | Yo |…)
+  ⎿  | B-174 | 20
+     | B-175 | 2026-11-16 02:27 | Yo | 3-Ejecutar | REVISIÓN | T11 revisada
+     , cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      176  | B-172 | 2026-11-16 02:20 | Agente | 3-Ejecutar | ERROR | T11
+           : (1) en el clon limpio, `npm --prefix src/api test` falló en 
+           9 de 14 suites porque el cliente Prisma generado (`src/api/src
+           /generated/`) no se versiona y las pruebas lo importan; en la 
+           copia de trabajo pasaba porque ya existía. (2) De vuelta en la
+            copia de trabajo, la primera corrida de las unitarias dio 2 s
+           uites y 33 pruebas fallidas; no se guardó el detalle y no se r
+           eprodujo en 6 corridas más (una con la caché de Jest borrada y
+            otra en paralelo con `api-test`) | (1) Corregido con `"pretes
+           t": "prisma generate"` en `src/api/package.json`: 159/159 en e
+           l clon con el cliente borrado. (2) Queda como fallo intermiten
+           te sin causa confirmada, para la revisión | docs/tareas/T11.md
+            §5 y §6 |
+      177  | B-173 | 2026-11-16 02:20 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T11 (README final y verificación desde un clon limpio): `
+           README.md` nuevo (instrucción única `docker compose up --build
+           `, URL, credenciales del seed, pantallas, recorte de T10c, pru
+           ebas, mapa de `docs/`, trabajo con el agente y reconstrucción 
+           con `/ejecutar-tarea`). Verificación en un clon nuevo tras `do
+           wn -v`, con build sin caché (6 min 10 s): todo healthy, login 
+           visible, admin y empleado1 entran, seed idempotente tras dos r
+           einicios (4 usuarios, 5 salas), unitarias 159/159, integración
+            78/78, humo (reservar → Mis reservas → cancelar → ADMIN crea 
+           sala) correcto, sin secretos, lint sin errores; compose de la 
+           copia de trabajo healthy | T11 En revisión. Commit: `T11: READ
+           ME final y verificación desde un clon limpio` (hash en `git lo
+           g`). Pendientes para la persona: qué hacer con el enlace "Audi
+           toría" (D-34), archivos sin versionar de la persona (`04-cierr
+           e.md`, su `.bak` y la sesión exportada); `down -v` borró los d
+           atos de verificación de tareas anteriores | docs/tareas/T11.md
+           , B-172 |
+      178  | B-174 | 2026-11-16 02:26 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona, sobre la entrega de T11: (1) `/admin
+           /audit` deja de ser una página vacía y muestra el aviso "Esta 
+           sección se recortó de esta versión" con la explicación (`Place
+           holderPage` con `Banner` `info`); el enlace "Auditoría" se man
+           tiene; (2) el spec §12 usa las rutas reales `src/api` y `src/w
+           eb`; (3) el campo "Estado" de `docs/tareas/T06a.md` a `T10b.md
+           ` pasa a "Hecha" y el de T11 a "En revisión". Se anota la reso
+           lución en D-34, la ficha de T10c, CLAUDE.md, el README y `docs
+           /tareas/T11.md` | Lint y build del frontend sin errores (bundl
+           e 527 kB, aviso de Vite), compose healthy; aviso comprobado en
+            Chrome como ADMIN. T11 sigue En revisión | D-34, docs/tareas/
+           T11.md §3 y §7, B-173 |
+      179 +| B-175 | 2026-11-16 02:27 | Yo | 3-Ejecutar | REVISIÓN | T11 
+          +revisada, cumple la DoD | — | — |                             
+
+● Fila agregada al final de docs/03-bitacora.md; sin commit, entra en el
+  siguiente de la tarea:
+
+  | B-175 | 2026-11-16 02:27 | Yo | 3-Ejecutar | REVISIÓN | T11 revisada, cumple
+  la DoD | — | — |
+
+✻ Brewed for 5s · done 2:27
+
+> Pasa T11 a Hecha en el backlog y haz commit                                   
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && T=$(date
+      "+%Y-%m-%d %H:%M") && sed -i '81s/| En revisión | \[T11\]/| Hecha |
+      [T11]/; 1093s/| Estado |…)
+  ⎿  | 23 | T11 | README final y verificación desde un clon limpio | todas
+     | S | No | Hecha | [T11](tareas/T11.md) |
+     | Estado | Hecha |
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      78  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | 
+          [T10a](tareas/T10a.md) |
+      79  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [
+          T10b](tareas/T10b.md) |
+      80  | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, 
+          T07 | M | **Sí** | Recortada (D-34) | |
+      81 -| 23 | T11 | README final y verificación desde un clon limpio |
+         - todas | S | No | En revisión | [T11](tareas/T11.md) |         
+      81 +| 23 | T11 | README final y verificación desde un clon limpio |
+         + todas | S | No | Hecha | [T11](tareas/T11.md) |               
+      82  
+      83  **Esfuerzo total estimado:** 4 L + 16 M + 3 S ≈ 12,75 h de ejec
+          ución del agente, sin contar la revisión. Si se recortan T06a y
+           T10c se ahorra ≈ 1 h, pero se pierde O4 (auditoría), P-12, P-1
+          5, F-08 y parte de D-05: habría que declararlo en `04-cierre.md
+          `. Recortar T07c ahorra ≈ 1 h más y solo afecta a lo visual: el
+           login funcional queda en T07.
+      84  
+     ...
+      1090  | Dependencias | T01 a T10c (si T06a y T10c se recortaron, se
+             declara) |
+      1091  | Estimación | S |
+      1092  | Seguridad / auditoría | Roles: no aplica. Auditoría: no apl
+            ica. Verifica que el repositorio solo contiene valores por de
+            fecto de desarrollo, sin secretos reales |
+      1093 -| Estado | En revisión |                                     
+      1093 +| Estado | Hecha |                                           
+      1094  
+      1095  **Alcance (archivos o módulos):**
+      1096  - `README.md`: qué es SalaLibre, la instrucción `docker compo
+            se up`, la URL, las credenciales del seed, cómo correr las pr
+            uebas, el mapa de `docs/` y cómo se trabajó con el agente.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      177  | B-173 | 2026-11-16 02:20 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T11 (README final y verificación desde un clon limpio): `
+           README.md` nuevo (instrucción única `docker compose up --build
+           `, URL, credenciales del seed, pantallas, recorte de T10c, pru
+           ebas, mapa de `docs/`, trabajo con el agente y reconstrucción 
+           con `/ejecutar-tarea`). Verificación en un clon nuevo tras `do
+           wn -v`, con build sin caché (6 min 10 s): todo healthy, login 
+           visible, admin y empleado1 entran, seed idempotente tras dos r
+           einicios (4 usuarios, 5 salas), unitarias 159/159, integración
+            78/78, humo (reservar → Mis reservas → cancelar → ADMIN crea 
+           sala) correcto, sin secretos, lint sin errores; compose de la 
+           copia de trabajo healthy | T11 En revisión. Commit: `T11: READ
+           ME final y verificación desde un clon limpio` (hash en `git lo
+           g`). Pendientes para la persona: qué hacer con el enlace "Audi
+           toría" (D-34), archivos sin versionar de la persona (`04-cierr
+           e.md`, su `.bak` y la sesión exportada); `down -v` borró los d
+           atos de verificación de tareas anteriores | docs/tareas/T11.md
+           , B-172 |
+      178  | B-174 | 2026-11-16 02:26 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona, sobre la entrega de T11: (1) `/admin
+           /audit` deja de ser una página vacía y muestra el aviso "Esta 
+           sección se recortó de esta versión" con la explicación (`Place
+           holderPage` con `Banner` `info`); el enlace "Auditoría" se man
+           tiene; (2) el spec §12 usa las rutas reales `src/api` y `src/w
+           eb`; (3) el campo "Estado" de `docs/tareas/T06a.md` a `T10b.md
+           ` pasa a "Hecha" y el de T11 a "En revisión". Se anota la reso
+           lución en D-34, la ficha de T10c, CLAUDE.md, el README y `docs
+           /tareas/T11.md` | Lint y build del frontend sin errores (bundl
+           e 527 kB, aviso de Vite), compose healthy; aviso comprobado en
+            Chrome como ADMIN. T11 sigue En revisión | D-34, docs/tareas/
+           T11.md §3 y §7, B-173 |
+      179  | B-175 | 2026-11-16 02:27 | Yo | 3-Ejecutar | REVISIÓN | T11 
+           revisada, cumple la DoD | — | — |
+      180 +| B-176 | 2026-11-16 02:28 | Agente | 4-Cierre | AGENTE | A pe
+          +dido de la persona, T11 pasa a Hecha en el resumen y en la fic
+          +ha de 02-backlog.md (y en el encabezado de docs/tareas/T11.md)
+          +, tras la revisión de B-175 | T11 Hecha; todas las tareas del 
+          +backlog quedan Hechas salvo T10c, Recortada (D-34) | docs/02-b
+          +acklog.md, B-175 |                                            
+  ⎿  Updated docs\tareas\T11.md (+1 -1)
+       4  
+       5  | Campo | Valor |
+       6  |---|---|
+       7 -| Estado | En revisión |                                       
+       7 +| Estado | Hecha |                                             
+       8  | Inicio – fin | 2026-11-16 02:03 – 02:20 (17 min) · estimado: 
+          S |
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (la exporta 
+          la persona) |
+      10  | Commit(s) | `T11: README final y verificación desde un clon l
+          impio` (hash en `git log` y en B-173) |
+
+● T11 quedó en Hecha y el cambio está en el commit 551ce71.
+
+  - Backlog: T11 pasa a Hecha en la tabla resumen y en su ficha. También cambié
+    a Hecha el encabezado de docs/tareas/T11.md.
+  - Bitácora: agregué la fila B-176 y la marqué como fase 4-Cierre, porque ya no
+    queda ninguna tarea pendiente: todas están Hechas salvo T10c, que fue
+    recortada (D-34).
+  - Commit: incluye tu fila de revisión B-175.
+
+  Quedan sin versionar docs/04-cierre.md y la sesión exportada; los dejé fuera
+  del commit porque son tuyos.
+
+✻ Sautéed for 10s · done 2:28
+
+> Agrega a CLAUDE.md los desvíos de T11                                         
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿  | B-177 | 2026-11-16 02:29 | Agente | 4-Cierre | CORRECCIÓN | A pedido
+      de la persona, CLA
+      M CLAUDE.md
+     … +4 lines (ctrl+o to expand)
+  ⎿  Updated CLAUDE.md (+29 -0)
+      596  - Decidido en T11 (B-174): el enlace "Auditoría" del ADMIN se 
+           mantiene y `/admin/audit` muestra `PlaceholderPage` con
+      597    un aviso (`Banner` `info`) de que la sección se recortó y la
+            auditoría se sigue registrando. No quitarlo ni cambiarlo
+      598    sin que la persona lo pida.
+      599 +                                                              
+      600 +### Cierre y clon limpio fijados en T11 (ver `docs/tareas/T11.
+          +md` §6 y §7; B-172, B-174)                                    
+      601 +- **`README.md` es la instrucción única** para levantar el pro
+          +yecto (`docker compose up --build`, sin `.env` ni pasos       
+      602 +  previos). Si cambia el arranque, los puertos, las credencial
+          +es del seed o los comandos de prueba, se actualiza el README  
+      603 +  en la misma tarea.                                          
+      604 +- **`pretest` en `src/api/package.json` (`prisma generate`):**
+          + el cliente Prisma (`src/api/src/generated/`) no se           
+      605 +  versiona y las unitarias lo importan; sin el `pretest`, `npm
+          + --prefix src/api test` falla en un clon limpio (9 de 14      
+      606 +  suites, B-172). No quitarlo. En un clon nuevo, antes de las 
+          +unitarias va `npm --prefix src/api ci` (requiere Node 24      
+      607 +  en la máquina; la integración solo requiere Docker).        
+      608 +- **Verificar un clon limpio:** `git clone .` en una carpeta d
+          +el scratchpad (nunca dentro del repositorio), después de      
+      609 +  `docker compose down -v`, y construir con `docker compose bu
+          +ild --no-cache`: `up --build` reutiliza la caché y no         
+      610 +  prueba nada (28 s contra 6 min). Al reiniciar `api`, esperar
+          + a `healthy` con                                              
+      611 +  `docker inspect -f '{{.State.Health.Status}}' salalibre-api-
+          +1`, no con `sleep`.                                           
+      612 +- **El compose tiene `name: salalibre`:** un clon en otra carp
+          +eta usa los mismos contenedores y el mismo volumen            
+      613 +  (`salalibre_db-data`) que la copia de trabajo. `down -v` en 
+          +cualquiera de los dos borra la base de desarrollo; al         
+      614 +  terminar, bajar el clon (`docker compose down`) y volver a l
+          +evantar desde la copia de trabajo.                            
+      615 +- **npm 12 en la máquina bloquea los scripts de instalación** 
+          +de `prisma` y `@prisma/engines` (`npm warn                    
+      616 +  install-scripts`); no afecta, porque `prisma generate` funci
+          +ona igual y la imagen usa el npm de `node:24-alpine`. No      
+      617 +  aprobar scripts con `npm install-scripts approve` sin que lo
+          + pida la persona.                                             
+      618 +- **Fallo intermitente sin causa confirmada (B-172):** una cor
+          +rida de `npm --prefix src/api test` en la copia de trabajo    
+      619 +  dio 2 suites y 33 pruebas fallidas y no se repitió en 6 corr
+          +idas más. Si vuelve a pasar, guardar la salida completa       
+      620 +  (`> archivo.log 2>&1`) antes de repetir, para registrar la s
+          +uite y el error en la bitácora.                               
+      621 +- **Estado de los documentos de tareas:** cuando una tarea pas
+          +a a Hecha en `docs/02-backlog.md`, se cambia también el       
+      622 +  campo "Estado" del encabezado de su `docs/tareas/Txx.md` (B-
+          +174: varios habían quedado en "En revisión").                 
+      623 +- **Rutas de los comandos:** siempre `src/api` y `src/web` (`n
+          +pm --prefix src/api …`), como el spec §12 corregido (B-174).  
+      624 +- **Archivos de la persona fuera de los commits del agente:** 
+          +`docs/04-cierre.md` (lo redacta la persona), las sesiones     
+      625 +  exportadas de `docs/sesiones/` y los `.bak` del editor, salv
+          +o que la persona pida incluirlos.                             
+      626 +- **Datos de la base de desarrollo tras T11:** se recreó desde
+          + el seed con `down -v` (ya no están los datos de las          
+      627 +  verificaciones de T05a a T10b). Quedan "Sala Humo T11 …" **i
+          +nactiva** y la reserva "Humo T11" de empleado1 cancelada.     
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      178  | B-174 | 2026-11-16 02:26 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona, sobre la entrega de T11: (1) `/admin
+           /audit` deja de ser una página vacía y muestra el aviso "Esta 
+           sección se recortó de esta versión" con la explicación (`Place
+           holderPage` con `Banner` `info`); el enlace "Auditoría" se man
+           tiene; (2) el spec §12 usa las rutas reales `src/api` y `src/w
+           eb`; (3) el campo "Estado" de `docs/tareas/T06a.md` a `T10b.md
+           ` pasa a "Hecha" y el de T11 a "En revisión". Se anota la reso
+           lución en D-34, la ficha de T10c, CLAUDE.md, el README y `docs
+           /tareas/T11.md` | Lint y build del frontend sin errores (bundl
+           e 527 kB, aviso de Vite), compose healthy; aviso comprobado en
+            Chrome como ADMIN. T11 sigue En revisión | D-34, docs/tareas/
+           T11.md §3 y §7, B-173 |
+      179  | B-175 | 2026-11-16 02:27 | Yo | 3-Ejecutar | REVISIÓN | T11 
+           revisada, cumple la DoD | — | — |
+      180  | B-176 | 2026-11-16 02:28 | Agente | 4-Cierre | AGENTE | A pe
+           dido de la persona, T11 pasa a Hecha en el resumen y en la fic
+           ha de 02-backlog.md (y en el encabezado de docs/tareas/T11.md)
+           , tras la revisión de B-175 | T11 Hecha; todas las tareas del 
+           backlog quedan Hechas salvo T10c, Recortada (D-34) | docs/02-b
+           acklog.md, B-175 |
+      181 +| B-177 | 2026-11-16 02:29 | Agente | 4-Cierre | CORRECCIÓN | 
+          +A pedido de la persona, CLAUDE.md (Dependencias) agrega la sub
+          +sección «Cierre y clon limpio fijados en T11»: el README como 
+          +instrucción única; el `pretest` con `prisma generate` (B-172);
+          + cómo verificar un clon limpio (scratchpad, `down -v`, `build 
+          +--no-cache`, esperar `healthy` con `docker inspect`); el proye
+          +cto compose compartido `salalibre` entre clon y copia de traba
+          +jo; scripts de instalación bloqueados por npm 12; el fallo int
+          +ermitente de las unitarias; el estado de los documentos de tar
+          +eas y las rutas `src/api`/`src/web` (B-174); archivos de la pe
+          +rsona fuera de los commits y datos de la base tras T11 | Solo 
+          +documentación; sin cambios de código | CLAUDE.md, docs/tareas/
+          +T11.md §6 y §7, B-172, B-174 |                                
+
+● Agregué al final de CLAUDE.md la subsección «Cierre y clon limpio fijados en 
+  T11» y registré el cambio en la bitácora como B-177. Recoge:
+
+  - README: es la única instrucción para levantar el proyecto y se actualiza en
+    la misma tarea si cambia el arranque, los puertos, las credenciales o los
+    comandos de prueba.
+  - pretest (prisma generate): no se quita. Sin él, las pruebas unitarias fallan
+    en un clon limpio; antes de correrlas va npm --prefix src/api ci.
+  - Cómo verificar un clon limpio:
+    - el clon va en el scratchpad, nunca dentro del repositorio;
+    - primero docker compose down -v;
+    - se construye con build --no-cache, porque con caché la prueba no demuestra
+      nada;
+    - tras reiniciar api, se espera a que quede healthy en vez de usar sleep.
+  - Proyecto salalibre compartido: el clon y la copia de trabajo usan los mismos
+    contenedores y el mismo volumen, así que down -v en cualquiera de los dos
+    borra la base de desarrollo.
+  - npm 12: bloquea los scripts de instalación de Prisma. No afecta y no se
+    aprueban sin que lo pidas.
+  - Fallo intermitente de las unitarias (B-172): si vuelve a pasar, se guarda la
+    salida completa antes de repetir.
+  - Estado de los documentos de tareas: al pasar una tarea a Hecha en el
+    backlog, también se cambia el encabezado de su docs/tareas/Txx.md.
+  - Rutas de los comandos: siempre src/api y src/web.
+  - Archivos tuyos: 04-cierre.md, las sesiones exportadas y los .bak quedan
+    fuera de los commits del agente.
+  - Base de desarrollo tras T11: solo tiene el seed y lo que dejó la prueba de
+    humo.
+
+  No hice commit: CLAUDE.md y docs/03-bitacora.md quedan modificados. ¿Quieres
+  que lo haga?
+
+✻ Baked for 31s · done 2:30
+
+> sí, haz el commit                                                             
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Listo: hice el commit 208bad0 T11: CLAUDE.md con los desvíos con CLAUDE.md y
+  docs/03-bitacora.md.
+
+  Siguen sin versionar docs/04-cierre.md y la sesión exportada, porque son
+  tuyos.
+✻ Sautéed for 4s · done 2:30
+
+> Ayúdame a completar docs/04-cierre.md con la evidencia                        
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Reviso la evidencia real en la bitácora antes de tocar el documento.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Tengo la evidencia. Antes de escribir, hay tres afirmaciones del borrador que
+  no encuentro en la bitácora y no quiero inventar ni borrar sin preguntarte:
+
+● User answered Claude's questions:
+  ⎿  · En 04-cierre.md, el 'Ensayo de reconstrucción' dice 'Total: Si' con fecha
+     de ejemplo (<AAAA-MM-DD 15:10>). No hay registro en la bitácora de una 
+     sesión nueva reconstruyendo el proyecto. ¿Lo hiciste? → Sí, lo hice yo
+     · En §4 'Qué falló', las filas 2 ('modo automático falló 2 de 10 corridas')
+     y 3 ('entrypoint.sh: not found' por CRLF, 15 min) parecen venir del 
+     ejemplo: la bitácora no tiene un error de CRLF, y el fallo del modo 
+     automático registrado es B-159 (el verificador de permisos dejó de dar 
+     veredicto en T10a). ¿Qué hago? → Reemplazar por la evidencia (Recommended)
+     · §5 'Qué cambiaría' es casi igual al ejemplo (p. ej. 'test de concurrencia
+     en T05' — en realidad T05 ya lo probó con una ráfaga, B-74; 'días no 
+     hábiles' no fue un problema). ¿Qué hago? → Proponer desde la evidencia 
+     (Recommended)
+
+● Con tus respuestas escribo el documento. Del ensayo de reconstrucción conservo
+  tu "Sí", pero la fecha y el resultado los tienes que completar tú (no hay
+  registro).
+
+● Write(docs\04-cierre.md)
+  ⎿  Added 92 lines, removed 24 lines
+       1 -# 04 · Reporte de cierre                                       
+       1 +# 04 · Reporte de cierre                                       
+       2  
+       3 -> reporte de cierre con la DoD marcada y su evidencia          
+       3 +> Reporte de cierre con la DoD marcada y su evidencia. Las hora
+         +s salen de `docs/03-bitacora.md` y las salidas, de la          
+       4 +> verificación real de T11 (`docs/tareas/T11.md` §5).          
+       5  
+       5 -> **Fecha de cierre:** <16/11/2026 02:00 AM>                   
+       6 +> **Fecha de cierre:** 2026-11-16 02:31 · **Último commit antes
+         + de este reporte:** `208bad0` · **Ejecución del agente:**      
+       7 +> 4 h 32 min sumando inicio–fin de las 22 tareas (detalle en `0
+         +3-bitacora.md`)                                                
+       8  
+       9  ## 1. Definition of Done de la prueba
+      10  | # | Requisito | Estado | Evidencia |
+      11  |---|---|---|---|
+      10 -| 1 | `docker compose up` levanta la base de datos, la API y el
+         - frontend desde un clon limpio, sin pasos manuales | ✅ | Clon 
+         -en carpeta nueva, `docker compose up -d --build`, 3 servicios s
+         -anos (salida abajo); captura `docs/evidencia/compose-ps.png` | 
+      11 -| 2 | Cada tarea del backlog tiene su documento en `/docs/tarea
+         -s`                                                             
+      12 -| 3 | El README explica cómo levantar el proyecto | ✅ | `READM
+         -E.md` § Cómo levantar (probado al pie de la letra en el clon li
+         -mpio) |                                                        
+      12 +| 1 | `docker compose up` levanta la base de datos, la API y el
+         + frontend desde un clon limpio, sin pasos manuales | ✅ | T11 (
+         +B-173): `git clone` en una carpeta nueva, sin `node_modules`, s
+         +in `.env` y tras `docker compose down -v`; imágenes construidas
+         + **sin caché**; `db`, `api` y `web` healthy, login visible en `
+         +http://localhost:8080`, seed idempotente tras dos reinicios (sa
+         +lida abajo) |                                                  
+      13 +| 2 | Cada tarea del backlog tiene su documento en `/docs/tarea
+         +s` | ✅ | 22 de 22 tareas ejecutadas, cada una con su revisión 
+         +en §8 (tabla de §2). T10c no se ejecutó: recortada por decisión
+         + (D-34, B-170), declarada en §3 |                              
+      14 +| 3 | El README explica cómo levantar el proyecto | ✅ | `READM
+         +E.md` § "Cómo levantar (instrucción única)": `docker compose up
+         + --build`, URL, credenciales del seed y pruebas; es la instrucc
+         +ión que se ejecutó en el clon limpio de T11 |                  
+      15  
+      16 +### Verificación desde un clon limpio (T11, 2026-11-16)        
+      17 +```bash                                                        
+      18 +docker compose down -v                                         
+      19 +git clone . <carpeta nueva> && cd <carpeta nueva>              
+      20 +docker compose build --no-cache && docker compose up -d        
+      21 +docker compose ps                                              
+      22 +curl localhost:8080/api/health                                 
+      23 +docker compose restart api   # ×2, esperando healthy           
+      24 +docker compose exec -T db psql -U salalibre -d salalibre -c "SE
+         +LECT (SELECT count(*) FROM users) AS usuarios, (SELECT count(*)
+         + FROM rooms) AS salas;"                                        
+      25 +npm --prefix src/api ci && npm --prefix src/api test           
+      26 +docker compose --profile test run --rm api-test                
+      27 +```                                                            
+      28 +```                                                            
+      29 +real    6m10.670s                                              
+      30 +SERVICE   STATUS                    PORTS                      
+      31 +api       Up 20 seconds (healthy)   3000/tcp                   
+      32 +db        Up 31 seconds (healthy)   5432/tcp                   
+      33 +web       Up 15 seconds (healthy)   0.0.0.0:8080->8080/tcp, [::
+         +]:8080->8080/tcp                                               
+      34 +                                                               
+      35 +{"status":"ok"}                                                
+      36 +                                                               
+      37 +api-1  | No pending migrations to apply.                       
+      38 +api-1  | {"msg":"seed aplicado","users":4,"rooms":5,"roomsCreat
+         +ed":false}                                                     
+      39 + usuarios | salas                                              
+      40 +----------+-------                                             
+      41 +        4 |     5                                              
+      42 +                                                               
+      43 +Test Suites: 14 passed, 14 total                               
+      44 +Tests:       159 passed, 159 total                             
+      45 +                                                               
+      46 +Test Suites: 7 passed, 7 total                                 
+      47 +Tests:       78 passed, 78 total                               
+      48 +```                                                            
+      49 +Flujo de humo (CA7 de T11): login de empleado1 → reservar (201)
+         + → aparece en Mis reservas → cancelar (200,                    
+      50 +`CANCELLED`) → ADMIN crea una sala (201); un EMPLOYEE que inten
+         +ta crear una sala recibe 403.                                  
+      51 +                                                               
+      52  ### Ensayo de reconstrucción (instrucción única del README)
+      53  | Campo | Resultado |
+      54  |---|---|
+      17 -| Fecha / agente | <AAAA-MM-DD 15:10> · Claude Code, sesión nue
+         -va sin contexto previo, sobre un clon con solo `docs/`, `CLAUDE
+         -.md` y `README.md` |                                           
+      18 -| ¿Reconstruyó solo? | Total:Si|                               
+      55 +| Fecha / agente | <completar: fecha y hora reales (registrarlo
+         + también con `/bitacora`)> · Claude Code, sesión nueva sin cont
+         +exto previo, sobre un clon con solo `docs/`, `CLAUDE.md` y `REA
+         +DME.md` |                                                      
+      56 +| ¿Reconstruyó solo? | Total: Sí |                             
+      57  
+      20 -                                                               
+      58  ## 2. Qué quedó
+      59  | Orden | ID | Título | Dep. | Est. | Recortable | Estado | Doc
+           |
+      60  |---|---|---|---|---|---|---|---|
+     ...
+       79  | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10
+           ](tareas/T10.md) |
+       80  | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha |
+            [T10a](tareas/T10a.md) |
+       81  | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | 
+           [T10b](tareas/T10b.md) |
+       82 +| 23 | T11 | README final y verificación desde un clon limpio 
+          +| todas | S | No | Hecha | [T11](tareas/T11.md) |             
+       83  
+       84 +**Pruebas que respaldan lo entregado** (nombres con la regla, 
+          +`it('RN-xx · P-xx · …')`):                                    
+       85 +- Choques y concurrencia (RN-01, P-01 a P-04): `test/integrati
+          +on/bookings-conflicts.int-spec.ts`, 20 `POST` simultáneos al m
+          +ismo hueco → 1 × 201 y 19 × 409.                              
+       86 +- Reglas de reserva (RN-02 a RN-13, P-05 a P-09): `test/bookin
+          +gs-rules.spec.ts`, `test/bookings.spec.ts` y `test/integration
+          +/bookings-rules.int-spec.ts`.                                 
+       87 +- Desactivación y cierres con cancelación en cascada y carrera
+          +s (RN-14 a RN-16, RN-24, P-10, P-11, R-01, R-02): `users-deact
+          +ivation.int-spec.ts` y `closures.int-spec.ts`.                
+       88 +- Matriz de permisos (RN-21, P-14): `rbac.int-spec.ts`. Audito
+          +ría (D-05, RN-25, P-12, P-15): `audit.int-spec.ts`. Formato de
+          + error y request ID (D-06, P-17): `errors.int-spec.ts`.       
+       89 +- Seed idempotente (P-18): dos reinicios de `api` en el clon l
+          +impio (§1).                                                   
+       90 +                                                              
+       91  ## 3. Qué no quedó (y por qué)
+       92  | Elemento | Motivo | Qué haría falta |
+       93  |---|---|---|
+       49 -| Tarea T10c | Falta de tiempo: T06a era recortable | Diseño d
+          -e la vista ~30 min |                                          
+       50 -| Vista móvil | Fuera de alcance  | Ajustar la grilla de dispo
+          -nibilidad a una columna por día |                             
+       51 -| Reservas recurrentes y notificaciones | Fuera de alcance | I
+          -mplementar modelo de recurrencia y libreria de notificaciones 
+          -|                                                             
+       94 +| Pantalla de auditoría (T10c, `/admin/audit`) | Falta de tiem
+          +po: la persona la recortó (D-34, B-170); era recortable. La au
+          +ditoría sí se escribe en cada escritura y se consulta con `POS
+          +T /api/audit-logs/search` (solo ADMIN); el enlace muestra un a
+          +viso de sección recortada (B-174) | `features/audit/` con filt
+          +ros, tabla paginada y `useAuditSearch` sobre el endpoint exist
+          +ente (estimada M, ≤ 30 min, en el backlog) |                  
+       95 +| Vista móvil | Fuera de alcance | Ajustar la grilla de dispon
+          +ibilidad a una columna por día |                              
+       96 +| Reservas recurrentes y notificaciones | Fuera de alcance (D-
+          +22) | Implementar modelo de recurrencia y librería de notifica
+          +ciones |                                                      
+       97 +| Cancelar reservas futuras de una sala inactiva desde la UI |
+          + Pendiente de decisión: la agenda no muestra salas inactivas (
+          +D-14), así que esas reservas no se ven (T10) | Decidir la regl
+          +a; por ejemplo, cancelarlas al desactivar la sala, como RN-15 
+          +con los usuarios |                                            
+       98 +| Impedir que un ADMIN se quite su propio rol | Pendiente de d
+          +ecisión: el spec solo prohíbe desactivarse (RN-26); la API y l
+          +a pantalla lo permiten (T05a, T10a) | Agregar la regla al spec
+          + si se quiere y validarla en `UsersAdminService` |            
+       99  
+      100  ## 4. Qué falló en mi plan
+       54 -| # | Qué pasó | Impacto | Causa raíz |                       
+       55 -|---|---|---|---|                                             
+       56 -| 1 | Mi maquina tuvo un reinicio forzoso | Obligo al agente a
+          - analizar donde se habia quedado | Problemas con un disco loca
+          -l |                                                           
+       57 -| 2 | El modo automatico para cambiar de plan a ejecucion fall
+          -o (2 de 10 corridas) | Unos minutos de diagnóstico | Sospecho 
+          -que fue un problema interno de Claude luego funciono correctam
+          -ente |                                                        
+       58 -| 3 | El primer `docker compose up` en Windows falló: `entrypo
+          -int.sh: not found` | 15 min | Saltos de línea CRLF; `.gitattri
+          -butes` estaba en `CLAUDE.md` pero no en los criterios de acept
+          -ación de T01 |                                                
+      101 +| # | Qué pasó | Impacto | Causa raíz | Ref. bitácora |       
+      102 +|---|---|---|---|---|                                         
+      103 +| 1 | Mi máquina tuvo un reinicio forzoso a mitad de T08a | Ob
+          +ligó al agente a analizar dónde se había quedado (código sin c
+          +ommit); T08a tomó 38 min, la única tarea que superó su estimac
+          +ión (M, ≤ 30 min) | Problemas con un disco local | B-140 · `do
+          +cs/sesiones/2026-11-16-011140-T08-T09-fallasEnMaquinaReinicio.
+          +txt` |                                                        
+      104 +| 2 | El verificador de permisos del modo automático dejó de d
+          +ar veredicto varias veces seguidas durante la verificación de 
+          +T10a | El agente se detuvo para no agotar el límite de intento
+          +s; se retomó en una pestaña nueva y algunos pasos con `curl` s
+          +e hicieron desde la página | Falla transitoria del verificador
+          + del modo automático (externa al proyecto) | B-159 |          
+      105 +| 3 | En T05, 20 reservas simultáneas dieron 11 × 500 (`P2028`
+          +) en vez de 409 | Bloqueante hasta corregirlo; las pruebas con
+          + repositorios en memoria pasaban | Una lectura dentro de la tr
+          +ansacción sin `ctx` usaba otra conexión del pool y lo agotaba;
+          + los dobles en memoria no detectan pool, locks ni concurrencia
+          + | B-74 |                                                     
+      106 +| 4 | Un `PATCH` desde Git Bash con "SALA COPÁN" renombró una 
+          +sala del seed a `SALA COP�N` | Dato del seed dañado durante la
+          + verificación de T04 | Git Bash en Windows no envía UTF-8; la 
+          +API aceptaba cuerpos con bytes inválidos (desde entonces respo
+          +nde 400) | B-66 |                                             
+      107 +| 5 | Tres clics seguidos en "Reservar" mandaron 3 `POST` | Do
+          +ble envío en el formulario de T08a | `handleSubmit` de React H
+          +ook Form valida de forma asíncrona e `isPending` aún era `fals
+          +e`; se resolvió con un candado síncrono | B-141 |             
+      108 +| 6 | En el clon limpio de T11 las pruebas unitarias fallaron 
+          +en 9 de 14 suites | Se detectó recién en la última tarea | El 
+          +cliente Prisma generado no se versiona y en la copia de trabaj
+          +o ya existía; se agregó `pretest` | B-172 |                   
+      109 +| 7 | Herramientas en Windows: un script de Python cortó un ar
+          +chivo por la codificación de stdin y un `git add -A` coló un `
+          +.bak` del editor en un commit | Commits corregidos después | C
+          +odificación de la consola en Windows y agregar archivos sin re
+          +visarlos; desde entonces se agrega por ruta | B-52, B-54 |    
+      110  
+      111  ## 5. Qué cambiaría si lo hiciera de nuevo
+       61 -- Dividir toda tarea que toque más de una capa del backend; ni
+          -nguna L con dominio y persistencia juntos.                    
+       62 -- Pasar las reglas de `CLAUDE.md` que se pueden verificar (CRL
+          -F, puertos, dependencias) a criterios de aceptación explícitos
+          - de T01, con un comando que falle si no se cumplen.           
+       63 -- Escribir el test de concurrencia en T05 y no en T06.        
+       64 -- Hacer el ensayo de reconstrucción a mitad del proyecto (tras
+          - T06), no solo al final, para detectar huecos del spec antes d
+          -e la UI.                                                      
+       65 -- Definir en el spec qué se muestra en la UI para los días no 
+          -hábiles, en lugar de dejarlo implícito en el diseño de Stitch.
+      112 +> Propuesta del agente a partir de la bitácora; la persona la 
+          +revisa y ajusta.                                              
+      113  
+       67 -## 6. Evidencias                                              
+       68 -- En la seccion del que quedo, esta referenciado cada document
+          -o de la tarea en el cual describen su respectiva DoD.         
+      114 +- Probar el clon limpio (build sin caché, pruebas unitarias e 
+          +integración) desde T01 y repetirlo a mitad del proyecto, no so
+          +lo en T11: el fallo de B-172 estuvo oculto desde T02.         
+      115 +- Exigir desde la primera escritura (T04/T05) un caso contra P
+          +ostgreSQL real con ráfaga de peticiones simultáneas: los doble
+          +s en memoria no mostraron el agotamiento del pool (B-74).     
+      116 +- Fijar en `CLAUDE.md`, antes de la primera verificación manua
+          +l, el entorno de la máquina (Git Bash sin UTF-8, `jq` no insta
+          +lado, npm 12): varias fallas vinieron de ahí (B-52, B-66).    
+      117 +- Poner en los criterios de aceptación de cada formulario de U
+          +I el doble envío y la medición en anchos fijos (360 a 1920 px)
+          +: se encontraron en la verificación y no en el diseño de la ta
+          +rea (B-133, B-141, B-153).                                    
+      118 +- Hacer commits intermedios y exportar la sesión con más frecu
+          +encia para recuperarse de una falla de la máquina (B-140).    
+      119 +- Medir también el tiempo de revisión: la ejecución del agente
+          + sumó 4 h 32 min contra 12,75 h estimadas, pero la bitácora no
+          + muestra cuánto tomó revisar cada tarea.                      
+      120 +                                                              
+      121 +## 6. Métricas                                                
+      122 +| Métrica | Valor |                                           
+      123 +|---|---|                                                     
+      124 +| Tareas planificadas / terminadas | 23 / 22 (T10c recortada, 
+          +D-34) |                                                       
+      125 +| Tiempo de ejecución del agente | 4 h 32 min (suma de inicio–
+          +fin por tarea en la bitácora); estimado en el backlog: ≈ 12,75
+          + h. Solo T08a superó su estimación (B-140) |                  
+      126 +| Periodo | Planificación desde 2026-11-14 20:52 (B-01); ejecu
+          +ción de 2026-11-15 14:02 (inicio de T01) a 2026-11-16 02:20 (f
+          +in de T11) |                                                  
+      127 +| Entradas de bitácora | 177 (B-01 a B-177): 82 AGENTE, 36 COR
+          +RECCIÓN, 26 REVISIÓN, 20 ERROR, 9 DECISIÓN, 3 MANUAL, 1 HITO |
+      128 +| Decisiones registradas | 34 (D-01 a D-34) |                 
+      129 +| Sesiones del agente exportadas | 10 (en `docs/sesiones/`) | 
+      130 +| Intervenciones manuales en código | 0 (§8 de los 22 document
+          +os de tareas: "Código tocado a mano: No"). Las 3 entradas MANU
+          +AL son de diseño con Stitch y redacción del backlog (B-08, B-1
+          +4, B-15) |                                                    
+      131 +| Pruebas | Unitarias: 159 pasan / 0 fallan (14 suites). Integ
+          +ración contra PostgreSQL: 78 pasan / 0 fallan (7 suites). Una 
+          +corrida intermitente con fallos no reproducida (B-172) |      
+      132 +                                                              
+      133 +## 7. Evidencias                                              
+      134 +- En la sección "Qué quedó" está referenciado el documento de 
+          +cada tarea, con su verificación real (§5) y su revisión (§8). 
+      135 +- La bitácora (`docs/03-bitacora.md`) registra con hora real e
+          +l inicio y el fin de cada tarea, los errores y las revisiones.
+      136 +- Las decisiones están en `docs/00-decisiones.md` y lo aprendi
+          +do en cada revisión quedó fijado en `CLAUDE.md`.              
+
+● Compruebo que las referencias a pruebas existan como las cito.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Completé docs/04-cierre.md con la evidencia real. No hice commit ni agregué
+  una fila en la bitácora, porque el documento es tuyo; dime si quieres
+  cualquiera de las dos cosas.
+
+  Lo que tienes que completar tú: en el "Ensayo de reconstrucción" conservé tu
+  "Total: Sí", pero falta la fecha y hora reales. Dejé un <completar> porque no
+  hay registro en la bitácora ni en ningún otro sitio. Conviene registrarlo
+  también con /bitacora.
+
+  Qué cambié respecto a tu borrador:
+  - §1:
+    - La evidencia del clon limpio ahora es la salida real de T11: build sin
+      caché, servicios sanos, health, seed sin duplicar y las pruebas.
+    - Quité la captura docs/evidencia/compose-ps.png, que no existe.
+    - La fila 2 dice "22 de 22 tareas ejecutadas con su documento" y explica que
+      T10c se recortó.
+  - §2: agregué T11 y una lista de las pruebas que respaldan cada grupo de
+    reglas. Comprobé que los archivos y los nombres que cito existen.
+  - §3:
+    - Corregí el motivo de T10c: lo recortaste tú por falta de tiempo (D-34);
+      antes decía "T06a era recortable".
+    - Agregué las dos decisiones que siguen abiertas: las reservas futuras de
+      una sala inactiva no se pueden cancelar desde la pantalla, y un ADMIN
+      puede quitarse su propio rol.
+  - §4:
+    - Tu fila del reinicio queda igual, con su referencia (B-140) y el impacto
+      real: T08a fue la única tarea que superó su estimación.
+    - La fila del modo automático ahora describe B-159 tal como ocurrió.
+    - Quité la fila del CRLF, que venía del ejemplo y no pasó.
+    - Agregué fallas reales de la bitácora: B-74, B-66, B-141, B-172 y
+      B-52/B-54.
+  - §5: la reescribí con lecciones que salen de la bitácora y la marqué como
+    propuesta para que la revises y ajustes.
+  - §6 Métricas (nueva):
+    - El agente trabajó 4 h 32 min en total, contra unas 12,75 h estimadas.
+    - La bitácora tiene 177 entradas y hay 34 decisiones.
+    - No se tocó código a mano.
+    - Pasan 159 pruebas unitarias y 78 de integración.
+
+  Tu texto de "Evidencias" quedó como §7, con dos puntos agregados.
+
+✻ Baked for 2m 13s · done 2:33
+
+> haz el commit de 04-cierre.md                                                 
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hice el commit 9466bc8 con solo docs/04-cierre.md, con el mensaje "Cierre:
+  reporte de cierre con la DoD y su evidencia".
+
+  - Bitácora: no agregué fila. Si quieres registrar el cierre, puedes hacerlo
+    con /bitacora.
+  - Ensayo de reconstrucción: la fecha y la hora siguen con <completar>; faltan
+    las reales.
+  - Sin versionar: queda solo la sesión exportada
+    docs/sesiones/2026-11-16-020145-….txt.
+
+✻ Cooked for 6s · done 2:34
+
+> /bitacora HITO Cierre del proyecto, reporte 04-cierre.md completo             
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && T=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-10 && echo "|
+      B-178 | $T | Yo |…)
+  ⎿  | B-177 |
+     | B-178 | 2026-11-16 02:34 | Yo | 4-Cierre | HITO | Cierre del proyect
+     o, reporte 04-cierre.md completo | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      179  | B-175 | 2026-11-16 02:27 | Yo | 3-Ejecutar | REVISIÓN | T11 
+           revisada, cumple la DoD | — | — |
+      180  | B-176 | 2026-11-16 02:28 | Agente | 4-Cierre | AGENTE | A pe
+           dido de la persona, T11 pasa a Hecha en el resumen y en la fic
+           ha de 02-backlog.md (y en el encabezado de docs/tareas/T11.md)
+           , tras la revisión de B-175 | T11 Hecha; todas las tareas del 
+           backlog quedan Hechas salvo T10c, Recortada (D-34) | docs/02-b
+           acklog.md, B-175 |
+      181  | B-177 | 2026-11-16 02:29 | Agente | 4-Cierre | CORRECCIÓN | 
+           A pedido de la persona, CLAUDE.md (Dependencias) agrega la sub
+           sección «Cierre y clon limpio fijados en T11»: el README como 
+           instrucción única; el `pretest` con `prisma generate` (B-172);
+            cómo verificar un clon limpio (scratchpad, `down -v`, `build 
+           --no-cache`, esperar `healthy` con `docker inspect`); el proye
+           cto compose compartido `salalibre` entre clon y copia de traba
+           jo; scripts de instalación bloqueados por npm 12; el fallo int
+           ermitente de las unitarias; el estado de los documentos de tar
+           eas y las rutas `src/api`/`src/web` (B-174); archivos de la pe
+           rsona fuera de los commits y datos de la base tras T11 | Solo 
+           documentación; sin cambios de código | CLAUDE.md, docs/tareas/
+           T11.md §6 y §7, B-172, B-174 |
+      182 +| B-178 | 2026-11-16 02:34 | Yo | 4-Cierre | HITO | Cierre del
+          + proyecto, reporte 04-cierre.md completo | — | — |            
+
+● Fila agregada al final de docs/03-bitacora.md, sin commit:
+
+  | B-178 | 2026-11-16 02:34 | Yo | 4-Cierre | HITO | Cierre del proyecto, 
+  reporte 04-cierre.md completo | — | — |
+
+✻ Crunched for 5s · done 2:34
+
+> haz el commit de la bitácora                                                  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hice el commit de la bitácora con la fila B-178: 65d6d07 Cierre: bitácora con 
+  el hito de cierre (B-178).
+
+  Solo queda sin versionar la sesión exportada
+  docs/sesiones/2026-11-16-020145-….txt; dime si quieres incluirla en un commit.
+
+✻ Churned for 5s · done 2:34
