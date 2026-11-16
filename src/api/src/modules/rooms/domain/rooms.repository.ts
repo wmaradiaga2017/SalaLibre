@@ -8,7 +8,8 @@ import type { NewRoom, Room, RoomChanges } from './room';
 export interface RoomsRepository {
   /** Salas ordenadas por `name`; con `onlyActive`, solo las de `isActive = true`. */
   list(options: { onlyActive: boolean }): Promise<Room[]>;
-  findById(id: string): Promise<Room | null>;
+  /** Con `ctx`, lee dentro de esa transacción (misma conexión, B-74). */
+  findById(id: string, ctx?: TransactionContext): Promise<Room | null>;
   create(ctx: TransactionContext, room: NewRoom): Promise<Room>;
   update(ctx: TransactionContext, id: string, changes: RoomChanges): Promise<Room>;
 }

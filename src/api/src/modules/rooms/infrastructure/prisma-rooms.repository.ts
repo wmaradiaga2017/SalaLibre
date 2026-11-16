@@ -23,8 +23,9 @@ export class PrismaRoomsRepository implements RoomsRepository {
     });
   }
 
-  async findById(id: string): Promise<Room | null> {
-    return this.prisma.room.findUnique({ where: { id }, select: SELECT });
+  async findById(id: string, ctx?: TransactionContext): Promise<Room | null> {
+    const client = ctx ? prismaTx(ctx) : this.prisma;
+    return client.room.findUnique({ where: { id }, select: SELECT });
   }
 
   async create(ctx: TransactionContext, room: NewRoom): Promise<Room> {

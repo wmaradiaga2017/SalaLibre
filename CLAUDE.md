@@ -199,3 +199,39 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   rechaza con 400. Antes de un `PATCH` sobre datos del seed, confirmar el id y revertir al terminar.
 - **`jq` no está instalado** en la máquina de desarrollo: en las verificaciones se usa `node -e` para leer el JSON y se
   anota en `docs/tareas/Txx.md`.
+
+### Reservas, tiempo y transacciones fijados en T05 (ver `docs/tareas/T05.md` §5, §6 y §7; B-74)
+- **Parámetros de spec §5:** `loadBusinessConfig()` (`common/config/business-config.ts`) los tipa y valida al arrancar
+  (zona IANA, `HH:MM`, enteros > 0, apertura < cierre). Se inyectan con `@Inject(BUSINESS_CONFIG)`; nunca leer
+  `process.env.BUSINESS_*` ni `BOOKING_*` en otro lugar. Sus valores por defecto son los del spec.
+- **"Ahora" siempre del `Clock`** (`@Inject(CLOCK)`, `common/time/clock.ts`), nunca `new Date()` en services ni en el
+  dominio: las pruebas lo fijan con `overrides: [{ token: CLOCK, value: { now: () => … } }]`.
+- **Zona horaria con `Intl`** (`common/time/zoned-time.ts`: `toLocal`, `localDate`, `startOfLocalDay`, `addDays`,
+  `isCalendarDate`), sin librerías ni desfases fijos. Toda fecha "del día" (cierres, auditoría, "hoy") se calcula en
+  `BUSINESS_TZ` con estas funciones.
+- **Choques (`23P01`):** los traduce `HttpExceptionFilter` con `isExclusionViolation()`. Forma real con Prisma 7.10.1 +
+  adapter-pg: `PrismaClientKnownRequestError` con `code: "P2039"` y `meta.driverAdapterError.cause.originalCode === "23P01"`
+  (no es `PrismaClientUnknownRequestError`). No duplicar la restricción en código ni hacer una consulta previa de choque.
+- **Dentro de `TransactionRunner.run(async (ctx) => …)`, toda llamada a una dependencia recibe el `ctx`**, también las
+  lecturas: `findById(id, ctx)`. Una lectura sin `ctx` usa otra conexión del pool (10) y, con muchas transacciones
+  esperando un lock, lo agota: todas vencen a los 5 s con 500 `P2028` (B-74, CA10 de T05). Los repositorios que se lean
+  dentro de una transacción aceptan `ctx?` y usan `ctx ? prismaTx(ctx) : this.prisma`.
+- **Locks (spec §11):** siempre en el orden `date:<AAAA-MM-DD local>` → `user:<uuid>`, para no generar bloqueos
+  cruzados. T05b toma solo `date:` y T05a solo `user:`. Después del lock por usuario se relee el usuario con `ctx`.
+- **`BookingsService` es la API del módulo de reservas** para T05a (cancelar al desactivar) y T05b (cancelar al cerrar
+  un día). Mientras no exista el módulo de cierres, `PrismaBookingsRepository.isDateClosed` lee `closures` directamente
+  dentro de la transacción; T05b puede pasarlo a `ClosuresService`.
+- **Contrato de `Booking`:** `cancelledBy` es `{ id, name }` como `owner`; `title` se guarda recortado; las fechas del
+  body exigen zona (`Z` o `±hh:mm`), sin zona → 400.
+- **Controles automáticos (no quitarlos ni saltarlos):**
+  - `test/transactions.spec.ts` recorre `src/` y falla si dentro de un `.run(async (ctx) => …)` hay una llamada
+    `this.<dep>.<método>(…)` sin el `ctx` (salvo `logger`). Si una dependencia nueva no toca la base, se agrega a
+    `WITHOUT_DB` con su motivo.
+  - Las pruebas con repositorios en memoria **no detectan** problemas de pool, locks ni concurrencia: toda escritura
+    nueva se verifica también contra PostgreSQL con una ráfaga de peticiones simultáneas (20 o más) y se revisa que el
+    log no tenga errores `"level":50`.
+- **Pruebas de reservas:** `test/support/in-memory-bookings.repository.ts` emula `bookings_no_overlap` lanzando el error
+  con la forma real de Prisma (`exclusionViolation()`); `test/bookings-service.spec.ts` comprueba con dobles el orden
+  `begin → lock date → lock user → lecturas con ctx → INSERT → end`.
+- **Verificación manual:** no usar `tee /dev/stderr` para capturar ids (mezcla la salida); usar un script que imprima en
+  orden y que al final cancele las reservas creadas (las canceladas quedan como historial).
