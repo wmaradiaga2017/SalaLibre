@@ -75,7 +75,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 17 | T08a | Reservar desde la agenda: formulario modal y manejo del 409 | T08 | M | No | Hecha | [T08a](tareas/T08a.md) |
 | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T09.md) |
 | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10](tareas/T10.md) |
-| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | En revisión | [T10a](tareas/T10a.md) |
+| 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | [T10a](tareas/T10a.md) |
 | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Pendiente | |
 | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, T07 | M | **Sí** | Pendiente | |
 | 23 | T11 | README final y verificación desde un clon limpio | todas | S | No | Pendiente | |
@@ -968,7 +968,7 @@ docker compose up -d --build
 | Dependencias | T05a, T07 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: la genera la API (`USER_CREATED`, `USER_UPDATED`, `USER_PASSWORD_RESET` y las cancelaciones, T06a). OWASP A07: ninguna contraseña se muestra ni se guarda tras enviarla |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/users/`: `AdminUsersPage`, `UserFormModal`, `ResetPasswordModal`, hooks.

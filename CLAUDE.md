@@ -531,3 +531,31 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Datos que dejó la verificación de T10** en la base de desarrollo: "Sala Prueba T10" **inactiva** y la reserva
   "T10 reserva futura" cancelada. "Sala Prueba" (inactiva) ya existía antes. No hay `DELETE` de salas: en verificaciones
   nuevas, usar nombres únicos y dejarlas inactivas al terminar para no agregar columnas a la agenda.
+
+### Admin de usuarios fijado en T10a (ver `docs/tareas/T10a.md` §6 y §7; B-159)
+- **`features/users/` es dueño del usuario en el frontend:** `types.ts` (`User`, `Role`, `ROLES`, `ROLE_LABELS`,
+  `USER_LIMITS` igual al API); `features/auth/types.ts` solo los reexporta para la sesión. No volver a declararlos en auth.
+- **Consultas y mutaciones en `users-queries.ts`** (`userKeys`, `useUsers`, `useCreateUser`, `useUpdateUser`,
+  `useResetPassword`). Toda mutación invalida `userKeys.all`; desactivar invalida además `agendaKeys.bookings` (cascada
+  de RN-15, como pide la regla de T09); si el ADMIN se edita a sí mismo, se recarga `ME_QUERY_KEY` para que la sesión
+  tenga el rol de la base. T10b (cierres que cancelan reservas) invalida `agendaKeys.bookings` igual.
+- **Mutaciones con contraseña** (alta y restablecer): `gcTime: 0` en el hook y `reset()` de la mutación en `onSettled`
+  del `mutate`; el modal se desmonta al terminar y los avisos nunca muestran la contraseña. Campos con `PasswordField`
+  y `autoComplete="new-password"`. La auditoría de `USER_PASSWORD_RESET` va con `data` vacío.
+- **Edición de usuario:** solo nombre y rol; el correo se muestra deshabilitado. El correo del alta no se recorta ni se
+  pasa a minúsculas en el cliente (lo normaliza el API, RN-23). Mismo patrón de formulario que T10 (modal de 640 px,
+  candado, errores por campo: `EMAIL_TAKEN` → `email`; editar sin cambios no llama al API). Restablecer usa el modal de
+  480 px.
+- **Acción propia prohibida (RN-26):** en la fila del ADMIN con sesión, "Desactivar" va `disabled` con la etiqueta "No
+  puedes desactivar tu propia cuenta"; un error del API al activar/desactivar se muestra en un aviso con su `requestId`.
+  Para probar el 422 desde la pantalla se simula la respuesta con `window.fetch` y se confirma aparte contra el API real.
+- **Avisos (toasts) en las verificaciones:** duran 4 s (éxito) u 8 s (error), así que se capturan con un
+  `MutationObserver` sobre las regiones `aria-live` instalado antes de la acción; leer la página después no alcanza.
+- **Si el verificador de permisos del modo automático deja de dar veredicto** varias veces seguidas (B-159), detenerse
+  y avisar a la persona antes de llegar al límite de intentos; al retomar, pedir de nuevo `tabs_context_mcp`.
+- **Credenciales de prueba generadas:** en un archivo del scratchpad, nunca en el repositorio, el chat ni
+  `docs/tareas/Txx.md`.
+- **Pendiente de decisión de la persona** (sigue desde T05a): un ADMIN puede quitarse el rol de ADMIN; la pantalla lo
+  permite, como el API.
+- **Datos que dejó la verificación de T10a** en la base de desarrollo: `t10a.prueba.mwiy29he@salalibre.local` ("Prueba
+  Dos Editada", Empleado) **inactivo** y su reserva cancelada. Bundle del frontend: 517 kB (aviso de Vite).
