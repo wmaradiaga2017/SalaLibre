@@ -64,7 +64,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tareas/T04.md) |
 | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hecha | [T05](tareas/T05.md) |
 | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | Hecha | [T05a](tareas/T05a.md) |
-| 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | Pendiente | |
+| 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | En revisión | [T05b](tareas/T05b.md) |
 | 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | Pendiente | |
 | 11 | T06a | Auditoría: `AuditService` transaccional en todas las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** | Pendiente | |
 | 12 | T07a | Sistema visual base (tokens, componentes de `shared/ui`) | T01 | M | No | Pendiente | |
@@ -487,7 +487,7 @@ npm --prefix src/api test -- users && npm --prefix src/api run lint
 | Dependencias | T05 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: `GET` autenticado; `POST` y `DELETE` solo ADMIN. Auditoría: `CLOSURE_CREATED`, `CLOSURE_DELETED` y `BOOKING_CANCELLED` por cada reserva cancelada, que se conectan en T06a. OWASP A01; A04: lock por fecha |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/closures/**` (controller, service, dto, repositorio de interfaz + Prisma).

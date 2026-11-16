@@ -90,6 +90,21 @@ export class InMemoryBookingsRepository implements BookingsRepository {
     return future.map((b) => b.id);
   }
 
+  async cancelConfirmedBetween(
+    ctx: TransactionContext,
+    from: Date,
+    to: Date,
+    cancelledById: string,
+    at: Date,
+  ): Promise<string[]> {
+    assertTx(ctx);
+    const day = this.bookings.filter((b) => b.status === 'CONFIRMED' && b.startAt >= from && b.startAt < to);
+    for (const b of day) {
+      Object.assign(b, { status: 'CANCELLED', cancelledAt: at, cancelledById, cancelledByName: this.userName(cancelledById) });
+    }
+    return day.map((b) => b.id);
+  }
+
   private sorted(list: BookingRecord[]): BookingRecord[] {
     return list
       .map((b) => ({ ...b }))

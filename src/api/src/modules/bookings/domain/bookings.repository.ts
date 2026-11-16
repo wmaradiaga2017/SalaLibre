@@ -25,6 +25,11 @@ export interface BookingsRepository {
    * ya empezaron no cambian). Devuelve los ids cancelados, para auditar cada uno en T06a.
    */
   cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string, at: Date): Promise<string[]>;
+  /**
+   * RN-16: cancela en un solo UPDATE las reservas `CONFIRMED` de todas las salas con `startAt` en `[from, to)` (un día
+   * local). `at` es el instante de la cancelación. Devuelve los ids cancelados, para auditar cada uno en T06a.
+   */
+  cancelConfirmedBetween(ctx: TransactionContext, from: Date, to: Date, cancelledById: string, at: Date): Promise<string[]>;
 }
 
 export const BOOKINGS_REPOSITORY = Symbol('BOOKINGS_REPOSITORY');

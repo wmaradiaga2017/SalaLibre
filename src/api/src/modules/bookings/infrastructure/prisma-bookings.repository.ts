@@ -83,7 +83,8 @@ export class PrismaBookingsRepository implements BookingsRepository {
   }
 
   /**
-   * RN-10. Lee la tabla `closures` directamente: el módulo de cierres llega en T05b. La consulta corre en la misma
+   * RN-10. Lee la tabla `closures` directamente y no a través de `ClosuresService`: el módulo de cierres importa este
+   * (cancelación en cascada, RN-16) y usar su service crearía un ciclo (T05b). La consulta corre en la misma
    * transacción que el INSERT y después del lock por fecha, que también toma la creación de cierres (spec §11).
    */
   async isDateClosed(ctx: TransactionContext, date: string): Promise<boolean> {
@@ -115,6 +116,21 @@ export class PrismaBookingsRepository implements BookingsRepository {
   async cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string, at: Date): Promise<string[]> {
     const rows = await prismaTx(ctx).booking.updateManyAndReturn({
       where: { userId, status: 'CONFIRMED', startAt: { gt: at } },
+      data: { status: 'CANCELLED', cancelledAt: at, cancelledById },
+      select: { id: true },
+    });
+    return rows.map((r) => r.id);
+  }
+
+  async cancelConfirmedBetween(
+    ctx: TransactionContext,
+    from: Date,
+    to: Date,
+    cancelledById: string,
+    at: Date,
+  ): Promise<string[]> {
+    const rows = await prismaTx(ctx).booking.updateManyAndReturn({
+      where: { status: 'CONFIRMED', startAt: { gte: from, lt: to } },
       data: { status: 'CANCELLED', cancelledAt: at, cancelledById },
       select: { id: true },
     });

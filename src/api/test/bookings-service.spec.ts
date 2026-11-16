@@ -71,6 +71,7 @@ function setup(options: { closed?: boolean; userActive?: boolean; cancelReturnsN
       return options.cancelReturnsNull ? null : { ...record({ ...VALID, userId: EMPLOYEE.id }), status: 'CANCELLED' };
     },
     cancelFutureByUser: async () => [],
+    cancelConfirmedBetween: async () => [],
   };
   const rooms = {
     findById: async (id: string) => {

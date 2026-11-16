@@ -4,6 +4,7 @@ import { TransactionModule } from './common/transaction/transaction.module';
 import { HealthModule } from './health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
+import { ClosuresModule } from './modules/closures/closures.module';
 import { RoomsModule } from './modules/rooms/rooms.module';
 import { UsersAdminModule } from './modules/users/users-admin.module';
 import { UsersModule } from './modules/users/users.module';
@@ -20,6 +21,7 @@ import { PrismaModule } from './prisma/prisma.module';
     RoomsModule,
     BookingsModule,
     UsersAdminModule,
+    ClosuresModule,
   ],
 })
 export class AppModule {}

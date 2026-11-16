@@ -128,4 +128,17 @@ export class BookingsService {
     // T06a agrega aquí la auditoría BOOKING_CANCELLED por cada id, dentro de la misma transacción.
     return ids;
   }
+
+  /**
+   * RN-16 (D-23): cancela las reservas `CONFIRMED` del día local `date` (`AAAA-MM-DD` en `BUSINESS_TZ`), de todas las
+   * salas. La llama el módulo de cierres dentro de su transacción, después de tomar el lock `date:<AAAA-MM-DD>`
+   * (spec §11), así ninguna reserva nueva de ese día puede colarse. Devuelve los ids cancelados.
+   */
+  async cancelConfirmedByDate(ctx: TransactionContext, date: string, cancelledById: string): Promise<string[]> {
+    const from = startOfLocalDay(date, this.config.timeZone);
+    const to = startOfLocalDay(addDays(date, 1), this.config.timeZone);
+    const ids = await this.bookings.cancelConfirmedBetween(ctx, from, to, cancelledById, this.clock.now());
+    // T06a agrega aquí la auditoría BOOKING_CANCELLED por cada id, dentro de la misma transacción.
+    return ids;
+  }
 }
