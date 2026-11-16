@@ -78,7 +78,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | [T10a](tareas/T10a.md) |
 | 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [T10b](tareas/T10b.md) |
 | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, T07 | M | **Sí** | Recortada (D-34) | |
-| 23 | T11 | README final y verificación desde un clon limpio | todas | S | No | En revisión | [T11](tareas/T11.md) |
+| 23 | T11 | README final y verificación desde un clon limpio | todas | S | No | Hecha | [T11](tareas/T11.md) |
 
 **Esfuerzo total estimado:** 4 L + 16 M + 3 S ≈ 12,75 h de ejecución del agente, sin contar la revisión. Si se recortan T06a y T10c se ahorra ≈ 1 h, pero se pierde O4 (auditoría), P-12, P-15, F-08 y parte de D-05: habría que declararlo en `04-cierre.md`. Recortar T07c ahorra ≈ 1 h más y solo afecta a lo visual: el login funcional queda en T07.
 
@@ -1090,7 +1090,7 @@ curl -s -b /tmp/admin.txt -H "$H" -d '{"page":1,"pageSize":20}' $BASE/audit-logs
 | Dependencias | T01 a T10c (si T06a y T10c se recortaron, se declara) |
 | Estimación | S |
 | Seguridad / auditoría | Roles: no aplica. Auditoría: no aplica. Verifica que el repositorio solo contiene valores por defecto de desarrollo, sin secretos reales |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `README.md`: qué es SalaLibre, la instrucción `docker compose up`, la URL, las credenciales del seed, cómo correr las pruebas, el mapa de `docs/` y cómo se trabajó con el agente.
