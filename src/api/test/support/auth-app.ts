@@ -1,3 +1,4 @@
+import type { Type } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { Writable } from 'node:stream';
@@ -10,7 +11,7 @@ import { USERS_REPOSITORY } from '../../src/modules/users/domain/users.repositor
 import { AuthTestController } from './auth-test.controller';
 import { InMemoryTransactionRunner, type InMemoryUsersRepository } from './in-memory-users.repository';
 
-/** Utilidades compartidas por las pruebas HTTP de auth (T03, T03a), sin base de datos. */
+/** Utilidades compartidas por las pruebas HTTP (auth y módulos de negocio), sin base de datos. */
 
 export interface ErrorResponse {
   error: { code: string; message: string; requestId: string };
@@ -39,19 +40,33 @@ export function capture() {
   return { stream, text: () => chunks.join('') };
 }
 
-export async function createApp(
-  repo: InMemoryUsersRepository,
-  options: { logStream?: Writable; runner?: InMemoryTransactionRunner } = {},
-) {
-  const moduleRef = await Test.createTestingModule({
-    imports: [CommonModule.forRoot({ logStream: options.logStream ?? silent() }), TransactionModule, AuthModule],
+export interface CreateAppOptions {
+  logStream?: Writable;
+  runner?: InMemoryTransactionRunner;
+  /** Módulos de negocio adicionales (por ejemplo `RoomsModule`). */
+  modules?: Type[];
+  /** Reemplazos de providers por token (repositorios en memoria). */
+  overrides?: { token: symbol; value: unknown }[];
+}
+
+export async function createApp(repo: InMemoryUsersRepository, options: CreateAppOptions = {}) {
+  let builder = Test.createTestingModule({
+    imports: [
+      CommonModule.forRoot({ logStream: options.logStream ?? silent() }),
+      TransactionModule,
+      AuthModule,
+      ...(options.modules ?? []),
+    ],
     controllers: [AuthTestController],
   })
     .overrideProvider(USERS_REPOSITORY)
     .useValue(repo)
     .overrideProvider(TRANSACTION_RUNNER)
-    .useValue(options.runner ?? new InMemoryTransactionRunner())
-    .compile();
+    .useValue(options.runner ?? new InMemoryTransactionRunner());
+  for (const { token, value } of options.overrides ?? []) {
+    builder = builder.overrideProvider(token).useValue(value);
+  }
+  const moduleRef = await builder.compile();
   const app = moduleRef.createNestApplication({ bufferLogs: true });
   configureApp(app);
   await app.listen(0, '127.0.0.1');
