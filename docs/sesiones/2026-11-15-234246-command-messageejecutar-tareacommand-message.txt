@@ -1,0 +1,3324 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+> /ejecutar-tarea T07                                                           
+
+● Empiezo leyendo la tarea en el backlog.
+
+  Ran 7 shell commands (ctrl+o to expand)
+
+● DoR cumplida (T03 y T07a en Hecha, todos los campos presentes). Ahora reviso
+  la imagen de la agenda para la barra superior y la bitácora.
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && printf '%s\n'
+      '| B-111 | 2026-11-15 22:49 | Agente | 3-Ejecutar | AGENTE | Inicio de T07
+      (Frontend ba…)
+  ⎿  | B-111 | 2026-11-15 22:49 | Agente | 3-Ejecutar | AGENTE | Inicio de
+     T07 (Frontend base: `apiClient`, auth, layout y rutas protegidas). DoR
+      comprobada: dependencias T03 y T07a en Hecha | En curso | docs/02-bac
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71 -| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+         -, layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+         -iente | |                                                      
+      71 +| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+         +, layout y rutas protegidas por rol | T03, T07a | M | No | En c
+         +urso | |                                                       
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      112  | B-108 | 2026-11-15 22:44 | Yo | 3-Ejecutar | REVISIÓN | T07a
+            revisada, cumple la DoD | — | — |
+      113  | B-109 | 2026-11-15 22:45 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-108 | T07a Hecha
+            | docs/02-backlog.md, B-108 |
+      114  | B-110 | 2026-11-15 22:46 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07a, 
+           B-108), CLAUDE.md (Dependencias) agrega la subsección «Sistema
+            visual fijado en T07a»: tokens en el `@theme` de `index.css` 
+           sin `tailwind.config.*`; paleta por defecto de Tailwind quitad
+           a y nombres de los tokens agregados; formas, tipografía, espac
+           iado, modales, sombras y `tnum`; Inter y lucide-react locales,
+            sin CDN; uso de los componentes de `shared/ui`; placeholder c
+           on `on-surface-variant` y medición de contraste de combinacion
+           es nuevas; verificación en navegador sin página de demo perman
+           ente | Solo documentación; sin cambios de código | CLAUDE.md, 
+           docs/tareas/T07a.md §6 y §7, B-108 |
+      115 +| B-111 | 2026-11-15 22:49 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T07 (Frontend base: `apiClient`, auth, layout y rutas 
+          +protegidas). DoR comprobada: dependencias T03 y T07a en Hecha 
+          +| En curso | docs/02-backlog.md (T07) |                       
+
+● Ya tengo el plan de T07: instalaré las dependencias con versiones exactas,
+  montaré el cliente de API, el módulo de autenticación, el layout y el router
+  con sus ocho rutas, y luego verificaré con lint, build y una prueba manual. 
+  · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora instalo las dependencias con versión exacta.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && npm
+      install --save-exact @tanstack/react-query@5.107.1 react-router@8.5.1
+      react-hook-form@7.9…)
+  ⎿  To address all issues (including breaking changes), run:
+       npm audit fix --force
+     … +14 lines (ctrl+o to expand)
+  ⎿  Updated src\web\package-lock.json (+240 -28)
+       9        "version": "0.1.0",
+      10        "dependencies": {
+      11          "@fontsource-variable/inter": "5.3.0",
+      12 +        "@hookform/resolvers": "7.0.6",                        
+      13 +        "@tanstack/react-query": "5.107.1",                    
+      14          "lucide-react": "1.73.0",
+      15          "react": "19.3.1",
+      14 -        "react-dom": "19.3.1"                                  
+      16 +        "react-dom": "19.3.1",                                 
+      17 +        "react-hook-form": "7.92.0",                           
+      18 +        "react-router": "8.5.1",                               
+      19 +        "zod": "4.6.7"                                         
+      20        },
+      21        "devDependencies": {
+      22          "@eslint/js": "10.0.1",
+     ...
+      473          "url": "https://github.com/sponsors/ayuhito"
+      474        }
+      475      },
+      476 +    "node_modules/@hookform/resolvers": {                     
+      477 +      "version": "7.0.6",                                     
+      478 +      "resolved": "https://registry.npmjs.org/@hookform/resolv
+          +ers/-/resolvers-7.0.6.tgz",                                   
+      479 +      "integrity": "sha512-LSTMwW4tmRWtM7pS5HkSqahi71USbhrmjc9
+          +pNHNa7UyYTbKIK/e0G1EAw6xsEnp9GahTjXhunxRJp0Bd8E6NZA==",       
+      480 +      "license": "MIT",                                       
+      481 +      "dependencies": {                                       
+      482 +        "@standard-schema/utils": "^0.3.0"                    
+      483 +      },                                                      
+      484 +      "peerDependencies": {                                   
+      485 +        "@standard-schema/spec": "^1.0.0",                    
+      486 +        "@vinejs/vine": "^2.0.0 || ^3.0.0 || ^4.0.0",         
+      487 +        "ajv": "^8.12.0",                                     
+      488 +        "ajv-errors": "^3.0.0",                               
+      489 +        "ajv-formats": "^2.1.1 || ^3.0.0",                    
+      490 +        "arktype": "^2.0.0",                                  
+      491 +        "ata-validator": "^1.23.0",                           
+      492 +        "class-transformer": ">=0.4.0",                       
+      493 +        "class-validator": ">=0.12.0",                        
+      494 +        "computed-types": "^1.0.0",                           
+      495 +        "effect": "^4.0.0",                                   
+      496 +        "fluentvalidation-ts": "^3.0.0",                      
+      497 +        "fp-ts": "^2.7.0",                                    
+     … 308 more lines (ctrl+o to expand)
+  ⎿  Updated src\web\package.json (+6 -1)
+      14    },
+      15    "dependencies": {
+      16      "@fontsource-variable/inter": "5.3.0",
+      17 +    "@hookform/resolvers": "7.0.6",                            
+      18 +    "@tanstack/react-query": "5.107.1",                        
+      19      "lucide-react": "1.73.0",
+      20      "react": "19.3.1",
+      19 -    "react-dom": "19.3.1"                                      
+      21 +    "react-dom": "19.3.1",                                     
+      22 +    "react-hook-form": "7.92.0",                               
+      23 +    "react-router": "8.5.1",                                   
+      24 +    "zod": "4.6.7"                                             
+      25    },
+      26    "devDependencies": {
+      27      "@eslint/js": "10.0.1",
+  ⎿  (timeout 5m)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Los avisos de npm audit vienen de typescript-eslint, una dependencia de
+  desarrollo que ya estaba antes de esta tarea. Ahora confirmo qué exporta
+  react-router 8.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Escribo el apiClient.
+
+● Write(src\web\src\shared\apiClient.ts)
+  ⎿  Wrote 122 lines to src\web\src\shared\apiClient.ts
+      1 /**
+      2  * Único cliente HTTP de la app (CLAUDE.md, Frontend; D-03, D-06)
+        . Todas las peticiones van a `/api` con la cookie
+      3  * `access_token` (`credentials: 'include'`): el frontend nunca l
+        ee ni guarda tokens.
+      4  * - Los errores del API (`{ error: { code, message, requestId } 
+        }`) se convierten en `ApiError`, con su `requestId`.
+      5  * - Todo 401 llama al manejador de sesión (lo registra `AuthProv
+        ider`): limpia la sesión y lleva a `/login`.
+      6  * - El 409 `BOOKING_CONFLICT` usa el mensaje del spec (F-02).
+     … +116 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Escribo los archivos de auth y el cliente de consultas.
+
+● Write(src\web\src\shared\queryClient.ts)
+  ⎿  Wrote 18 lines to src\web\src\shared\queryClient.ts
+       1 import { QueryClient } from '@tanstack/react-query';
+       2 import { ApiError } from './apiClient';
+       3 
+       4 /** Los errores 4xx no se reintentan (la respuesta no va a cambi
+         ar); los de red o 5xx, una vez. */
+       5 function shouldRetry(failureCount: number, error: unknown): bool
+         ean {
+       6   if (error instanceof ApiError && error.status >= 400 && error.
+         status < 500) return false;
+       7   return failureCount < 1;
+     … +11 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\types.ts)
+  ⎿  Wrote 16 lines to src\web\src\features\auth\types.ts
+       1 /** Objeto `User` del API (spec §8). */
+       2 export type Role = 'EMPLOYEE' | 'ADMIN';
+       3 
+       4 export interface User {
+       5   id: string;
+       6   email: string;
+       7   name: string;
+       8   role: Role;
+       9   isActive: boolean;
+      10 }
+     … +6 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\authService.ts)
+  ⎿  Wrote 28 lines to src\web\src\features\auth\authService.ts
+       1 import { ApiError, apiClient } from '../../shared/apiClient';
+       2 import type { User } from './types';
+       3 
+       4 /**
+       5  * Llamadas de sesión sobre el `apiClient` (spec §8). La sesión 
+         vive en la cookie `httpOnly` `access_token` (D-03):
+       6  * aquí no se lee, guarda ni devuelve ningún token, y la contras
+         eña solo viaja en el cuerpo del login.
+       7  */
+       8 export const authService = {
+     … +20 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\auth-context.ts)
+  ⎿  Wrote 28 lines to src\web\src\features\auth\auth-context.ts
+       1 import { createContext, useContext } from 'react';
+       2 import type { ApiError } from '../../shared/apiClient';
+       3 import type { User } from './types';
+       4 
+       5 /** Clave de la sesión en la caché de TanStack Query. */
+       6 export const ME_QUERY_KEY = ['auth', 'me'] as const;
+       7 
+       8 export type AuthStatus = 'loading' | 'authenticated' | 'anonymou
+         s' | 'error';
+       9 
+     … +19 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\AuthProvider.tsx)
+  ⎿  Wrote 77 lines to src\web\src\features\auth\AuthProvider.tsx
+       1 import { useQuery, useQueryClient } from '@tanstack/react-query'
+         ;
+       2 import { useCallback, useEffect, useMemo, type ReactNode } from 
+         'react';
+       3 import { useNavigate } from 'react-router';
+       4 import { setUnauthorizedHandler, toApiError } from '../../shared
+         /apiClient';
+       5 import { AuthContext, ME_QUERY_KEY, type AuthContextValue, type 
+         AuthStatus } from './auth-context';
+       6 import { authService } from './authService';
+     … +71 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\PasswordField.tsx)
+  ⎿  Wrote 42 lines to src\web\src\features\auth\PasswordField.tsx
+      1 import { Eye, EyeOff } from 'lucide-react';
+      2 import { useState, type InputHTMLAttributes, type Ref } from 'rea
+        ct';
+      3 import { Input, cn } from '../../shared/ui';
+      4 
+      5 interface PasswordFieldProps extends Omit<InputHTMLAttributes<HTM
+        LInputElement>, 'type'> {
+      6   ref?: Ref<HTMLInputElement>;
+      7   /** Avisa cuando la contraseña pasa a verse u ocultarse (lo usa
+         T07c). Nunca recibe el valor. */
+     … +35 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\LoginForm.tsx)
+  ⎿  Wrote 131 lines to src\web\src\features\auth\LoginForm.tsx
+       1 import { zodResolver } from '@hookform/resolvers/zod';
+       2 import { useMutation } from '@tanstack/react-query';
+       3 import { ArrowUpRight } from 'lucide-react';
+       4 import { useForm } from 'react-hook-form';
+       5 import { useNavigate } from 'react-router';
+       6 import { z } from 'zod';
+       7 import { ApiError, toApiError } from '../../shared/apiClient';
+       8 import { Banner, Button, Field, Input } from '../../shared/ui';
+       9 import { useAuth } from './auth-context';
+      10 import { authService } from './authService';
+     … +121 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\LoginPage.tsx)
+  ⎿  Wrote 34 lines to src\web\src\features\auth\LoginPage.tsx
+       1 import { Navigate } from 'react-router';
+       2 import { Spinner } from '../../shared/ui';
+       3 import { useAuth } from './auth-context';
+       4 import { LoginForm } from './LoginForm';
+       5 
+       6 /**
+       7  * `/login` funcional y sencillo (T07). La composición de dos co
+         lumnas y los personajes animados llegan en T07c.
+       8  * Con una sesión válida no tiene sentido mostrarlo: se va a la 
+         agenda.
+     … +26 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/auth" && sed -i
+      "s/React\.FocusEvent/FocusEvent/g; s/^import { useForm } from 'react…)  ⎿  4:import type { FocusEvent } from 'react';
+     75:  const focusHandlers = (field: Exclude<LoginFocus, 'none'>, onBlur
+     : (e: FocusEvent<HTMLInputElement>) => unknown) => ({
+     77:    onBlur: (e: FocusEvent<HTMLInputElement>) => {
+  ⎿  Updated src\web\src\features\auth\LoginForm.tsx (+3 -2)
+      1  import { zodResolver } from '@hookform/resolvers/zod';
+      2  import { useMutation } from '@tanstack/react-query';
+      3  import { ArrowUpRight } from 'lucide-react';
+      4 +import type { FocusEvent } from 'react';                        
+      5  import { useForm } from 'react-hook-form';
+      6  import { useNavigate } from 'react-router';
+      7  import { z } from 'zod';
+     ...
+      72  
+      73    const email = register('email');
+      74    const password = register('password');
+      74 -  const focusHandlers = (field: Exclude<LoginFocus, 'none'>, on
+         -Blur: (e: React.FocusEvent<HTMLInputElement>) => unknown) => ({
+      75 +  const focusHandlers = (field: Exclude<LoginFocus, 'none'>, on
+         +Blur: (e: FocusEvent<HTMLInputElement>) => unknown) => ({      
+      76      onFocus: () => onFocusChange?.(field),
+      76 -    onBlur: (e: React.FocusEvent<HTMLInputElement>) => {       
+      77 +    onBlur: (e: FocusEvent<HTMLInputElement>) => {             
+      78        onFocusChange?.('none');
+      79        return onBlur(e);
+      80      },
+
+● Ahora las guardas de rutas, la página de sin permiso y el layout.
+
+● Write(src\web\src\features\auth\ProtectedRoute.tsx)
+  ⎿  Wrote 35 lines to src\web\src\features\auth\ProtectedRoute.tsx
+       1 import { Navigate, Outlet } from 'react-router';
+       2 import { ErrorState, Spinner } from '../../shared/ui';
+       3 import { useAuth } from './auth-context';
+       4 
+       5 /**
+       6  * Rutas que exigen sesión (F-01, spec §9 "Sin sesión"). Sin ses
+         ión → `/login`. Es solo experiencia de uso: la API
+       7  * responde 401 igual (CLAUDE.md, Seguridad).
+       8  */
+       9 export function ProtectedRoute() {
+     … +26 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\RequireRole.tsx)
+  ⎿  Wrote 14 lines to src\web\src\features\auth\RequireRole.tsx
+       1 import { Outlet } from 'react-router';
+       2 import { useAuth } from './auth-context';
+       3 import { ForbiddenPage } from './ForbiddenPage';
+       4 import type { Role } from './types';
+       5 
+       6 /**
+       7  * Rutas de un rol (RN-21: `/admin/*` solo para `ADMIN`). Con ot
+         ro rol se ve "No tienes permiso para ver esta
+       8  * página" (spec §9). Solo es experiencia de uso: la API respond
+         e 403 igual.
+     … +6 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\ForbiddenPage.tsx)
+  ⎿  Wrote 22 lines to src\web\src\features\auth\ForbiddenPage.tsx
+       1 import { ShieldX } from 'lucide-react';
+       2 import { Link } from 'react-router';
+       3 import { EmptyState } from '../../shared/ui';
+       4 
+       5 /** Estado "Sin permiso" (spec §9). */
+       6 export function ForbiddenPage() {
+       7   return (
+       8     <EmptyState
+       9       icon={<ShieldX size={32} />}
+      10       title="No tienes permiso para ver esta página"
+     … +12 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/auth" && sed -i '/description="Si
+      crees que deberías tener acceso, consulta con RR.…)
+  ⎿  0
+  ⎿  Updated src\web\src\features\auth\ForbiddenPage.tsx (+0 -1)
+       8      <EmptyState
+       9        icon={<ShieldX size={32} />}
+      10        title="No tienes permiso para ver esta página"
+      11 -      description="Si crees que deberías tener acceso, consulta
+         - con RR. HH."                                                  
+      11        action={
+      12          <Link
+      13            to="/agenda"
+
+● Write(src\web\src\shared\layout\UserMenu.tsx)
+  ⎿  Wrote 99 lines to src\web\src\shared\layout\UserMenu.tsx
+       1 import { ChevronDown, LogOut, UserRound } from 'lucide-react';
+       2 import { useEffect, useId, useRef, useState } from 'react';
+       3 import { Link } from 'react-router';
+       4 import { Avatar, Spinner, cn } from '../ui';
+       5 
+       6 interface UserMenuProps {
+       7   name: string;
+       8   roleLabel: string;
+       9   onSignOut: () => Promise<void>;
+      10 }
+     … +89 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\layout\AppLayout.tsx)
+  ⎿  Wrote 67 lines to src\web\src\shared\layout\AppLayout.tsx
+       1 import { NavLink, Outlet } from 'react-router';
+       2 import { cn } from '../ui';
+       3 import { UserMenu } from './UserMenu';
+       4 
+       5 export interface NavItem {
+       6   to: string;
+       7   label: string;
+       8 }
+       9 
+      10 interface AppLayoutProps {
+     … +57 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\layout\PlaceholderPage.tsx)
+  ⎿  Wrote 15 lines to src\web\src\shared\layout\PlaceholderPage.tsx
+       1 import { EmptyState } from '../ui';
+       2 
+       3 /** Marcador de una ruta cuyo contenido llega en una tarea poste
+         rior (T07: solo rutas y navegación). */
+       4 export function PlaceholderPage({ title }: { title: string }) {
+       5   return (
+       6     <section aria-labelledby="titulo-pagina" className="mx-auto 
+         flex max-w-5xl flex-col gap-space-lg">
+       7       <h1 id="titulo-pagina" className="text-headline-lg text-in
+         k">
+     … +8 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\SessionLayout.tsx)
+  ⎿  Wrote 26 lines to src\web\src\features\auth\SessionLayout.tsx
+      1 import { AppLayout, type NavItem } from '../../shared/layout/AppL
+        ayout';
+      2 import { useAuth } from './auth-context';
+      3 import { ROLE_LABELS } from './types';
+      4 
+      5 /** Navegación de todos (DESIGN.md, «Estructura global»). */
+      6 const COMMON_NAV: NavItem[] = [
+      7   { to: '/agenda', label: 'Agenda' },
+      8   { to: '/my-bookings', label: 'Mis reservas' },
+      9 ];
+     … +17 lines (ctrl+o to expand)
+
+● Write(src\web\src\App.tsx)
+  ⎿  Added 44 lines, removed 5 lines
+       1 -// T01: página placeholder. Los tokens y componentes visuales l
+         -legan en T07a; las rutas, en T07.                              
+       1 +import { QueryClientProvider } from '@tanstack/react-query';   
+       2 +import { useState } from 'react';                              
+       3 +import { BrowserRouter, Navigate, Route, Routes } from 'react-r
+         +outer';                                                        
+       4 +import { AuthProvider } from './features/auth/AuthProvider';   
+       5 +import { LoginPage } from './features/auth/LoginPage';         
+       6 +import { ProtectedRoute } from './features/auth/ProtectedRoute'
+         +;                                                              
+       7 +import { RequireRole } from './features/auth/RequireRole';     
+       8 +import { SessionLayout } from './features/auth/SessionLayout'; 
+       9 +import { PlaceholderPage } from './shared/layout/PlaceholderPag
+         +e';                                                            
+      10 +import { createQueryClient } from './shared/queryClient';      
+      11 +import { ToastProvider } from './shared/ui';                   
+      12 +                                                               
+      13 +/**                                                            
+      14 + * Rutas de spec §9. `/login` es pública; el resto exige sesión
+         + y `/admin/*` exige `ADMIN` (RN-21). Las pantallas son         
+      15 + * marcadores hasta sus tareas (T07b, T08, T09, T10…).         
+      16 + */                                                            
+      17  export function App() {
+      18 +  const [queryClient] = useState(createQueryClient);           
+      19 +                                                               
+      20    return (
+       4 -    <main>                                                     
+       5 -      <h1>SalaLibre</h1>                                       
+       6 -      <p>Esqueleto en construcción.</p>                        
+       7 -    </main>                                                    
+      21 +    <QueryClientProvider client={queryClient}>                 
+      22 +      <BrowserRouter>                                          
+      23 +        <AuthProvider>                                         
+      24 +          <ToastProvider>                                      
+      25 +            <Routes>                                           
+      26 +              <Route path="/login" element={<LoginPage />} />  
+      27 +              <Route element={<ProtectedRoute />}>             
+      28 +                <Route element={<SessionLayout />}>            
+      29 +                  <Route index element={<Navigate to="/agenda" 
+         +replace />} />                                                 
+      30 +                  <Route path="/agenda" element={<PlaceholderPa
+         +ge title="Agenda" />} />                                       
+      31 +                  <Route path="/my-bookings" element={<Placehol
+         +derPage title="Mis reservas" />} />                            
+      32 +                  <Route path="/account" element={<PlaceholderP
+         +age title="Mi cuenta" />} />                                   
+      33 +                  <Route path="/admin" element={<RequireRole ro
+         +le="ADMIN" />}>                                                
+      34 +                    <Route path="rooms" element={<PlaceholderPa
+         +ge title="Salas" />} />                                        
+      35 +                    <Route path="users" element={<PlaceholderPa
+         +ge title="Usuarios" />} />                                     
+      36 +                    <Route path="closures" element={<Placeholde
+         +rPage title="Cierres" />} />                                   
+      37 +                    <Route path="audit" element={<PlaceholderPa
+         +ge title="Auditoría" />} />                                    
+      38 +                  </Route>                                     
+      39 +                  <Route path="*" element={<Navigate to="/agend
+         +a" replace />} />                                              
+      40 +                </Route>                                       
+      41 +              </Route>                                         
+      42 +            </Routes>                                          
+      43 +          </ToastProvider>                                     
+      44 +        </AuthProvider>                                        
+      45 +      </BrowserRouter>                                         
+      46 +    </QueryClientProvider>                                     
+      47    );
+      48  }
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && sed -i
+      's|                    <Route path="rooms"|                    <Route
+      index element={<…)
+  ⎿  npm notice run salalibre-web@0.1.0 lint
+     npm notice run eslint .
+     ✓ 2339 modules transformed.
+     … +14 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\App.tsx (+1 -0)
+      31                    <Route path="/my-bookings" element={<Placehol
+          derPage title="Mis reservas" />} />
+      32                    <Route path="/account" element={<PlaceholderP
+          age title="Mi cuenta" />} />
+      33                    <Route path="/admin" element={<RequireRole ro
+          le="ADMIN" />}>
+      34 +                    <Route index element={<Navigate to="/agenda
+         +" replace />} />                                               
+      35                      <Route path="rooms" element={<PlaceholderPa
+          ge title="Salas" />} />
+      36                      <Route path="users" element={<PlaceholderPa
+          ge title="Usuarios" />} />
+      37                      <Route path="closures" element={<Placeholde
+          rPage title="Cierres" />} />
+  ⎿  (timeout 5m)
+
+● Lint y build pasan sin errores. Corro el grep y levanto el compose.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora hago la prueba manual en el navegador.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● La ruta sin sesión ya terminó en /login (CA1). Recargo para registrar la red y
+  tomo captura.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● CA1 queda confirmado. Ahora pruebo CA9 enviando el formulario vacío y luego
+  con un correo inválido.
+
+  Called claude-in-chrome 3 times (ctrl+o to expand)
+
+● El clic cayó fuera del botón porque cambió el tamaño de la ventana. Lo pulso
+  por referencia.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● Con el formulario vacío, CA9 se cumple. Ahora pruebo un correo inválido y el
+  botón del ojo (CA10).
+
+  Called claude-in-chrome 9 times (ctrl+o to expand)
+
+● CA9 y CA10 se cumplen. Ahora pruebo CA3: un correo válido con la contraseña
+  incorrecta.
+
+  Called claude-in-chrome 7 times (ctrl+o to expand)
+
+● CA3 y CA7 se cumplen: el botón se deshabilita y luego se rehabilita, y el
+  error muestra su requestId. Ahora entro como empleado (CA2) con la contraseña
+  del seed.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● CA2 está cumplido y el empleado no ve enlaces de admin. Ahora probaré
+  /admin/rooms como empleado y provocaré el 401 de CA6 cerrando sesión a mitad
+  de uso. · summary
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+● CA4 (empleado) se cumple. Para CA6 cierro la sesión en el servidor sin que la
+  app se entere y disparo una revalidación de la ventana.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● El logout devolvió 503, algo inesperado. Reviso los logs de la API.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● El servidor respondió 204. El 503 es un artefacto de la herramienta, porque la
+  evaluación se cortó por tiempo. Ahora disparo la revalidación.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● Con la sesión invalidada termina en /login. Ahora entro como ADMIN y pruebo
+  CA4 y CA5, el cierre de sesión desde el menú.
+
+  Called claude-in-chrome 7 times (ctrl+o to expand)
+
+● En el menú de usuario, el nombre accesible repite el texto. Lo simplifico: un
+  solo bloque de texto, visible en escritorio y sr-only en móvil.
+
+● Update(src\web\src\shared\layout\UserMenu.tsx)
+  ⎿  Added 1 line, removed 2 lines
+      67          )}
+      68        >
+      69          <Avatar name={name} size="md" />
+      70 -        <span className="hidden flex-col sm:flex">             
+      70 +        <span className="sr-only sm:not-sr-only sm:flex sm:flex
+         +-col">                                                         
+      71            <span className="text-label-md text-on-surface">{name
+          }</span>
+      72            <span className="text-label-sm text-on-surface-varian
+          t">{roleLabel}</span>
+      73          </span>
+      74 -        <span className="sr-only sm:hidden">{`${name}, ${roleLa
+         -bel}`}</span>                                                  
+      74          <ChevronDown aria-hidden="true" size={16} className="te
+          xt-on-surface-variant" />
+      75        </button>
+      76  
+
+  Called claude-in-chrome 8 times (ctrl+o to expand)
+
+● CA5 se cumple: POST /logout devuelve 204 y la app vuelve a /login. El ADMIN ve
+  los 4 enlaces. Reviso la consola y reconstruyo con el ajuste del menú.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Compruebo el nombre accesible del menú tras el ajuste y que no haya scroll
+  horizontal en un ancho de móvil.
+
+  Called claude-in-chrome 4 times (ctrl+o to expand)
+
+● El nombre accesible ya es correcto: el seed nombra al admin "Administrador
+  RRHH" y el rol también se llama así. A 360 px no hay scroll horizontal. Cierro
+  sesión y la pestaña.
+
+  Called claude-in-chrome 2 times, ran 1 shell command (ctrl+o to expand)
+
+● Escribo docs/tareas/T07.md.
+
+● Write(docs\tareas\T07.md)
+  ⎿  Wrote 154 lines to docs\tareas\T07.md
+       1 # T07 · Frontend base: `apiClient`, auth, layout y rutas protegi
+         das
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | En revisión |
+       8 | Inicio – fin | 2026-11-15 22:49 – 23:04 (15 min) · estimado: M
+     … +147 lines (~11 KB) (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && echo $NOW && sed -i "s/| 2026-11-15 22:49 – 23:04
+      (15 min)/| 2026-11…)
+  ⎿  2026-11-15 23:04
+     8:| Inicio – fin | 2026-11-15 22:49 – 23:04 (15 min) · estimado: M |
+     71:| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), la
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71 -| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+         -, layout y rutas protegidas por rol | T03, T07a | M | No | En c
+         -urso | |                                                       
+      71 +| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+         +, layout y rutas protegidas por rol | T03, T07a | M | No | En r
+         +evisión | [T07](tareas/T07.md) |                               
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      113  | B-109 | 2026-11-15 22:45 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-108 | T07a Hecha
+            | docs/02-backlog.md, B-108 |
+      114  | B-110 | 2026-11-15 22:46 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07a, 
+           B-108), CLAUDE.md (Dependencias) agrega la subsección «Sistema
+            visual fijado en T07a»: tokens en el `@theme` de `index.css` 
+           sin `tailwind.config.*`; paleta por defecto de Tailwind quitad
+           a y nombres de los tokens agregados; formas, tipografía, espac
+           iado, modales, sombras y `tnum`; Inter y lucide-react locales,
+            sin CDN; uso de los componentes de `shared/ui`; placeholder c
+           on `on-surface-variant` y medición de contraste de combinacion
+           es nuevas; verificación en navegador sin página de demo perman
+           ente | Solo documentación; sin cambios de código | CLAUDE.md, 
+           docs/tareas/T07a.md §6 y §7, B-108 |
+      115  | B-111 | 2026-11-15 22:49 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07 (Frontend base: `apiClient`, auth, layout y rutas 
+           protegidas). DoR comprobada: dependencias T03 y T07a en Hecha 
+           | En curso | docs/02-backlog.md (T07) |
+      116 +| B-112 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T07 (Frontend base: `apiClient`, auth, layout y rutas pro
+          +tegidas): `shared/apiClient.ts` (`credentials: 'include'`, `Ap
+          +iError` con `requestId`, 401 → limpiar sesión y `/login`, mens
+          +aje del 409), `shared/queryClient.ts`, `shared/layout/` (barra
+          + con navegación por rol y menú Mi cuenta / Cerrar sesión), `fe
+          +atures/auth/` (`AuthProvider` con `GET /auth/me`, `authService
+          +`, `LoginPage`, `LoginForm` con RHF + Zod y props para T07c, `
+          +PasswordField`, `ProtectedRoute`, `RequireRole`, página sin pe
+          +rmiso) y rutas de spec §9 como marcadores. Lint y build sin er
+          +rores, grep de almacenamiento OK, compose healthy, CA1–CA10 co
+          +mprobados en Chrome | T07 En revisión. Commit: ver la fila sig
+          +uiente. Desvíos: dependencias `react-router` 8.5.1 y `@hookfor
+          +m/resolvers` 7.0.6 (además de las de D-01), menú como disclosu
+          +re, enlace "Saltar al contenido". Ambigüedades: manejador gene
+          +ral de 401 sin pantalla que lo ejercite aún, destino fijo `/ag
+          +enda`, `/login` con sesión y rutas desconocidas → `/agenda` | 
+          +docs/tareas/T07.md, B-111 |                                   
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i '660s/|
+      Estado | Pendiente |/| Estado | En revisión |/' docs/02-backlog.md && sed
+      -n 660p docs…)
+  ⎿  | Estado | En revisión |
+     M  ../../docs/02-backlog.md
+     M  ../../docs/03-bitacora.md
+     … +23 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      657  | Dependencias | T03, T07a |
+      658  | Estimación | M |
+      659  | Seguridad / auditoría | Roles: público (`/login`), autentica
+           do y ADMIN (`/admin/*`). Auditoría: no aplica. OWASP A01: la U
+           I no sustituye a la API (que igual responde 403); A07: mensaje
+            de login genérico; sin tokens en JavaScript |
+      660 -| Estado | Pendiente |                                        
+      660 +| Estado | En revisión |                                      
+      661  
+      662  **Alcance (archivos o módulos):**
+      663  - `src/web/src/shared/apiClient.ts`: `fetch` con `credentials:
+            'include'`, lectura del formato `{ error: { code, message, re
+           questId } }`, `ApiError`, y todo 401 limpia la sesión y lleva 
+           a `/login`.
+
+● Registro el hash del commit, como en T07a.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && echo "| B-113 | $NOW | Agente | 3-Ejecutar | AGENTE
+      | Registro del h…)
+  ⎿  10:| Commit(s) | `669b847` (registrado en B-113) |
+     dd2ca09 T07: registro del hash del commit en bitácora
+     669b847 T07: Frontend base: apiClient, auth, layout y rutas protegidas
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      114  | B-110 | 2026-11-15 22:46 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07a, 
+           B-108), CLAUDE.md (Dependencias) agrega la subsección «Sistema
+            visual fijado en T07a»: tokens en el `@theme` de `index.css` 
+           sin `tailwind.config.*`; paleta por defecto de Tailwind quitad
+           a y nombres de los tokens agregados; formas, tipografía, espac
+           iado, modales, sombras y `tnum`; Inter y lucide-react locales,
+            sin CDN; uso de los componentes de `shared/ui`; placeholder c
+           on `on-surface-variant` y medición de contraste de combinacion
+           es nuevas; verificación en navegador sin página de demo perman
+           ente | Solo documentación; sin cambios de código | CLAUDE.md, 
+           docs/tareas/T07a.md §6 y §7, B-108 |
+      115  | B-111 | 2026-11-15 22:49 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07 (Frontend base: `apiClient`, auth, layout y rutas 
+           protegidas). DoR comprobada: dependencias T03 y T07a en Hecha 
+           | En curso | docs/02-backlog.md (T07) |
+      116  | B-112 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07 (Frontend base: `apiClient`, auth, layout y rutas pro
+           tegidas): `shared/apiClient.ts` (`credentials: 'include'`, `Ap
+           iError` con `requestId`, 401 → limpiar sesión y `/login`, mens
+           aje del 409), `shared/queryClient.ts`, `shared/layout/` (barra
+            con navegación por rol y menú Mi cuenta / Cerrar sesión), `fe
+           atures/auth/` (`AuthProvider` con `GET /auth/me`, `authService
+           `, `LoginPage`, `LoginForm` con RHF + Zod y props para T07c, `
+           PasswordField`, `ProtectedRoute`, `RequireRole`, página sin pe
+           rmiso) y rutas de spec §9 como marcadores. Lint y build sin er
+           rores, grep de almacenamiento OK, compose healthy, CA1–CA10 co
+           mprobados en Chrome | T07 En revisión. Commit: ver la fila sig
+           uiente. Desvíos: dependencias `react-router` 8.5.1 y `@hookfor
+           m/resolvers` 7.0.6 (además de las de D-01), menú como disclosu
+           re, enlace "Saltar al contenido". Ambigüedades: manejador gene
+           ral de 401 sin pantalla que lo ejercite aún, destino fijo `/ag
+           enda`, `/login` con sesión y rutas desconocidas → `/agenda` | 
+           docs/tareas/T07.md, B-111 |
+      117 +| B-113 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Re
+          +gistro del hash del commit de T07 (fila B-112) | Commit `669b8
+          +47` (código y documentación de T07) | B-112, docs/tareas/T07.m
+          +d |                                                           
+  ⎿  Updated docs\tareas\T07.md (+1 -1)
+       7  | Estado | En revisión |
+       8  | Inicio – fin | 2026-11-15 22:49 – 23:04 (15 min) · estimado: 
+          M |
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta 
+          al cerrar la sesión) |
+      10 -| Commit(s) | ver B-113 en `docs/03-bitacora.md` |             
+      10 +| Commit(s) | `669b847` (registrado en B-113) |                
+      11  | Trazabilidad | RN-14, RN-19, RN-21 · D-03, D-06, D-19, D-28 ·
+           spec §6 (F-01), §9, §10 · backlog T07 |
+      12  
+      13  ## 1. Objetivo
+
+● T07 está terminada y en En revisión: la persona inicia sesión contra la API
+  real, ve la navegación de su rol y las rutas quedan protegidas. Los 10
+  criterios de aceptación los comprobé en Chrome contra el compose, salvo un
+  caso del manejador de 401 que todavía no se puede probar (lo explico abajo).
+  Lint y build pasan sin errores, el grep de localStorage, sessionStorage y
+  document.cookie no encuentra nada, y docker compose up -d --build deja todo
+  healthy. Commits: 669b847 (código y documentación) y dd2ca09 (hash en
+  bitácora).
+
+  Lo que se construyó:
+  - apiClient único: envía la cookie en cada petición y convierte los errores
+    del API en un error con mensaje y requestId. Ante cualquier 401 limpia la
+    sesión y lleva a /login. El 409 de choque de reservas usa el mensaje del
+    spec ("Ese horario acaba de ocuparse.").
+  - features/auth: login con validación junto a cada campo y botón para mostrar
+    u ocultar la contraseña. LoginForm ya trae los tres eventos que necesita
+    T07c. También están las guardas de sesión y de rol y la página "No tienes
+    permiso para ver esta página".
+  - Barra superior: un empleado ve Agenda y Mis reservas; el ADMIN ve además
+    Salas, Usuarios, Cierres y Auditoría. El menú del usuario tiene "Mi cuenta"
+    y "Cerrar sesión". Las 8 rutas de spec §9 son marcadores "Pantalla en
+    construcción", y / lleva a /agenda.
+
+  Desvíos (en docs/tareas/T07.md §6):
+  - Dos dependencias que D-01 no nombra: react-router 8.5.1, porque la tarea
+    pide un router y no hay uno fijado, y @hookform/resolvers 7.0.6, el
+    adaptador oficial para usar Zod con React Hook Form. Las dejé registradas
+    con su motivo; si prefieres otro router, se cambia.
+  - Menú de usuario: es un botón que despliega un panel y se cierra con Escape,
+    no un menú navegable con flechas.
+  - "Saltar al contenido": agregué este enlace para la navegación por teclado.
+  - Aviso de npm audit: una vulnerabilidad moderada que ya estaba en
+    typescript-eslint, una dependencia de desarrollo que no entra en la imagen.
+    No la toqué porque la corrección que propone npm rompe la compatibilidad.
+
+  Ambigüedades (en docs/tareas/T07.md §7):
+  - Manejador general de 401 sin probar en el navegador. Hoy la única petición
+    protegida es /auth/me, y una sesión invalidada sí termina en /login. Pero
+    ninguna pantalla llama todavía a la API, así que el manejador para el resto
+    de peticiones solo lo revisé en el código. Se probará con T07b y T08.
+  - Redirecciones que el spec no define:
+    - Tras el login siempre va a /agenda, aunque se haya llegado a /login desde
+      otra ruta.
+    - Abrir /login con una sesión válida lleva a /agenda.
+    - Las rutas desconocidas también van a /agenda; no hice página 404.
+  - Correo: se quitan los espacios de los extremos antes de validar y enviar,
+    igual que hace la API.
+
+  En git status sigue sin seguimiento docs/sesiones/2026-11-15-224633-local-comm
+  and-caveatthe-command-below-was-run-d.txt, que ya estaba antes de empezar; no
+  lo incluí en el commit. Quedo a la espera de tu revisión.
+
+✻ Crunched for 15m 47s · done 23:04
+
+> /bitacora REVISION T07 revisada, cumple la DoD                                
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-20 && NOW=$(date "+%Y-%m-%d %H:%M") && echo
+      "| B-114 | $NOW | Y…)
+  ⎿  | B-113 | 2026-11-15
+     | B-114 | 2026-11-15 23:09 | Yo | 3-Ejecutar | REVISIÓN | T07 revisada
+     , cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      115  | B-111 | 2026-11-15 22:49 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07 (Frontend base: `apiClient`, auth, layout y rutas 
+           protegidas). DoR comprobada: dependencias T03 y T07a en Hecha 
+           | En curso | docs/02-backlog.md (T07) |
+      116  | B-112 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07 (Frontend base: `apiClient`, auth, layout y rutas pro
+           tegidas): `shared/apiClient.ts` (`credentials: 'include'`, `Ap
+           iError` con `requestId`, 401 → limpiar sesión y `/login`, mens
+           aje del 409), `shared/queryClient.ts`, `shared/layout/` (barra
+            con navegación por rol y menú Mi cuenta / Cerrar sesión), `fe
+           atures/auth/` (`AuthProvider` con `GET /auth/me`, `authService
+           `, `LoginPage`, `LoginForm` con RHF + Zod y props para T07c, `
+           PasswordField`, `ProtectedRoute`, `RequireRole`, página sin pe
+           rmiso) y rutas de spec §9 como marcadores. Lint y build sin er
+           rores, grep de almacenamiento OK, compose healthy, CA1–CA10 co
+           mprobados en Chrome | T07 En revisión. Commit: ver la fila sig
+           uiente. Desvíos: dependencias `react-router` 8.5.1 y `@hookfor
+           m/resolvers` 7.0.6 (además de las de D-01), menú como disclosu
+           re, enlace "Saltar al contenido". Ambigüedades: manejador gene
+           ral de 401 sin pantalla que lo ejercite aún, destino fijo `/ag
+           enda`, `/login` con sesión y rutas desconocidas → `/agenda` | 
+           docs/tareas/T07.md, B-111 |
+      117  | B-113 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07 (fila B-112) | Commit `669b8
+           47` (código y documentación de T07) | B-112, docs/tareas/T07.m
+           d |
+      118 +| B-114 | 2026-11-15 23:09 | Yo | 3-Ejecutar | REVISIÓN | T07 
+          +revisada, cumple la DoD | — | — |                             
+
+● Fila agregada a docs/03-bitacora.md (escribí "REVISION" con tilde, como en
+  B-108):
+
+  | B-114 | 2026-11-15 23:09 | Yo | 3-Ejecutar | REVISIÓN | T07 revisada, cumple
+  la DoD | — | — |
+
+  No hice commit.
+
+✻ Crunched for 6s · done 23:09
+
+> Pasa T07 Hecha en el backlog y haz commit                                     
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i '71s/|
+      En revisión | \[T07\]/| Hecha | [T07]/; 660s/| Estado | En revisión |/|
+      Estado | Hecha…)  ⎿  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layou
+     t y rutas protegidas por rol | T03, T07a | M | No | Hecha | [T07](tare
+     as/T07.md) |
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71 -| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+         -, layout y rutas protegidas por rol | T03, T07a | M | No | En r
+         -evisión | [T07](tareas/T07.md) |                               
+      71 +| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+         +, layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+         +a | [T07](tareas/T07.md) |                                     
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+     ...
+      657  | Dependencias | T03, T07a |
+      658  | Estimación | M |
+      659  | Seguridad / auditoría | Roles: público (`/login`), autentica
+           do y ADMIN (`/admin/*`). Auditoría: no aplica. OWASP A01: la U
+           I no sustituye a la API (que igual responde 403); A07: mensaje
+            de login genérico; sin tokens en JavaScript |
+      660 -| Estado | En revisión |                                      
+      660 +| Estado | Hecha |                                            
+      661  
+      662  **Alcance (archivos o módulos):**
+      663  - `src/web/src/shared/apiClient.ts`: `fetch` con `credentials:
+            'include'`, lectura del formato `{ error: { code, message, re
+           questId } }`, `ApiError`, y todo 401 limpia la sesión y lleva 
+           a `/login`.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      116  | B-112 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07 (Frontend base: `apiClient`, auth, layout y rutas pro
+           tegidas): `shared/apiClient.ts` (`credentials: 'include'`, `Ap
+           iError` con `requestId`, 401 → limpiar sesión y `/login`, mens
+           aje del 409), `shared/queryClient.ts`, `shared/layout/` (barra
+            con navegación por rol y menú Mi cuenta / Cerrar sesión), `fe
+           atures/auth/` (`AuthProvider` con `GET /auth/me`, `authService
+           `, `LoginPage`, `LoginForm` con RHF + Zod y props para T07c, `
+           PasswordField`, `ProtectedRoute`, `RequireRole`, página sin pe
+           rmiso) y rutas de spec §9 como marcadores. Lint y build sin er
+           rores, grep de almacenamiento OK, compose healthy, CA1–CA10 co
+           mprobados en Chrome | T07 En revisión. Commit: ver la fila sig
+           uiente. Desvíos: dependencias `react-router` 8.5.1 y `@hookfor
+           m/resolvers` 7.0.6 (además de las de D-01), menú como disclosu
+           re, enlace "Saltar al contenido". Ambigüedades: manejador gene
+           ral de 401 sin pantalla que lo ejercite aún, destino fijo `/ag
+           enda`, `/login` con sesión y rutas desconocidas → `/agenda` | 
+           docs/tareas/T07.md, B-111 |
+      117  | B-113 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07 (fila B-112) | Commit `669b8
+           47` (código y documentación de T07) | B-112, docs/tareas/T07.m
+           d |
+      118  | B-114 | 2026-11-15 23:09 | Yo | 3-Ejecutar | REVISIÓN | T07 
+           revisada, cumple la DoD | — | — |
+      119 +| B-115 | 2026-11-15 23:10 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T07 pasa a Hecha en el resumen y en la f
+          +icha de 02-backlog.md, tras la revisión de B-114 | T07 Hecha |
+          + docs/02-backlog.md, B-114 |                                  
+
+● T07 quedó en Hecha en docs/02-backlog.md, tanto en la tabla de resumen como en
+  la ficha de la tarea. Lo dejé registrado en la bitácora (B-115) y en el
+  commit adede70 "T07: revisión aprobada y estado Hecha". El commit también
+  lleva tu fila B-114 y la sección 8 (Revisión) que escribiste en
+  docs/tareas/T07.md.
+
+  - Archivos fuera del commit: quedaron sin incluir docs/tareas/T07.md.bak, que
+    parece un respaldo del editor, y la sesión exportada que ya estaba en
+    docs/sesiones/. Si el .bak no te sirve, puedes borrarlo.
+  - Tu observación de la revisión: pediste actualizar CLAUDE.md con los desvíos
+    de T07 si hace falta. No lo hice todavía; si quieres, agrego una subsección
+    «Frontend base fijado en T07», como la de T07a. Recogería las dependencias
+    react-router y @hookform/resolvers, el apiClient con su manejo de 401 y la
+    estructura de features/auth y shared/layout.
+
+✻ Brewed for 23s · done 23:10
+
+> Actualiza CLAUDE.md con los desvíos de T07 y haz commit                       
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿  8e1dc69 T07: CLAUDE.md con los desvíos de la tarea
+     ?? docs/sesiones/2026-11-15-224633-local-command-caveatthe-command-bel
+     ow-was-run-d.txt
+  ⎿  Updated CLAUDE.md (+25 -0)
+      365    el navegador. Si se usa una página temporal de demostración,
+            se borra antes del commit (no hay página de demo
+      366    permanente). En `react-refresh`, los hooks y helpers van en 
+           archivos aparte de los componentes (como
+      367    `toast-context.ts` e `initials.ts`) para que el lint no dé a
+           visos.
+      368 +                                                              
+      369 +### Frontend base fijado en T07 (ver `docs/tareas/T07.md` §6 y
+          + §7)                                                          
+      370 +- **Dependencias agregadas** (versión exacta): `@tanstack/reac
+          +t-query` 5.107.1, `react-hook-form` 7.92.0, `zod` 4.6.7,      
+      371 +  `react-router` 8.5.1 (D-01 no nombra router) y `@hookform/re
+          +solvers` 7.0.6 (une RHF con Zod). No agregar otras para lo    
+      372 +  mismo. Rutas declarativas con `BrowserRouter`/`Routes`/`Rout
+          +e` importados de `react-router`.                              
+      373 +- **`shared/apiClient.ts` es la única forma de llamar al API:*
+          +* `apiClient.get/post/patch/delete` con prefijo `/api` y      
+      374 +  `credentials: 'include'`. Los errores llegan como `ApiError`
+          + (`status`, `code`, `message`, `requestId`); para             
+      375 +  mostrarlos se usa `toApiError(e)` con `ErrorState` o `Banner
+          +` y su `requestId`. Nunca `fetch` directo en una pantalla.    
+      376 +- **401:** el `apiClient` llama al manejador que registra `Aut
+          +hProvider` (`setUnauthorizedHandler`): vacía la caché, deja   
+      377 +  la sesión en `null` y navega a `/login`. Solo `authService` 
+          +usa `skipUnauthorizedHandler` (login, logout y `me`); no      
+      378 +  usarlo en otras peticiones. El 409 `BOOKING_CONFLICT` ya tra
+          +e el mensaje de F-02; recargar la agenda es de T08/T09.       
+      379 +- **Sesión:** `useAuth()` (`features/auth/auth-context.ts`) da
+          + `status`, `user`, `signIn` y `signOut`. La sesión vive en    
+      380 +  la consulta `ME_QUERY_KEY` (`['auth','me']`); al limpiar la 
+          +caché se conserva esa clave. Nada de tokens ni datos de       
+      381 +  sesión en `localStorage`, `sessionStorage` ni `document.cook
+          +ie` (T07, CA8).                                               
+      382 +- **Rutas (`App.tsx`):** `/login` pública; el resto dentro de 
+          +`ProtectedRoute` → `SessionLayout`; `/admin/*` dentro de      
+      383 +  `RequireRole role="ADMIN"`. Una pantalla nueva reemplaza su 
+          +`PlaceholderPage` en `App.tsx`. Tras el login siempre se      
+      384 +  va a `/agenda`; `/login` con sesión, `/admin` a secas y ruta
+          +s desconocidas redirigen a `/agenda`.                         
+      385 +- **Navegación por rol:** los enlaces se definen en `features/
+          +auth/SessionLayout.tsx` (`COMMON_NAV`, `ADMIN_NAV`);          
+      386 +  `shared/layout/AppLayout` solo recibe `navItems` y no import
+          +a nada de `features/` (`shared` no depende de features).      
+      387 +- **Formularios:** RHF + Zod con `zodResolver`, `noValidate` e
+          +n el `<form>` y errores mostrados con `Field`. Zod 4 usa      
+      388 +  `{ error: '…' }` y `z.email()`. Los textos de error van en e
+          +spañol y junto al campo.                                      
+      389 +- **`LoginForm` y `PasswordField`** ya exponen `onFocusChange`
+          +, `onPasswordVisibleChange` y `onSubmitStatusChange` para     
+      390 +  T07c, que solo debe cambiar `LoginPage` y agregar los person
+          +ajes, sin pasarles el valor de la contraseña.                 
+      391 +- **Pendiente de prueba:** el manejador general de 401 aún no 
+          +se ejercitó en el navegador (solo `/me`); comprobarlo en      
+      392 +  T07b o T08 con la primera pantalla que llame a la API.      
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      117  | B-113 | 2026-11-15 23:04 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07 (fila B-112) | Commit `669b8
+           47` (código y documentación de T07) | B-112, docs/tareas/T07.m
+           d |
+      118  | B-114 | 2026-11-15 23:09 | Yo | 3-Ejecutar | REVISIÓN | T07 
+           revisada, cumple la DoD | — | — |
+      119  | B-115 | 2026-11-15 23:10 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-114 | T07 Hecha |
+            docs/02-backlog.md, B-114 |
+      120 +| B-116 | 2026-11-15 23:11 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T07, B
+          +-114), CLAUDE.md (Dependencias) agrega la subsección «Frontend
+          + base fijado en T07»: dependencias `react-router` y `@hookform
+          +/resolvers` además de las de D-01; `apiClient` como única vía 
+          +al API con `ApiError`/`toApiError`; manejo del 401 y uso restr
+          +ingido de `skipUnauthorizedHandler`; sesión con `useAuth` y `M
+          +E_QUERY_KEY`; estructura de rutas y redirecciones; navegación 
+          +por rol en `SessionLayout`; RHF + Zod 4; props de `LoginForm` 
+          +para T07c; manejador general de 401 pendiente de prueba | Solo
+          + documentación; sin cambios de código | CLAUDE.md, docs/tareas
+          +/T07.md §6 y §7, B-114 |                                      
+
+● Agregué a CLAUDE.md, dentro de «Dependencias», la subsección «Frontend base 
+  fijado en T07», y quedó en el commit 8e1dc69 "T07: CLAUDE.md con los desvíos
+  de la tarea". En la bitácora lo registré como fila B-116 (CORRECCIÓN, solo
+  documentación).
+
+  La subsección fija para las tareas siguientes:
+  - Dependencias: react-router y @hookform/resolvers, además de las de D-01,
+    todas con versión exacta.
+  - apiClient: es la única vía para llamar al API; las pantallas no usan fetch
+    directo y muestran los errores con toApiError y su requestId.
+  - 401: lo resuelve el manejador que registra AuthProvider. Solo authService
+    puede usar skipUnauthorizedHandler.
+  - Sesión: se lee con useAuth() y vive en ME_QUERY_KEY, sin almacenamiento en
+    el navegador.
+  - Rutas: cada pantalla nueva reemplaza su marcador en App.tsx. Quedan anotadas
+    las redirecciones a /agenda.
+  - Navegación por rol: los enlaces se definen en SessionLayout. shared/ no
+    importa nada de features/.
+  - Formularios: React Hook Form con Zod 4, noValidate en el formulario y los
+    errores junto al campo con Field.
+  - T07c: LoginForm ya tiene los tres eventos, así que T07c solo cambia
+    LoginPage y agrega los personajes.
+  - Pendiente: el manejador general de 401 todavía no se probó en el navegador;
+    hay que comprobarlo en T07b o T08.
+
+  Solo sigue sin seguimiento el archivo de sesión de docs/sesiones/. El
+  T07.md.bak ya no está.
+
+✻ Sautéed for 26s · done 23:12
+
+> /ejecutar-tarea T07b                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Cumple la DoR: T03a y T07 están en Hecha. Reviso F-09 y el contrato de PATCH 
+  /auth/password en la API.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && grep -n "F-09"
+      -A8 docs/01-spec.md | head -12; cat
+      src/api/src/modules/auth/dto/*password*.ts; grep -…)
+  ⎿  172:**F-09 · Cambiar mi contraseña**
+     173-1. En `/account` ingresa la contraseña actual y la nueva.
+     174-2. Envía `PATCH /api/auth/password`. Responde 204.
+     … +25 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+          a | [T07](tareas/T07.md) |
+      72 -| 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+         - No | Pendiente | |                                            
+      72 +| 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+         + No | En curso | |                                             
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Pendiente | |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      118  | B-114 | 2026-11-15 23:09 | Yo | 3-Ejecutar | REVISIÓN | T07 
+           revisada, cumple la DoD | — | — |
+      119  | B-115 | 2026-11-15 23:10 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-114 | T07 Hecha |
+            docs/02-backlog.md, B-114 |
+      120  | B-116 | 2026-11-15 23:11 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07, B
+           -114), CLAUDE.md (Dependencias) agrega la subsección «Frontend
+            base fijado en T07»: dependencias `react-router` y `@hookform
+           /resolvers` además de las de D-01; `apiClient` como única vía 
+           al API con `ApiError`/`toApiError`; manejo del 401 y uso restr
+           ingido de `skipUnauthorizedHandler`; sesión con `useAuth` y `M
+           E_QUERY_KEY`; estructura de rutas y redirecciones; navegación 
+           por rol en `SessionLayout`; RHF + Zod 4; props de `LoginForm` 
+           para T07c; manejador general de 401 pendiente de prueba | Solo
+            documentación; sin cambios de código | CLAUDE.md, docs/tareas
+           /T07.md §6 y §7, B-114 |
+      121 +| B-117 | 2026-11-15 23:12 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T07b (Mi cuenta: cambio de contraseña). DoR comprobada
+          +: dependencias T03a y T07 en Hecha | En curso | docs/02-backlo
+          +g.md (T07b) |                                                 
+
+● Ahora agrego changePassword al servicio de autenticación, luego creo
+  AccountPage.tsx con validación de la nueva contraseña (mínimo 8 caracteres) y
+  reemplazo el marcador de /account en App.tsx; al final verificaré con lint,
+  build y compose, y probaré en el navegador con empleado3. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Escribo el servicio y la página.
+
+● Update(src\web\src\features\auth\authService.ts)
+  ⎿  Added 5 lines
+      16      await apiClient.post<void>('/auth/logout', undefined, { ski
+          pUnauthorizedHandler: true });
+      17    },
+      18  
+      19 +  /** `PATCH /auth/password` (F-09, 204). Contraseña actual inc
+         +orrecta → `ApiError` 422 `INVALID_CURRENT_PASSWORD`. */        
+      20 +  async changePassword(currentPassword: string, newPassword: st
+         +ring): Promise<void> {                                         
+      21 +    await apiClient.patch<void>('/auth/password', { currentPass
+         +word, newPassword });                                          
+      22 +  },                                                           
+      23 +                                                               
+      24    /** `GET /auth/me`: el usuario de la sesión, o `null` si no h
+          ay sesión válida (401). */
+      25    async me(signal?: AbortSignal): Promise<User | null> {
+      26      try {
+
+● Write(src\web\src\features\auth\AccountPage.tsx)
+  ⎿  Wrote 104 lines to src\web\src\features\auth\AccountPage.tsx
+      1 import { zodResolver } from '@hookform/resolvers/zod';
+      2 import { useMutation } from '@tanstack/react-query';
+      3 import { useState } from 'react';
+      4 import { useForm } from 'react-hook-form';
+      5 import { z } from 'zod';
+      6 import { toApiError, type ApiError } from '../../shared/apiClient
+        ';
+      7 import { Banner, Button, Field, useToast } from '../../shared/ui'
+        ;
+      8 import { authService } from './authService';
+     … +96 lines (ctrl+o to expand)
+
+● Aplico gcTime: 0 también al login, para que la contraseña no se quede en la
+  caché de mutaciones, y conecto la ruta.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && sed -i
+      "s|    mutationFn: ({ email, password }: LoginData) =>
+      authService.login(email, passwo…)
+  ⎿  src/features/auth/AccountPage.tsx:25: * no se guardan en el navegador
+     ni se imprimen, y la mutación no queda en la caché (`gcTime: 0`).
+     src/features/auth/AccountPage.tsx:45:    gcTime: 0,
+     … +12 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\App.tsx (+2 -1)
+      1  import { QueryClientProvider } from '@tanstack/react-query';
+      2  import { useState } from 'react';
+      3  import { BrowserRouter, Navigate, Route, Routes } from 'react-ro
+         uter';
+      4 +import { AccountPage } from './features/auth/AccountPage';      
+      5  import { AuthProvider } from './features/auth/AuthProvider';
+      6  import { LoginPage } from './features/auth/LoginPage';
+      7  import { ProtectedRoute } from './features/auth/ProtectedRoute';
+     ...
+      30                    <Route index element={<Navigate to="/agenda" 
+          replace />} />
+      31                    <Route path="/agenda" element={<PlaceholderPa
+          ge title="Agenda" />} />
+      32                    <Route path="/my-bookings" element={<Placehol
+          derPage title="Mis reservas" />} />
+      32 -                  <Route path="/account" element={<PlaceholderP
+         -age title="Mi cuenta" />} />                                   
+      33 +                  <Route path="/account" element={<AccountPage 
+         +/>} />                                                         
+      34                    <Route path="/admin" element={<RequireRole ro
+          le="ADMIN" />}>
+      35                      <Route index element={<Navigate to="/agenda
+          " replace />} />
+      36                      <Route path="rooms" element={<PlaceholderPa
+          ge title="Salas" />} />
+  ⎿  Updated src\web\src\features\auth\LoginForm.tsx (+2 -0)
+      55  
+      56    const login = useMutation({
+      57      mutationFn: ({ email, password }: LoginData) => authService
+          .login(email, password),
+      58 +    // La contraseña no queda en la caché de mutaciones al sali
+         +r de la pantalla (A07).                                        
+      59 +    gcTime: 0,                                                 
+      60      onMutate: () => onSubmitStatusChange?.('loading'),
+      61      onSuccess: (user) => {
+      62        onSubmitStatusChange?.('success');
+  ⎿  (timeout 10m)
+
+● Pruebo en el navegador con empleado3.
+
+  Called claude-in-chrome 11 times (ctrl+o to expand)
+
+● Pruebo primero CA3 (nueva corta) y CA2 (actual incorrecta), observando el
+  botón y la red.
+
+  Called claude-in-chrome 9 times (ctrl+o to expand)
+
+● CA3 por el lado del cliente se cumple: sin petición. Ahora pruebo CA2: nueva
+  de 8 o más caracteres con la actual incorrecta.
+
+  Called claude-in-chrome 6 times (ctrl+o to expand)
+
+● CA2 y CA4 se cumplen. Ahora pruebo CA1 con la actual correcta.
+
+  Called claude-in-chrome 5 times (ctrl+o to expand)
+
+● CA1 se cumple: 204, toast de éxito y campos vacíos. Ahora cierro sesión, entro
+  con la nueva contraseña y restauro la original.
+
+  Called claude-in-chrome 13 times (ctrl+o to expand)
+
+● Entró con la nueva contraseña. Restauro Empleado12345.
+
+  Called claude-in-chrome 7 times (ctrl+o to expand)
+
+● Contraseña restaurada (204). Ahora pruebo el manejador general de 401 que
+  quedó pendiente en T07: invalido la sesión en el servidor y envío el
+  formulario.
+
+  Called claude-in-chrome 9 times (ctrl+o to expand)
+● El manejador general de 401 ya queda probado: el PATCH devolvió 401 y la app
+  terminó en /login. Confirmo con curl que empleado3 conserva Empleado12345 y
+  reviso los logs.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Todo está en orden: empleado3 entra con Empleado12345, no hay errores de nivel
+  50 y ninguna contraseña aparece en los logs. Cierro la pestaña y documento.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Write(docs\tareas\T07b.md)
+  ⎿  Wrote 110 lines to docs\tareas\T07b.md
+       1 # T07b · Mi cuenta: cambio de contraseña
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | En revisión |
+       8 | Inicio – fin | 2026-11-15 23:12 – FIN |
+       9 | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta a
+     … +102 lines (~7 KB) (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && M=$(( (10#${NOW:11:2}*60+10#${NOW:14:2}) -
+      (23*60+12) )) && sed -i "…)
+  ⎿  8:| Inicio – fin | 2026-11-15 23:12 – 23:17 (5 min) · estimado: S |
+     | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | E
+     n revisión | [T07b](tareas/T07b.md) |
+     … +14 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+          a | [T07](tareas/T07.md) |
+      72 -| 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+         - No | En curso | |                                             
+      72 +| 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+         + No | En revisión | [T07b](tareas/T07b.md) |                   
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Pendiente | |
+     ...
+      705  | Dependencias | T03a, T07 |
+      706  | Estimación | S |
+      707  | Seguridad / auditoría | Roles: autenticado. Auditoría: la ge
+           nera la API (`USER_PASSWORD_CHANGED`, T06a). OWASP A07: la con
+           traseña no se guarda en estado persistente ni se loguea |
+      708 -| Estado | Pendiente |                                        
+      708 +| Estado | En revisión |                                      
+      709  
+      710  **Alcance (archivos o módulos):**
+      711  - `src/web/src/features/auth/AccountPage.tsx`, esquema Zod y m
+           utación `PATCH /auth/password`.
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      119  | B-115 | 2026-11-15 23:10 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07 pasa a Hecha en el resumen y en la f
+           icha de 02-backlog.md, tras la revisión de B-114 | T07 Hecha |
+            docs/02-backlog.md, B-114 |
+      120  | B-116 | 2026-11-15 23:11 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07, B
+           -114), CLAUDE.md (Dependencias) agrega la subsección «Frontend
+            base fijado en T07»: dependencias `react-router` y `@hookform
+           /resolvers` además de las de D-01; `apiClient` como única vía 
+           al API con `ApiError`/`toApiError`; manejo del 401 y uso restr
+           ingido de `skipUnauthorizedHandler`; sesión con `useAuth` y `M
+           E_QUERY_KEY`; estructura de rutas y redirecciones; navegación 
+           por rol en `SessionLayout`; RHF + Zod 4; props de `LoginForm` 
+           para T07c; manejador general de 401 pendiente de prueba | Solo
+            documentación; sin cambios de código | CLAUDE.md, docs/tareas
+           /T07.md §6 y §7, B-114 |
+      121  | B-117 | 2026-11-15 23:12 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07b (Mi cuenta: cambio de contraseña). DoR comprobada
+           : dependencias T03a y T07 en Hecha | En curso | docs/02-backlo
+           g.md (T07b) |
+      122 +| B-118 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T07b (Mi cuenta: cambio de contraseña): `features/auth/Ac
+          +countPage.tsx` con RHF + Zod (actual obligatoria, nueva ≥ 8, R
+          +N-18), `authService.changePassword` (`PATCH /auth/password`), 
+          +204 → toast y formulario limpio, 422 `INVALID_CURRENT_PASSWORD
+          +` → error en el campo actual, otros errores → `Banner` con `re
+          +questId`; mutación con `gcTime: 0`. Lint y build sin errores, 
+          +compose healthy, CA1–CA5 comprobados en Chrome con empleado3 (
+          +contraseña restaurada a la del seed, login 200), logs sin erro
+          +res ni contraseñas. Se comprobó además el manejador general de
+          + 401 pendiente de T07 (`PATCH` 401 → `/login`) | T07b En revis
+          +ión. Commit: ver la fila siguiente. Desvíos: `gcTime: 0` tambi
+          +én en la mutación del login (A07), éxito con toast. Ambigüedad
+          +es: el 400 del API no se alcanza desde la pantalla (validación
+          + igual), 422 en el campo sin `requestId`, textos sin prototipo
+          + | docs/tareas/T07b.md, B-117 |                               
+      123 +| B-119 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Re
+          +gistro del hash del commit de T07b (fila B-118) | Commit `af4d
+          +0db` (código y documentación de T07b) | B-118, docs/tareas/T07
+          +b.md |                                                        
+  ⎿  Updated docs\tareas\T07b.md (+2 -2)
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | En revisión |
+       8 -| Inicio – fin | 2026-11-15 23:12 – FIN |                      
+       8 +| Inicio – fin | 2026-11-15 23:12 – 23:17 (5 min) · estimado: S
+         + |                                                             
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta 
+          al cerrar la sesión) |
+      10 -| Commit(s) | ver la fila siguiente a «Fin de T07b» en `docs/03
+         --bitacora.md` |                                                
+      10 +| Commit(s) | `af4d0db` (registrado en B-119) |                
+      11  | Trazabilidad | RN-18 · D-19 · spec §6 (F-09), §9 (Mi cuenta) 
+          · backlog T07b |
+      12  
+      13  ## 1. Objetivo
+
+● T07b está terminada y en En revisión: desde /account la persona cambia su
+  contraseña contra la API real. Comprobé los 5 criterios de aceptación en
+  Chrome con empleado3; el 400 de la API solo lo verifiqué desde la API
+  directamente (ver ambigüedades). Lint y build pasan sin errores, docker 
+  compose up -d --build deja todo healthy, y los logs de la API no tienen
+  errores ni contraseñas. Commits: af4d0db (código y documentación) y babb434
+  (hash en bitácora).
+
+  Cómo responde la pantalla:
+  - Antes de enviar: la contraseña actual es obligatoria y la nueva necesita al
+    menos 8 caracteres. Si no se cumple, el error sale junto al campo y no se
+    llama a la API.
+  - Éxito (204): aparece un aviso de éxito y el formulario se limpia.
+  - Actual incorrecta (422): el mensaje se muestra en el campo de la contraseña
+    actual, que recibe el foco.
+  - Cualquier otro error: se muestra en un banner con el mensaje y su requestId.
+  - Mientras envía: el botón queda deshabilitado.
+
+  La contraseña de empleado3 quedó restaurada a Empleado12345; comprobé con curl
+  que el login responde 200.
+
+  Pendiente de T07, ya resuelto: el manejador general de 401 quedó probado. Con
+  la sesión invalidada en el servidor, el cambio de contraseña dio 401 y la app
+  llevó a /login.
+
+  Desvíos:
+  - Cambio en LoginForm, fuera del alcance escrito: sin él, TanStack Query
+    guardaba el correo y la contraseña del login durante 5 minutos después de
+    salir de /login. Ahora no los conserva (gcTime: 0), igual que la nueva
+    pantalla. Es una línea.
+  - Aviso de éxito como toast: el spec no dice dónde va.
+
+  Ambigüedades:
+  - El 400 de la API no se puede provocar desde la pantalla, porque la
+    validación del cliente es la misma. Comprobé la respuesta real con una
+    petición directa; en la pantalla iría al mismo banner que ya se vio
+    funcionar en el login de T07.
+  - El error de contraseña actual incorrecta no muestra requestId, porque va
+    junto al campo, como pide el criterio. Los errores inesperados sí lo
+    muestran en el banner.
+  - Textos sin prototipo: "Cambiar contraseña", "Al menos 8 caracteres." y el
+    aviso de éxito los redacté yo.
+
+  Quedo a la espera de tu revisión.
+
+✻ Sautéed for 5m 3s · done 23:17
+
+> /bitacora REVISION T07b revisada, cumple la DoD                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-12 && NOW=$(date "+%Y-%m-%d %H:%M") && echo
+      "| B-120 | $NOW | Y…)
+  ⎿  | B-119 | 20
+     | B-120 | 2026-11-15 23:19 | Yo | 3-Ejecutar | REVISIÓN | T07b revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      121  | B-117 | 2026-11-15 23:12 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07b (Mi cuenta: cambio de contraseña). DoR comprobada
+           : dependencias T03a y T07 en Hecha | En curso | docs/02-backlo
+           g.md (T07b) |
+      122  | B-118 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07b (Mi cuenta: cambio de contraseña): `features/auth/Ac
+           countPage.tsx` con RHF + Zod (actual obligatoria, nueva ≥ 8, R
+           N-18), `authService.changePassword` (`PATCH /auth/password`), 
+           204 → toast y formulario limpio, 422 `INVALID_CURRENT_PASSWORD
+           ` → error en el campo actual, otros errores → `Banner` con `re
+           questId`; mutación con `gcTime: 0`. Lint y build sin errores, 
+           compose healthy, CA1–CA5 comprobados en Chrome con empleado3 (
+           contraseña restaurada a la del seed, login 200), logs sin erro
+           res ni contraseñas. Se comprobó además el manejador general de
+            401 pendiente de T07 (`PATCH` 401 → `/login`) | T07b En revis
+           ión. Commit: ver la fila siguiente. Desvíos: `gcTime: 0` tambi
+           én en la mutación del login (A07), éxito con toast. Ambigüedad
+           es: el 400 del API no se alcanza desde la pantalla (validación
+            igual), 422 en el campo sin `requestId`, textos sin prototipo
+            | docs/tareas/T07b.md, B-117 |
+      123  | B-119 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07b (fila B-118) | Commit `af4d
+           0db` (código y documentación de T07b) | B-118, docs/tareas/T07
+           b.md |
+      124 +| B-120 | 2026-11-15 23:19 | Yo | 3-Ejecutar | REVISIÓN | T07b
+          + revisada, cumple la DoD | — | — |                            
+
+● Fila agregada a docs/03-bitacora.md (escribí "REVISION" con tilde, como en las
+  filas anteriores):
+
+  | B-120 | 2026-11-15 23:19 | Yo | 3-Ejecutar | REVISIÓN | T07b revisada, 
+  cumple la DoD | — | — |
+
+  No hice commit.
+
+✻ Worked for 7s · done 23:19
+
+> Pasa T07b Hecha en el backlog y haz commit                                    
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^|
+      14 | T07b | \(.*\) | En revisión | \[T07b\]/| 14 | T07b | \1 | Hecha |
+      [T07b]/' docs/02-…)
+  ⎿  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | H
+     echa | [T07b](tareas/T07b.md) |
+     | Estado | Hecha |
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+          a | [T07](tareas/T07.md) |
+      72 -| 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+         - No | En revisión | [T07b](tareas/T07b.md) |                   
+      72 +| 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+         + No | Hecha | [T07b](tareas/T07b.md) |                         
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Pendiente | |
+     ...
+      705  | Dependencias | T03a, T07 |
+      706  | Estimación | S |
+      707  | Seguridad / auditoría | Roles: autenticado. Auditoría: la ge
+           nera la API (`USER_PASSWORD_CHANGED`, T06a). OWASP A07: la con
+           traseña no se guarda en estado persistente ni se loguea |
+      708 -| Estado | En revisión |                                      
+      708 +| Estado | Hecha |                                            
+      709  
+      710  **Alcance (archivos o módulos):**
+      711  - `src/web/src/features/auth/AccountPage.tsx`, esquema Zod y m
+           utación `PATCH /auth/password`.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      122  | B-118 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07b (Mi cuenta: cambio de contraseña): `features/auth/Ac
+           countPage.tsx` con RHF + Zod (actual obligatoria, nueva ≥ 8, R
+           N-18), `authService.changePassword` (`PATCH /auth/password`), 
+           204 → toast y formulario limpio, 422 `INVALID_CURRENT_PASSWORD
+           ` → error en el campo actual, otros errores → `Banner` con `re
+           questId`; mutación con `gcTime: 0`. Lint y build sin errores, 
+           compose healthy, CA1–CA5 comprobados en Chrome con empleado3 (
+           contraseña restaurada a la del seed, login 200), logs sin erro
+           res ni contraseñas. Se comprobó además el manejador general de
+            401 pendiente de T07 (`PATCH` 401 → `/login`) | T07b En revis
+           ión. Commit: ver la fila siguiente. Desvíos: `gcTime: 0` tambi
+           én en la mutación del login (A07), éxito con toast. Ambigüedad
+           es: el 400 del API no se alcanza desde la pantalla (validación
+            igual), 422 en el campo sin `requestId`, textos sin prototipo
+            | docs/tareas/T07b.md, B-117 |
+      123  | B-119 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07b (fila B-118) | Commit `af4d
+           0db` (código y documentación de T07b) | B-118, docs/tareas/T07
+           b.md |
+      124  | B-120 | 2026-11-15 23:19 | Yo | 3-Ejecutar | REVISIÓN | T07b
+            revisada, cumple la DoD | — | — |
+      125 +| B-121 | 2026-11-15 23:19 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T07b pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-120 | T07b Hecha
+          + | docs/02-backlog.md, B-120 |                                
+
+● T07b quedó en Hecha en docs/02-backlog.md, tanto en la tabla de resumen como
+  en la ficha. Lo registré en la bitácora como B-121 y está en el commit
+  155ed83, "T07b: revisión aprobada y estado Hecha", que también lleva tu fila
+  B-120 y la sección 8 de docs/tareas/T07b.md.
+
+  En tu revisión pediste actualizar CLAUDE.md con los desvíos, si hace falta. No
+  lo hice todavía. Para T07b serían tres puntos breves que conviene fijar:
+  - Mutaciones con contraseñas: usar siempre gcTime: 0, y reset() al terminar si
+    el formulario sigue montado.
+  - Errores de regla de negocio de un campo: van en ese campo con setError. Los
+    inesperados van al Banner con su requestId.
+  - Manejador general de 401: ya está probado, así que se quita el aviso de
+    pendiente de la subsección de T07.
+
+  ¿Lo agrego?
+
+✻ Cooked for 14s · done 23:19
+
+> Actualiza CLAUDE.md con los desvíos de T07b y haz commit                      
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i
+      '391,392d' CLAUDE.md && cat >> CLAUDE.md <<'EOF'
+      - **Manejador general de 401 comprobado en T0…)
+  ⎿  a237fe5 T07b: CLAUDE.md con los desvíos de la tarea
+     ?? docs/sesiones/2026-11-15-224633-local-command-caveatthe-command-bel
+     ow-was-run-d.txt
+     … +13 lines (ctrl+o to expand)
+  ⎿  Updated CLAUDE.md (+18 -2)
+      388    `{ error: '…' }` y `z.email()`. Los textos de error van en e
+           spañol y junto al campo.
+      389  - **`LoginForm` y `PasswordField`** ya exponen `onFocusChange`
+           , `onPasswordVisibleChange` y `onSubmitStatusChange` para
+      390    T07c, que solo debe cambiar `LoginPage` y agregar los person
+           ajes, sin pasarles el valor de la contraseña.
+      391 -- **Pendiente de prueba:** el manejador general de 401 aún no 
+          -se ejercitó en el navegador (solo `/me`); comprobarlo en      
+      392 -  T07b o T08 con la primera pantalla que llame a la API.      
+      391 +- **Manejador general de 401 comprobado en T07b:** con la sesi
+          +ón invalidada en el servidor, `PATCH /auth/password` dio      
+      392 +  401 y la app llevó a `/login`.                              
+      393 +                                                              
+      394 +### Mi cuenta fijado en T07b (ver `docs/tareas/T07b.md` §6 y §
+          +7)                                                            
+      395 +- **Mutaciones que llevan contraseñas** (login, cambio, alta d
+          +e usuario y reset en T10a): `useMutation({ …, gcTime: 0 })`   
+      396 +  y, si el formulario sigue montado después del envío, `reset(
+          +)` de la mutación en `onSettled`, para que la contraseña      
+      397 +  no quede en la caché de TanStack Query. Nunca `console.log` 
+          +de valores de formularios.                                    
+      398 +- **Errores del API en formularios:** un error de regla de neg
+          +ocio que corresponde a un campo (`INVALID_CURRENT_PASSWORD`;  
+      399 +  después, por ejemplo, `EMAIL_TAKEN` o `ROOM_NAME_TAKEN`) va 
+          +a ese campo con `setError(campo, { message }, { shouldFocus:  
+      400 +  true })` y el mensaje del API. Todo error inesperado o sin c
+          +ampo va a un `Banner` con su `requestId`, encima del formulari
+          +o.                                                            
+      401 +- **Éxito de un formulario:** `useToast().show({ tone: 'succes
+          +s', message })` y limpiar el formulario con `reset(...)`.     
+      402 +- **Validación del cliente igual a la del API** (por ejemplo, 
+          +contraseña ≥ 8, RN-18), con mensajes en español junto al campo
+          +.                                                             
+      403 +  Si con eso el 400 del API no se puede provocar desde la pant
+          +alla, se comprueba con una petición directa y se anota en     
+      404 +  `docs/tareas/Txx.md`.                                       
+      405 +- **`PasswordField`** se reutiliza en todo campo de contraseña
+          +, con `autoComplete` `current-password` o `new-password`.     
+      406 +  No hay campo de confirmación (el spec no lo pide).          
+      407 +- **Verificación con usuarios del seed:** si una prueba cambia
+          + la contraseña de uno, se restaura la del seed al terminar    
+      408 +  y se comprueba con un login por `curl`.                     
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      123  | B-119 | 2026-11-15 23:17 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07b (fila B-118) | Commit `af4d
+           0db` (código y documentación de T07b) | B-118, docs/tareas/T07
+           b.md |
+      124  | B-120 | 2026-11-15 23:19 | Yo | 3-Ejecutar | REVISIÓN | T07b
+            revisada, cumple la DoD | — | — |
+      125  | B-121 | 2026-11-15 23:19 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07b pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-120 | T07b Hecha
+            | docs/02-backlog.md, B-120 |
+      126 +| B-122 | 2026-11-15 23:20 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T07b, 
+          +B-120), CLAUDE.md (Dependencias) agrega la subsección «Mi cuen
+          +ta fijado en T07b»: mutaciones con contraseñas con `gcTime: 0`
+          + y `reset()`; errores de regla de negocio en su campo con `set
+          +Error` y el resto en `Banner` con `requestId`; éxito con toast
+          + y `reset`; validación del cliente igual a la del API; reutili
+          +zar `PasswordField`; restaurar contraseñas del seed tras verif
+          +icar. En la subsección de T07, el aviso «Pendiente de prueba» 
+          +del manejador general de 401 se reemplaza por su comprobación 
+          +en T07b | Solo documentación; sin cambios de código | CLAUDE.m
+          +d, docs/tareas/T07b.md §6 y §7, B-120 |                       
+
+● Actualicé CLAUDE.md con los desvíos de T07b y lo dejé en el commit a237fe5,
+  "T07b: CLAUDE.md con los desvíos de la tarea". En la bitácora quedó como B-122
+  (CORRECCIÓN, solo documentación).
+
+  Cambios:
+  - Subsección de T07: el aviso "Pendiente de prueba" del manejador general de
+    401 ahora dice que se comprobó en T07b: con la sesión invalidada, el cambio
+    de contraseña dio 401 y la app llevó a /login.
+  - Nueva subsección «Mi cuenta fijado en T07b», con las reglas para las
+    pantallas siguientes:
+    - Contraseñas en formularios: toda mutación que las lleve no se guarda en la
+      caché (gcTime: 0), y se reinicia al terminar si el formulario sigue en
+      pantalla. Aplica también a T10a (alta de usuario y reset).
+    - Errores del API: el de una regla de negocio de un campo va a ese campo;
+      por ejemplo EMAIL_TAKEN o ROOM_NAME_TAKEN. El resto va a un banner con su
+      requestId.
+    - Éxito: se muestra un toast y se limpia el formulario.
+    - Validación: la del cliente es igual a la del API. Si eso impide provocar
+      el 400 desde la pantalla, se comprueba con una petición directa y se anota
+      en el documento de la tarea.
+    - Campos de contraseña: se reutiliza PasswordField, sin campo de
+      confirmación.
+    - Verificaciones: si una prueba cambia la contraseña de un usuario del seed,
+      se restaura al terminar y se comprueba con un login por curl.
+
+  Solo sigue sin seguimiento el archivo de sesión de docs/sesiones/.
+
+✻ Worked for 21s · done 23:20
+
+> /ejecutar-tarea T07c                                                          
+
+● La DoR se cumple: T07a y T07 están en Hecha y la ficha está completa (la leí
+  en T07). Registro el inicio y reviso la imagen del login.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && echo $NOW && echo "| B-123 | $NOW | Agente |
+      3-Ejecutar | AGENTE | I…)
+  ⎿  2026-11-15 23:21
+     73:| 15 | T07c | Login: composición visual de la imagen y personajes a
+     nimados | T07a, T07 | L | **Sí** | En curso | |
+  ⎿  Updated docs\02-backlog.md (+1 -1)
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+          a | [T07](tareas/T07.md) |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Hecha | [T07b](tareas/T07b.md) |
+      73 -| 15 | T07c | Login: composición visual de la imagen y personaj
+         -es animados | T07a, T07 | L | **Sí** | Pendiente | |           
+      73 +| 15 | T07c | Login: composición visual de la imagen y personaj
+         +es animados | T07a, T07 | L | **Sí** | En curso | |            
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Pendiente | |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Pendiente | |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      124  | B-120 | 2026-11-15 23:19 | Yo | 3-Ejecutar | REVISIÓN | T07b
+            revisada, cumple la DoD | — | — |
+      125  | B-121 | 2026-11-15 23:19 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07b pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-120 | T07b Hecha
+            | docs/02-backlog.md, B-120 |
+      126  | B-122 | 2026-11-15 23:20 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07b, 
+           B-120), CLAUDE.md (Dependencias) agrega la subsección «Mi cuen
+           ta fijado en T07b»: mutaciones con contraseñas con `gcTime: 0`
+            y `reset()`; errores de regla de negocio en su campo con `set
+           Error` y el resto en `Banner` con `requestId`; éxito con toast
+            y `reset`; validación del cliente igual a la del API; reutili
+           zar `PasswordField`; restaurar contraseñas del seed tras verif
+           icar. En la subsección de T07, el aviso «Pendiente de prueba» 
+           del manejador general de 401 se reemplaza por su comprobación 
+           en T07b | Solo documentación; sin cambios de código | CLAUDE.m
+           d, docs/tareas/T07b.md §6 y §7, B-120 |
+      127 +| B-123 | 2026-11-15 23:21 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T07c (Login: composición visual de la imagen y persona
+          +jes animados). DoR comprobada: dependencias T07a y T07 en Hech
+          +a | En curso | docs/02-backlog.md (T07c) |                    
+
+  Read 1 file (ctrl+o to expand)
+
+● Plan de T07c: colores de personajes como tokens, una función pura para las
+  poses, el SVG animado con su hook de cursor, ajustes de LoginPage, LoginForm y
+  PasswordField, y verificación con lint, build, grep, compose y Chrome en
+  cuatro anchos. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Agrego los tokens de los personajes y la lógica pura.
+
+● Update(src\web\src\index.css)  ⎿  Added 15 lines
+      143    --shadow-modal: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 
+           10px -6px rgb(15 23 42 / 0.1);
+      144  }
+      145  
+      146 +/*                                                            
+      147 + * T07c · Colores orientativos de los personajes del login (DE
+          +SIGN.md, «Login › Ilustración»). `static` los emite           
+      148 + * siempre como variables CSS, porque el SVG los usa con var()
+          + en los degradados y no como utilidades.                      
+      149 + */                                                           
+      150 +@theme static {                                               
+      151 +  --color-char-big-from: #4a74f0;                             
+      152 +  --color-char-big-to: #0a3ab0;                               
+      153 +  --color-char-mid-from: #8fa8e8;                             
+      154 +  --color-char-mid-to: #6b7fcb;                               
+      155 +  --color-char-small-from: #4de8b4;                           
+      156 +  --color-char-small-to: #0baf7c;                             
+      157 +  --color-char-semi-from: #a9bff7;                            
+      158 +  --color-char-semi-to: #6f8ddd;                              
+      159 +}                                                             
+      160 +                                                              
+      161  /* Cifras tabulares para horas, capacidades y contadores (DESI
+           GN.md, Tipografía). */
+      162  @utility tnum {
+      163    font-feature-settings: 'tnum' 1;
+
+● Write(src\web\src\features\auth\characterState.ts)
+  ⎿  Wrote 36 lines to src\web\src\features\auth\characterState.ts
+       1 /**
+       2  * T07c · Estado visual de los personajes del login. Función pur
+         a (S-09: sin pruebas de frontend, pero lista para
+       3  * probarse). Nunca recibe la contraseña: solo dónde está el foc
+         o, si la contraseña se ve y cómo va el envío.
+       4  */
+       5 export type CharacterFocus = 'none' | 'email' | 'password';
+       6 export type CharacterSubmitStatus = 'idle' | 'loading' | 'error'
+          | 'success';
+       7 
+     … +29 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\useCharacterLook.ts)
+  ⎿  Wrote 66 lines to src\web\src\features\auth\useCharacterLook.ts
+       1 import { useEffect, useState, type RefObject } from 'react';
+       2 
+       3 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+       4 
+       5 /** `true` si la persona pidió reducir el movimiento (CA16). Se 
+         actualiza si cambia la preferencia. */
+       6 export function usePrefersReducedMotion(): boolean {
+       7   const [reduced, setReduced] = useState(() => window.matchMedia
+         (REDUCED_MOTION).matches);
+       8 
+     … +58 lines (ctrl+o to expand)
+
+● Escribo los personajes y su CSS.
+
+● Write(src\web\src\features\auth\AnimatedCharacters.tsx)
+  ⎿  Wrote 129 lines to src\web\src\features\auth\AnimatedCharacters.tsx
+      1 import { useRef, type CSSProperties } from 'react';
+      2 import { cn } from '../../shared/ui';
+      3 import './animated-characters.css';
+      4 import {
+      5   characterState,
+      6   type CharacterFocus,
+      7   type CharacterSubmitStatus,
+      8 } from './characterState';
+      9 import { useCharacterLook, usePrefersReducedMotion } from './useC
+        haracterLook';
+     … +120 lines (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\animated-characters.css)
+  ⎿  Wrote 235 lines to src\web\src\features\auth\animated-characters.css
+       1 /*
+       2  * T07c · Poses y animaciones de los personajes del login (Anima
+         tedCharacters.tsx). Solo tokens del tema (var(--color-…)).
+       3  * La pose la fija `data-pose` en el <svg>: idle · email · passw
+         ord · peeking · loading · error · success.
+       4  */
+       5 
+       6 .characters {
+       7   --look-x: 0;
+       8   --look-y: 0;
+     … +227 lines (ctrl+o to expand)
+
+● Ahora el LoginForm, con espera de celebración, región status y hueco bajo la
+  contraseña, y el ajuste del foco del ojo.
+
+● Write(src\web\src\features\auth\LoginForm.tsx)
+  ⎿  Error writing file
+
+● Update(src\web\src\features\auth\PasswordField.tsx)
+  ⎿  Added 3 lines
+      27        <button
+      28          type="button"
+      29          onClick={toggle}
+      30 +        // Con el ratón, el foco se queda en el campo (T07c, CA
+         +11: al ocultarla, si la contraseña conserva el foco,           
+      31 +        // los personajes vuelven a mirar a la izquierda). Con 
+         +el teclado, el botón recibe el foco como siempre.              
+      32 +        onMouseDown={(event) => event.preventDefault()}        
+      33          aria-pressed={visible}
+      34          aria-label={visible ? 'Ocultar contraseña' : 'Mostrar c
+          ontraseña'}
+      35          aria-controls={inputProps.id}
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(src\web\src\features\auth\LoginForm.tsx)
+  ⎿  Added 73 lines, removed 28 lines
+      1  import { zodResolver } from '@hookform/resolvers/zod';
+      2  import { useMutation } from '@tanstack/react-query';
+      3  import { ArrowUpRight } from 'lucide-react';
+      4 -import type { FocusEvent } from 'react';                        
+      4 +import { useEffect, useRef, useState, type FocusEvent, type Reac
+        +tNode } from 'react';                                           
+      5  import { useForm } from 'react-hook-form';
+      6  import { useNavigate } from 'react-router';
+      7  import { z } from 'zod';
+     ...
+      17  /** Mensaje genérico de F-01 (A07): no dice si falló el correo 
+          o la contraseña. */
+      18  const INVALID_CREDENTIALS_MESSAGE = 'Correo o contraseña incorr
+          ectos';
+      19  
+      20 +/** Espera máxima antes de ir a `/agenda` para ver la celebraci
+         +ón (T07c, CA12: no más de 1 s). */                             
+      21 +const MAX_SUCCESS_DELAY_MS = 1000;                             
+      22 +                                                               
+      23  /** CA9: correo obligatorio y con formato; contraseña obligator
+          ia, sin regla de longitud (eso es RN-18, al cambiarla). */
+      24  const loginSchema = z.object({
+      25    email: z
+     ...
+      40    onPasswordVisibleChange?: (visible: boolean) => void;
+      41    /** Estado del envío (T07c). */
+      42    onSubmitStatusChange?: (status: LoginSubmitStatus) => void;
+      43 +  /** Contenido bajo el campo de contraseña (T07c: enlace "¿Olv
+         +idaste tu contraseña?"). */                                    
+      44 +  afterPassword?: ReactNode;                                   
+      45 +  /** Espera tras un login correcto antes de ir a `/agenda` (T0
+         +7c: celebración; tope de 1 s). */                              
+      46 +  successDelayMs?: number;                                     
+      47  }
+      48  
+      49 +const STATUS_TEXT: Record<LoginSubmitStatus, string> = {       
+      50 +  idle: '',                                                    
+      51 +  loading: 'Iniciando sesión…',                                
+      52 +  error: 'No se pudo iniciar sesión.',                         
+      53 +  success: 'Sesión iniciada. Entrando a la agenda…',           
+      54 +};                                                             
+      55 +                                                               
+      56  /** Formulario de inicio de sesión (F-01) contra `POST /api/aut
+          h/login`. Al entrar va a `/agenda`. */
+      43 -export function LoginForm({ onFocusChange, onPasswordVisibleCha
+         -nge, onSubmitStatusChange }: LoginFormProps) {                 
+      57 +export function LoginForm({                                    
+      58 +  onFocusChange,                                               
+      59 +  onPasswordVisibleChange,                                     
+      60 +  onSubmitStatusChange,                                        
+      61 +  afterPassword,                                               
+      62 +  successDelayMs = 0,                                          
+      63 +}: LoginFormProps) {                                           
+      64    const { signIn } = useAuth();
+      65    const navigate = useNavigate();
+      66 +  const [status, setStatus] = useState<LoginSubmitStatus>('idle
+         +');                                                            
+      67 +  const redirectTimer = useRef<ReturnType<typeof setTimeout> | 
+         +null>(null);                                                   
+      68  
+      69 +  // CA14: si la pantalla se desmonta durante la espera, se can
+         +cela el temporizador.                                          
+      70 +  useEffect(                                                   
+      71 +    () => () => {                                              
+      72 +      if (redirectTimer.current) clearTimeout(redirectTimer.cur
+         +rent);                                                         
+      73 +    },                                                         
+      74 +    [],                                                        
+      75 +  );                                                           
+      76 +                                                               
+      77 +  const changeStatus = (next: LoginSubmitStatus) => {          
+      78 +    setStatus(next);                                           
+      79 +    onSubmitStatusChange?.(next);                              
+      80 +  };                                                           
+      81 +                                                               
+      82    const {
+      83      register,
+      84      handleSubmit,
+     ...
+       92      mutationFn: ({ email, password }: LoginData) => authServic
+           e.login(email, password),
+       93      // La contraseña no queda en la caché de mutaciones al sal
+           ir de la pantalla (A07).
+       94      gcTime: 0,
+       60 -    onMutate: () => onSubmitStatusChange?.('loading'),        
+       95 +    onMutate: () => changeStatus('loading'),                  
+       96      onSuccess: (user) => {
+       62 -      onSubmitStatusChange?.('success');                      
+       63 -      signIn(user);                                           
+       64 -      navigate('/agenda', { replace: true });                 
+       97 +      changeStatus('success');                                
+       98 +      const enter = () => {                                   
+       99 +        signIn(user);                                         
+      100 +        navigate('/agenda', { replace: true });               
+      101 +      };                                                      
+      102 +      const delay = Math.min(Math.max(successDelayMs, 0), MAX_
+          +SUCCESS_DELAY_MS);                                            
+      103 +      if (delay === 0) enter();                               
+      104 +      else redirectTimer.current = setTimeout(enter, delay);  
+      105      },
+       66 -    onError: () => onSubmitStatusChange?.('error'),           
+      106 +    onError: () => changeStatus('error'),                     
+      107    });
+      108  
+      109 +  const busy = login.isPending || status === 'success';       
+      110 +                                                              
+      111    const onSubmit = handleSubmit((data) => {
+       70 -    // Sin envíos duplicados mientras hay una petición en curs
+          -o (spec §9, Cargando).                                        
+       71 -    if (login.isPending) return;                              
+      112 +    // Sin envíos duplicados mientras hay una petición en curs
+          +o o se está entrando (spec §9, Cargando; T07c CA7).           
+      113 +    if (busy) return;                                         
+      114      login.mutate(data);
+      115    });
+      116  
+     ...
+      129  
+      130    return (
+      131      <form onSubmit={onSubmit} noValidate className="flex flex-
+           col gap-space-lg">
+      132 +      {/* CA7: anuncia carga, error y éxito a los lectores de 
+          +pantalla. */}                                                 
+      133 +      <p role="status" className="sr-only">                   
+      134 +        {STATUS_TEXT[status]}                                 
+      135 +      </p>                                                    
+      136 +                                                              
+      137        {apiError && (
+      138          <Banner tone="error" requestId={apiError.requestId}>
+      139            {isInvalidCredentials ? INVALID_CREDENTIALS_MESSAGE 
+           : apiError.message}
+     ...
+      154          )}
+      155        </Field>
+      156  
+      110 -      <Field label="Contraseña" error={errors.password?.messag
+          -e}>                                                           
+      111 -        {(control) => (                                       
+      112 -          <PasswordField                                      
+      113 -            {...control}                                      
+      114 -            autoComplete="current-password"                   
+      115 -            placeholder="Escribe tu contraseña"               
+      116 -            onPasswordVisibleChange={onPasswordVisibleChange} 
+      117 -            {...password}                                     
+      118 -            {...focusHandlers('password', password.onBlur)}   
+      119 -          />                                                  
+      120 -        )}                                                    
+      121 -      </Field>                                                
+      157 +      <div className="flex flex-col gap-space-sm">            
+      158 +        <Field label="Contraseña" error={errors.password?.mess
+          +age}>                                                         
+      159 +          {(control) => (                                     
+      160 +            <PasswordField                                    
+      161 +              {...control}                                    
+      162 +              autoComplete="current-password"                 
+      163 +              placeholder="Escribe tu contraseña"             
+      164 +              onPasswordVisibleChange={onPasswordVisibleChange
+          +}                                                             
+      165 +              {...password}                                   
+      166 +              {...focusHandlers('password', password.onBlur)} 
+      167 +            />                                                
+      168 +          )}                                                  
+      169 +        </Field>                                              
+      170 +        {afterPassword}                                       
+      171 +      </div>                                                  
+      172  
+      123 -      <Button                                                 
+      124 -        type="submit"                                         
+      125 -        size="lg"                                             
+      126 -        loading={login.isPending}                             
+      127 -        className="w-full"                                    
+      128 -        icon={login.isPending ? undefined : <ArrowUpRight size
+          -={18} />}                                                     
+      129 -      >                                                       
+      173 +      <Button type="submit" size="lg" loading={busy} className
+          +="w-full">                                                    
+      174          Iniciar sesión
+      175 +        {!busy && <ArrowUpRight aria-hidden="true" size={18} /
+          +>}                                                            
+      176        </Button>
+      177      </form>
+      178    );
+
+● Ahora la LoginPage con la composición de la imagen.
+
+● Write(src\web\src\features\auth\LoginPage.tsx)
+  ⎿  Added 127 lines, removed 18 lines
+        1 +import { useEffect, useId, useRef, useState } from 'react';   
+        2  import { Navigate } from 'react-router';
+        2 -import { Spinner } from '../../shared/ui';                    
+        3 +import { Banner, Spinner } from '../../shared/ui';            
+        4 +import { AnimatedCharacters } from './AnimatedCharacters';    
+        5  import { useAuth } from './auth-context';
+        4 -import { LoginForm } from './LoginForm';                      
+        6 +import type { CharacterFocus, CharacterSubmitStatus } from './
+          +characterState';                                              
+        7 +import { LoginForm, type LoginSubmitStatus } from './LoginForm
+          +';                                                            
+        8 +import { usePrefersReducedMotion } from './useCharacterLook'; 
+        9  
+       10 +/** Duración de la reacción de error antes de volver a la post
+          +ura del foco (CA12). */                                       
+       11 +const ERROR_POSE_MS = 900;                                    
+       12 +/** Celebración antes de ir a `/agenda` (CA12: ≤ 1 s). Sin ani
+          +mación (CA16), no se espera. */                               
+       13 +const SUCCESS_DELAY_MS = 700;                                 
+       14 +                                                              
+       15  /**
+        7 - * `/login` funcional y sencillo (T07). La composición de dos 
+          -columnas y los personajes animados llegan en T07c.            
+        8 - * Con una sesión válida no tiene sentido mostrarlo: se va a l
+          -a agenda.                                                     
+       16 + * `/login` (spec §9, D-30; diseño `docs/diseño/stitch/login`)
+          +. Escritorio (≥ 1024 px): tarjeta de dos columnas con la      
+       17 + * ilustración a la izquierda y el formulario a la derecha. Má
+          +s angosto: cabecera compacta (logo e ilustración) y el        
+       18 + * formulario debajo. Con sesión válida, va a la agenda.      
+       19   */
+       20  export function LoginPage() {
+       21    const { status } = useAuth();
+       22 +  const reducedMotion = usePrefersReducedMotion();            
+       23 +  const [focus, setFocus] = useState<CharacterFocus>('none'); 
+       24 +  const [passwordVisible, setPasswordVisible] = useState(false
+          +);                                                            
+       25 +  const [submitStatus, setSubmitStatus] = useState<CharacterSu
+          +bmitStatus>('idle');                                          
+       26 +  const [forgotOpen, setForgotOpen] = useState(false);        
+       27 +  const errorTimer = useRef<ReturnType<typeof setTimeout> | nu
+          +ll>(null);                                                    
+       28 +  const forgotId = useId();                                   
+       29  
+       30 +  useEffect(                                                  
+       31 +    () => () => {                                             
+       32 +      if (errorTimer.current) clearTimeout(errorTimer.current)
+          +;                                                             
+       33 +    },                                                        
+       34 +    [],                                                       
+       35 +  );                                                          
+       36 +                                                              
+       37 +  const onSubmitStatusChange = (next: LoginSubmitStatus) => { 
+       38 +    if (errorTimer.current) clearTimeout(errorTimer.current); 
+       39 +    setSubmitStatus(next);                                    
+       40 +    // Tras el error, vuelven a la postura que corresponda al 
+          +foco (CA12).                                                  
+       41 +    if (next === 'error') errorTimer.current = setTimeout(() =
+          +> setSubmitStatus('idle'), ERROR_POSE_MS);                    
+       42 +  };                                                          
+       43 +                                                              
+       44    if (status === 'authenticated') return <Navigate to="/agenda
+           " replace />;
+       45  
+       46 +  const year = new Date().getFullYear();                      
+       47 +                                                              
+       48    return (
+       16 -    <main className="flex min-h-dvh items-center justify-cente
+          -r bg-canvas px-gutter py-space-xl">                           
+       17 -      <div className="w-full max-w-modal-sm rounded-lg border 
+          -border-divider bg-surface-container-lowest p-margin shadow-ele
+          -vated sm:p-space-xl">                                         
+       18 -        <img src="/logo.svg" alt="SalaLibre" className="mb-spa
+          -ce-xl h-10 w-auto" />                                         
+       19 -        <p className="text-label-xs text-primary-container upp
+          -ercase">Acceso a SalaLibre</p>                                
+       20 -        <h1 className="mt-space-xs text-headline-lg text-ink">
+          -Bienvenido de nuevo</h1>                                      
+       21 -        <p className="mt-space-xs mb-space-xl text-body-md tex
+          -t-on-surface-variant">                                        
+       22 -          Inicia sesión para gestionar tus reservas de salas. 
+       23 -        </p>                                                  
+       24 -        {status === 'loading' ? (                             
+       25 -          <div className="flex justify-center py-space-xl">   
+       26 -            <Spinner label="Comprobando la sesión" />         
+       49 +    <main className="flex min-h-dvh items-center justify-cente
+          +r bg-canvas p-gutter lg:p-margin">                            
+       50 +      <div className="grid w-full max-w-[1080px] overflow-hidd
+          +en rounded-lg border border-divider bg-surface-container-lowes
+          +t shadow-elevated lg:min-h-[812px] lg:grid-cols-[51fr_49fr]"> 
+       51 +        {/* Columna visual: cabecera compacta en móvil y table
+          +ta; columna completa en escritorio. */}                       
+       52 +        <section                                              
+       53 +          aria-label="SalaLibre"                              
+       54 +          className="flex items-end justify-between gap-space-
+          +md border-b border-divider bg-mist px-gutter pt-space-lg lg:fl
+          +ex-col lg:items-stretch lg:justify-start lg:border-r lg:border
+          +-b-0 lg:p-10"                                                 
+       55 +        >                                                     
+       56 +          <div className="flex min-w-0 flex-col gap-space-xl s
+          +elf-center lg:self-auto">                                     
+       57 +            <div className="flex items-center gap-space-md">  
+       58 +              <img src="/logo-icon.svg" alt="" className="size
+          +-11 shrink-0" />                                              
+       59 +              <div className="flex flex-col">                 
+       60 +                <span className="text-lg leading-6 font-semibo
+          +ld text-ink">SalaLibre</span>                                 
+       61 +                <span className="text-label-xs tracking-widest
+          + text-on-surface-variant uppercase">Reserva de salas</span>   
+       62 +              </div>                                          
+       63 +            </div>                                            
+       64 +            <div className="hidden flex-col gap-space-md lg:mt
+          +-12 lg:flex">                                                 
+       65 +              <p className="text-label-xs tracking-widest text
+          +-on-surface-variant uppercase">El espacio para tu equipo</p>  
+       66 +              <h2 className="text-[28px] leading-9 font-semibo
+          +ld tracking-tight text-ink">                                  
+       67 +                Tu próxima reunión,                           
+       68 +                <br />                                        
+       69 +                en el lugar ideal<span className="text-primary
+          +-container">.</span>                                          
+       70 +              </h2>                                           
+       71 +              <p className="max-w-xs text-body-md text-on-surf
+          +ace-variant">                                                 
+       72 +                Encuentra una sala, coordina con tu equipo y r
+          +eserva sin complicaciones.                                    
+       73 +              </p>                                            
+       74 +            </div>                                            
+       75            </div>
+       28 -        ) : (                                                 
+       29 -          <LoginForm />                                       
+       30 -        )}                                                    
+       76 +                                                              
+       77 +          <div className="w-36 shrink-0 sm:w-44 lg:mt-auto lg:
+          +w-full lg:max-w-[440px] lg:self-center lg:pt-space-xl">       
+       78 +            <AnimatedCharacters focus={focus} passwordVisible=
+          +{passwordVisible} submitStatus={submitStatus} />              
+       79 +          </div>                                              
+       80 +                                                              
+       81 +          <p className="hidden items-center gap-space-sm text-
+          +body-sm text-on-surface-variant lg:mt-space-xl lg:flex">      
+       82 +            <span aria-hidden="true" className="size-1.5 round
+          +ed-full bg-available" />                                      
+       83 +            Menos fricción. Más espacio para colaborar.       
+       84 +          </p>                                                
+       85 +        </section>                                            
+       86 +                                                              
+       87 +        {/* Columna del formulario. */}                       
+       88 +        <section className="flex flex-col px-gutter sm:px-marg
+          +in lg:px-14">                                                 
+       89 +          <div className="mx-auto flex w-full max-w-[350px] fl
+          +ex-1 flex-col justify-center py-space-xl lg:py-16">           
+       90 +            <p className="flex items-center gap-space-sm text-
+          +label-xs tracking-widest text-primary-container uppercase">   
+       91 +              <span aria-hidden="true" className="size-1.5 rou
+          +nded-full bg-primary-container" />                            
+       92 +              Acceso a SalaLibre                              
+       93 +            </p>                                              
+       94 +            <h1 className="mt-space-md text-headline-lg text-i
+          +nk">Bienvenido de nuevo</h1>                                  
+       95 +            <p className="mt-space-xs mb-space-xl text-body-md
+          + text-on-surface-variant">                                    
+       96 +              Inicia sesión para gestionar tus reservas de sal
+          +as.                                                           
+       97 +            </p>                                              
+       98 +                                                              
+       99 +            {status === 'loading' ? (                         
+      100 +              <div className="flex justify-center py-space-xl"
+          +>                                                             
+      101 +                <Spinner label="Comprobando la sesión" />     
+      102 +              </div>                                          
+      103 +            ) : (                                             
+      104 +              <LoginForm                                      
+      105 +                onFocusChange={setFocus}                      
+      106 +                onPasswordVisibleChange={setPasswordVisible}  
+      107 +                onSubmitStatusChange={onSubmitStatusChange}   
+      108 +                successDelayMs={reducedMotion ? 0 : SUCCESS_DE
+          +LAY_MS}                                                       
+      109 +                afterPassword={                               
+      110 +                  <>                                          
+      111 +                    <div className="flex justify-end">        
+      112 +                      <button                                 
+      113 +                        type="button"                         
+      114 +                        aria-expanded={forgotOpen}            
+      115 +                        aria-controls={forgotId}              
+      116 +                        onClick={() => setForgotOpen((open) =>
+          + !open)}                                                      
+      117 +                        className="rounded-base text-body-sm f
+          +ont-medium text-primary-container underline-offset-2 hover:und
+          +erline focus-visible:outline-2 focus-visible:outline-offset-2 
+          +focus-visible:outline-primary-container"                      
+      118 +                      >                                       
+      119 +                        ¿Olvidaste tu contraseña?             
+      120 +                      </button>                               
+      121 +                    </div>                                    
+      122 +                    <div id={forgotId}>                       
+      123 +                      {forgotOpen && (                        
+      124 +                        <Banner tone="info">                  
+      125 +                          La recuperación por correo no está d
+          +isponible. Pide a RR. HH. que restablezca tu contraseña.      
+      126 +                        </Banner>                             
+      127 +                      )}                                      
+      128 +                    </div>                                    
+      129 +                  </>                                         
+      130 +                }                                             
+      131 +              />                                              
+      132 +            )}                                                
+      133 +          </div>                                              
+      134 +                                                              
+      135 +          <footer className="flex items-center justify-between
+          + border-t border-divider py-space-lg text-body-sm text-on-surf
+          +ace-variant">                                                 
+      136 +            <span>Reserva de salas</span>                     
+      137 +            <span className="tnum">© {year} SalaLibre</span>  
+      138 +          </footer>                                           
+      139 +        </section>                                            
+      140        </div>
+      141      </main>
+      142    );
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && sed -i
+      's|<h2 className="text-\[28px\]|<p className="text-[28px]|;
+      s|</h2>|</p>|' src/feature…)
+  ⎿  65:              <p className="text-label-xs tracking-widest text-on-s
+     urface-variant uppercase">El espacio para tu equipo</p>
+     66:              <p className="text-[28px] leading-9 font-semibold tra
+     … +8 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\auth\LoginPage.tsx (+2 -2)
+      63              </div>
+      64              <div className="hidden flex-col gap-space-md lg:mt-
+          12 lg:flex">
+      65                <p className="text-label-xs tracking-widest text-
+          on-surface-variant uppercase">El espacio para tu equipo</p>
+      66 -              <h2 className="text-[28px] leading-9 font-semibol
+         -d tracking-tight text-ink">                                    
+      66 +              <p className="text-[28px] leading-9 font-semibold
+         + tracking-tight text-ink">                                     
+      67                  Tu próxima reunión,
+      68                  <br />
+      69                  en el lugar ideal<span className="text-primary-
+          container">.</span>
+      70 -              </h2>                                            
+      70 +              </p>                                             
+      71                <p className="max-w-xs text-body-md text-on-surfa
+          ce-variant">
+      72                  Encuentra una sala, coordina con tu equipo y re
+          serva sin complicaciones.
+      73                </p>
+  ⎿  (timeout 5m)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Todo pasa. Ahora la prueba visual en Chrome.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● La composición se parece a la imagen. La ventana se queda en 607 px de alto,
+  así que la página se desplaza. Ahora compruebo las poses según el foco y la
+  visibilidad.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Las poses email (pupilas que siguen el cursor) y password (miran a la
+  izquierda, sin seguimiento) funcionan. Ahora pruebo la contraseña visible
+  (CA11).
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● La contraseña visible tiene prioridad sobre el foco, y al ocultarla vuelven
+  los puntos. Ahora pruebo el envío en sus tres casos: error, olvido de
+  contraseña y éxito. · summary
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● El error se comporta bien: una sola petición con Enter doble pasa por loading,
+  error y vuelve a password, con la región status anunciando cada estado. Ahora
+  pruebo el caso de éxito y cuánto tarda hasta /agenda. · summary
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● El flujo pasa por loading y success y llega a /agenda en 760 ms, dentro del
+  tope de 1 s. Sigo con las pruebas de anchos de 360, 390 y 768 px en un iframe
+  y la limpieza de listeners al salir. · summary
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● No hay desplazamiento horizontal ni superposición en ningún ancho. Miro cómo
+  se ve la cabecera en móvil.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Se ve bien en los dos anchos. Pongo whitespace-nowrap en "Reserva de salas"
+  para que no se parta a 360 px. Ahora pruebo CA14: al desmontar el login se
+  quitan los listeners.
+
+  Called claude-in-chrome (ctrl+o to expand)
+● Al desmontar se quita el listener y al montar de nuevo queda uno solo. Como no
+  puedo emular prefers-reduced-motion, voy a revisar que la regla CSS esté en
+  la hoja servida. · summary
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Aplico el whitespace-nowrap, reconstruyo y repito las verificaciones de la
+  tarea.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i
+      's|<span className="text-label-xs tracking-widest text-on-surface-variant
+      uppercase">Reserva d…)
+  ⎿  1
+     npm notice run salalibre-web@0.1.0 lint
+     npm notice run eslint .
+     … +11 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\auth\LoginPage.tsx (+1 -1)
+      58                <img src="/logo-icon.svg" alt="" className="size-
+          11 shrink-0" />
+      59                <div className="flex flex-col">
+      60                  <span className="text-lg leading-6 font-semibol
+          d text-ink">SalaLibre</span>
+      61 -                <span className="text-label-xs tracking-widest 
+         -text-on-surface-variant uppercase">Reserva de salas</span>     
+      61 +                <span className="text-label-xs tracking-widest 
+         +whitespace-nowrap text-on-surface-variant uppercase">Reserva de
+         + salas</span>                                                  
+      62                </div>
+      63              </div>
+      64              <div className="hidden flex-col gap-space-md lg:mt-
+          12 lg:flex">
+  ⎿  (timeout 10m)
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● La composición ya se parece a la imagen, salvo que la animación CSS del
+  destello pisa el transform del SVG; envuelvo cada destello en un <g>
+  posicionado para arreglarlo. · summary
+
+● Update(src\web\src\features\auth\AnimatedCharacters.tsx)
+  ⎿  Added 7 lines, removed 2 lines
+       92        </defs>
+       93  
+       94        <ellipse className="shadow" cx="240" cy="338" rx="205" r
+           y="9" filter="url(#char-shadow-blur)" />
+       95 -      <path className="sparkle sparkle-lg" d={SPARKLE} transfo
+          -rm="translate(445 47)" />                                     
+       96 -      <path className="sparkle sparkle-sm" d={SPARKLE} transfo
+          -rm="translate(14 165) scale(0.7)" />                          
+       95 +      {/* La posición va en el <g>: la animación CSS del deste
+          +llo reemplaza el `transform` de su propio elemento. */}       
+       96 +      <g transform="translate(445 47)">                       
+       97 +        <path className="sparkle sparkle-lg" d={SPARKLE} />   
+       98 +      </g>                                                    
+       99 +      <g transform="translate(14 165) scale(0.7)">            
+      100 +        <path className="sparkle sparkle-sm" d={SPARKLE} />   
+      101 +      </g>                                                    
+      102  
+      103        {CHARACTERS.map((c, i) => (
+      104          <g key={c.id} className="enter" style={{ '--i': i } as
+            CSSProperties}>
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Los destellos ya están en su sitio. Cierro la pestaña y documento.
+
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Write(docs\tareas\T07c.md)
+  ⎿  Wrote 177 lines to docs\tareas\T07c.md
+       1 # T07c · Login: composición visual y personajes animados
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | En revisión |
+       8 | Inicio – fin | 2026-11-15 23:21 – FIN |
+       9 | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta a
+     … +169 lines (~13 KB) (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && M=$(( (10#${NOW:11:2}*60+10#${NOW:14:2}) -
+      (23*60+21) )) && sed -i "…)
+  ⎿  8:| Inicio – fin | 2026-11-15 23:21 – 23:31 (10 min) · estimado: L |
+     | 15 | T07c | Login: composición visual de la imagen y personajes anim
+     ados | T07a, T07 | L | **Sí** | En revisión | [T07c](tareas/T07c.md) |
+     … +7 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+          a | [T07](tareas/T07.md) |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Hecha | [T07b](tareas/T07b.md) |
+      73 -| 15 | T07c | Login: composición visual de la imagen y personaj
+         -es animados | T07a, T07 | L | **Sí** | En curso | |            
+      73 +| 15 | T07c | Login: composición visual de la imagen y personaj
+         +es animados | T07a, T07 | L | **Sí** | En revisión | [T07c](tar
+         +eas/T07c.md) |                                                 
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Pendiente | |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Pendiente | |
+     ...
+      738  | Dependencias | T07a, T07 |
+      739  | Estimación | L |
+      740  | Seguridad / auditoría | Roles: público. Auditoría: no aplica
+            (S-02). OWASP A07: la contraseña no se guarda ni se loguea y 
+           no llega a los personajes; mensaje de error genérico; sin enví
+           os duplicados |
+      741 -| Estado | Pendiente |                                        
+      741 +| Estado | En revisión |                                      
+      742  
+      743  **Alcance (archivos o módulos):**
+      744  - `src/web/src/features/auth/LoginPage.tsx`: composición de do
+           s columnas en escritorio y cabecera compacta más formulario en
+            móvil.
+  ⎿  Updated docs\03-bitacora.md (+3 -0)
+      125  | B-121 | 2026-11-15 23:19 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07b pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-120 | T07b Hecha
+            | docs/02-backlog.md, B-120 |
+      126  | B-122 | 2026-11-15 23:20 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T07b, 
+           B-120), CLAUDE.md (Dependencias) agrega la subsección «Mi cuen
+           ta fijado en T07b»: mutaciones con contraseñas con `gcTime: 0`
+            y `reset()`; errores de regla de negocio en su campo con `set
+           Error` y el resto en `Banner` con `requestId`; éxito con toast
+            y `reset`; validación del cliente igual a la del API; reutili
+           zar `PasswordField`; restaurar contraseñas del seed tras verif
+           icar. En la subsección de T07, el aviso «Pendiente de prueba» 
+           del manejador general de 401 se reemplaza por su comprobación 
+           en T07b | Solo documentación; sin cambios de código | CLAUDE.m
+           d, docs/tareas/T07b.md §6 y §7, B-120 |
+      127  | B-123 | 2026-11-15 23:21 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07c (Login: composición visual de la imagen y persona
+           jes animados). DoR comprobada: dependencias T07a y T07 en Hech
+           a | En curso | docs/02-backlog.md (T07c) |
+      128 +| B-124 | 2026-11-15 23:31 | Agente | 3-Ejecutar | ERROR | T07
+          +c: en la verificación visual a 1280 px, el destello grande apa
+          +recía fuera de su sitio: la animación CSS `char-twinkle` reemp
+          +lazaba el atributo `transform` (posición) del `<path>` del SVG
+          + | Corregido: la posición pasa a un `<g transform>` que envuel
+          +ve el destello; se volvió a compilar y a comprobar en el naveg
+          +ador | docs/tareas/T07c.md §6 |                               
+      129 +| B-125 | 2026-11-15 23:31 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T07c (Login: composición visual y personajes animados): `
+          +LoginPage` con la composición de la imagen (dos columnas desde
+          + 1024 px, cabecera compacta debajo), `AnimatedCharacters` (SVG
+          + propio, cuatro personajes en grupos separados) con `animated-
+          +characters.css`, `characterState.ts` (función pura de pose) y 
+          +`useCharacterLook.ts` (cursor y movimiento reducido); aviso de
+          + "¿Olvidaste tu contraseña?"; `LoginForm` con región `role="st
+          +atus"`, `afterPassword` y espera de celebración ≤ 1 s; tokens 
+          +`char-*` en `@theme static`. Lint, build y los 4 greps OK, com
+          +pose healthy; CA1–CA15 y CA17 comprobados en Chrome (poses, cu
+          +rsor, envíos, anchos 360/390/768/1280, limpieza de listeners) 
+          +| T07c En revisión. Commit: ver la fila siguiente. Desvíos: ca
+          +mpos de 40 px (no 46), cambios mínimos en `LoginForm` y `Passw
+          +ordField`. Ambigüedades: CA16 (movimiento reducido) sin emulac
+          +ión automática, queda para la revisión manual; corte a 1024 px
+          +; duraciones 900/700 ms | docs/tareas/T07c.md, B-123, B-124 | 
+      130 +| B-126 | 2026-11-15 23:32 | Agente | 3-Ejecutar | AGENTE | Re
+          +gistro del hash del commit de T07c (fila B-125) | Commit `d318
+          +433` (código y documentación de T07c) | B-125, docs/tareas/T07
+          +c.md |                                                        
+  ⎿  Updated docs\tareas\T07c.md (+2 -2)
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | En revisión |
+       8 -| Inicio – fin | 2026-11-15 23:21 – FIN |                      
+       8 +| Inicio – fin | 2026-11-15 23:21 – 23:31 (10 min) · estimado: 
+         +L |                                                            
+       9  | Agente / sesión | Claude Code · `docs/sesiones/` (se exporta 
+          al cerrar la sesión) |
+      10 -| Commit(s) | ver la fila siguiente a «Fin de T07c» en `docs/03
+         --bitacora.md` |                                                
+      10 +| Commit(s) | `d318433` (registrado en B-126) |                
+      11  | Trazabilidad | D-28, D-30, D-03, D-08, D-19 · RN-14, RN-19 · 
+          spec §6 (F-01), §8, §9 (Login), §11 · backlog T07c |
+      12  
+      13  ## 1. Objetivo
+
+● T07c está terminada y en En revisión: /login reproduce la imagen y los cuatro
+  personajes reaccionan al foco, a la contraseña visible y al envío. Comprobé en
+  Chrome 16 de los 17 criterios. CA16, el modo de movimiento reducido, queda
+  para tu revisión manual (ver pendiente). Lint, build y los greps pasan, y
+  docker compose up -d --build deja todo healthy. Commits: d318433 (código y
+  documentación) y 681e934 (hash en bitácora).
+
+  Cómo se comporta:
+  - Composición: desde 1024 px, tarjeta de dos columnas como la imagen; por
+    debajo, cabecera compacta con logo y la ilustración reducida, y el
+    formulario debajo. A 360, 390 y 768 px no hay desplazamiento horizontal ni
+    superposiciones.
+  - Personajes:
+    - Reposo y correo: con el foco en el correo se inclinan hacia el formulario,
+      y en reposo o en el correo las pupilas siguen el cursor un poco.
+    - Contraseña: con el foco en ella miran a la izquierda y dejan de seguir el
+      cursor.
+    - Contraseña visible: cierran los ojos, y eso manda sobre el foco.
+    - Envío: al enviar se balancean; con error se sacuden y luego vuelven a la
+      postura del foco; con éxito celebran y llegan a /agenda 760 ms después de
+      la respuesta (el tope es 1 s).
+  - Envío: pulsar Enter dos veces seguidas hace una sola petición, y una región
+    accesible anuncia la carga, el error y el éxito.
+  - "¿Olvidaste tu contraseña?": muestra el aviso de que RR. HH. restablece la
+    contraseña. No navega ni llama a la API.
+  - Al salir de /login: se quitan el listener del cursor y los temporizadores,
+    sin errores en consola.
+
+  Pendiente (CA16): la herramienta del navegador no puede activar
+  prefers-reduced-motion. Comprobé que las reglas están en la hoja de estilos y
+  que el código desactiva el seguimiento del cursor y la espera de la
+  celebración. Para revisarlo: DevTools → Rendering → prefers-reduced-motion: 
+  reduce y recargar /login. No debe haber entrada animada, parpadeo ni
+  seguimiento del cursor, y las poses deben seguir distinguiéndose.
+
+  Desvíos:
+  - Campos de 40 px de alto en lugar de 46 px. Uso el Input de T07a tal cual; el
+    botón sí mide 46 px.
+  - Dos ajustes en componentes de T07:
+    - LoginForm recibe el enlace bajo la contraseña y la espera de la
+      celebración.
+    - En PasswordField, pulsar el ojo con el ratón no quita el foco del campo.
+      Sin eso, el comportamiento de "ocultarla con el foco en la contraseña" no
+      se podía dar con el ratón.
+  - Error corregido durante la tarea: el destello grande aparecía fuera de su
+    sitio porque la animación CSS pisaba su posición. Lo registré como ERROR en
+    B-124.
+
+  Ambigüedades (decisiones mías):
+  - Corte a 1024 px: el criterio pide la cabecera compacta también a 768 px.
+  - Cabecera compacta sin titular ni pie: solo logo e ilustración, como describe
+    el diseño.
+  - Duraciones: la reacción de error dura 900 ms y la celebración 700 ms.
+
+  Quedo a la espera de tu revisión.
+
+✻ Churned for 10m 58s · done 23:32
+
+> Podrias validar el responsive del login al tener el 100% de zoom se ve fuera  
+  de pantalla el formulario mas las animaciones podrias validar que se ajuste   
+  al 100% y que sea visible completo                                            
+
+● Primero reproduzco el problema y mido qué se sale de la pantalla.
+
+  Read 1 file, called claude-in-chrome 2 times (ctrl+o to expand)
+
+● El formulario y el pie quedan fuera de la ventana porque el zoom está al 67 %
+  y la tarjeta tiene un alto mínimo fijo de 812 px. Voy a hacer que la tarjeta
+  use el alto disponible, con 812 px como máximo, y reducir la ilustración. 
+  · summary
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/features/auth" && python - <<'EOF'
+      import io…)
+  ⎿  76:      viewBox="0 0 470 360"
+  ⎿  Updated src\web\src\features\auth\LoginPage.tsx (+13 -8)
+      47  
+      48    return (
+      49      <main className="flex min-h-dvh items-center justify-center
+           bg-canvas p-gutter lg:p-margin">
+      50 -      <div className="grid w-full max-w-[1080px] overflow-hidde
+         -n rounded-lg border border-divider bg-surface-container-lowest 
+         -shadow-elevated lg:min-h-[812px] lg:grid-cols-[51fr_49fr]">    
+      50 +      <div className="grid w-full max-w-[1080px] overflow-hidde
+         +n rounded-lg border border-divider bg-surface-container-lowest 
+         +shadow-elevated lg:h-[clamp(520px,calc(100dvh-48px),812px)] lg:
+         +grid-cols-[51fr_49fr]">                                        
+      51          {/* Columna visual: cabecera compacta en móvil y tablet
+          a; columna completa en escritorio. */}
+      52          <section
+      53            aria-label="SalaLibre"
+      54 -          className="flex items-end justify-between gap-space-m
+         -d border-b border-divider bg-mist px-gutter pt-space-lg lg:flex
+         --col lg:items-stretch lg:justify-start lg:border-r lg:border-b-
+         -0 lg:p-10"                                                     
+      54 +          className="flex items-end justify-between gap-space-m
+         +d border-b border-divider bg-mist px-gutter pt-space-lg lg:flex
+         +-col lg:items-stretch lg:justify-start lg:min-h-0 lg:border-r l
+         +g:border-b-0 lg:p-10"                                          
+      55          >
+      56            <div className="flex min-w-0 flex-col gap-space-xl se
+          lf-center lg:self-auto">
+      57              <div className="flex items-center gap-space-md">
+     ...
+      61                  <span className="text-label-xs tracking-widest 
+          whitespace-nowrap text-on-surface-variant uppercase">Reserva de
+           salas</span>
+      62                </div>
+      63              </div>
+      64 -            <div className="hidden flex-col gap-space-md lg:mt-
+         -12 lg:flex">                                                   
+      64 +            <div className="hidden flex-col gap-space-md lg:mt-
+         +[clamp(1rem,4dvh,3rem)] lg:flex">                              
+      65                <p className="text-label-xs tracking-widest text-
+          on-surface-variant uppercase">El espacio para tu equipo</p>
+      66                <p className="text-[28px] leading-9 font-semibold
+           tracking-tight text-ink">
+      67                  Tu próxima reunión,
+     ...
+      74              </div>
+      75            </div>
+      76  
+      77 -          <div className="w-36 shrink-0 sm:w-44 lg:mt-auto lg:w
+         --full lg:max-w-[440px] lg:self-center lg:pt-space-xl">         
+      78 -            <AnimatedCharacters focus={focus} passwordVisible={
+         -passwordVisible} submitStatus={submitStatus} />                
+      77 +          <div className="h-28 w-36 shrink-0 sm:h-32 sm:w-44 lg
+         +:h-auto lg:min-h-0 lg:w-full lg:max-w-[440px] lg:flex-1 lg:self
+         +-center lg:pt-space-lg">                                       
+      78 +            <AnimatedCharacters                                
+      79 +              focus={focus}                                    
+      80 +              passwordVisible={passwordVisible}                
+      81 +              submitStatus={submitStatus}                      
+      82 +              className="h-full w-full"                        
+      83 +            />                                                 
+      84            </div>
+      85  
+      81 -          <p className="hidden items-center gap-space-sm text-b
+         -ody-sm text-on-surface-variant lg:mt-space-xl lg:flex">        
+      86 +          <p className="hidden items-center gap-space-sm text-b
+         +ody-sm text-on-surface-variant lg:mt-space-lg lg:flex">        
+      87              <span aria-hidden="true" className="size-1.5 rounde
+          d-full bg-available" />
+      88              Menos fricción. Más espacio para colaborar.
+      89            </p>
+     … 10 more lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's|
+       viewBox="0 0 470 360"|      viewBox="0 0 470 360"\n      // Se ajusta al
+      alto disponi…)
+  ⎿  npm notice run eslint .
+     ✓ built in 629ms
+      Container salalibre-web-1  Started
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\auth\AnimatedCharacters.tsx (+2 -0)
+      74      <svg
+      75        ref={svgRef}
+      76        viewBox="0 0 470 360"
+      77 +      // Se ajusta al alto disponible sin deformarse y con la b
+         +ase de los personajes abajo.                                   
+      78 +      preserveAspectRatio="xMidYMax meet"                      
+      79        aria-hidden="true"
+      80        focusable="false"
+      81        data-pose={pose}
+  ⎿  (timeout 10m)
+
+● Valido en iframes que simulan ventanas al 100 % de zoom, en medidas típicas de
+  portátil y de escritorio.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Al 100 % de zoom la tarjeta completa cabe sin desplazamiento en las cinco
+  resoluciones probadas. Quedan dos casos con desplazamiento de 8 px y 4 px, y
+  bajo 480 px reduzco el relleno vertical del formulario. · summary
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i
+      's/lg:h-\[clamp(520px,calc(100dvh-48px),812px)\]/lg:h-[clamp(480px,calc(10
+      0dvh-48px),812px)]/;…)
+  ⎿  1
+     npm notice run eslint .
+     ✓ built in 607ms
+     … +4 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\features\auth\LoginPage.tsx (+2 -2)
+      47  
+      48    return (
+      49      <main className="flex min-h-dvh items-center justify-center
+           bg-canvas p-gutter lg:p-margin">
+      50 -      <div className="grid w-full max-w-[1080px] overflow-hidde
+         -n rounded-lg border border-divider bg-surface-container-lowest 
+         -shadow-elevated lg:h-[clamp(520px,calc(100dvh-48px),812px)] lg:
+         -grid-cols-[51fr_49fr]">                                        
+      50 +      <div className="grid w-full max-w-[1080px] overflow-hidde
+         +n rounded-lg border border-divider bg-surface-container-lowest 
+         +shadow-elevated lg:h-[clamp(480px,calc(100dvh-48px),812px)] lg:
+         +grid-cols-[51fr_49fr]">                                        
+      51          {/* Columna visual: cabecera compacta en móvil y tablet
+          a; columna completa en escritorio. */}
+      52          <section
+      53            aria-label="SalaLibre"
+     ...
+      91  
+      92          {/* Columna del formulario. */}
+      93          <section className="flex flex-col px-gutter sm:px-margi
+          n lg:min-h-0 lg:overflow-y-auto lg:px-14">
+      94 -          <div className="mx-auto flex w-full max-w-[350px] fle
+         -x-1 flex-col justify-center py-space-xl lg:py-space-lg">       
+      94 +          <div className="mx-auto flex w-full max-w-[350px] fle
+         +x-1 flex-col justify-center py-space-lg">                      
+      95              <p className="flex items-center gap-space-sm text-l
+          abel-xs tracking-widest text-primary-container uppercase">
+      96                <span aria-hidden="true" className="size-1.5 roun
+          ded-full bg-primary-container" />
+      97                Acceso a SalaLibre
+  ⎿  (timeout 10m)
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Todas las medidas caben sin desplazamiento. Miro cómo se ve a 1366×607 al 100
+  %, el caso que reportaste.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Ahora todo es visible al 100 %. Registro la corrección en la bitácora y en
+  docs/tareas/T07c.md.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && echo "| B-127 | $NOW | Agente | 3-Ejecutar |
+      CORRECCIÓN | A pedido d…)
+  ⎿  | B-127 | 2026-11-15 23:37 | Agente | 3-Ejecutar | CORRECCIÓN | A pedi
+     do de la
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      128  | B-124 | 2026-11-15 23:31 | Agente | 3-Ejecutar | ERROR | T07
+           c: en la verificación visual a 1280 px, el destello grande apa
+           recía fuera de su sitio: la animación CSS `char-twinkle` reemp
+           lazaba el atributo `transform` (posición) del `<path>` del SVG
+            | Corregido: la posición pasa a un `<g transform>` que envuel
+           ve el destello; se volvió a compilar y a comprobar en el naveg
+           ador | docs/tareas/T07c.md §6 |
+      129  | B-125 | 2026-11-15 23:31 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07c (Login: composición visual y personajes animados): `
+           LoginPage` con la composición de la imagen (dos columnas desde
+            1024 px, cabecera compacta debajo), `AnimatedCharacters` (SVG
+            propio, cuatro personajes en grupos separados) con `animated-
+           characters.css`, `characterState.ts` (función pura de pose) y 
+           `useCharacterLook.ts` (cursor y movimiento reducido); aviso de
+            "¿Olvidaste tu contraseña?"; `LoginForm` con región `role="st
+           atus"`, `afterPassword` y espera de celebración ≤ 1 s; tokens 
+           `char-*` en `@theme static`. Lint, build y los 4 greps OK, com
+           pose healthy; CA1–CA15 y CA17 comprobados en Chrome (poses, cu
+           rsor, envíos, anchos 360/390/768/1280, limpieza de listeners) 
+           | T07c En revisión. Commit: ver la fila siguiente. Desvíos: ca
+           mpos de 40 px (no 46), cambios mínimos en `LoginForm` y `Passw
+           ordField`. Ambigüedades: CA16 (movimiento reducido) sin emulac
+           ión automática, queda para la revisión manual; corte a 1024 px
+           ; duraciones 900/700 ms | docs/tareas/T07c.md, B-123, B-124 |
+      130  | B-126 | 2026-11-15 23:32 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07c (fila B-125) | Commit `d318
+           433` (código y documentación de T07c) | B-125, docs/tareas/T07
+           c.md |
+      131 +| B-127 | 2026-11-15 23:37 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (revisión de T07c): al 100 % de zoom,
+          + el formulario y la ilustración del login quedaban fuera de la
+          + pantalla en ventanas bajas (p. ej. 1366×607), porque la tarje
+          +ta tenía `lg:min-h-[812px]`. Ahora la tarjeta mide `clamp(480p
+          +x, 100dvh − 48px, 812px)`, la ilustración ocupa el alto que qu
+          +eda (`flex-1`, SVG con `preserveAspectRatio="xMidYMax meet"`),
+          + los márgenes verticales se reducen y la columna del formulari
+          +o puede desplazarse por dentro si el aviso de contraseña no ca
+          +be | Sin desplazamiento a 1366×607, 1280×600, 1024×560, 1920×9
+          +37, 768×900, 390×700 y 360×640 (scrollHeight = alto y scrollWi
+          +dth = ancho en todos); lint y build sin errores, compose healt
+          +hy | src/web/src/features/auth/LoginPage.tsx, AnimatedCharacte
+          +rs.tsx, docs/tareas/T07c.md §6 |                              
+
+● Update(docs\tareas\T07c.md)
+  ⎿  Added 21 lines
+      158  - **Se corrigió durante la tarea:** la animación CSS de los de
+           stellos reemplazaba el `transform` del SVG y movía el
+      159    grande a otro sitio. Ahora la posición va en un `<g>` que lo
+            envuelve.
+      160  
+      161 +- **Corrección pedida en la revisión (B-127): ajuste al alto d
+          +e la ventana.** Al 100 % de zoom, en una ventana baja         
+      162 +  (1366×607), el formulario y la ilustración quedaban fuera de
+          + la pantalla, porque la tarjeta tenía un alto mínimo          
+      163 +  fijo de 812 px. La verificación original se hizo con la pest
+          +aña al 67 % de zoom (2049×910 px CSS) y no lo detectó.        
+      164 +  - La tarjeta ahora mide `clamp(480px, 100dvh − 48px, 812px)`
+          +.                                                             
+      165 +  - La ilustración toma el alto que queda en la columna (`flex
+          +-1`, SVG con `preserveAspectRatio="xMidYMax meet"`).          
+      166 +  - Los márgenes verticales se ajustan al alto, y la columna d
+          +el formulario se desplaza por dentro solo si no cabe          
+      167 +    (por ejemplo, con el aviso de contraseña abierto en una ve
+          +ntana muy baja).                                              
+      168 +                                                              
+      169 +  Resultado al 100 % (iframes con esas medidas en píxeles CSS)
+          +:                                                             
+      170 +  ```                                                         
+      171 +  1366x607 scrollH=607 scrollW=1366 footBottom=582 svgH=145 ch
+          +arTop=389                                                     
+      172 +  1280x600 scrollH=600 scrollW=1280 footBottom=575 svgH=138 ch
+          +arTop=387                                                     
+      173 +  1024x560 scrollH=560 scrollW=1024 footBottom=535 svgH=100 ch
+          +arTop=374                                                     
+      174 +  1920x937 scrollH=937 scrollW=1920 footBottom=874 svgH=385 ch
+          +arTop=545                                                     
+      175 +  768x900  scrollH=900 scrollW=768  footBottom=751 svgH=128 ch
+          +arTop=206                                                     
+      176 +  390x700  scrollH=700 scrollW=390  footBottom=643 svgH=112 ch
+          +arTop=111                                                     
+      177 +  360x640  scrollH=640 scrollW=360  footBottom=613 svgH=112 ch
+          +arTop=81                                                      
+      178 +  ```                                                         
+      179 +  En ventanas bajas, la ilustración se ve más pequeña que en l
+          +a imagen (145 px de alto a 1366×607 frente a unos 340 px      
+      180 +  a 1280×880), para que todo quepa sin desplazamiento.        
+      181 +                                                              
+      182  ## 7. Ambigüedades encontradas
+      183  - **CA16 sin emulación automática:** la herramienta del navega
+           dor no permite activar `prefers-reduced-motion`. Para
+      184    comprobarlo: DevTools → Rendering → "Emulate CSS media featu
+           re prefers-reduced-motion: reduce" y recargar `/login`.
+  Called claude-in-chrome, ran 1 shell command (ctrl+o to expand)
+
+● Tenías razón y ya está corregido: ahora el login cabe completo en la ventana
+  al 100 % de zoom.
+
+  Causa: la tarjeta tenía un alto mínimo fijo de 812 px (lg:min-h-[812px]). En
+  una ventana de portátil al 100 %, de unos 1366×607 px útiles, el formulario y
+  el pie quedaban debajo del borde. En mi verificación anterior el navegador
+  estaba al 67 % de zoom, por eso no lo vi.
+
+  Corrección (en LoginPage.tsx y AnimatedCharacters.tsx):
+  - Alto de la tarjeta: se ajusta a la ventana, entre 480 y 812 px.
+  - Personajes: ocupan el alto que queda en la columna, sin deformarse y
+    apoyados abajo.
+  - Márgenes: los verticales se ajustan al alto disponible.
+  - Columna del formulario: solo se desplaza por dentro si algo no cabe, por
+    ejemplo con el aviso de "¿Olvidaste tu contraseña?" abierto en una ventana
+    muy baja.
+
+  Validación al 100 %: probé estas medidas de ventana y en todas el formulario,
+  el pie y los personajes se ven completos, sin desplazamiento vertical ni
+  horizontal. Lint y build pasan, y el compose está healthy.
+
+  ┌────────────────────┬───────────────────┬────────────────────────┐
+  │      Ventana       │ Pie visible hasta │ Alto de los personajes │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 1366×607 (tu caso) │ 582 px            │ 145 px                 │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 1280×600           │ 575 px            │ 138 px                 │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 1024×560           │ 535 px            │ 100 px                 │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 1920×937           │ 874 px            │ 385 px                 │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 768×900            │ 751 px            │ 128 px                 │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 390×700            │ 643 px            │ 112 px                 │
+  ├────────────────────┼───────────────────┼────────────────────────┤
+  │ 360×640            │ 613 px            │ 112 px                 │
+  └────────────────────┴───────────────────┴────────────────────────┘
+
+  Un efecto a tener en cuenta: en ventanas bajas los personajes se ven más
+  pequeños que en la imagen de diseño (145 px de alto a 1366×607), para que todo
+  quepa.
+
+  Lo registré en la bitácora como B-127 (CORRECCIÓN) y lo agregué al §6 de
+  docs/tareas/T07c.md. No hice commit; si te parece bien, lo hago con el título
+  "T07c: login ajustado al alto de la ventana".
+
+✻ Cooked for 4m 5s · done 23:37
+
+> actualiza la seccion del login en el desing.md tambien                        
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && python -
+      <<'EOF'
+      import io…)
+  ⎿    - Botón primario de ancho completo y 46 px, `#1D4ED8`, texto blanco
+     semibold "Iniciar sesión" con un icono de flecha diagonal.
+       - Pie de la columna, separado por una línea fina: "Reserva de salas"
+     … +16 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      129  | B-125 | 2026-11-15 23:31 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07c (Login: composición visual y personajes animados): `
+           LoginPage` con la composición de la imagen (dos columnas desde
+            1024 px, cabecera compacta debajo), `AnimatedCharacters` (SVG
+            propio, cuatro personajes en grupos separados) con `animated-
+           characters.css`, `characterState.ts` (función pura de pose) y 
+           `useCharacterLook.ts` (cursor y movimiento reducido); aviso de
+            "¿Olvidaste tu contraseña?"; `LoginForm` con región `role="st
+           atus"`, `afterPassword` y espera de celebración ≤ 1 s; tokens 
+           `char-*` en `@theme static`. Lint, build y los 4 greps OK, com
+           pose healthy; CA1–CA15 y CA17 comprobados en Chrome (poses, cu
+           rsor, envíos, anchos 360/390/768/1280, limpieza de listeners) 
+           | T07c En revisión. Commit: ver la fila siguiente. Desvíos: ca
+           mpos de 40 px (no 46), cambios mínimos en `LoginForm` y `Passw
+           ordField`. Ambigüedades: CA16 (movimiento reducido) sin emulac
+           ión automática, queda para la revisión manual; corte a 1024 px
+           ; duraciones 900/700 ms | docs/tareas/T07c.md, B-123, B-124 |
+      130  | B-126 | 2026-11-15 23:32 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07c (fila B-125) | Commit `d318
+           433` (código y documentación de T07c) | B-125, docs/tareas/T07
+           c.md |
+      131  | B-127 | 2026-11-15 23:37 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (revisión de T07c): al 100 % de zoom,
+            el formulario y la ilustración del login quedaban fuera de la
+            pantalla en ventanas bajas (p. ej. 1366×607), porque la tarje
+           ta tenía `lg:min-h-[812px]`. Ahora la tarjeta mide `clamp(480p
+           x, 100dvh − 48px, 812px)`, la ilustración ocupa el alto que qu
+           eda (`flex-1`, SVG con `preserveAspectRatio="xMidYMax meet"`),
+            los márgenes verticales se reducen y la columna del formulari
+           o puede desplazarse por dentro si el aviso de contraseña no ca
+           be | Sin desplazamiento a 1366×607, 1280×600, 1024×560, 1920×9
+           37, 768×900, 390×700 y 360×640 (scrollHeight = alto y scrollWi
+           dth = ancho en todos); lint y build sin errores, compose healt
+           hy | src/web/src/features/auth/LoginPage.tsx, AnimatedCharacte
+           rs.tsx, docs/tareas/T07c.md §6 |
+      132 +| B-128 | 2026-11-15 23:38 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona, DESIGN.md («Login › Composición en e
+          +scritorio») agrega «Alto de la ventana» (la tarjeta cabe compl
+          +eta al 100 % de zoom, alto entre 480 y 812 px, ilustración que
+          + se reduce en ventanas bajas) y precisa «Móvil y tableta» (men
+          +os de 1024 px, cabecera compacta sin titular, párrafo ni pie v
+          +erde; dos columnas desde 1024 px), según lo implementado en T0
+          +7c y la corrección B-127 | Solo documentación; sin cambios de 
+          +código | docs/diseño/DESIGN.md, B-127, docs/tareas/T07c.md §6 
+          +y §7 |                                                        
+  ⎿  Updated docs\diseño\DESIGN.md (+2 -1)
+      197    - Una fila con el enlace "¿Olvidaste tu contraseña?" a la de
+           recha (azul, `body-sm`).
+      198    - Botón primario de ancho completo y 46 px, `#1D4ED8`, texto
+            blanco semibold "Iniciar sesión" con un icono de flecha diago
+           nal.
+      199    - Pie de la columna, separado por una línea fina: "Reserva d
+           e salas" a la izquierda y "© AAAA SalaLibre" a la derecha (`bo
+           dy-sm`, gris), con el año actual.
+      200 -- **Móvil:** el bloque visual pasa a una cabecera compacta (lo
+          -go y la ilustración reducida) y el formulario va debajo, sin d
+          -esplazamiento horizontal ni superposiciones.                  
+      200 +- **Alto de la ventana:** al 100 % de zoom, la tarjeta complet
+          +a cabe en la ventana sin desplazamiento. Su alto se ajusta ent
+          +re 480 y 812 px (el alto de la ventana menos el margen), y la 
+          +ilustración ocupa el espacio que queda en la columna izquierda
+          +: en ventanas bajas (por ejemplo, 1366×607) los personajes se 
+          +ven más pequeños, sin deformarse y apoyados en la base. Logo, 
+          +textos, formulario y pies no se recortan. (Ajuste de la revisi
+          +ón de T07c, B-127.)                                           
+      201 +- **Móvil y tableta (menos de 1024 px):** el bloque visual pas
+          +a a una cabecera compacta (logo y la ilustración reducida; sin
+          + titular, párrafo ni pie verde) y el formulario va debajo, sin
+          + desplazamiento horizontal ni superposiciones. Las dos columna
+          +s aparecen desde 1024 px.                                     
+      202  
+      203  ### Ilustración: cuatro personajes geométricos
+      204  Se dibujan en SVG propio, sin archivos gráficos externos. Los 
+           colores son orientativos; la imagen manda.
+
+● Actualicé la sección «Login › Composición en escritorio» de
+  docs/diseño/DESIGN.md con dos cambios:
+
+  - Nuevo punto «Alto de la ventana»: al 100 % de zoom la tarjeta cabe completa
+    sin desplazamiento, y su alto se ajusta entre 480 y 812 px. En ventanas
+    bajas, como 1366×607, los personajes se ven más pequeños, sin deformarse y
+    apoyados en la base, y nada se recorta. Cita la corrección B-127.
+  - «Móvil» pasa a «Móvil y tableta (menos de 1024 px)»: precisa que la cabecera
+    compacta lleva solo el logo y la ilustración, sin titular, párrafo ni pie
+    verde, y que las dos columnas aparecen desde 1024 px.
+
+  Lo registré en la bitácora como B-128 (CORRECCIÓN, solo documentación).
+
+  Siguen sin commit la corrección del alto (B-127) y este cambio en DESIGN.md,
+  en docs/03-bitacora.md, docs/diseño/DESIGN.md, docs/tareas/T07c.md,
+  LoginPage.tsx y AnimatedCharacters.tsx. Si quieres, hago un solo commit "T07c:
+  login ajustado al alto de la ventana y DESIGN.md actualizado".
+
+✻ Sautéed for 17s · done 23:38
+
+> /bitacora REVISION T07c revisada, cumple la DoD                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-12 && NOW=$(date "+%Y-%m-%d %H:%M") && echo
+      "| B-129 | $NOW | Y…)
+  ⎿  | B-128 | 20
+     | B-129 | 2026-11-15 23:40 | Yo | 3-Ejecutar | REVISIÓN | T07c revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      130  | B-126 | 2026-11-15 23:32 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07c (fila B-125) | Commit `d318
+           433` (código y documentación de T07c) | B-125, docs/tareas/T07
+           c.md |
+      131  | B-127 | 2026-11-15 23:37 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (revisión de T07c): al 100 % de zoom,
+            el formulario y la ilustración del login quedaban fuera de la
+            pantalla en ventanas bajas (p. ej. 1366×607), porque la tarje
+           ta tenía `lg:min-h-[812px]`. Ahora la tarjeta mide `clamp(480p
+           x, 100dvh − 48px, 812px)`, la ilustración ocupa el alto que qu
+           eda (`flex-1`, SVG con `preserveAspectRatio="xMidYMax meet"`),
+            los márgenes verticales se reducen y la columna del formulari
+           o puede desplazarse por dentro si el aviso de contraseña no ca
+           be | Sin desplazamiento a 1366×607, 1280×600, 1024×560, 1920×9
+           37, 768×900, 390×700 y 360×640 (scrollHeight = alto y scrollWi
+           dth = ancho en todos); lint y build sin errores, compose healt
+           hy | src/web/src/features/auth/LoginPage.tsx, AnimatedCharacte
+           rs.tsx, docs/tareas/T07c.md §6 |
+      132  | B-128 | 2026-11-15 23:38 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona, DESIGN.md («Login › Composición en e
+           scritorio») agrega «Alto de la ventana» (la tarjeta cabe compl
+           eta al 100 % de zoom, alto entre 480 y 812 px, ilustración que
+            se reduce en ventanas bajas) y precisa «Móvil y tableta» (men
+           os de 1024 px, cabecera compacta sin titular, párrafo ni pie v
+           erde; dos columnas desde 1024 px), según lo implementado en T0
+           7c y la corrección B-127 | Solo documentación; sin cambios de 
+           código | docs/diseño/DESIGN.md, B-127, docs/tareas/T07c.md §6 
+           y §7 |
+      133 +| B-129 | 2026-11-15 23:40 | Yo | 3-Ejecutar | REVISIÓN | T07c
+          + revisada, cumple la DoD | — | — |                            
+
+● Fila agregada a docs/03-bitacora.md (escribí "REVISION" con tilde, como en las
+  anteriores):
+
+  | B-129 | 2026-11-15 23:40 | Yo | 3-Ejecutar | REVISIÓN | T07c revisada, 
+  cumple la DoD | — | — |
+
+  No hice commit.
+
+✻ Cooked for 5s · done 23:40
+
+> Pasa T07c Hecha en el backlog y haz commit                                    
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^|
+      15 | T07c | \(.*\) | En revisión | \[T07c\]/| 15 | T07c | \1 | Hecha |
+      [T07c]/' docs/02-…)
+  ⎿  | 15 | T07c | Login: composición visual de la imagen y personajes anim
+     ados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T07c.md) |
+     | Estado | Hecha |
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Hech
+          a | [T07](tareas/T07.md) |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Hecha | [T07b](tareas/T07b.md) |
+      73 -| 15 | T07c | Login: composición visual de la imagen y personaj
+         -es animados | T07a, T07 | L | **Sí** | En revisión | [T07c](tar
+         -eas/T07c.md) |                                                 
+      73 +| 15 | T07c | Login: composición visual de la imagen y personaj
+         +es animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T0
+         +7c.md) |                                                       
+      74  | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, 
+          selector de día, filtros, cierres | T05b, T07 | L | No | Pendie
+          nte | |
+      75  | 17 | T08a | Reservar desde la agenda: formulario modal y mane
+          jo del 409 | T08 | M | No | Pendiente | |
+      76  | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, aj
+          enas desde la agenda) | T08a | M | No | Pendiente | |
+     ...
+      738  | Dependencias | T07a, T07 |
+      739  | Estimación | L |
+      740  | Seguridad / auditoría | Roles: público. Auditoría: no aplica
+            (S-02). OWASP A07: la contraseña no se guarda ni se loguea y 
+           no llega a los personajes; mensaje de error genérico; sin enví
+           os duplicados |
+      741 -| Estado | En revisión |                                      
+      741 +| Estado | Hecha |                                            
+      742  
+      743  **Alcance (archivos o módulos):**
+      744  - `src/web/src/features/auth/LoginPage.tsx`: composición de do
+           s columnas en escritorio y cabecera compacta más formulario en
+            móvil.
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      131  | B-127 | 2026-11-15 23:37 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (revisión de T07c): al 100 % de zoom,
+            el formulario y la ilustración del login quedaban fuera de la
+            pantalla en ventanas bajas (p. ej. 1366×607), porque la tarje
+           ta tenía `lg:min-h-[812px]`. Ahora la tarjeta mide `clamp(480p
+           x, 100dvh − 48px, 812px)`, la ilustración ocupa el alto que qu
+           eda (`flex-1`, SVG con `preserveAspectRatio="xMidYMax meet"`),
+            los márgenes verticales se reducen y la columna del formulari
+           o puede desplazarse por dentro si el aviso de contraseña no ca
+           be | Sin desplazamiento a 1366×607, 1280×600, 1024×560, 1920×9
+           37, 768×900, 390×700 y 360×640 (scrollHeight = alto y scrollWi
+           dth = ancho en todos); lint y build sin errores, compose healt
+           hy | src/web/src/features/auth/LoginPage.tsx, AnimatedCharacte
+           rs.tsx, docs/tareas/T07c.md §6 |
+      132  | B-128 | 2026-11-15 23:38 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona, DESIGN.md («Login › Composición en e
+           scritorio») agrega «Alto de la ventana» (la tarjeta cabe compl
+           eta al 100 % de zoom, alto entre 480 y 812 px, ilustración que
+            se reduce en ventanas bajas) y precisa «Móvil y tableta» (men
+           os de 1024 px, cabecera compacta sin titular, párrafo ni pie v
+           erde; dos columnas desde 1024 px), según lo implementado en T0
+           7c y la corrección B-127 | Solo documentación; sin cambios de 
+           código | docs/diseño/DESIGN.md, B-127, docs/tareas/T07c.md §6 
+           y §7 |
+      133  | B-129 | 2026-11-15 23:40 | Yo | 3-Ejecutar | REVISIÓN | T07c
+            revisada, cumple la DoD | — | — |
+      134 +| B-130 | 2026-11-15 23:40 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T07c pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-129 | T07c Hecha
+          + | docs/02-backlog.md, B-129 |                                
+
+● T07c quedó en Hecha en docs/02-backlog.md, tanto en el resumen como en la
+  ficha. Lo registré en la bitácora como B-130 y está en el commit 91e1d5e,
+  "T07c: revisión aprobada y estado Hecha".
+
+  Ese commit también incluye lo que estaba pendiente de la revisión:
+  - la corrección del alto de la ventana (B-127), en LoginPage.tsx y
+    AnimatedCharacters.tsx;
+  - la sección Login de DESIGN.md actualizada (B-128);
+  - tu fila B-129 y la sección 8 de docs/tareas/T07c.md.
+
+  Solo sigue sin seguimiento el archivo de sesión de docs/sesiones/.
+
+  En tu revisión pediste actualizar CLAUDE.md con los desvíos, si hace falta.
+  Para T07c conviene fijar:
+  - Colores sin utilidad de Tailwind: van en @theme static (como los char-*) y
+    se usan con var().
+  - Animaciones: se apagan con prefers-reduced-motion y su posición en el SVG va
+    en un <g>, porque la animación CSS pisa el transform del elemento.
+  - Pantallas a pantalla completa: se verifican al 100 % de zoom en ventanas
+    bajas, como 1366×607, para que no vuelva a pasar lo de B-127.
+  - El login: la estructura que queda (characterState, AnimatedCharacters,
+    successDelayMs) y el corte a 1024 px.
+
+  ¿Lo agrego?
+
+✻ Churned for 19s · done 23:40
+
+> Actualiza CLAUDE.md con los desvíos de T07c y haz commit                      
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -c 1
+      CLAUDE.md | od -c | head -1 && cat >> CLAUDE.md <<'EOF'…)
+  ⎿  0000000  \n
+     4cfd889 T07c: CLAUDE.md con los desvíos de la tarea
+     ?? docs/sesiones/2026-11-15-224633-local-command-caveatthe-command-bel
+     ow-was-run-d.txt
+  ⎿  Updated CLAUDE.md (+24 -0)
+      406    No hay campo de confirmación (el spec no lo pide).
+      407  - **Verificación con usuarios del seed:** si una prueba cambia
+            la contraseña de uno, se restaura la del seed al terminar
+      408    y se comprueba con un login por `curl`.
+      409 +                                                              
+      410 +### Login visual fijado en T07c (ver `docs/tareas/T07c.md` §6 
+          +y §7; B-124, B-127)                                           
+      411 +- **Estructura:** `LoginPage` compone la pantalla; `AnimatedCh
+          +aracters` (SVG propio) solo recibe `focus`,                   
+      412 +  `passwordVisible` y `submitStatus`, nunca la contraseña. La 
+          +pose sale de la función pura `characterState.ts`              
+      413 +  (prioridad `loading`/`error`/`success` > `peeking` > `passwo
+          +rd` > `email` > `idle`) y las poses viven en                  
+      414 +  `animated-characters.css` según `data-pose`. El cursor lo si
+          +gue `useCharacterLook.ts` (un listener y un                   
+      415 +  `requestAnimationFrame`, limpiados al desmontar). No agregar
+          + librerías de animación.                                      
+      416 +- **`LoginForm`** expone además `afterPassword` (enlace "¿Olvi
+          +daste tu contraseña?") y `successDelayMs` (tope 1000 ms;      
+      417 +  `LoginPage` usa 700, o 0 con movimiento reducido) y una regi
+          +ón `role="status"`. `PasswordField` no quita el foco del      
+      418 +  campo al pulsar el ojo con el ratón (`onMouseDown` con `prev
+          +entDefault`).                                                 
+      419 +- **Colores que no son utilidades de Tailwind** (degradados de
+          +l SVG): tokens en un bloque `@theme static` de                
+      420 +  `index.css` (como `--color-char-*`), usados con `var(--color
+          +-…)`. Nunca hex en componentes ni en CSS de features.         
+      421 +- **Animaciones CSS en SVG:** la animación reemplaza el `trans
+          +form` del elemento animado; la posición va en un `<g          
+      422 +  transform>` que lo envuelve (B-124). Toda animación se apaga
+          + con `@media (prefers-reduced-motion: reduce)` y en           
+      423 +  ese modo los estados se siguen distinguiendo sin movimiento;
+          + el JS consulta `usePrefersReducedMotion()`.                  
+      424 +- **Login responsive:** dos columnas desde 1024 px (`lg`); por
+          + debajo, cabecera compacta (logo e ilustración, sin           
+      425 +  titular ni pie). La tarjeta mide `clamp(480px, 100dvh − 48px
+          +, 812px)` y la ilustración ocupa el alto restante             
+      426 +  (`flex-1`, `preserveAspectRatio="xMidYMax meet"`). No volver
+          + a un alto mínimo fijo (B-127).                               
+      427 +- **Verificación de pantallas a pantalla completa:** al 100 % 
+          +de zoom y en ventanas bajas, no solo en la del navegador      
+      428 +  de pruebas (que puede estar con otro zoom: B-127 pasó por ve
+          +rificar al 67 %). Medir con iframes de tamaño fijo en px      
+      429 +  CSS (por ejemplo 1366×607, 1280×600, 1024×560, 1920×937, 768
+          +×900, 390×700 y 360×640) que `scrollHeight` y                 
+      430 +  `scrollWidth` no superen la ventana, y anotar las medidas en
+          + `docs/tareas/Txx.md`.                                        
+      431 +- **`prefers-reduced-motion` no se puede emular** con la herra
+          +mienta del navegador del agente: se comprueban las reglas     
+      432 +  en `document.styleSheets` y la emulación en DevTools queda c
+          +omo paso manual de la revisión.                               
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      132  | B-128 | 2026-11-15 23:38 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona, DESIGN.md («Login › Composición en e
+           scritorio») agrega «Alto de la ventana» (la tarjeta cabe compl
+           eta al 100 % de zoom, alto entre 480 y 812 px, ilustración que
+            se reduce en ventanas bajas) y precisa «Móvil y tableta» (men
+           os de 1024 px, cabecera compacta sin titular, párrafo ni pie v
+           erde; dos columnas desde 1024 px), según lo implementado en T0
+           7c y la corrección B-127 | Solo documentación; sin cambios de 
+           código | docs/diseño/DESIGN.md, B-127, docs/tareas/T07c.md §6 
+           y §7 |
+      133  | B-129 | 2026-11-15 23:40 | Yo | 3-Ejecutar | REVISIÓN | T07c
+            revisada, cumple la DoD | — | — |
+      134  | B-130 | 2026-11-15 23:40 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07c pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-129 | T07c Hecha
+            | docs/02-backlog.md, B-129 |
+      135 +| B-131 | 2026-11-15 23:41 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T07c, 
+          +B-129), CLAUDE.md (Dependencias) agrega la subsección «Login v
+          +isual fijado en T07c»: estructura de `LoginPage`, `AnimatedCha
+          +racters`, `characterState` y `useCharacterLook`; props nuevas 
+          +de `LoginForm` y foco del ojo en `PasswordField`; colores en `
+          +@theme static` usados con `var()`; animaciones en SVG con la p
+          +osición en un `<g>` (B-124) y movimiento reducido; login respo
+          +nsive con alto `clamp` y sin alto mínimo fijo (B-127); verific
+          +ar pantallas al 100 % de zoom en ventanas bajas con iframes; e
+          +mulación de movimiento reducido como paso manual | Solo docume
+          +ntación; sin cambios de código | CLAUDE.md, docs/tareas/T07c.m
+          +d §6 y §7, B-124, B-127, B-129 |                              
+
+● Agregué a CLAUDE.md la subsección «Login visual fijado en T07c» y quedó en el
+  commit 4cfd889, "T07c: CLAUDE.md con los desvíos de la tarea". En la bitácora
+  la registré como B-131 (CORRECCIÓN, solo documentación).
+
+  Lo que fija para las tareas siguientes:
+  - Estructura del login: cómo se reparten la pantalla, la ilustración, la
+    función de poses y el seguimiento del cursor, y que no se agregan librerías
+    de animación.
+  - Cambios en componentes de T07: LoginForm recibe el enlace bajo la contraseña
+    y la espera de la celebración, con tope de 1 s. PasswordField no quita el
+    foco al pulsar el ojo con el ratón.
+  - Colores que no son utilidades de Tailwind: van en un bloque @theme static y
+    se usan con var(); nunca hex.
+  - Animaciones en SVG: la posición va en un <g> envolvente, porque la animación
+    CSS pisa el transform (fue el error B-124). Todo se apaga con
+    prefers-reduced-motion.
+  - Login responsive: dos columnas desde 1024 px y alto de la tarjeta ajustado a
+    la ventana. No se vuelve a un alto mínimo fijo (B-127).
+  - Verificación de pantallas completas: al 100 % de zoom en ventanas bajas
+    (1366×607, 1024×560, 360×640…), midiendo con iframes y anotando las medidas
+    en el documento de la tarea.
+  - Movimiento reducido: no se puede emular con la herramienta del navegador,
+    así que queda como paso manual de la revisión.
+
+  Solo sigue sin seguimiento el archivo de sesión de docs/sesiones/.
+
+✻ Baked for 22s · done 23:41
+
+> haz el commit para dar seguimiento a docs/sesiones/                           
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Hice el commit c117bb5, "Sesión exportada del 2026-11-15 22:46 (T06a y T07a)",
+  y el árbol de trabajo quedó limpio.
+
+  - Contenido: el archivo es la exportación de la sesión que ejecutó T06a y
+    T07a. El nombre del commit sigue el formato de los anteriores, como "Sesión
+    exportada del 2026-11-15 22:00 (T06)".
+  - Revisión previa: antes de agregarlo busqué tokens JWT, cookies access_token,
+    claves de API, llaves privadas y hashes bcrypt, y no encontré ninguno.
+
+  Esta sesión (T07, T07b y T07c) todavía no está exportada. Cuando la exportes
+  con /export a docs/sesiones/, la puedo subir igual.
+
+✻ Crunched for 14s · done 23:42
