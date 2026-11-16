@@ -1,9 +1,11 @@
 import type { INestApplication } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
 import { requestIdMiddleware } from './request-id/request-id.middleware';
+import { rejectNonUtf8Body } from './validation/utf8-body';
 
 /**
  * Configuración HTTP compartida por `main.ts` y las pruebas.
@@ -14,6 +16,12 @@ export function configureApp(app: INestApplication): INestApplication {
   app.use(requestIdMiddleware);
   app.use(helmet());
   app.use(cookieParser());
+  // Los parsers se registran aquí (Nest no agrega los suyos si ya existen) para poner detrás la validación UTF-8.
+  // Requiere crear la app con `rawBody: true`, que guarda el cuerpo crudo en `req.rawBody` (revisión de T04).
+  const express = app as NestExpressApplication;
+  express.useBodyParser('json');
+  express.useBodyParser('urlencoded', { extended: true });
+  app.use(rejectNonUtf8Body);
   app.setGlobalPrefix('api');
   app.enableShutdownHooks();
 

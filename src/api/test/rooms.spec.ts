@@ -134,6 +134,9 @@ describe('Módulo de salas (T04)', () => {
       { ...valid, name: 'x'.repeat(61) },
       { ...valid, location: '' },
       { ...valid, location: 'x'.repeat(101) },
+      { ...valid, name: '   ' },
+      { ...valid, name: '\t \n' },
+      { ...valid, location: '  ' },
       { ...valid, equipment: ['TV', 'TV'] },
       { ...valid, equipment: ['CAFETERA'] },
       { ...valid, equipment: 'TV' },
@@ -150,11 +153,50 @@ describe('Módulo de salas (T04)', () => {
 
   it('RN-22 · PATCH con valores inválidos o null → 400 VALIDATION_ERROR y la sala no cambia', async () => {
     const before = await rooms.findById(COPAN);
-    const invalid = [{ capacity: 0 }, { name: null }, { equipment: ['TV', 'TV'] }, { isActive: 'no' }, { id: MISSING }];
+    const invalid = [
+      { capacity: 0 },
+      { name: null },
+      { name: '   ' },
+      { location: ' ' },
+      { equipment: ['TV', 'TV'] },
+      { isActive: 'no' },
+      { id: MISSING },
+    ];
     const responses = await Promise.all(invalid.map((b) => send('PATCH', `/rooms/${COPAN}`, b, admin)));
 
     expect(responses.map((r) => r.status)).toEqual(invalid.map(() => 400));
     expect(await rooms.findById(COPAN)).toEqual(before);
+  });
+
+  it('RN-22 · PATCH con un campo en null → 400 con un mensaje que nombra el campo y dice que no puede ser null', async () => {
+    const res = await send('PATCH', `/rooms/${COPAN}`, { name: null, capacity: null, isActive: true }, admin);
+    const body = await json(res);
+
+    expect(res.status).toBe(400);
+    expect(body.error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.message).toBe(
+      'Datos inválidos o no permitidos: name (no puede ser null), capacity (no puede ser null).',
+    );
+  });
+
+  it('D-06 · nombre con bytes que no son UTF-8 → 400 VALIDATION_ERROR y no se crea ni se renombra la sala', async () => {
+    const latin1Name = (prefix: string) =>
+      Buffer.concat([Buffer.from(`${prefix}"name":"SALA COP`), Buffer.from([0xc1]), Buffer.from('N"')]);
+    const before = await rooms.list({ onlyActive: false });
+    const post = await fetch(`${baseUrl}/rooms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Cookie: admin },
+      body: Buffer.concat([latin1Name('{'), Buffer.from(',"capacity":4,"location":"Piso 1","equipment":[]}')]),
+    });
+    const patch = await fetch(`${baseUrl}/rooms/a2222222-2222-4222-8222-222222222222`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Cookie: admin },
+      body: Buffer.concat([latin1Name('{'), Buffer.from('}')]),
+    });
+
+    expect([post.status, patch.status]).toEqual([400, 400]);
+    expect((await json(patch)).error.code).toBe('VALIDATION_ERROR');
+    expect(await rooms.list({ onlyActive: false })).toEqual(before);
   });
 
   it('D-14 · PATCH { isActive: false } → 200, la sala queda inactiva sin borrarse y no existe DELETE', async () => {

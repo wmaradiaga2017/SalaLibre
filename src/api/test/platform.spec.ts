@@ -34,7 +34,7 @@ describe('Plataforma transversal (T02a)', () => {
       controllers: [PlatformTestController],
     }).compile();
 
-    app = moduleRef.createNestApplication({ bufferLogs: true });
+    app = moduleRef.createNestApplication({ bufferLogs: true, rawBody: true });
     configureApp(app);
     await app.listen(0, '127.0.0.1');
     baseUrl = `${await app.getUrl()}/api`;
@@ -100,6 +100,35 @@ describe('Plataforma transversal (T02a)', () => {
     expect((await json(invalid)).error.code).toBe('VALIDATION_ERROR');
     expect(malformed.status).toBe(400);
     expect((await json(malformed)).error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('D-06 · body JSON o de formulario que no es UTF-8 válido → 400 VALIDATION_ERROR (revisión de T04)', async () => {
+    // "Á" en Latin-1 (0xC1): un byte suelto que no es UTF-8 válido.
+    const latin1 = Buffer.concat([Buffer.from('{"name":"'), Buffer.from([0xc1]), Buffer.from('na","attendees":2}')]);
+    const jsonBody = await fetch(`${baseUrl}/test/echo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: latin1,
+    });
+    const formBody = await fetch(`${baseUrl}/test/echo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: Buffer.concat([Buffer.from('name='), Buffer.from([0xc1]), Buffer.from('na&attendees=2')]),
+    });
+    const utf8 = await fetch(`${baseUrl}/test/echo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ name: 'Ána', attendees: 2 }),
+    });
+    const body = await json(jsonBody);
+
+    expect(jsonBody.status).toBe(400);
+    expect(body.error.code).toBe('VALIDATION_ERROR');
+    expect(body.error.message).toBe('El cuerpo de la petición no es texto UTF-8 válido.');
+    expect(body.error.requestId).toMatch(UUID);
+    expect(formBody.status).toBe(400);
+    expect((await json(formBody)).error.code).toBe('VALIDATION_ERROR');
+    expect(utf8.status).not.toBe(400);
   });
 
   it('D-06 · body válido pasa el ValidationPipe y se transforma', async () => {

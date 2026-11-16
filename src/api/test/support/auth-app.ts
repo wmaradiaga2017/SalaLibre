@@ -67,7 +67,7 @@ export async function createApp(repo: InMemoryUsersRepository, options: CreateAp
     builder = builder.overrideProvider(token).useValue(value);
   }
   const moduleRef = await builder.compile();
-  const app = moduleRef.createNestApplication({ bufferLogs: true });
+  const app = moduleRef.createNestApplication({ bufferLogs: true, rawBody: true });
   configureApp(app);
   await app.listen(0, '127.0.0.1');
   return { app, baseUrl: `${await app.getUrl()}/api`, jwt: moduleRef.get(JwtService) };
