@@ -134,8 +134,9 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   y cierres) y `user:<uuid>` (reservas y desactivación de usuario).
 - **Pruebas HTTP con el `fetch` nativo de Node 24** (sin `supertest`), levantando la app en `127.0.0.1` y puerto 0.
   Las pruebas de plataforma viven en `src/api/test/` con controladores de prueba fuera del código de producción.
-- **Pruebas contra PostgreSQL real** antes de T06: con un script de un solo uso ejecutado en el contenedor
-  (`docker compose exec -T api node -`), fuera del repositorio y con la salida pegada en `docs/tareas/Txx.md`.
+- **Pruebas contra PostgreSQL real:** desde T06 van en la suite de integración (`api-test`, ver la subsección de T06).
+  El script de un solo uso en el contenedor (`docker compose exec -T api node -`) queda solo para comprobaciones
+  manuales puntuales, con la salida pegada en `docs/tareas/Txx.md`.
 - **Swagger en `/api/docs`** lo sirve Express fuera del router de Nest, así que el guard global no lo cubre. Por decisión
   de la persona (D-33), **solo se monta fuera de producción** (`NODE_ENV !== 'production'`); en el compose responde 404 (T03, CA8).
 
@@ -229,7 +230,7 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
     `WITHOUT_DB` con su motivo.
   - Las pruebas con repositorios en memoria **no detectan** problemas de pool, locks ni concurrencia: toda escritura
     nueva se verifica también contra PostgreSQL con una ráfaga de peticiones simultáneas (20 o más) y se revisa que el
-    log no tenga errores `"level":50`.
+    log no tenga errores `"level":50`. Desde T06, esa ráfaga se agrega como caso de la suite de integración.
 - **Pruebas de reservas:** `test/support/in-memory-bookings.repository.ts` emula `bookings_no_overlap` lanzando el error
   con la forma real de Prisma (`exclusionViolation()`); `test/bookings-service.spec.ts` comprueba con dobles el orden
   `begin → lock date → lock user → lecturas con ctx → INSERT → end`.
@@ -285,3 +286,28 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   insertan con `psql` dentro del script de verificación y se borran al final del mismo script; anotarlo en
   `docs/tareas/Txx.md` como paso manual. Al terminar una verificación, no dejar cierres futuros en la base: bloquean las
   reservas de esos días en las tareas siguientes.
+
+### Pruebas de integración fijadas en T06 (ver `docs/tareas/T06.md` §6 y §7)
+- **Comando:** `docker compose --profile test run --rm api-test` (S-08). Sale con código 0 si todo pasa y 1 si algo
+  falla. `docker compose up` no arranca `api-test`.
+- **Infraestructura:** etapa `test` de `src/api/Dockerfile` (parte de `build` y agrega `test/` con
+  `COPY --chown=node:node`; **no** usar `chown -R` sobre `/app`, tardó más de 10 min, B-92). El servicio `api-test` no
+  publica puertos y depende de `db` (`service_healthy`).
+- **Base de pruebas propia, `salalibre_test`, en el mismo servidor `db`** (no hay un segundo PostgreSQL). `test/integration/run.sh`
+  se niega a correr si `DATABASE_URL` no apunta a `salalibre_test`; luego `prisma migrate reset --force` → seed →
+  `npm run test:int`. La base se recrea en cada corrida: la de desarrollo (`salalibre`) nunca se toca.
+- **Estructura:** archivos `src/api/test/integration/*.int-spec.ts` con `test/integration/jest.config.json` (`--runInBand`,
+  `verbose`). `npm test` (unitarias, `*.spec.ts`) no los recoge: no renombrar a `.spec.ts`. No hay dobles: se levanta
+  `AppModule` completo con `IntegrationApp.start()` (`test/integration/support/int-app.ts`).
+- **Helpers de `int-app.ts`:** `login`, `createUser`, `createRoom` (nombres y correos únicos con `unique()`), `book`,
+  `cancel`, `confirmedIn`, `statusCount`; `nextBusinessDay(offset)` y `at(fecha, 'HH:MM')` en `BUSINESS_TZ`, calculados
+  desde "ahora" (nunca fechas fijas). `reset()` borra `bookings` y `closures` antes de cada prueba; usuarios y salas
+  quedan. `audit_logs` no se borra (el trigger lo impide).
+- **Estados imposibles por la API** (reserva ya empezada, cierre de hoy o pasado) se insertan con `api.prisma` en la
+  base de pruebas, no con `psql`.
+- **Matriz RBAC (`rbac.int-spec.ts`):** toda ruta nueva se agrega a `ADMIN_ROUTES` o a `AUTHENTICATED_ROUTES`, con un body
+  válido para que el 403 no se confunda con un 400. **T06a** debe agregar `POST /audit-logs/search` a `ADMIN_ROUTES` y
+  quitar el `it.todo` (hoy la ruta no existe y responde 404 antes de los guards).
+- **Carreras (R-01, R-02):** se comprueba el invariante final (ninguna `CONFIRMED` y toda reserva creada cancelada), no
+  un orden concreto de las peticiones.
+- **Nombres:** `it('RN-xx · P-xx · …')`. Las escrituras nuevas (T06a) agregan aquí sus casos de integración (P-12, P-15).

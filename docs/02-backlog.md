@@ -65,7 +65,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hecha | [T05](tareas/T05.md) |
 | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | Hecha | [T05a](tareas/T05a.md) |
 | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
-| 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | En revisión | [T06](tareas/T06.md) |
+| 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | Hecha | [T06](tareas/T06.md) |
 | 11 | T06a | Auditoría: `AuditService` transaccional en todas las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** | Pendiente | |
 | 12 | T07a | Sistema visual base (tokens, componentes de `shared/ui`) | T01 | M | No | Pendiente | |
 | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layout y rutas protegidas por rol | T03, T07a | M | No | Pendiente | |
@@ -532,7 +532,7 @@ npm --prefix src/api test -- closures && npm --prefix src/api run lint
 | Dependencias | T05a, T05b |
 | Estimación | L |
 | Seguridad / auditoría | Roles: no aplica (son pruebas). Auditoría: no aplica (P-12 y P-15 van en T06a). Cubre OWASP A01 (matriz de roles) y A04 (concurrencia) |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `docker-compose.yml`: servicio `api-test` en el perfil `test` (S-08), en la red interna, con su propia base de pruebas; `docker compose up` normal no lo arranca.
