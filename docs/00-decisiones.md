@@ -70,7 +70,7 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Duda:** ¿Qué impide que dos reservas de la misma sala se solapen si se crean a la vez?
 - **Opciones:** Decisión cerrada en `CLAUDE.md`.
 - **Decisión:** Restricción `EXCLUDE USING gist` en una migración SQL propia. El código `23P01` se traduce a 409 `BOOKING_CONFLICT`. La migración nunca se elimina, regenera ni reemplaza por código.
-- **Por qué:** Fijado por la persona en `CLAUDE.md`.
+- **Por qué:** Usaremos la arquitectura de Postgres con su modelo de exclusion cuando nos de el error `23P01`. Este error ocurre cuando se intenta insertar o actualizar una fila en una tabla que viola una restricción de exclusión (exclusion constraint), la cual se define comúnmente mediante índices GiST para garantizar que no existan valores o rangos que se superpongan entre sí, al final ese registro son las reservas no permitir mas de una en un mismo momento en una sala.
 - **Costo/riesgo:** Requiere la extensión `btree_gist`.
 - **Afecta a:** spec §7, §11, §12
 
@@ -78,7 +78,7 @@ Principio rector: las decisiones las toma la persona; el agente las redacta con 
 - **Duda:** ¿Cómo se registra quién hizo qué?
 - **Opciones:** Decisión cerrada en `CLAUDE.md`.
 - **Decisión:** "`audit_logs` solo recibe filas nuevas", protegida por un trigger de inmutabilidad en migración SQL propia. Las escrituras usan `TransactionRunner.run(ctx => …)` e incluyen la auditoría en la misma transacción. Cada fila lleva el request ID.
-- **Por qué:** Fijado por la persona en `CLAUDE.md`.
+- **Por qué:** La auditoria no debe permitir editar o eliminar registros.
 - **Costo/riesgo:** —
 - **Afecta a:** spec §7, §10
 
