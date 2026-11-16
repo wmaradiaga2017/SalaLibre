@@ -430,3 +430,28 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   `scrollWidth` no superen la ventana, y anotar las medidas en `docs/tareas/Txx.md`.
 - **`prefers-reduced-motion` no se puede emular** con la herramienta del navegador del agente: se comprueban las reglas
   en `document.styleSheets` y la emulación en DevTools queda como paso manual de la revisión.
+
+### Agenda fijada en T08 (ver `docs/tareas/T08.md` §6 y §7; B-133)
+- **Fechas y horas en el frontend solo con `shared/datetime`** (`localDate`, `localMinutes`, `formatTime`,
+  `formatMinutes`, `zonedInstant`, `addDays`, `isWeekday`, `formatLongDate`…), con `Intl` y `BUSINESS_TZ`; nunca
+  `toLocaleString` sin zona, `getHours()` ni desfases fijos. Una "fecha" es texto `AAAA-MM-DD`; "ahora" sale de `useNow()`.
+- **Horario y zona como constantes del spec §5** (`shared/datetime/zoned.ts` y `features/bookings/agenda-config.ts`): el
+  API no los expone. Si cambian los valores por defecto del spec, se cambian también ahí.
+- **Datos de la agenda en `features/bookings/agenda-queries.ts`:** `useRooms`, `useBookings(date)` y `useClosures`, con
+  las claves de `agendaKeys` (`['bookings','day',date]`, `['rooms']`, `['closures']`). T08a y T09 invalidan con
+  `agendaKeys.bookings` (todas las fechas) o `agendaKeys.bookingsOf(date)`; no escribir las claves a mano.
+- **La UI no decide disponibilidad:** solo oculta la acción en huecos ya empezados (`startAt` ≤ ahora, RN-05), cubiertos
+  por una reserva o de un día cerrado. Lo demás (RN-06 en el último día, capacidad…) lo responde el API al reservar.
+- **Privacidad (RN-17):** el texto de una tarjeta es `title ?? 'Ocupado'` (`bookingHeadline`), y **toda** variante de
+  tarjeta, incluida la compacta, muestra también el nombre del dueño (B-133). Nunca rellenar el título desde otro dato.
+- **Punto de conexión para T08a:** `AgendaPage` recibe `onSelectSlot(roomId, startAt)` (hoy no hace nada); los huecos
+  libres son `<button>` con `aria-label` "Sala, HH:MM, libre". Las tarjetas no son enfocables hasta T09, que las vuelve
+  botones.
+- **`cn` no fusiona clases** (no hay `tailwind-merge`): una clase pasada en `className` no reemplaza la del componente
+  base si chocan (p. ej. `w-44` contra el `w-full` de `Input`). El tamaño se pone en un contenedor (B-133).
+- **Grillas con desplazamiento horizontal:** columnas `minmax(<mín>px, 1fr)` sin `min-w-max` en el contenedor (con él las
+  columnas toman su ancho máximo de contenido y no reparten el espacio). Los elementos enfocables bajo un encabezado o
+  eje fijos llevan `scroll-mt-*`/`scroll-ml-*` para no quedar tapados al recibir el foco (B-133).
+- **Verificar "hoy" en fin de semana o fuera de horario:** se reemplaza `Date` en la página (clase que devuelve un
+  instante fijo sin argumentos) y se espera el tick de `useNow` (≤ 60 s); anotarlo como paso manual en `docs/tareas/Txx.md`.
+  No usar esperas largas dentro de una sola llamada de `javascript_tool` (vence a los 45 s).
