@@ -76,7 +76,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas desde la agenda) | T08a | M | No | Hecha | [T09](tareas/T09.md) |
 | 19 | T10 | Admin de salas | T04, T07 | M | No | Hecha | [T10](tareas/T10.md) |
 | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Hecha | [T10a](tareas/T10a.md) |
-| 21 | T10b | Admin de cierres | T05b, T07 | M | No | En revisión | [T10b](tareas/T10b.md) |
+| 21 | T10b | Admin de cierres | T05b, T07 | M | No | Hecha | [T10b](tareas/T10b.md) |
 | 22 | T10c | Auditoría: pantalla de consulta paginada | T06a, T07 | M | **Sí** | Pendiente | |
 | 23 | T11 | README final y verificación desde un clon limpio | todas | S | No | Pendiente | |
 
@@ -1010,7 +1010,7 @@ docker compose up -d --build
 | Dependencias | T05b, T07 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: la genera la API (`CLOSURE_CREATED`, `CLOSURE_DELETED`, `BOOKING_CANCELLED`, T06a) |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/closures/`: `AdminClosuresPage`, `ClosureFormModal`, hooks sobre `GET`, `POST` y `DELETE /api/closures` y `GET /api/bookings?date=`.

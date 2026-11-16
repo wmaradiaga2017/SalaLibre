@@ -559,3 +559,32 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   permite, como el API.
 - **Datos que dejó la verificación de T10a** en la base de desarrollo: `t10a.prueba.mwiy29he@salalibre.local` ("Prueba
   Dos Editada", Empleado) **inactivo** y su reserva cancelada. Bundle del frontend: 517 kB (aviso de Vite).
+
+### Admin de cierres fijado en T10b (ver `docs/tareas/T10b.md` §6 y §7; B-165)
+- **`features/closures/` es dueño de los cierres en el frontend:** `types.ts` (`Closure`, `CLOSURE_LIMITS` y
+  `closureKeys`) y `closures-queries.ts` (`useClosures`, `useCreateClosure`, `useDeleteClosure`). `bookings/types.ts`
+  reexporta `Closure`; `agendaKeys.closures` es `closureKeys.all`; `AgendaPage` importa `useClosures` de `features/closures`.
+- **Sin ciclos de imports entre features:** si dos features se necesitan (aquí `closures-queries` usa `agendaKeys` y la
+  agenda usa la clave de cierres), la clave compartida va en un archivo sin imports (`closures/types.ts`) y no se
+  reexportan hooks en la dirección contraria. Un ciclo con uso en el nivel del módulo rompe según el orden de carga.
+- **Invalidaciones:** crear un cierre invalida `closureKeys.all` y `agendaKeys.bookings` (cascada de RN-16); eliminarlo
+  solo `closureKeys.all` (no restaura reservas, S-05).
+- **Aviso previo con datos frescos:** `useBookings(date, { fresh: true })` (`staleTime: 0`) para contar las reservas que
+  se cancelarán; la acción que las cancela queda deshabilitada hasta tener el número (si el conteo falla, error con
+  `requestId` y "Reintentar"). No inventar un endpoint de conteo.
+- **Confirmación de acciones que cancelan reservas en un formulario:** dos pasos dentro del mismo `Modal` (datos →
+  confirmación con la consecuencia), no un `ConfirmDialog` encima de otro modal. Un error del API que corresponde a un
+  campo del paso 1 vuelve a ese paso y se aplica en un efecto con el mensaje guardado en un `useRef`.
+- **No llamar a `setState` dentro de un `useEffect`:** la regla `react-hooks/set-state-in-effect` de ESLint lo marca como
+  error (B-165). Para un valor que solo se consume en el efecto, usar `useRef`.
+- **Textos con número:** separar singular y plural ("Se canceló 1 reserva." / "Se cancelaron N reservas."), también en
+  las etiquetas (`bookingsLabel`).
+- **Fechas de calendario en formularios:** `input type="date"` con `min` = `addDays(hoy, 1)` y validación Zod con "hoy"
+  de `localDate(useNow())`, comparando texto `AAAA-MM-DD`; una fecha válida se comprueba con `addDays(d, 0) === d`. En
+  las verificaciones, el valor se fija con el `setter` nativo de `HTMLInputElement.value` y un evento `input`.
+- **`Banner` no tiene tono de advertencia:** un aviso de consecuencia destructiva usa `error`; uno neutro, `info`. No
+  agregar tonos ni colores nuevos sin pasar por los tokens.
+- **Verificación de cierres de hoy:** se insertan con `psql` incluyendo `created_by_id` (`NOT NULL`), se comprueba que
+  no tengan filas en `audit_logs` y se borran en el mismo script. Al terminar no quedan cierres en la base.
+- **Datos que dejó la verificación de T10b** en la base de desarrollo: la reserva "T10b reserva del miercoles" de
+  empleado1 cancelada como historial. Bundle del frontend: 527 kB (aviso de Vite).
