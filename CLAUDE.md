@@ -365,3 +365,28 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   el navegador. Si se usa una página temporal de demostración, se borra antes del commit (no hay página de demo
   permanente). En `react-refresh`, los hooks y helpers van en archivos aparte de los componentes (como
   `toast-context.ts` e `initials.ts`) para que el lint no dé avisos.
+
+### Frontend base fijado en T07 (ver `docs/tareas/T07.md` §6 y §7)
+- **Dependencias agregadas** (versión exacta): `@tanstack/react-query` 5.107.1, `react-hook-form` 7.92.0, `zod` 4.6.7,
+  `react-router` 8.5.1 (D-01 no nombra router) y `@hookform/resolvers` 7.0.6 (une RHF con Zod). No agregar otras para lo
+  mismo. Rutas declarativas con `BrowserRouter`/`Routes`/`Route` importados de `react-router`.
+- **`shared/apiClient.ts` es la única forma de llamar al API:** `apiClient.get/post/patch/delete` con prefijo `/api` y
+  `credentials: 'include'`. Los errores llegan como `ApiError` (`status`, `code`, `message`, `requestId`); para
+  mostrarlos se usa `toApiError(e)` con `ErrorState` o `Banner` y su `requestId`. Nunca `fetch` directo en una pantalla.
+- **401:** el `apiClient` llama al manejador que registra `AuthProvider` (`setUnauthorizedHandler`): vacía la caché, deja
+  la sesión en `null` y navega a `/login`. Solo `authService` usa `skipUnauthorizedHandler` (login, logout y `me`); no
+  usarlo en otras peticiones. El 409 `BOOKING_CONFLICT` ya trae el mensaje de F-02; recargar la agenda es de T08/T09.
+- **Sesión:** `useAuth()` (`features/auth/auth-context.ts`) da `status`, `user`, `signIn` y `signOut`. La sesión vive en
+  la consulta `ME_QUERY_KEY` (`['auth','me']`); al limpiar la caché se conserva esa clave. Nada de tokens ni datos de
+  sesión en `localStorage`, `sessionStorage` ni `document.cookie` (T07, CA8).
+- **Rutas (`App.tsx`):** `/login` pública; el resto dentro de `ProtectedRoute` → `SessionLayout`; `/admin/*` dentro de
+  `RequireRole role="ADMIN"`. Una pantalla nueva reemplaza su `PlaceholderPage` en `App.tsx`. Tras el login siempre se
+  va a `/agenda`; `/login` con sesión, `/admin` a secas y rutas desconocidas redirigen a `/agenda`.
+- **Navegación por rol:** los enlaces se definen en `features/auth/SessionLayout.tsx` (`COMMON_NAV`, `ADMIN_NAV`);
+  `shared/layout/AppLayout` solo recibe `navItems` y no importa nada de `features/` (`shared` no depende de features).
+- **Formularios:** RHF + Zod con `zodResolver`, `noValidate` en el `<form>` y errores mostrados con `Field`. Zod 4 usa
+  `{ error: '…' }` y `z.email()`. Los textos de error van en español y junto al campo.
+- **`LoginForm` y `PasswordField`** ya exponen `onFocusChange`, `onPasswordVisibleChange` y `onSubmitStatusChange` para
+  T07c, que solo debe cambiar `LoginPage` y agregar los personajes, sin pasarles el valor de la contraseña.
+- **Pendiente de prueba:** el manejador general de 401 aún no se ejercitó en el navegador (solo `/me`); comprobarlo en
+  T07b o T08 con la primera pantalla que llame a la API.
