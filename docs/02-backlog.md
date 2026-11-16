@@ -72,7 +72,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | Hecha | [T07b](tareas/T07b.md) |
 | 15 | T07c | Login: composición visual de la imagen y personajes animados | T07a, T07 | L | **Sí** | Hecha | [T07c](tareas/T07c.md) |
 | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, selector de día, filtros, cierres | T05b, T07 | L | No | Hecha | [T08](tareas/T08.md) |
-| 17 | T08a | Reservar desde la agenda: formulario modal y manejo del 409 | T08 | M | No | Pendiente | |
+| 17 | T08a | Reservar desde la agenda: formulario modal y manejo del 409 | T08 | M | No | En revisión | [T08a](tareas/T08a.md) |
 | 18 | T09 | Mis reservas + cancelar (propias y, para ADMIN, ajenas desde la agenda) | T08a | M | No | Pendiente | |
 | 19 | T10 | Admin de salas | T04, T07 | M | No | Pendiente | |
 | 20 | T10a | Admin de usuarios | T05a, T07 | M | No | Pendiente | |
@@ -849,7 +849,7 @@ curl -s -b /tmp/emp1.txt -X POST $BASE/bookings/$B1/cancel | jq -r .status   # l
 | Dependencias | T08 |
 | Estimación | M |
 | Seguridad / auditoría | Roles: autenticado. Auditoría: la genera la API (`BOOKING_CREATED`, T06a). Las validaciones del cliente son comodidad; la API decide |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/bookings/BookingFormModal.tsx`, `useCreateBooking`, esquema Zod, selectores de inicio y fin en pasos de 15 minutos, mapa de códigos de error a mensajes en español en un solo archivo.

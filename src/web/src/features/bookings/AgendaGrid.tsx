@@ -26,7 +26,7 @@ interface AgendaGridProps {
   bookings: Booking[];
   /** Día cerrado: ningún hueco es clicable (RN-10, CA5). */
   closed: boolean;
-  /** Clic o Enter en un hueco libre (CA7). En T08a abre el formulario de reserva. */
+  /** Clic o Enter en un hueco libre (T08 CA7): abre el formulario de reserva (T08a). */
   onSelectSlot: (roomId: string, startAt: Date) => void;
 }
 

@@ -7,17 +7,15 @@ import { useAuth } from '../auth/auth-context';
 import { agendaDays, hasFilters, NO_FILTERS, visibleRooms, type RoomFilterValue } from './agenda-logic';
 import { useBookings, useClosures, useRooms } from './agenda-queries';
 import { AgendaGrid } from './AgendaGrid';
+import { BookingFormModal, type SlotSelection } from './BookingFormModal';
 import { DayPicker } from './DayPicker';
 import { RoomFilters } from './RoomFilters';
-
-/** Hasta T08a, elegir un hueco libre no abre nada (fuera de alcance de T08). */
-function noSlotAction() {}
 
 /**
  * `/agenda` (spec §9, F-02 pasos 1–2, D-18): disponibilidad del día de todas las salas activas en franjas de 15 min,
  * con selector de día, filtros en el cliente y banner de día cerrado. Todo lo que se dibuja sale del API.
  */
-export function AgendaPage({ onSelectSlot = noSlotAction }: { onSelectSlot?: (roomId: string, startAt: Date) => void }) {
+export function AgendaPage() {
   const { user } = useAuth();
   const now = useNow();
   const today = localDate(now);
@@ -27,6 +25,8 @@ export function AgendaPage({ onSelectSlot = noSlotAction }: { onSelectSlot?: (ro
   // Primer día hábil ofrecido (hoy, o el lunes si hoy es fin de semana) hasta que la persona elija otro.
   const day = selected && days.includes(selected) ? selected : days[0];
   const [filters, setFilters] = useState<RoomFilterValue>(NO_FILTERS);
+  // Hueco elegido: abre el formulario de reserva (F-02 paso 3, T08a).
+  const [slot, setSlot] = useState<SlotSelection | null>(null);
 
   const rooms = useRooms();
   const bookings = useBookings(day);
@@ -89,7 +89,7 @@ export function AgendaPage({ onSelectSlot = noSlotAction }: { onSelectSlot?: (ro
         rooms={columns}
         bookings={bookings.data ?? []}
         closed={closure !== undefined}
-        onSelectSlot={onSelectSlot}
+        onSelectSlot={(roomId, startAt) => setSlot({ roomId, startAt })}
       />
     );
   }
@@ -119,6 +119,8 @@ export function AgendaPage({ onSelectSlot = noSlotAction }: { onSelectSlot?: (ro
       </div>
 
       {content}
+
+      {slot && <BookingFormModal slot={slot} rooms={activeRooms} onClose={() => setSlot(null)} />}
     </section>
   );
 }
