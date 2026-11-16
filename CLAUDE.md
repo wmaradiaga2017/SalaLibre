@@ -269,7 +269,7 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   **no** importa el de cierres. RN-10 (`DAY_CLOSED`) la sigue resolviendo `BookingsRepository.isDateClosed` dentro de la
   transacción de la reserva; no pasarla a `ClosuresService` (sería un ciclo). `test/closures.spec.ts` lo comprueba.
 - **Fechas de cierre:** `Closure.date` es texto `AAAA-MM-DD` (día de calendario en `BUSINESS_TZ`), nunca un instante.
-  `PrismaClosuresRepository` convierte la columna `@db.Date` con `new Date(\`${date}T00:00:00.000Z\`)` y
+  `PrismaClosuresRepository` convierte la columna `@db.Date` con `` new Date(`${date}T00:00:00.000Z`) `` y
   `toISOString().slice(0, 10)`. "Hoy" = `localDate(clock.now(), config.timeZone)`; "posterior a hoy" compara las fechas
   como texto (`isAfterToday`). `GET` muestra fecha ≥ hoy; crear y eliminar exigen fecha > hoy (RN-24, D-31).
 - **Cancelación por fecha:** `BookingsService.cancelConfirmedByDate(ctx, date, cancelledById)` arma el rango UTC del día
