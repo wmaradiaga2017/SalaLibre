@@ -801,7 +801,7 @@ docker compose up -d --build
 | Dependencias | T05b, T07 |
 | Estimación | L |
 | Seguridad / auditoría | Roles: autenticado. Auditoría: no aplica. OWASP A01: un `EMPLOYEE` no recibe los títulos ajenos (la API los omite, RN-17) y la UI no los reconstruye |
-| Estado | Pendiente |
+| Estado | En revisión |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/features/bookings/`: `AgendaPage`, `DayPicker`, grilla de línea de tiempo, `BookingCard`, `RoomFilters`, hooks `useRooms`, `useBookings(date)` y `useClosures`.
