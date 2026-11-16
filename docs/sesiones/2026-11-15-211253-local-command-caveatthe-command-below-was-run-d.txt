@@ -1,0 +1,2533 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+❯ /clear                                                                        
+
+❯ /ejecutar-tarea T05a                                                          
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● Comprobé la DoR de T05a: dependencias T05 y T03a en Hecha, y la ficha está
+  completa. Ahora leo las decisiones y el código actual de users y bookings.
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Contexto leído. Registro el inicio en la bitácora con la hora real.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && printf '%s\n'
+      '| B-79 | 2026-11-15 20:46 | Agente | 3-Ejecutar | AGENTE | Inicio de T05a
+      (Módulo de u…)
+  ⎿  | B-79 | 2026-11-15 20:46 | Agente | 3-Ejecutar | AGENTE | Inicio de T
+     05a (Módulo de usuarios ADMIN): DoR comprobada, dependencias T05 y T03
+     a en Hecha | En curso | docs/02-backlog.md T05a |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      80  | B-76 | 2026-11-15 20:38 | Yo | 3-Ejecutar | REVISIÓN | T05 re
+          visada, cumple la DoD | aprobada | T05 |
+      81  | B-77 | 2026-11-15 20:38 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05 pasa a Hecha en el resumen y en la fich
+          a de 02-backlog.md, tras la revisión de B-76; se incluye la sec
+          ción 8 de docs/tareas/T05.md escrita por la persona | T05 Hecha
+          . Pendiente la observación de la revisión: actualizar CLAUDE.md
+           con los desvíos | docs/02-backlog.md, docs/tareas/T05.md §8, B
+          -76 |
+      82  | B-78 | 2026-11-15 20:41 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05, B-76
+          ), CLAUDE.md (Dependencias) agrega la subsección «Reservas, tie
+          mpo y transacciones fijados en T05»: `BusinessConfig`, `Clock` 
+          y zona horaria con `Intl`; forma real del `23P01`; toda llamada
+           dentro de `TransactionRunner.run` recibe el `ctx` (B-74); orde
+          n de locks fecha → usuario; `BookingsService` como API para T05
+          a y T05b. Control automático nuevo: `test/transactions.spec.ts`
+           falla si una dependencia se llama sin `ctx` dentro de una tran
+          sacción. Al crearlo apareció otro caso latente de B-74 en `Room
+          sService.update` (T04): `RoomsRepository.findById(id, ctx?)` y 
+          lectura con `ctx`. Prueba negativa: quitar el `ctx` en reservas
+           y en salas hace fallar el control con los dos casos | 90 tests
+           en verde, `tsc` y lint sin errores, compose healthy, `PATCH /r
+          ooms` 200 y 404 en el compose | CLAUDE.md, src/api/test/transac
+          tions.spec.ts, src/api/src/modules/rooms, B-74, B-76 |
+      83 +| B-79 | 2026-11-15 20:46 | Agente | 3-Ejecutar | AGENTE | Inic
+         +io de T05a (Módulo de usuarios ADMIN): DoR comprobada, dependen
+         +cias T05 y T03a en Hecha | En curso | docs/02-backlog.md T05a |
+
+● El plan de T05a cubre cuatro frentes: el repositorio de usuarios con sus
+  traducciones de errores, la cancelación de reservas futuras con el Clock, un
+  módulo UsersAdminModule aparte para evitar un ciclo de importación, y las
+  reglas del PATCH con su transacción y las pruebas. Siguiente paso: escribir
+  test/users.spec.ts y luego verificar con curl contra el compose. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Empiezo por el dominio y el repositorio de usuarios.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && cat >
+      src/modules/users/domain/user.ts <<'EOF'
+      // Dominio de usuarios: tipos puros, sin depen…)
+  ⎿  prisma/migrations/20261115142500_init/migration.sql:19:    "email" TEX
+     T NOT NULL,
+     prisma/migrations/20261115142500_init/migration.sql:87:CREATE UNIQUE I
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\users\domain\user.ts (+28 -0)
+       2  
+       3  export type Role = 'EMPLOYEE' | 'ADMIN';
+       4  
+       5 +export const ROLES: readonly Role[] = ['EMPLOYEE', 'ADMIN'];   
+       6 +                                                               
+       7 +/** spec §7 (`users.name`) y RN-18 (contraseña de al menos 8 ca
+         +racteres). */                                                  
+       8 +export const USER_LIMITS = { nameMax: 100, passwordMin: 8 } as 
+         +const;                                                         
+       9 +                                                               
+      10 +/** Costo de bcryptjs para todo hash nuevo (cambio, alta y rese
+         +t); el mismo que usa el seed (T03a). */                        
+      11 +export const BCRYPT_ROUNDS = 10;                               
+      12 +                                                               
+      13  /** Usuario tal como lo expone la API (spec §8, objeto `User`).
+           Nunca incluye el hash. */
+      14  export interface PublicUser {
+      15    id: string;
+     ...
+      24    passwordHash: string;
+      25  }
+      26  
+      27 +/** Alta de un usuario (F-06). El correo ya llega normalizado y
+         + la contraseña ya convertida en hash. */                       
+      28 +export interface NewUser {                                     
+      29 +  name: string;                                                
+      30 +  email: string;                                               
+      31 +  passwordHash: string;                                        
+      32 +  role: Role;                                                  
+      33 +}                                                              
+      34 +                                                               
+      35 +/** Cambios permitidos por `PATCH /users/:id` (el correo no se 
+         +edita: RN-23 solo aplica al alta). */                          
+      36 +export interface UserChanges {                                 
+      37 +  name?: string;                                               
+      38 +  role?: Role;                                                 
+      39 +  isActive?: boolean;                                          
+      40 +}                                                              
+      41 +                                                               
+      42  export function toPublicUser(user: PublicUser): PublicUser {
+      43    return { id: user.id, email: user.email, name: user.name, rol
+          e: user.role, isActive: user.isActive };
+      44  }
+     ...
+      47  export function normalizeEmail(email: string): string {
+      48    return email.trim().toLowerCase();
+      49  }
+      50 +                                                               
+      51 +/** RN-26 (S-03): un ADMIN no puede desactivarse a sí mismo. */
+     … 3 more lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\users\domain\users.repository.ts (+11 -3)
+       1  import type { TransactionContext } from '../../../common/transa
+          ction/transaction-runner';
+       2 -import type { UserWithCredentials } from './user';             
+       2 +import type { NewUser, PublicUser, UserChanges, UserWithCredent
+         +ials } from './user';                                          
+       3  
+       4 -/** Repositorio de usuarios (interfaz). La implementación Prism
+         -a vive en `infrastructure/`. */                                
+       4 +/**                                                            
+       5 + * Repositorio de usuarios (interfaz). La implementación Prisma
+         + vive en `infrastructure/`.                                    
+       6 + * `create` lanza `AppError('EMAIL_TAKEN')` si el correo ya exi
+         +ste (RN-23, lo garantiza el índice único de la base);          
+       7 + * `update` lanza `AppError('NOT_FOUND')` si el id no existe.  
+       8 + */                                                            
+       9  export interface UsersRepository {
+      10    findByEmail(email: string): Promise<UserWithCredentials | nul
+          l>;
+      11    /**
+     ...
+      13     * debe pasar el `ctx`: si usa otra conexión del pool, muchas
+           transacciones esperando un lock lo agotan (B-74).
+      14     */
+      15    findById(id: string, ctx?: TransactionContext): Promise<UserW
+          ithCredentials | null>;
+      12 -  /** Escritura: siempre dentro de `TransactionRunner.run` (CLA
+         -UDE.md, escrituras). */                                        
+      16 +  /** Todos los usuarios, activos e inactivos, ordenados por `n
+         +ame`. */                                                       
+      17 +  findAll(): Promise<PublicUser[]>;                            
+      18 +  /** Escrituras: siempre dentro de `TransactionRunner.run` (CL
+         +AUDE.md, escrituras). */                                       
+      19 +  create(ctx: TransactionContext, user: NewUser): Promise<Publi
+         +cUser>;                                                        
+      20 +  update(ctx: TransactionContext, id: string, changes: UserChan
+         +ges): Promise<PublicUser>;                                     
+      21    updatePasswordHash(ctx: TransactionContext, id: string, passw
+          ordHash: string): Promise<void>;
+      22  }
+      23  
+  ⎿  Updated
+     src\api\src\modules\users\infrastructure\prisma-users.repository.ts
+     (+47 -2)
+       1  import { Injectable } from '@nestjs/common';
+       2 +import { AppError } from '../../../common/errors/app-error';   
+       3  import { prismaTx } from '../../../common/transaction/prisma-tr
+          ansaction-runner';
+       4  import type { TransactionContext } from '../../../common/transa
+          ction/transaction-runner';
+       5 +import { Prisma } from '../../../generated/prisma/client';     
+       6  import { PrismaService } from '../../../prisma/prisma.service';
+       5 -import type { UserWithCredentials } from '../domain/user';     
+       7 +import type { NewUser, PublicUser, UserChanges, UserWithCredent
+         +ials } from '../domain/user';                                  
+       8  import type { UsersRepository } from '../domain/users.repositor
+          y';
+       9  
+      10  const SELECT = { id: true, email: true, name: true, role: true,
+           isActive: true, passwordHash: true } as const;
+      11 +/** Lo que se devuelve fuera de la autenticación: nunca el hash
+         + (A02). */                                                     
+      12 +const PUBLIC = { id: true, email: true, name: true, role: true,
+         + isActive: true } as const;                                    
+      13  
+      14  @Injectable()
+      15  export class PrismaUsersRepository implements UsersRepository {
+     ...
+      27      return client.user.findUnique({ where: { id }, select: SELE
+          CT });
+      28    }
+      29  
+      30 +  findAll(): Promise<PublicUser[]> {                           
+      31 +    return this.prisma.user.findMany({ orderBy: [{ name: 'asc' 
+         +}, { email: 'asc' }], select: PUBLIC });                       
+      32 +  }                                                            
+      33 +                                                               
+      34 +  async create(ctx: TransactionContext, user: NewUser): Promise
+         +<PublicUser> {                                                 
+      35 +    try {                                                      
+      36 +      return await prismaTx(ctx).user.create({ data: user, sele
+         +ct: PUBLIC });                                                 
+      37 +    } catch (error) {                                          
+      38 +      throw translate(error);                                  
+      39 +    }                                                          
+      40 +  }                                                            
+      41 +                                                               
+      42 +  async update(ctx: TransactionContext, id: string, changes: Us
+         +erChanges): Promise<PublicUser> {                              
+      43 +    try {                                                      
+      44 +      return await prismaTx(ctx).user.update({ where: { id }, d
+         +ata: changes, select: PUBLIC });                               
+      45 +    } catch (error) {                                          
+      46 +      throw translate(error);                                  
+      47 +    }                                                          
+      48 +  }                                                            
+      49 +                                                               
+      50    async updatePasswordHash(ctx: TransactionContext, id: string,
+           passwordHash: string): Promise<void> {
+     … 27 more lines (ctrl+o to expand)
+
+● Ahora el UsersService, la constante de bcrypt en auth y la cancelación en
+  cascada del lado de reservas.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && cat >
+      src/modules/users/users.service.ts <<'EOF'
+      import { Inject, Injectable } from '@nestjs/…)
+  ⎿  8:import { BCRYPT_ROUNDS, toPublicUser, type PublicUser } from '../use
+     rs/domain/user';
+     73:      await this.users.updatePasswordHash(ctx, user.id, await hash(
+     newPassword, BCRYPT_ROUNDS));
+  ⎿  Updated src\api\src\modules\auth\auth.service.ts (+1 -4)
+       5  import type { SessionResolver, SessionRole, SessionUser } from 
+          '../../common/auth/session';
+       6  import { AppError } from '../../common/errors/app-error';
+       7  import { TRANSACTION_RUNNER, type TransactionRunner } from '../
+          ../common/transaction/transaction-runner';
+       8 -import { toPublicUser, type PublicUser } from '../users/domain/
+         -user';                                                         
+       8 +import { BCRYPT_ROUNDS, toPublicUser, type PublicUser } from '.
+         +./users/domain/user';                                          
+       9  import { UsersService } from '../users/users.service';
+      10  
+      11  /** Payload del JWT: solo `sub` y `role` (spec §11). `iat` y `e
+          xp` los agrega la librería. */
+     ...
+      20  
+      21  const INVALID_CREDENTIALS_MESSAGE = 'Correo o contraseña incorr
+          ectos.';
+      22  
+      23 -/** Costo de bcryptjs para los hashes nuevos; el mismo que usa 
+         -el seed. */                                                    
+      24 -const BCRYPT_ROUNDS = 10;                                      
+      25 -                                                               
+      23  export interface LoginResult {
+      24    user: PublicUser;
+      25    token: string;
+  ⎿  Updated src\api\src\modules\users\users.service.ts (+25 -2)
+       1  import { Inject, Injectable } from '@nestjs/common';
+       2  import type { TransactionContext } from '../../common/transacti
+          on/transaction-runner';
+       3 -import { normalizeEmail, type UserWithCredentials } from './dom
+         -ain/user';                                                     
+       3 +import {                                                       
+       4 +  normalizeEmail,                                              
+       5 +  type NewUser,                                                
+       6 +  type PublicUser,                                             
+       7 +  type UserChanges,                                            
+       8 +  type UserWithCredentials,                                    
+       9 +} from './domain/user';                                        
+      10  import { USERS_REPOSITORY, type UsersRepository } from './domai
+          n/users.repository';
+      11  
+       6 -/** API pública del módulo de usuarios para otros módulos. El C
+         -RUD de ADMIN llega en T05a. */                                 
+      12 +/**                                                            
+      13 + * API pública del módulo de usuarios para otros módulos (auth,
+         + reservas y la administración de T05a).                        
+      14 + * Las escrituras reciben el `ctx` de una transacción abierta p
+         +or quien llama.                                                
+      15 + */                                                            
+      16  @Injectable()
+      17  export class UsersService {
+      18    constructor(@Inject(USERS_REPOSITORY) private readonly users:
+           UsersRepository) {}
+     ...
+      26      return this.users.findById(id, ctx);
+      27    }
+      28  
+      29 +  /** Todos los usuarios ordenados por `name`, sin `passwordHas
+         +h`. */                                                         
+      30 +  findAll(): Promise<PublicUser[]> {                           
+      31 +    return this.users.findAll();                               
+      32 +  }                                                            
+      33 +                                                               
+      34 +  /** RN-23: guarda el correo en minúsculas. Lanza `EMAIL_TAKEN
+         +` si ya existe. */                                             
+      35 +  create(ctx: TransactionContext, user: NewUser): Promise<Publi
+         +cUser> {                                                       
+      36 +    return this.users.create(ctx, { ...user, email: normalizeEm
+         +ail(user.email) });                                            
+      37 +  }                                                            
+      38 +                                                               
+      39 +  update(ctx: TransactionContext, id: string, changes: UserChan
+         +ges): Promise<PublicUser> {                                    
+      40 +    return this.users.update(ctx, id, changes);                
+      41 +  }                                                            
+      42 +                                                               
+      43    /** Guarda un hash ya calculado. Se llama dentro de una trans
+          acción del módulo que escribe. */
+      44    updatePasswordHash(ctx: TransactionContext, id: string, passw
+          ordHash: string): Promise<void> {
+      45      return this.users.updatePasswordHash(ctx, id, passwordHash)
+          ;
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && node
+      -e "
+      const fs=require('fs');…)
+  ⎿  /usr/bin/bash: line 48: CONFIRMED\: No such file or directory
+     /usr/bin/bash: line 46: at\: Is a directory
+     /usr/bin/bash: line 46: uuid: No such file or directory
+     … +29 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\bookings\bookings.service.ts (+16 -1)
+       3  import { AppError } from '../../common/errors/app-error';
+       4  import { CLOCK, type Clock } from '../../common/time/clock';
+       5  import { addDays, localDate, startOfLocalDay } from '../../comm
+          on/time/zoned-time';
+       6 -import { TRANSACTION_RUNNER, type TransactionRunner } from '../
+         -../common/transaction/transaction-runner';                     
+       6 +import {                                                       
+       7 +  TRANSACTION_RUNNER,                                          
+       8 +  type TransactionContext,                                     
+       9 +  type TransactionRunner,                                      
+      10 +} from '../../common/transaction/transaction-runner';          
+      11  import { RoomsService } from '../rooms/rooms.service';
+      12  import { UsersService } from '../users/users.service';
+      13  import { toBookingView, type BookingView, type Viewer } from '.
+          /domain/booking';
+     ...
+      117      });
+      118      return toBookingView(cancelled, viewer);
+      119    }
+      120 +                                                              
+      121 +  /**                                                         
+      122 +   * RN-15 (D-16): cancela las reservas futuras de un usuario 
+          +que se desactiva. La llama el módulo de usuarios dentro       
+      123 +   * de su transacción, después de tomar el lock  (spec §11), 
+          +así ninguna reserva nueva de ese usuario                      
+      124 +   * puede colarse. "Futuras" =  posterior a ahora (). Devuelv
+          +e los ids cancelados.                                         
+      125 +   */                                                         
+      126 +  async cancelFutureByUser(ctx: TransactionContext, userId: st
+          +ring, cancelledById: string): Promise<string[]> {             
+      127 +    const ids = await this.bookings.cancelFutureByUser(ctx, us
+          +erId, cancelledById, this.clock.now());                       
+      128 +    // T06a agrega aquí la auditoría BOOKING_CANCELLED por cad
+          +a id, dentro de la misma transacción.                         
+      129 +    return ids;                                               
+      130 +  }                                                           
+      131  }
+  ⎿  Updated src\api\src\modules\bookings\domain\bookings.repository.ts (+5
+     -0)
+      20     * devuelve `null` si ya no lo estaba (otra petición la cance
+          ló antes).
+      21     */
+      22    cancel(ctx: TransactionContext, id: string, cancelledById: st
+          ring, at: Date): Promise<BookingRecord | null>;
+      23 +  /**                                                          
+      24 +   * RN-15: cancela en un solo UPDATE las reservas  del usuario
+         + con  (las pasadas y las que                                   
+      25 +   * ya empezaron no cambian). Devuelve los ids cancelados, par
+         +a auditar cada uno en T06a.                                    
+      26 +   */                                                          
+      27 +  cancelFutureByUser(ctx: TransactionContext, userId: string, c
+         +ancelledById: string, at: Date): Promise<string[]>;            
+      28  }
+      29  
+      30  export const BOOKINGS_REPOSITORY = Symbol('BOOKINGS_REPOSITORY'
+          );
+  ⎿  Updated src\api\src\modules\bookings\infrastructure\prisma-bookings.re
+     pository.ts (+9 -0)
+      111      const row = await tx.booking.findUniqueOrThrow({ where: { 
+           id }, select: SELECT });
+      112      return toRecord(row);
+      113    }
+      114 +                                                              
+      115 +  async cancelFutureByUser(ctx: TransactionContext, userId: st
+          +ring, cancelledById: string, at: Date): Promise<string[]> {   
+      116 +    const rows = await prismaTx(ctx).booking.updateManyAndRetu
+          +rn({                                                          
+      117 +      where: { userId, status: 'CONFIRMED', startAt: { gt: at 
+          +} },                                                          
+      118 +      data: { status: 'CANCELLED', cancelledAt: at, cancelledB
+          +yId },                                                        
+      119 +      select: { id: true },                                   
+      120 +    });                                                       
+      121 +    return rows.map((r) => r.id);                             
+      122 +  }                                                           
+      123  }
+
+● Los backticks se perdieron en los comentarios; los corrijo con Edit.
+
+  Read 2 files (ctrl+o to expand)
+
+● Update(src\api\src\modules\bookings\domain\bookings.repository.ts)
+  ⎿  Added 1 line, removed 1 line
+      21     */
+      22    cancel(ctx: TransactionContext, id: string, cancelledById: st
+          ring, at: Date): Promise<BookingRecord | null>;
+      23    /**
+      24 -   * RN-15: cancela en un solo UPDATE las reservas  del usuario
+         - con  (las pasadas y las que                                   
+      24 +   * RN-15: cancela en un solo UPDATE las reservas `CONFIRMED` 
+         +del usuario con `startAt > at` (las pasadas y las que          
+      25     * ya empezaron no cambian). Devuelve los ids cancelados, par
+          a auditar cada uno en T06a.
+      26     */
+      27    cancelFutureByUser(ctx: TransactionContext, userId: string, c
+          ancelledById: string, at: Date): Promise<string[]>;
+
+● Update(src\api\src\modules\bookings\bookings.service.ts)
+  ⎿  Added 2 lines, removed 2 lines
+      120  
+      121    /**
+      122     * RN-15 (D-16): cancela las reservas futuras de un usuario 
+           que se desactiva. La llama el módulo de usuarios dentro
+      123 -   * de su transacción, después de tomar el lock  (spec §11), 
+          -así ninguna reserva nueva de ese usuario                      
+      124 -   * puede colarse. "Futuras" =  posterior a ahora (). Devuelv
+          -e los ids cancelados.                                         
+      123 +   * de su transacción, después de tomar el lock `user:<uuid>`
+          + (spec §11), así ninguna reserva nueva de ese usuario         
+      124 +   * puede colarse. "Futuras" = `startAt` posterior a ahora (`
+          +Clock`). Devuelve los ids cancelados.                         
+      125     */
+      126    async cancelFutureByUser(ctx: TransactionContext, userId: st
+           ring, cancelledById: string): Promise<string[]> {
+      127      const ids = await this.bookings.cancelFutureByUser(ctx, us
+           erId, cancelledById, this.clock.now());
+
+● Ahora el módulo de administración: DTOs, service, controller y módulo.
+
+● Write(src\api\src\modules\users\dto\user.dto.ts)
+  ⎿  Wrote 61 lines to src\api\src\modules\users\dto\user.dto.ts
+       1 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagge
+         r';
+       2 import { IsBoolean, IsEmail, IsIn, IsString, Length, MinLength }
+          from 'class-validator';
+       3 import { NotBlank, OptionalNotNull } from '../../../common/valid
+         ation/decorators';
+       4 import { ROLES, USER_LIMITS, type Role } from '../domain/user';
+       5 
+       6 // spec §7 (`users`) y §8: nombre 1–100 caracteres (no solo espa
+         cios), correo válido, contraseña ≥ 8 (RN-18) y rol de
+     … +55 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\users\users-admin.service.ts)
+  ⎿  Wrote 99 lines to src\api\src\modules\users\users-admin.service.ts
+       1 import { Inject, Injectable } from '@nestjs/common';
+       2 import { hash } from 'bcryptjs';
+       3 import { PinoLogger } from 'nestjs-pino';
+       4 import { AppError } from '../../common/errors/app-error';
+       5 import { TRANSACTION_RUNNER, type TransactionRunner } from '../.
+         ./common/transaction/transaction-runner';
+       6 import { BookingsService } from '../bookings/bookings.service';
+       7 import {
+       8   BCRYPT_ROUNDS,
+       9   isSelfDeactivation,
+     … +90 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\users\users.controller.ts)
+  ⎿  Wrote 41 lines to src\api\src\modules\users\users.controller.ts
+       1 import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, 
+         Patch, Post } from '@nestjs/common';
+       2 import { ApiTags } from '@nestjs/swagger';
+       3 import { CurrentUser, Roles } from '../../common/auth/decorators
+         ';
+       4 import type { SessionUser } from '../../common/auth/session';
+       5 import type { PublicUser } from './domain/user';
+       6 import { CreateUserDto, ResetPasswordDto, UpdateUserDto } from '
+         ./dto/user.dto';
+       7 import { UsersAdminService } from './users-admin.service';
+     … +34 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\users\users-admin.module.ts)
+  ⎿  Wrote 16 lines to src\api\src\modules\users\users-admin.module.ts
+       1 import { Module } from '@nestjs/common';
+       2 import { BookingsModule } from '../bookings/bookings.module';
+       3 import { UsersController } from './users.controller';
+       4 import { UsersAdminService } from './users-admin.service';
+       5 import { UsersModule } from './users.module';
+       6 
+       7 /**
+       8  * Rutas `/users` del ADMIN (F-06). Va separado de `UsersModule`
+          para no crear un ciclo: `BookingsModule` importa
+       9  * `UsersModule` (relectura del usuario al reservar) y la desact
+     … +8 lines (ctrl+o to expand)
+
+● Reutilizo lockKeys de BookingsService en vez de duplicar el prefijo. También
+  registro el módulo y reviso si RolesGuard lee @Roles a nivel de clase.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && node
+      -e "
+      const fs=require('fs');let
+      p='src/modules/users/users-admin.service.ts';let s=fs.re…)
+  ⎿  6:import { BookingsService, lockKeys } from '../bookings/bookings.serv
+     ice';
+     67:      await ctx.advisoryLock(lockKeys.user(id));
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\app.module.ts (+2 -0)
+       5  import { AuthModule } from './modules/auth/auth.module';
+       6  import { BookingsModule } from './modules/bookings/bookings.mod
+          ule';
+       7  import { RoomsModule } from './modules/rooms/rooms.module';
+       8 +import { UsersAdminModule } from './modules/users/users-admin.m
+         +odule';                                                        
+       9  import { UsersModule } from './modules/users/users.module';
+      10  import { PrismaModule } from './prisma/prisma.module';
+      11  
+     ...
+      19      AuthModule,
+      20      RoomsModule,
+      21      BookingsModule,
+      22 +    UsersAdminModule,                                          
+      23    ],
+      24  })
+      25  export class AppModule {}
+  ⎿  Updated src\api\src\modules\users\users-admin.service.ts (+3 -5)
+      3  import { PinoLogger } from 'nestjs-pino';
+      4  import { AppError } from '../../common/errors/app-error';
+      5  import { TRANSACTION_RUNNER, type TransactionRunner } from '../.
+         ./common/transaction/transaction-runner';
+      6 -import { BookingsService } from '../bookings/bookings.service'; 
+      6 +import { BookingsService, lockKeys } from '../bookings/bookings.
+        +service';                                                       
+      7  import {
+      8    BCRYPT_ROUNDS,
+      9    isSelfDeactivation,
+     ...
+      20    role: Role;
+      21  }
+      22  
+      23 -/** Misma clave que usa la creación de reservas (`BookingsServi
+         -ce`, spec §11): serializa ambas operaciones. */                
+      24 -const userLock = (userId: string) => `user:${userId}`;         
+      25 -                                                               
+      23  const NOT_FOUND_MESSAGE = 'El usuario no existe.';
+      24  
+      25  /**
+     ...
+      63     */
+      64    async update(actorId: string, id: string, changes: UserChange
+          s): Promise<PublicUser> {
+      65      const { user, cancelled } = await this.tx.run(async (ctx) =
+          > {
+      69 -      await ctx.advisoryLock(userLock(id));                    
+      66 +      // Misma clave que la creación de reservas (spec §11): se
+         +rializa ambas operaciones (R-02).                              
+      67 +      await ctx.advisoryLock(lockKeys.user(id));               
+      68        if (!(await this.users.findById(id, ctx))) { // misma con
+          exión que la transacción (B-74)
+      69          throw new AppError('NOT_FOUND', NOT_FOUND_MESSAGE);
+      70        }
+● Compilo para ver qué falta (los repositorios en memoria tendrán que
+  implementar los métodos nuevos).
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && node
+      -e "
+      const fs=require('fs');…)
+  ⎿  /usr/bin/bash: line 76: users.email\: No such file or directory
+     /usr/bin/bash: line 74: ${operation}: command not found
+     import { hashSync } from 'bcryptjs';
+     … +27 lines (ctrl+o to expand)
+  ⎿  Updated src\api\test\bookings-service.spec.ts (+1 -0)
+      70        events.push('cancel');
+      71        return options.cancelReturnsNull ? null : { ...record({ .
+          ..VALID, userId: EMPLOYEE.id }), status: 'CANCELLED' };
+      72      },
+      73 +    cancelFutureByUser: async () => [],                        
+      74    };
+      75    const rooms = {
+      76      findById: async (id: string) => {
+  ⎿  Updated src\api\test\support\in-memory-bookings.repository.ts (+9 -0)
+      81      return { ...b };
+      82    }
+      83  
+      84 +  async cancelFutureByUser(ctx: TransactionContext, userId: str
+         +ing, cancelledById: string, at: Date): Promise<string[]> {     
+      85 +    assertTx(ctx);                                             
+      86 +    const future = this.bookings.filter((b) => b.userId === use
+         +rId && b.status === 'CONFIRMED' && b.startAt > at);            
+      87 +    for (const b of future) {                                  
+      88 +      Object.assign(b, { status: 'CANCELLED', cancelledAt: at, 
+         +cancelledById, cancelledByName: this.userName(cancelledById) })
+         +;                                                              
+      89 +    }                                                          
+      90 +    return future.map((b) => b.id);                            
+      91 +  }                                                            
+      92 +                                                               
+      93    private sorted(list: BookingRecord[]): BookingRecord[] {
+      94      return list
+      95        .map((b) => ({ ...b }))
+  ⎿  Updated src\api\test\support\in-memory-users.repository.ts (+44 -4)
+       1  import { hashSync } from 'bcryptjs';
+       2 +import { randomUUID } from 'node:crypto';                      
+       3 +import { AppError } from '../../src/common/errors/app-error';  
+       4  import type { TransactionContext, TransactionRunner } from '../
+          ../src/common/transaction/transaction-runner';
+       3 -import type { UserWithCredentials } from '../../src/modules/use
+         -rs/domain/user';                                               
+       5 +import {                                                       
+       6 +  toPublicUser,                                                
+       7 +  type NewUser,                                                
+       8 +  type PublicUser,                                             
+       9 +  type UserChanges,                                            
+      10 +  type UserWithCredentials,                                    
+      11 +} from '../../src/modules/users/domain/user';                  
+      12  import type { UsersRepository } from '../../src/modules/users/d
+          omain/users.repository';
+      13  
+      14  export const TEST_PASSWORD = 'Empleado12345';
+     ...
+      55      return this.users.find((u) => u.id === id) ?? null;
+      56    }
+      57  
+      50 -  async updatePasswordHash(ctx: TransactionContext, id: string,
+         - passwordHash: string): Promise<void> {                        
+      51 -    if (!(ctx instanceof InMemoryTransactionContext)) {        
+      52 -      throw new Error('updatePasswordHash fuera de una transacc
+         -ión');                                                         
+      58 +  async findAll(): Promise<PublicUser[]> {                     
+      59 +    return [...this.users].sort((a, b) => a.name.localeCompare(
+         +b.name)).map(toPublicUser);                                    
+      60 +  }                                                            
+      61 +                                                               
+      62 +  /** Emula el índice único de  (RN-23) y el CHECK de minúscula
+         +s de la base. */                                               
+      63 +  async create(ctx: TransactionContext, user: NewUser): Promise
+         +<PublicUser> {                                                 
+      64 +    assertTx(ctx, 'create');                                   
+      65 +    if (user.email !== user.email.toLowerCase()) {             
+      66 +      throw new Error('CHECK users_email_lowercase_check: el co
+         +rreo debe llegar en minúsculas');                              
+      67 +    }                                                          
+      68 +    if (this.users.some((u) => u.email === user.email)) {      
+      69 +      throw new AppError('EMAIL_TAKEN', 'Ya existe un usuario c
+         +on ese correo.');                                              
+      70 +    }                                                          
+      71 +    const created: UserWithCredentials = { id: randomUUID(), ..
+         +.user, isActive: true };                                       
+      72 +    this.users.push(created);                                  
+      73 +    return toPublicUser(created);                              
+      74 +  }                                                            
+      75 +                                                               
+      76 +  async update(ctx: TransactionContext, id: string, changes: Us
+         +erChanges): Promise<PublicUser> {                              
+     … 26 more lines (ctrl+o to expand)
+
+● Otra vez se perdieron los backticks dentro de bash. Corrijo esas líneas con
+  Edit; desde ahora escribo los archivos con Write o Edit.
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(src\api\test\support\in-memory-users.repository.ts)
+  ⎿  Added 1 line, removed 1 line
+       94  
+       95  function assertTx(ctx: TransactionContext, operation: string):
+            void {
+       96    if (!(ctx instanceof InMemoryTransactionContext)) {
+       97 -    throw new Error();                                        
+       97 +    throw new Error(`${operation} fuera de una transacción`); 
+       98    }
+       99  }
+      100  
+
+● Update(src\api\test\support\in-memory-users.repository.ts)
+  ⎿  Added 1 line, removed 1 line
+      59      return [...this.users].sort((a, b) => a.name.localeCompare(
+          b.name)).map(toPublicUser);
+      60    }
+      61  
+      62 -  /** Emula el índice único de  (RN-23) y el CHECK de minúscula
+         -s de la base. */                                               
+      62 +  /** Emula el índice único de `users.email` (RN-23) y el CHECK
+         + de minúsculas de la base. */                                  
+      63    async create(ctx: TransactionContext, user: NewUser): Promise
+          <PublicUser> {
+      64      assertTx(ctx, 'create');
+      65      if (user.email !== user.email.toLowerCase()) {
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Escribo test/users.spec.ts con los CA1 a CA10, la prueba de orden de la
+  transacción con dobles y la prueba de capas.
+
+● Write(src\api\test\users.spec.ts)
+  ⎿  Wrote 466 lines to src\api\test\users.spec.ts
+       1 import type { INestApplication } from '@nestjs/common';
+       2 import { readdirSync, readFileSync } from 'node:fs';
+       3 import { join } from 'node:path';
+       4 import { CLOCK } from '../src/common/time/clock';
+       5 import type { TransactionContext, TransactionRunner } from '../s
+         rc/common/transaction/transaction-runner';
+       6 import type { BookingsService } from '../src/modules/bookings/bo
+         okings.service';
+       7 import type { BookingRecord } from '../src/modules/bookings/doma
+         in/booking';
+     … +459 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Varios 403 seguidos: algo le quita el rol a ADMIN, probablemente { ...body }
+  arrastrando campos undefined del DTO hacia el repositorio en memoria. Lo
+  reviso ahora. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Confirmado: el repositorio en memoria de salas ya filtra los undefined, igual
+  que Prisma, y el de usuarios no. Aplico lo mismo.
+
+● Update(src\api\test\support\in-memory-users.repository.ts)
+  ⎿  Added 2 lines, removed 1 line
+      79      if (!user) {
+      80        throw new AppError('NOT_FOUND', 'El usuario no existe.');
+      81      }
+      82 -    Object.assign(user, changes);                              
+      82 +    // Como Prisma: un campo `undefined` no se toca (el DTO def
+         +ine los campos opcionales ausentes como `undefined`).          
+      83 +    Object.assign(user, Object.fromEntries(Object.entries(chang
+         +es).filter(([, v]) => v !== undefined)));                      
+      84      return toPublicUser(user);
+      85    }
+      86  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Las 22 pasan. Ahora la suite completa, tsc y lint.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● tsc y lint sin errores; 112 pruebas en verde (el exit=1 de antes era de grep,
+  que no encontró líneas). Levanto el compose.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Compose healthy. Ahora corro los comandos de verificación del backlog contra
+  PostgreSQL con un script (sin jq: uso node).
+
+● Write(C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a87329
+       d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05a-verify.sh)
+  ⎿  Wrote 67 lines to
+     C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a873
+     29d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05a-verify.sh
+       1 #!/usr/bin/env bash
+       2 # Verificación de T05a (backlog) contra el compose. jq no está i
+         nstalado: se usa node para leer el JSON.
+       3 set -u
+       4 BASE=http://localhost:8080/api
+       5 H='Content-Type: application/json'
+       6 T=$(mktemp -d)
+       7 field() { node -e "let s='';process.stdin.on('data',d=>s+=d).on(
+         'end',()=>{const o=JSON.parse(s);console.log($1)})"; }
+       8 
+     … +59 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Los CA1 a CA10 pasan contra PostgreSQL; ahora pruebo la carrera R-02 con 20
+  reservas simultáneas mientras el ADMIN desactiva al usuario, y luego 20 PATCH
+  en paralelo. · summary
+
+● Write(C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a87329
+       d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05a-burst.mjs)
+  ⎿  Wrote 53 lines to
+     C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a873
+     29d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05a-burst.mjs
+       1 // Ráfaga contra el compose (T05a, CLAUDE.md T05): reservas simu
+         ltáneas del usuario mientras el ADMIN lo desactiva,
+       2 // y 20 PATCH simultáneos sobre el mismo usuario. Imprime en ord
+         en; al final deja al usuario desactivado y sin reservas
+       3 // CONFIRMED (las canceladas quedan como historial).
+       4 const BASE = 'http://localhost:8080/api';
+       5 const H = { 'Content-Type': 'application/json' };
+       6 const N = Number(process.argv[2] ?? 20);
+       7 
+       8 const cookieOf = (res) => res.headers.getSetCookie().find((c) =>
+     … +46 lines (~3 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Las ráfagas de 20 y 40 salieron bien: todas las reservas previas a la
+  desactivación quedaron CANCELLED, el resto recibió 401, no hay CONFIRMED ni
+  errores 500. Ahora corro los comandos finales del backlog para pegar la
+  salida. · summary
+
+  Ran 4 shell commands (ctrl+o to expand)
+
+● La salida verbose no muestra nombres de pruebas por la configuración del
+  reporter, así que los totales irán en el documento y los nombres se sacarán
+  del archivo. Ahora tomo la hora de fin y reviso el formato de T05.md. 
+  · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Escribo docs/tareas/T05a.md.
+
+● Write(docs\tareas\T05a.md)
+  ⎿  Wrote 176 lines to docs\tareas\T05a.md
+       1 # T05a · Módulo de usuarios (ADMIN)
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha |
+       8 | Inicio – fin | 2026-11-15 20:46 – 20:53 (7 min) · estimado: M 
+         |
+     … +168 lines (ctrl+o to expand)
+● Compruebo lo que afirmé sobre @IsEmail con espacios antes de dejarlo en el
+  documento.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Confirmado (400). Actualizo el backlog a "En revisión" y agrego las filas de
+  bitácora.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && date
+      "+%Y-%m-%d %H:%M" && node -e "
+      const fs=require('fs');const p='docs/02-backlog.md';let s=fs.read…)
+  ⎿  2026-11-15 20:55
+      docs/02-backlog.md | 4 ++--
+      1 file changed, 2 insertions(+), 2 deletions(-)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      63  | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password
+          `) | T03 | S | No | Hecha | [T03a](tareas/T03a.md) |
+      64  | 6 | T04 | Módulo de salas (repositorio + service + controller
+          , solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tar
+          eas/T04.md) |
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hec
+          ha | [T05](tareas/T05.md) |
+      66 -| 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+         -vación con cancelación en cascada, reset de contraseña | T05, T
+         -03a | M | No | Pendiente | |                                   
+      66 +| 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+         +vación con cancelación en cascada, reset de contraseña | T05, T
+         +03a | M | No | En revisión | [T05a](tareas/T05a.md) |          
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Pendiente | |
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | P
+          endiente | |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Pendiente | |
+     ...
+      437  | Dependencias | T05, T03a |
+      438  | Estimación | M |
+      439  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: `USER_
+           CREATED`, `USER_UPDATED`, `USER_PASSWORD_RESET` y `BOOKING_CAN
+           CELLED` por cada reserva cancelada en cascada, que se conectan
+            en T06a. OWASP A01: 403 a `EMPLOYEE`; A02: nunca se devuelve 
+           `password_hash`; A04: lock por `userId` |
+      440 -| Estado | Pendiente |                                        
+      440 +| Estado | En revisión |                                      
+      441  
+      442  **Alcance (archivos o módulos):**
+      443  - `src/api/src/modules/users/**` (controller, service, dto), a
+           mpliando `UsersRepository` con `findAll`, `create`, `update`.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && printf '%s\n'
+      '| B-80 | 2026-11-15 20:55 | Agente | 3-Ejecutar | ERROR | T05a: la
+      primera corrida de…)
+  ⎿  M  docs/02-backlog.md
+     M  docs/03-bitacora.md
+     A  docs/tareas/T05a.md
+     … +20 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      81  | B-77 | 2026-11-15 20:38 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05 pasa a Hecha en el resumen y en la fich
+          a de 02-backlog.md, tras la revisión de B-76; se incluye la sec
+          ción 8 de docs/tareas/T05.md escrita por la persona | T05 Hecha
+          . Pendiente la observación de la revisión: actualizar CLAUDE.md
+           con los desvíos | docs/02-backlog.md, docs/tareas/T05.md §8, B
+          -76 |
+      82  | B-78 | 2026-11-15 20:41 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05, B-76
+          ), CLAUDE.md (Dependencias) agrega la subsección «Reservas, tie
+          mpo y transacciones fijados en T05»: `BusinessConfig`, `Clock` 
+          y zona horaria con `Intl`; forma real del `23P01`; toda llamada
+           dentro de `TransactionRunner.run` recibe el `ctx` (B-74); orde
+          n de locks fecha → usuario; `BookingsService` como API para T05
+          a y T05b. Control automático nuevo: `test/transactions.spec.ts`
+           falla si una dependencia se llama sin `ctx` dentro de una tran
+          sacción. Al crearlo apareció otro caso latente de B-74 en `Room
+          sService.update` (T04): `RoomsRepository.findById(id, ctx?)` y 
+          lectura con `ctx`. Prueba negativa: quitar el `ctx` en reservas
+           y en salas hace fallar el control con los dos casos | 90 tests
+           en verde, `tsc` y lint sin errores, compose healthy, `PATCH /r
+          ooms` 200 y 404 en el compose | CLAUDE.md, src/api/test/transac
+          tions.spec.ts, src/api/src/modules/rooms, B-74, B-76 |
+      83  | B-79 | 2026-11-15 20:46 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T05a (Módulo de usuarios ADMIN): DoR comprobada, dependen
+          cias T05 y T03a en Hecha | En curso | docs/02-backlog.md T05a |
+      84 +| B-80 | 2026-11-15 20:55 | Agente | 3-Ejecutar | ERROR | T05a:
+         + la primera corrida de `test/users.spec.ts` dio 7 fallos en cas
+         +cada (403 en rutas de ADMIN). Causa: el `InMemoryUsersRepositor
+         +y.update` nuevo aplicaba los campos `undefined` del DTO (campos
+         + de clase con `target: es2023`) y un `PATCH` sobre el propio AD
+         +MIN le borraba el rol; Prisma ignora `undefined`, así que produ
+         +cción no estaba afectada. Corrección: el doble filtra los `unde
+         +fined`, como ya hacía el de salas | Repetido: 22/22 en verde; s
+         +uite completa 112/112 | docs/tareas/T05a.md §6, B-79 |         
+
+● Commit 7b8019e. Ahora agrego la fila de fin con el hash y lo anoto en T05a.md.
+
+● Update(docs\tareas\T05a.md)
+  ⎿  Added 1 line, removed 1 line
+       7  | Estado | Hecha |
+       8  | Inicio – fin | 2026-11-15 20:46 – 20:53 (7 min) · estimado: M
+           |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10 -| Commit(s) | ver B-81 en `docs/03-bitacora.md` (código y docum
+         -entación) + commit de registro del hash |                      
+      10 +| Commit(s) | `7b8019e` (código y documentación) + commit de re
+         +gistro del hash |                                              
+      11  | Trazabilidad | RN-14, RN-15, RN-18, RN-21, RN-23, RN-26 · D-0
+          8, D-16, D-19, D-32, S-03 · spec §7 (`users`), §8 (`/users`), §
+          11 (lock por `userId`), F-06 · P-10, P-16 (parcial; integración
+           en T06) · R-02 · backlog T05a |
+      12  
+      13  ## 1. Objetivo
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && date
+      "+%Y-%m-%d %H:%M" && printf '%s\n' '| B-81 | 2026-11-15 20:56 | Agente |
+      3-Ejecutar | AGENTE | F…)
+  ⎿  2026-11-15 20:55
+     7c08879 T05a: registro de fin en bitácora y hash del commit
+     7b8019e T05a: Módulo de usuarios (ADMIN): alta, edición, desactivación
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      82  | B-78 | 2026-11-15 20:41 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05, B-76
+          ), CLAUDE.md (Dependencias) agrega la subsección «Reservas, tie
+          mpo y transacciones fijados en T05»: `BusinessConfig`, `Clock` 
+          y zona horaria con `Intl`; forma real del `23P01`; toda llamada
+           dentro de `TransactionRunner.run` recibe el `ctx` (B-74); orde
+          n de locks fecha → usuario; `BookingsService` como API para T05
+          a y T05b. Control automático nuevo: `test/transactions.spec.ts`
+           falla si una dependencia se llama sin `ctx` dentro de una tran
+          sacción. Al crearlo apareció otro caso latente de B-74 en `Room
+          sService.update` (T04): `RoomsRepository.findById(id, ctx?)` y 
+          lectura con `ctx`. Prueba negativa: quitar el `ctx` en reservas
+           y en salas hace fallar el control con los dos casos | 90 tests
+           en verde, `tsc` y lint sin errores, compose healthy, `PATCH /r
+          ooms` 200 y 404 en el compose | CLAUDE.md, src/api/test/transac
+          tions.spec.ts, src/api/src/modules/rooms, B-74, B-76 |
+      83  | B-79 | 2026-11-15 20:46 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T05a (Módulo de usuarios ADMIN): DoR comprobada, dependen
+          cias T05 y T03a en Hecha | En curso | docs/02-backlog.md T05a |
+      84  | B-80 | 2026-11-15 20:55 | Agente | 3-Ejecutar | ERROR | T05a:
+           la primera corrida de `test/users.spec.ts` dio 7 fallos en cas
+          cada (403 en rutas de ADMIN). Causa: el `InMemoryUsersRepositor
+          y.update` nuevo aplicaba los campos `undefined` del DTO (campos
+           de clase con `target: es2023`) y un `PATCH` sobre el propio AD
+          MIN le borraba el rol; Prisma ignora `undefined`, así que produ
+          cción no estaba afectada. Corrección: el doble filtra los `unde
+          fined`, como ya hacía el de salas | Repetido: 22/22 en verde; s
+          uite completa 112/112 | docs/tareas/T05a.md §6, B-79 |
+      85 +| B-81 | 2026-11-15 20:56 | Agente | 3-Ejecutar | AGENTE | Fin 
+         +de T05a (Módulo de usuarios ADMIN): `GET/POST /users`, `PATCH /
+         +users/:id` y `POST /users/:id/reset-password` con `@Roles(ADMIN
+         +)`; desactivar toma el lock `user:<uuid>`, relee con `ctx` (404
+         +), aplica RN-26 (422) y cancela en la misma transacción las res
+         +ervas `CONFIRMED` con `startAt` futuro (`BookingsService.cancel
+         +FutureByUser`, un solo `UPDATE … RETURNING`); `EMAIL_TAKEN` por
+         + el índice único; bcryptjs costo 10 compartido con auth. CA1 a 
+         +CA10 en verde con 22 pruebas nuevas (112 en total), lint y `tsc
+         +` sin errores, compose healthy; contra PostgreSQL, ráfagas de 2
+         +0 y 40 reservas simultáneas + desactivación → 0 reservas `CONFI
+         +RMED` restantes, 0 errores 500 y 0 `"level":50` | T05a En revis
+         +ión. Commit `7b8019e`. Desvíos: `UsersAdminModule` aparte (evit
+         +a el ciclo con `BookingsModule`), firma `cancelFutureByUser(ctx
+         +, …)`, `BCRYPT_ROUNDS` al dominio de usuarios. Ambigüedades: un
+         + ADMIN puede quitarse el rol de ADMIN (solo se prohíbe desactiv
+         +arse), reservas en curso no se cancelan, reset a usuario inacti
+         +vo permitido | docs/tareas/T05a.md, commit 7b8019e, B-79, B-80 
+         +|                                                              
+
+● Escribí la hora 20:56 en la fila B-81 antes de leer date, que marcó 20:55.
+  Como la bitácora no permite editar filas, añado una fila nueva con la hora
+  correcta y ajusto el campo "Inicio – fin" de T05a.md. · summary
+
+● Update(docs\tareas\T05a.md)
+  ⎿  Added 1 line, removed 1 line
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha |
+       8 -| Inicio – fin | 2026-11-15 20:46 – 20:53 (7 min) · estimado: M
+         - |                                                             
+       8 +| Inicio – fin | 2026-11-15 20:46 – 20:55 (9 min) · estimado: M
+         + |                                                             
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | `7b8019e` (código y documentación) + commit de re
+          gistro del hash |
+      11  | Trazabilidad | RN-14, RN-15, RN-18, RN-21, RN-23, RN-26 · D-0
+          8, D-16, D-19, D-32, S-03 · spec §7 (`users`), §8 (`/users`), §
+          11 (lock por `userId`), F-06 · P-10, P-16 (parcial; integración
+           en T06) · R-02 · backlog T05a |
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && echo "$NOW" && printf '%s\n' "| B-82 | $NOW | Agente
+      | 3-Ejecutar |…)
+  ⎿  2026-11-15 20:55
+     | B-82 | 2026-11-15 20:55 | Agente | 3-Ejecutar | CORRECCIÓN | La fila
+      B-81 (fin de T05a) se escribió con la hora 20:56 antes de leer la sal
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      83  | B-79 | 2026-11-15 20:46 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T05a (Módulo de usuarios ADMIN): DoR comprobada, dependen
+          cias T05 y T03a en Hecha | En curso | docs/02-backlog.md T05a |
+      84  | B-80 | 2026-11-15 20:55 | Agente | 3-Ejecutar | ERROR | T05a:
+           la primera corrida de `test/users.spec.ts` dio 7 fallos en cas
+          cada (403 en rutas de ADMIN). Causa: el `InMemoryUsersRepositor
+          y.update` nuevo aplicaba los campos `undefined` del DTO (campos
+           de clase con `target: es2023`) y un `PATCH` sobre el propio AD
+          MIN le borraba el rol; Prisma ignora `undefined`, así que produ
+          cción no estaba afectada. Corrección: el doble filtra los `unde
+          fined`, como ya hacía el de salas | Repetido: 22/22 en verde; s
+          uite completa 112/112 | docs/tareas/T05a.md §6, B-79 |
+      85  | B-81 | 2026-11-15 20:56 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T05a (Módulo de usuarios ADMIN): `GET/POST /users`, `PATCH /
+          users/:id` y `POST /users/:id/reset-password` con `@Roles(ADMIN
+          )`; desactivar toma el lock `user:<uuid>`, relee con `ctx` (404
+          ), aplica RN-26 (422) y cancela en la misma transacción las res
+          ervas `CONFIRMED` con `startAt` futuro (`BookingsService.cancel
+          FutureByUser`, un solo `UPDATE … RETURNING`); `EMAIL_TAKEN` por
+           el índice único; bcryptjs costo 10 compartido con auth. CA1 a 
+          CA10 en verde con 22 pruebas nuevas (112 en total), lint y `tsc
+          ` sin errores, compose healthy; contra PostgreSQL, ráfagas de 2
+          0 y 40 reservas simultáneas + desactivación → 0 reservas `CONFI
+          RMED` restantes, 0 errores 500 y 0 `"level":50` | T05a En revis
+          ión. Commit `7b8019e`. Desvíos: `UsersAdminModule` aparte (evit
+          a el ciclo con `BookingsModule`), firma `cancelFutureByUser(ctx
+          , …)`, `BCRYPT_ROUNDS` al dominio de usuarios. Ambigüedades: un
+           ADMIN puede quitarse el rol de ADMIN (solo se prohíbe desactiv
+          arse), reservas en curso no se cancelan, reset a usuario inacti
+          vo permitido | docs/tareas/T05a.md, commit 7b8019e, B-79, B-80 
+          |
+      86 +| B-82 | 2026-11-15 20:55 | Agente | 3-Ejecutar | CORRECCIÓN | 
+         +La fila B-81 (fin de T05a) se escribió con la hora 20:56 antes 
+         +de leer la salida de `date`, que devolvió 2026-11-15 20:55: la 
+         +hora real del fin de T05a es 20:55. `docs/tareas/T05a.md` pasa 
+         +a «20:46 – 20:55 (9 min)» | B-81 sin editar (solo se agregan fi
+         +las); hora corregida aquí | B-81, docs/tareas/T05a.md |        
+
+● T05a está terminada y queda En revisión. Implementé las rutas /users para el
+  ADMIN y cumplen los 10 criterios de aceptación, tanto en las pruebas como
+  contra PostgreSQL en el compose.
+
+  Qué hace ahora la API:
+  - GET /users, POST /users, PATCH /users/:id y POST /users/:id/reset-password
+    responden solo al ADMIN; un empleado recibe 403.
+  - Al desactivar un usuario, en una sola transacción y con el bloqueo por
+    usuario, se cancelan sus reservas confirmadas que aún no empiezan. Si algo
+    falla, no queda nada a medias.
+  - Un ADMIN que intenta desactivarse recibe 422 CANNOT_DEACTIVATE_SELF. Un
+    correo repetido da 409 EMAIL_TAKEN. Reactivar a un usuario no restaura sus
+    reservas.
+
+  Verificación:
+  - 22 pruebas nuevas; la suite completa pasa (112). Lint y tsc sin errores;
+    docker compose up -d --build queda con los tres servicios healthy.
+  - Probé la carrera de R-02: 20 y luego 40 reservas simultáneas del mismo
+    usuario mientras el ADMIN lo desactiva. Ninguna reserva quedó confirmada, no
+    hubo errores 500 y el log no tiene errores.
+  - La verificación dejó usuarios de prueba en la base local, porque no hay
+    forma de borrarlos: prueba.uno@salalibre.local (activo, contraseña
+    Nueva12345) y dos rafaga.* desactivados. Si vuelves a correr el alta del
+    backlog con ese correo, dará 409.
+
+  Desvíos:
+  - Las rutas /users viven en un módulo aparte (UsersAdminModule), dentro de
+    modules/users/. El módulo de reservas ya depende del de usuarios; si la
+    desactivación, que necesita reservas, fuera en el mismo módulo, se crearía
+    una dependencia circular.
+  - cancelFutureByUser recibe primero el contexto de la transacción, como pide
+    CLAUDE.md, y no al final como dice el backlog.
+  - El costo de bcrypt (10) pasó al dominio de usuarios para que el alta, el
+    reset y el cambio de contraseña usen el mismo.
+  - Registré dos errores en la bitácora. B-80: la primera corrida de pruebas
+    falló por un error en un repositorio en memoria, no en el código de
+    producción. B-82: escribí la hora de fin de B-81 (20:56) antes de leer la
+    del sistema (20:55), y la corregí con una fila nueva.
+
+  Ambigüedades que necesitan tu decisión:
+  - Un ADMIN puede quitarse a sí mismo el rol de ADMIN. El spec solo prohíbe
+    desactivarse, así que lo permití. Así podría quedar el sistema sin ningún
+    ADMIN, el mismo riesgo que motivó S-03. ¿Agrego una regla?
+  - Las reservas que ya empezaron no se cancelan, porque RN-15 habla de
+    "futuras" (inicio posterior a ahora).
+  - Se puede restablecer la contraseña de un usuario inactivo, porque el spec no
+    lo restringe.
+
+  Los commits son 7b8019e (código y documentación), 7c08879 (fin en bitácora) y
+  d2c61b8 (corrección de la hora). El detalle y la salida real están en
+  docs/tareas/T05a.md. Quedo a la espera de tu revisión.
+
+✻ Cogitated for 10m 34s · done 20:55
+
+❯ /bitacora T05a revisada, cumple la DoD                                        
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-12 && printf
+      '%s\n' "| B-83 |…)
+  ⎿  | B-82 | 202
+     | B-83 | 2026-11-15 20:59 | Yo | 3-Ejecutar | REVISIÓN | T05a revisada
+     , cumple la DoD | aprobada | T05a |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      84  | B-80 | 2026-11-15 20:55 | Agente | 3-Ejecutar | ERROR | T05a:
+           la primera corrida de `test/users.spec.ts` dio 7 fallos en cas
+          cada (403 en rutas de ADMIN). Causa: el `InMemoryUsersRepositor
+          y.update` nuevo aplicaba los campos `undefined` del DTO (campos
+           de clase con `target: es2023`) y un `PATCH` sobre el propio AD
+          MIN le borraba el rol; Prisma ignora `undefined`, así que produ
+          cción no estaba afectada. Corrección: el doble filtra los `unde
+          fined`, como ya hacía el de salas | Repetido: 22/22 en verde; s
+          uite completa 112/112 | docs/tareas/T05a.md §6, B-79 |
+      85  | B-81 | 2026-11-15 20:56 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T05a (Módulo de usuarios ADMIN): `GET/POST /users`, `PATCH /
+          users/:id` y `POST /users/:id/reset-password` con `@Roles(ADMIN
+          )`; desactivar toma el lock `user:<uuid>`, relee con `ctx` (404
+          ), aplica RN-26 (422) y cancela en la misma transacción las res
+          ervas `CONFIRMED` con `startAt` futuro (`BookingsService.cancel
+          FutureByUser`, un solo `UPDATE … RETURNING`); `EMAIL_TAKEN` por
+           el índice único; bcryptjs costo 10 compartido con auth. CA1 a 
+          CA10 en verde con 22 pruebas nuevas (112 en total), lint y `tsc
+          ` sin errores, compose healthy; contra PostgreSQL, ráfagas de 2
+          0 y 40 reservas simultáneas + desactivación → 0 reservas `CONFI
+          RMED` restantes, 0 errores 500 y 0 `"level":50` | T05a En revis
+          ión. Commit `7b8019e`. Desvíos: `UsersAdminModule` aparte (evit
+          a el ciclo con `BookingsModule`), firma `cancelFutureByUser(ctx
+          , …)`, `BCRYPT_ROUNDS` al dominio de usuarios. Ambigüedades: un
+           ADMIN puede quitarse el rol de ADMIN (solo se prohíbe desactiv
+          arse), reservas en curso no se cancelan, reset a usuario inacti
+          vo permitido | docs/tareas/T05a.md, commit 7b8019e, B-79, B-80 
+          |
+      86  | B-82 | 2026-11-15 20:55 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          La fila B-81 (fin de T05a) se escribió con la hora 20:56 antes 
+          de leer la salida de `date`, que devolvió 2026-11-15 20:55: la 
+          hora real del fin de T05a es 20:55. `docs/tareas/T05a.md` pasa 
+          a «20:46 – 20:55 (9 min)» | B-81 sin editar (solo se agregan fi
+          las); hora corregida aquí | B-81, docs/tareas/T05a.md |
+      87 +| B-83 | 2026-11-15 20:59 | Yo | 3-Ejecutar | REVISIÓN | T05a r
+         +evisada, cumple la DoD | aprobada | T05a |                     
+
+● Fila agregada: | B-83 | 2026-11-15 20:59 | Yo | 3-Ejecutar | REVISIÓN | T05a 
+  revisada, cumple la DoD | aprobada | T05a |
+
+  La primera palabra de tu texto ("T05a") no es un tipo válido. Usé REVISIÓN,
+  igual que en la revisión de T05 (B-76).
+
+✻ Sautéed for 7s · done 20:59
+
+❯ Pasa T05a a Hecha en el backlog y haz commit                                  
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && git status
+      --short && git diff docs/tareas/T05a.md | tail -15 && node -e "
+      const fs=require('fs');con…)
+  ⎿   M docs/03-bitacora.md
+      M docs/tareas/T05a.md
+     ?? docs/sesiones/2026-11-15-152204-local-command-caveatthe-command-bel
+     … +20 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      63  | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password
+          `) | T03 | S | No | Hecha | [T03a](tareas/T03a.md) |
+      64  | 6 | T04 | Módulo de salas (repositorio + service + controller
+          , solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tar
+          eas/T04.md) |
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hec
+          ha | [T05](tareas/T05.md) |
+      66 -| 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+         -vación con cancelación en cascada, reset de contraseña | T05, T
+         -03a | M | No | En revisión | [T05a](tareas/T05a.md) |          
+      66 +| 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+         +vación con cancelación en cascada, reset de contraseña | T05, T
+         +03a | M | No | Hecha | [T05a](tareas/T05a.md) |                
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Pendiente | |
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | P
+          endiente | |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Pendiente | |
+     ...
+      437  | Dependencias | T05, T03a |
+      438  | Estimación | M |
+      439  | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: `USER_
+           CREATED`, `USER_UPDATED`, `USER_PASSWORD_RESET` y `BOOKING_CAN
+           CELLED` por cada reserva cancelada en cascada, que se conectan
+            en T06a. OWASP A01: 403 a `EMPLOYEE`; A02: nunca se devuelve 
+           `password_hash`; A04: lock por `userId` |
+      440 -| Estado | En revisión |                                      
+      440 +| Estado | Hecha |                                            
+      441  
+      442  **Alcance (archivos o módulos):**
+      443  - `src/api/src/modules/users/**` (controller, service, dto), a
+           mpliando `UsersRepository` con `findAll`, `create`, `update`.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Los cambios en T05a.md son tuyos: la sección 8 y una edición en el objetivo.
+  Los incluyo tal cual en el commit; el .bak del editor no lo agrego.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && printf '%s\n' "| B-84 | $NOW | Agente | 3-Ejecutar |
+      AGENTE | A pedi…)
+  ⎿  | B-84 | 2026-11-15 20:59 | Agente | 3-Ejecutar | AGENTE | A pedido de
+      la persona, T05a pasa a Hecha en el resumen y en la ficha de 02-backl
+     og.md, tras la revisión de B-83; se incluye la sección 8 de docs/tarea
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      85  | B-81 | 2026-11-15 20:56 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T05a (Módulo de usuarios ADMIN): `GET/POST /users`, `PATCH /
+          users/:id` y `POST /users/:id/reset-password` con `@Roles(ADMIN
+          )`; desactivar toma el lock `user:<uuid>`, relee con `ctx` (404
+          ), aplica RN-26 (422) y cancela en la misma transacción las res
+          ervas `CONFIRMED` con `startAt` futuro (`BookingsService.cancel
+          FutureByUser`, un solo `UPDATE … RETURNING`); `EMAIL_TAKEN` por
+           el índice único; bcryptjs costo 10 compartido con auth. CA1 a 
+          CA10 en verde con 22 pruebas nuevas (112 en total), lint y `tsc
+          ` sin errores, compose healthy; contra PostgreSQL, ráfagas de 2
+          0 y 40 reservas simultáneas + desactivación → 0 reservas `CONFI
+          RMED` restantes, 0 errores 500 y 0 `"level":50` | T05a En revis
+          ión. Commit `7b8019e`. Desvíos: `UsersAdminModule` aparte (evit
+          a el ciclo con `BookingsModule`), firma `cancelFutureByUser(ctx
+          , …)`, `BCRYPT_ROUNDS` al dominio de usuarios. Ambigüedades: un
+           ADMIN puede quitarse el rol de ADMIN (solo se prohíbe desactiv
+          arse), reservas en curso no se cancelan, reset a usuario inacti
+          vo permitido | docs/tareas/T05a.md, commit 7b8019e, B-79, B-80 
+          |
+      86  | B-82 | 2026-11-15 20:55 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          La fila B-81 (fin de T05a) se escribió con la hora 20:56 antes 
+          de leer la salida de `date`, que devolvió 2026-11-15 20:55: la 
+          hora real del fin de T05a es 20:55. `docs/tareas/T05a.md` pasa 
+          a «20:46 – 20:55 (9 min)» | B-81 sin editar (solo se agregan fi
+          las); hora corregida aquí | B-81, docs/tareas/T05a.md |
+      87  | B-83 | 2026-11-15 20:59 | Yo | 3-Ejecutar | REVISIÓN | T05a r
+          evisada, cumple la DoD | aprobada | T05a |
+      88 +| B-84 | 2026-11-15 20:59 | Agente | 3-Ejecutar | AGENTE | A pe
+         +dido de la persona, T05a pasa a Hecha en el resumen y en la fic
+         +ha de 02-backlog.md, tras la revisión de B-83; se incluye la se
+         +cción 8 de docs/tareas/T05a.md escrita por la persona | T05a He
+         +cha. Pendiente la observación de la revisión: actualizar CLAUDE
+         +.md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+         +tareas/T05a.md §8, B-83 |                                      
+
+● T05a ya está Hecha en el resumen y en la ficha del backlog. El commit es
+  7374b4a (T05a: revisión aprobada, estado Hecha).
+
+  - El commit incluye tus cambios en docs/tareas/T05a.md tal como los dejaste:
+    la sección 8 de revisión y la edición del objetivo.
+  - Agregué la fila B-84 a la bitácora.
+  - No agregué docs/tareas/T05a.md.bak, que parece una copia del editor; sigue
+    sin seguimiento en la carpeta.
+
+  Queda pendiente la observación de tu revisión: actualizar CLAUDE.md con los
+  desvíos de T05a. Si quieres, lo hago ahora. Agregaría el módulo
+  UsersAdminModule aparte, cancelFutureByUser(ctx, …) y BCRYPT_ROUNDS en el
+  dominio de usuarios.
+
+✻ Cooked for 18s · done 21:00
+
+❯ Actualiza CLAUDE.md con los desvíos de T05a y haz commit                      
+
+  Read 1 file, ran 1 shell command (ctrl+o to expand)
+
+● Update(CLAUDE.md)
+  ⎿  Added 28 lines
+      235    `begin → lock date → lock user → lecturas con ctx → INSERT →
+            end`.
+      236  - **Verificación manual:** no usar `tee /dev/stderr` para capt
+           urar ids (mezcla la salida); usar un script que imprima en
+      237    orden y que al final cancele las reservas creadas (las cance
+           ladas quedan como historial).
+      238 +                                                              
+      239 +### Usuarios y cancelación en cascada fijados en T05a (ver `do
+          +cs/tareas/T05a.md` §6 y §7; B-80)                             
+      240 +- **Rutas `/users` en `UsersAdminModule`** (`modules/users/use
+          +rs-admin.module.ts`, con `UsersController` y                  
+      241 +  `UsersAdminService`), separado de `UsersModule`: `BookingsMo
+          +dule` importa `UsersModule` y la desactivación necesita       
+      242 +  `BookingsService`, así que juntarlos crearía un ciclo. **No 
+          +usar `forwardRef`.** Si un módulo nuevo (T05b, T06a)          
+      243 +  necesita un service que a su vez depende del suyo, se resuel
+          +ve igual: un módulo aparte que importa a ambos.               
+      244 +- **`UsersModule` sigue siendo la API de usuarios** para otros
+          + módulos: `UsersService` (`findById(id, ctx?)`, `findAll`,    
+      245 +  `create(ctx, …)`, `update(ctx, …)`, `updatePasswordHash(ctx,
+          + …)`). `UsersService.create` normaliza el correo (RN-23).     
+      246 +- **Cancelación en cascada:** `BookingsService.cancelFutureByU
+          +ser(ctx, userId, cancelledById)` (el `ctx` primero, como      
+      247 +  toda escritura) cancela con un solo `updateManyAndReturn` la
+          +s `CONFIRMED` con `startAt > ahora` (`Clock`) y devuelve      
+      248 +  los ids, para auditar cada uno en T06a. Las reservas en curs
+          +o no se cancelan. T05b hace lo mismo para los cierres         
+      249 +  (`cancelByDate(ctx, …)` o equivalente), dentro de su transac
+          +ción y con el lock `date:` tomado.                            
+      250 +- **Claves de lock:** usar siempre `lockKeys` de `bookings.ser
+          +vice.ts` (`lockKeys.user(id)`, `lockKeys.date(d)`), nunca     
+      251 +  escribir el prefijo a mano. Desactivar: `begin → lock user: 
+          +→ findById(ctx) (404) → 422 CANNOT_DEACTIVATE_SELF →          
+      252 +  UPDATE → cascada → commit`.                                 
+      253 +- **`BCRYPT_ROUNDS` (10) vive en `modules/users/domain/user.ts
+          +`** y lo usan auth (cambio) y usuarios (alta y reset). El     
+      254 +  hash se calcula **fuera** de la transacción, para no retener
+          + la conexión mientras bcrypt trabaja.                         
+      255 +- **Lecturas públicas sin hash (A02):** `PrismaUsersRepository
+          +` usa el `select` `PUBLIC` en todo lo que no sea              
+      256 +  `findByEmail`/`findById`; `test/users.spec.ts` lo comprueba.
+      257 +- **Repositorios en memoria:** en un `update`, ignorar los cam
+          +pos `undefined` como hace Prisma. Los DTOs definen los        
+      258 +  campos opcionales ausentes como `undefined` (`target: es2023
+          +`) y `{ ...body }` los trae; aplicarlos borra datos (B-80).   
+      259 +- **Escribir archivos:** con Write o Edit, no con `node -e "…"
+          +` dentro de Bash. Bash interpreta los backticks dentro        
+      260 +  de comillas dobles y borra el texto entre ellos (pasó en T05
+          +a; se corrigió antes del commit).                             
+      261 +- **Pendiente de decisión de la persona:** un ADMIN puede quit
+          +arse el rol de ADMIN (solo se prohíbe desactivarse, RN-26).   
+      262 +  No agregar una regla nueva sin que lo diga el spec.         
+      263 +- **Datos que dejó la verificación de T05a** en la base del co
+          +mpose: `prueba.uno@salalibre.local` (activo, contraseña       
+      264 +  `Nueva12345`) y usuarios `rafaga.*` desactivados. No hay `DE
+          +LETE` de usuarios: en verificaciones nuevas, usar correos     
+      265 +  únicos (por ejemplo con un sufijo de tiempo).               
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && printf '%s\n' "| B-85 | $NOW | Agente | 3-Ejecutar |
+      CORRECCIÓN | A…)
+  ⎿  | B-85 | 2026-11-15 21:00 | Agente | 3-Ejecutar | CORRECCIÓ
+     84e02c3 T05a: CLAUDE.md con los desvíos de la tarea
+     ?? docs/sesiones/2026-11-15-152204-local-command-caveatthe-command-bel
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      86  | B-82 | 2026-11-15 20:55 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          La fila B-81 (fin de T05a) se escribió con la hora 20:56 antes 
+          de leer la salida de `date`, que devolvió 2026-11-15 20:55: la 
+          hora real del fin de T05a es 20:55. `docs/tareas/T05a.md` pasa 
+          a «20:46 – 20:55 (9 min)» | B-81 sin editar (solo se agregan fi
+          las); hora corregida aquí | B-81, docs/tareas/T05a.md |
+      87  | B-83 | 2026-11-15 20:59 | Yo | 3-Ejecutar | REVISIÓN | T05a r
+          evisada, cumple la DoD | aprobada | T05a |
+      88  | B-84 | 2026-11-15 20:59 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05a pasa a Hecha en el resumen y en la fic
+          ha de 02-backlog.md, tras la revisión de B-83; se incluye la se
+          cción 8 de docs/tareas/T05a.md escrita por la persona | T05a He
+          cha. Pendiente la observación de la revisión: actualizar CLAUDE
+          .md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+          tareas/T05a.md §8, B-83 |
+      89 +| B-85 | 2026-11-15 21:00 | Agente | 3-Ejecutar | CORRECCIÓN | 
+         +A pedido de la persona (observación de la revisión de T05a, B-8
+         +3), CLAUDE.md (Dependencias) agrega la subsección «Usuarios y c
+         +ancelación en cascada fijados en T05a»: `UsersAdminModule` apar
+         +te para evitar el ciclo con `BookingsModule` (sin `forwardRef`)
+         +; `UsersService` como API de usuarios; `BookingsService.cancelF
+         +utureByUser(ctx, …)` y su análogo para T05b; claves de lock con
+         + `lockKeys`; `BCRYPT_ROUNDS` en el dominio de usuarios y hash f
+         +uera de la transacción; repositorios en memoria que ignoran `un
+         +defined` (B-80); escribir archivos con Write o Edit (backticks 
+         +en Bash); decisión pendiente sobre que un ADMIN se quite el rol
+         +; datos de prueba que quedaron en la base | Solo documentación;
+         + sin cambios de código | CLAUDE.md, docs/tareas/T05a.md §6 y §7
+         +, B-80, B-83 |                                                 
+
+● Actualicé CLAUDE.md con los desvíos de T05a e hice el commit 84e02c3 (T05a: 
+  CLAUDE.md con los desvíos de la tarea). Solo cambia documentación, no código.
+
+  La nueva subsección «Usuarios y cancelación en cascada fijados en T05a» deja
+  fijado esto:
+  - Módulo aparte: las rutas /users van en UsersAdminModule, separado de
+    UsersModule, para evitar el ciclo con BookingsModule sin usar forwardRef. Si
+    T05b o T06a tienen el mismo problema, se resuelve igual.
+  - Cancelación en cascada: se usa BookingsService.cancelFutureByUser(ctx, …), y
+    T05b debe hacer algo equivalente para los cierres. Las reservas en curso no
+    se cancelan.
+  - Bloqueos: sus claves siempre salen de lockKeys, nunca escritas a mano.
+  - Contraseñas: el costo de bcrypt (10) vive en el dominio de usuarios y el
+    hash se calcula fuera de la transacción.
+  - Pruebas en memoria: los repositorios deben ignorar los campos undefined en
+    un update, como hace Prisma (B-80).
+  - Escritura de archivos: con Write o Edit, no con node -e dentro de Bash,
+    porque Bash borra el texto entre backticks.
+  - Pendiente de tu decisión: si un ADMIN puede quitarse a sí mismo el rol de
+    ADMIN. Hoy está permitido y no agrego ninguna regla mientras el spec no lo
+    diga.
+  - Datos de prueba: los usuarios que dejó la verificación siguen en la base
+    local; en verificaciones nuevas hay que usar correos únicos.
+
+  Agregué la fila B-85 a la bitácora. El archivo .bak ya no aparece en el
+  repositorio.
+
+✻ Cooked for 32s · done 21:00
+
+❯ /ejecutar-tarea T05b                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● La DoR de T05b se cumple y T05 está en Hecha. Leo las decisiones y supuestos
+  que referencia.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Dependencias en orden. Registro el inicio.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-10 && printf
+      '%s\n' "| B-86 |…)
+  ⎿  | B-85 | 2
+     | B-86 | 2026-11-15 21:02 | Agente | 3-Ejecutar | AGENTE | Inicio de T
+     05b (Módulo de cierres ADMIN): DoR comprobada, dependencia T05 en Hech
+     a | En curso | docs/02-backlog.md T05b |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      87  | B-83 | 2026-11-15 20:59 | Yo | 3-Ejecutar | REVISIÓN | T05a r
+          evisada, cumple la DoD | aprobada | T05a |
+      88  | B-84 | 2026-11-15 20:59 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05a pasa a Hecha en el resumen y en la fic
+          ha de 02-backlog.md, tras la revisión de B-83; se incluye la se
+          cción 8 de docs/tareas/T05a.md escrita por la persona | T05a He
+          cha. Pendiente la observación de la revisión: actualizar CLAUDE
+          .md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+          tareas/T05a.md §8, B-83 |
+      89  | B-85 | 2026-11-15 21:00 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05a, B-8
+          3), CLAUDE.md (Dependencias) agrega la subsección «Usuarios y c
+          ancelación en cascada fijados en T05a»: `UsersAdminModule` apar
+          te para evitar el ciclo con `BookingsModule` (sin `forwardRef`)
+          ; `UsersService` como API de usuarios; `BookingsService.cancelF
+          utureByUser(ctx, …)` y su análogo para T05b; claves de lock con
+           `lockKeys`; `BCRYPT_ROUNDS` en el dominio de usuarios y hash f
+          uera de la transacción; repositorios en memoria que ignoran `un
+          defined` (B-80); escribir archivos con Write o Edit (backticks 
+          en Bash); decisión pendiente sobre que un ADMIN se quite el rol
+          ; datos de prueba que quedaron en la base | Solo documentación;
+           sin cambios de código | CLAUDE.md, docs/tareas/T05a.md §6 y §7
+          , B-80, B-83 |
+      90 +| B-86 | 2026-11-15 21:02 | Agente | 3-Ejecutar | AGENTE | Inic
+         +io de T05b (Módulo de cierres ADMIN): DoR comprobada, dependenc
+         +ia T05 en Hecha | En curso | docs/02-backlog.md T05b |         
+
+● Cierres (T05b) va en su propio módulo, con la cancelación en cascada de
+  reservas dentro de la misma transacción que el alta; después escribo las
+  pruebas en test/closures.spec.ts. · summary
+
+● Write(src\api\src\modules\closures\domain\closure.ts)
+  ⎿  Wrote 37 lines to src\api\src\modules\closures\domain\closure.ts
+       1 // Dominio de cierres: tipos puros y reglas, sin dependencias de
+          Nest, Prisma ni HTTP.
+       2 
+       3 /** spec §7 (`closures.reason`): 1–100 caracteres. */
+       4 export const CLOSURE_LIMITS = { reasonMax: 100 } as const;
+       5 
+       6 /**
+       7  * Día cerrado global (D-23). `date` es una fecha de calendario 
+         `AAAA-MM-DD` en `BUSINESS_TZ`, no un instante UTC
+       8  * (spec §7, notas de T05b).
+     … +29 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\closures\domain\closures.repository.ts)
+  ⎿  Wrote 19 lines to
+     src\api\src\modules\closures\domain\closures.repository.ts
+       1 import type { TransactionContext } from '../../../common/transac
+         tion/transaction-runner';
+       2 import type { Closure, NewClosure } from './closure';
+       3 
+       4 /**
+       5  * Repositorio de cierres (interfaz). La implementación Prisma v
+         ive en `infrastructure/`.
+       6  * `create` lanza `AppError('CLOSURE_EXISTS')` si la fecha ya es
+         tá cerrada (RN-24): lo garantiza el índice único
+       7  * `closures_date_key`, no una consulta previa.
+     … +12 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\closures\infrastructure\prisma-closures.repository.t
+       s)
+  ⎿  Wrote 59 lines to src\api\src\modules\closures\infrastructure\prisma-c
+     losures.repository.ts
+       1 import { Injectable } from '@nestjs/common';
+       2 import { AppError } from '../../../common/errors/app-error';
+       3 import { prismaTx } from '../../../common/transaction/prisma-tra
+         nsaction-runner';
+       4 import type { TransactionContext } from '../../../common/transac
+         tion/transaction-runner';
+       5 import { Prisma } from '../../../generated/prisma/client';
+       6 import { PrismaService } from '../../../prisma/prisma.service';
+       7 import type { Closure, NewClosure } from '../domain/closure';
+       8 import type { ClosuresRepository } from '../domain/closures.repo
+     … +52 lines (~2 KB) (ctrl+o to expand)
+
+● Ahora la cancelación por fecha del lado de reservas.
+
+● Update(src\api\src\modules\bookings\domain\bookings.repository.ts)
+  ⎿  Added 5 lines
+      25     * ya empezaron no cambian). Devuelve los ids cancelados, par
+          a auditar cada uno en T06a.
+      26     */
+      27    cancelFutureByUser(ctx: TransactionContext, userId: string, c
+          ancelledById: string, at: Date): Promise<string[]>;
+      28 +  /**                                                          
+      29 +   * RN-16: cancela en un solo UPDATE las reservas `CONFIRMED` 
+         +de todas las salas con `startAt` en `[from, to)` (un día       
+      30 +   * local). `at` es el instante de la cancelación. Devuelve lo
+         +s ids cancelados, para auditar cada uno en T06a.               
+      31 +   */                                                          
+      32 +  cancelConfirmedBetween(ctx: TransactionContext, from: Date, t
+         +o: Date, cancelledById: string, at: Date): Promise<string[]>;  
+      33  }
+      34  
+      35  export const BOOKINGS_REPOSITORY = Symbol('BOOKINGS_REPOSITORY'
+          );
+
+● Update(src\api\src\modules\bookings\infrastructure\prisma-bookings.repository.
+        ts)
+  ⎿  Added 15 lines
+      120      });
+      121      return rows.map((r) => r.id);
+      122    }
+      123 +                                                              
+      124 +  async cancelConfirmedBetween(                               
+      125 +    ctx: TransactionContext,                                  
+      126 +    from: Date,                                               
+      127 +    to: Date,                                                 
+      128 +    cancelledById: string,                                    
+      129 +    at: Date,                                                 
+      130 +  ): Promise<string[]> {                                      
+      131 +    const rows = await prismaTx(ctx).booking.updateManyAndRetu
+          +rn({                                                          
+      132 +      where: { status: 'CONFIRMED', startAt: { gte: from, lt: 
+          +to } },                                                       
+      133 +      data: { status: 'CANCELLED', cancelledAt: at, cancelledB
+          +yId },                                                        
+      134 +      select: { id: true },                                   
+      135 +    });                                                       
+      136 +    return rows.map((r) => r.id);                             
+      137 +  }                                                           
+      138  }
+
+● Update(src\api\src\modules\bookings\bookings.service.ts)
+  ⎿  Added 18 lines
+      128      // T06a agrega aquí la auditoría BOOKING_CANCELLED por cad
+           a id, dentro de la misma transacción.
+      129      return ids;
+      130    }
+      131 +                                                              
+      132 +  /**                                                         
+      133 +   * RN-16 (D-23): cancela las reservas `CONFIRMED` del día lo
+          +cal `date` (`AAAA-MM-DD` en `BUSINESS_TZ`), de todas las      
+      134 +   * salas. La llama el módulo de cierres dentro de su transac
+          +ción, después de tomar el lock `date:<AAAA-MM-DD>`            
+      135 +   * (spec §11), así ninguna reserva nueva de ese día puede co
+          +larse. Devuelve los ids cancelados.                           
+      136 +   */                                                         
+      137 +  async cancelConfirmedByDate(ctx: TransactionContext, date: s
+          +tring, cancelledById: string): Promise<string[]> {            
+      138 +    const from = startOfLocalDay(date, this.config.timeZone); 
+      139 +    const to = startOfLocalDay(addDays(date, 1), this.config.t
+          +imeZone);                                                     
+      140 +    const ids = await this.bookings.cancelConfirmedBetween(ctx
+          +, from, to, cancelledById, this.clock.now());                 
+      141 +    // T06a agrega aquí la auditoría BOOKING_CANCELLED por cad
+          +a id, dentro de la misma transacción.                         
+      142 +    return ids;                                               
+      143 +  }                                                           
+      144 +                                                              
+      145 +  /** "Hoy" en `BUSINESS_TZ` según el `Clock`, para las reglas
+          + de otros módulos (RN-24). */                                 
+      146 +  today(): string {                                           
+      147 +    return localDate(this.clock.now(), this.config.timeZone); 
+      148 +  }                                                           
+      149  }
+
+● Mejor que el ClosuresService calcule "hoy" con CLOCK y BUSINESS_CONFIG, que
+  están en common/, en vez de pedírselo a reservas. Quito ese today().
+
+● Update(src\api\src\modules\bookings\bookings.service.ts)
+  ⎿  Removed 5 lines
+      141      // T06a agrega aquí la auditoría BOOKING_CANCELLED por cad
+           a id, dentro de la misma transacción.
+      142      return ids;
+      143    }
+      144 -                                                              
+      145 -  /** "Hoy" en `BUSINESS_TZ` según el `Clock`, para las reglas
+          - de otros módulos (RN-24). */                                 
+      146 -  today(): string {                                           
+      147 -    return localDate(this.clock.now(), this.config.timeZone); 
+      148 -  }                                                           
+      144  }
+
+● Write(src\api\src\modules\closures\closures.service.ts)
+  ⎿  Wrote 83 lines to src\api\src\modules\closures\closures.service.ts
+       1 import { Inject, Injectable } from '@nestjs/common';
+       2 import { PinoLogger } from 'nestjs-pino';
+       3 import { BUSINESS_CONFIG, type BusinessConfig } from '../../comm
+         on/config/business-config';
+       4 import { AppError } from '../../common/errors/app-error';
+       5 import { CLOCK, type Clock } from '../../common/time/clock';
+       6 import { localDate } from '../../common/time/zoned-time';
+       7 import { TRANSACTION_RUNNER, type TransactionRunner } from '../.
+         ./common/transaction/transaction-runner';
+       8 import { BookingsService, lockKeys } from '../bookings/bookings.
+     … +76 lines (~3 KB) (ctrl+o to expand)
+
+● Ahora el DTO, el controller y el módulo.
+
+● Write(src\api\src\modules\closures\dto\closure.dto.ts)
+  ⎿  Wrote 19 lines to src\api\src\modules\closures\dto\closure.dto.ts
+       1 import { ApiProperty } from '@nestjs/swagger';
+       2 import { IsISO8601, IsString, Length, Matches } from 'class-vali
+         dator';
+       3 import { NotBlank } from '../../../common/validation/decorators'
+         ;
+       4 import { CLOSURE_LIMITS } from '../domain/closure';
+       5 
+       6 /** F-07. `date` es un día de calendario `AAAA-MM-DD` en `BUSINE
+         SS_TZ`; `reason` 1–100 caracteres, no solo espacios. */
+       7 export class CreateClosureDto {
+     … +12 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\closures\closures.controller.ts)
+  ⎿  Wrote 32 lines to src\api\src\modules\closures\closures.controller.ts
+       1 import { Body, Controller, Delete, Get, HttpCode, Param, ParseUU
+         IDPipe, Post } from '@nestjs/common';
+       2 import { ApiTags } from '@nestjs/swagger';
+       3 import { CurrentUser, Roles } from '../../common/auth/decorators
+         ';
+       4 import type { SessionUser } from '../../common/auth/session';
+       5 import { ClosuresService } from './closures.service';
+       6 import type { Closure, CreatedClosure } from './domain/closure';
+       7 import { CreateClosureDto } from './dto/closure.dto';
+       8 
+     … +24 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\closures\closures.module.ts)
+  ⎿  Wrote 18 lines to src\api\src\modules\closures\closures.module.ts
+       1 import { Module } from '@nestjs/common';
+       2 import { BookingsModule } from '../bookings/bookings.module';
+       3 import { ClosuresController } from './closures.controller';
+       4 import { ClosuresService } from './closures.service';
+       5 import { CLOSURES_REPOSITORY } from './domain/closures.repositor
+         y';
+       6 import { PrismaClosuresRepository } from './infrastructure/prism
+         a-closures.repository';
+       7 
+       8 /**
+     … +10 lines (ctrl+o to expand)
+
+● Update(src\api\src\app.module.ts)
+  ⎿  Added 1 line
+       4  import { HealthModule } from './health/health.module';
+       5  import { AuthModule } from './modules/auth/auth.module';
+       6  import { BookingsModule } from './modules/bookings/bookings.mod
+          ule';
+       7 +import { ClosuresModule } from './modules/closures/closures.mod
+         +ule';                                                          
+       8  import { RoomsModule } from './modules/rooms/rooms.module';
+       9  import { UsersAdminModule } from './modules/users/users-admin.m
+          odule';
+      10  import { UsersModule } from './modules/users/users.module';
+● Update(src\api\src\app.module.ts)
+  ⎿  Added 1 line
+      21      RoomsModule,
+      22      BookingsModule,
+      23      UsersAdminModule,
+      24 +    ClosuresModule,                                            
+      25    ],
+      26  })
+      27  export class AppModule {}
+
+● Actualizo el comentario de isDateClosed, que decía que el módulo de cierres
+  llegaba en T05b, y amplío los dobles de prueba.
+
+● Update(src\api\src\modules\bookings\infrastructure\prisma-bookings.repository.
+        ts)
+  ⎿  Added 2 lines, removed 1 line
+      83    }
+      84  
+      85    /**
+      86 -   * RN-10. Lee la tabla `closures` directamente: el módulo de 
+         -cierres llega en T05b. La consulta corre en la misma           
+      86 +   * RN-10. Lee la tabla `closures` directamente y no a través 
+         +de `ClosuresService`: el módulo de cierres importa este        
+      87 +   * (cancelación en cascada, RN-16) y usar su service crearía 
+         +un ciclo (T05b). La consulta corre en la misma                 
+      88     * transacción que el INSERT y después del lock por fecha, qu
+          e también toma la creación de cierres (spec §11).
+      89     */
+      90    async isDateClosed(ctx: TransactionContext, date: string): Pr
+          omise<boolean> {
+
+● Update(src\api\test\bookings-service.spec.ts)
+  ⎿  Added 1 line
+      71        return options.cancelReturnsNull ? null : { ...record({ .
+          ..VALID, userId: EMPLOYEE.id }), status: 'CANCELLED' };
+      72      },
+      73      cancelFutureByUser: async () => [],
+      74 +    cancelConfirmedBetween: async () => [],                    
+      75    };
+      76    const rooms = {
+      77      findById: async (id: string) => {
+
+● Update(src\api\test\support\in-memory-bookings.repository.ts)
+  ⎿  Added 15 lines
+       90      return future.map((b) => b.id);
+       91    }
+       92  
+       93 +  async cancelConfirmedBetween(                               
+       94 +    ctx: TransactionContext,                                  
+       95 +    from: Date,                                               
+       96 +    to: Date,                                                 
+       97 +    cancelledById: string,                                    
+       98 +    at: Date,                                                 
+       99 +  ): Promise<string[]> {                                      
+      100 +    assertTx(ctx);                                            
+      101 +    const day = this.bookings.filter((b) => b.status === 'CONF
+          +IRMED' && b.startAt >= from && b.startAt < to);               
+      102 +    for (const b of day) {                                    
+      103 +      Object.assign(b, { status: 'CANCELLED', cancelledAt: at,
+          + cancelledById, cancelledByName: this.userName(cancelledById) 
+          +});                                                           
+      104 +    }                                                         
+      105 +    return day.map((b) => b.id);                              
+      106 +  }                                                           
+      107 +                                                              
+      108    private sorted(list: BookingRecord[]): BookingRecord[] {
+      109      return list
+      110        .map((b) => ({ ...b }))
+
+● Write(src\api\test\support\in-memory-closures.repository.ts)
+  ⎿  Wrote 56 lines to
+     src\api\test\support\in-memory-closures.repository.ts
+       1 import { randomUUID } from 'node:crypto';
+       2 import { AppError } from '../../src/common/errors/app-error';
+       3 import type { TransactionContext } from '../../src/common/transa
+         ction/transaction-runner';
+       4 import type { Closure, NewClosure } from '../../src/modules/clos
+         ures/domain/closure';
+       5 import type { ClosuresRepository } from '../../src/modules/closu
+         res/domain/closures.repository';
+       6 
+       7 /**
+     … +49 lines (ctrl+o to expand)
+
+● Escribo test/closures.spec.ts.
+
+● Write(src\api\test\closures.spec.ts)
+  ⎿  Wrote 404 lines to src\api\test\closures.spec.ts
+       1 import type { INestApplication } from '@nestjs/common';
+       2 import { readdirSync, readFileSync } from 'node:fs';
+       3 import { join } from 'node:path';
+       4 import { loadBusinessConfig } from '../src/common/config/busines
+         s-config';
+       5 import { CLOCK } from '../src/common/time/clock';
+       6 import type { TransactionContext, TransactionRunner } from '../s
+         rc/common/transaction/transaction-runner';
+       7 import type { BookingsService } from '../src/modules/bookings/bo
+         okings.service';
+     … +397 lines (ctrl+o to expand)
+
+● Simplifico una línea que quedó rara (TODAY.replace) y reviso la firma de
+  loadBusinessConfig.
+
+● Update(src\api\test\closures.spec.ts)
+  ⎿  Added 1 line, removed 1 line
+      272    });
+      273  
+      274    it('RN-24 · D-31 · CA5 · DELETE de un cierre de hoy o pasado
+            → 422 CLOSURE_IN_PAST y el cierre sigue', async () => {
+      275 -    const today = seedClosure(TODAY.replace('16', '16')); // o
+          -tra fila de hoy, independiente de la de CA1                   
+      275 +    const today = closures.closures.find((c) => c.date === TOD
+          +AY) ?? seedClosure(TODAY);                                    
+      276      const past = seedClosure('2026-10-12');
+      277      const responses = await Promise.all([today, past].map((c) 
+           => send('DELETE', `/closures/${c.id}`, admin)));
+      278      const bodies = await Promise.all(responses.map((r) => json
+           (r)));
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Las 18 pasan. Corro la suite completa, tsc y lint, y levanto el compose.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Compose healthy. Antes de la verificación reviso qué cierres hay en la base y
+  el límite de días hacia adelante.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a87329
+       d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05b-verify.sh)
+  ⎿  Wrote 64 lines to
+     C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a873
+     29d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05b-verify.sh
+       1 #!/usr/bin/env bash
+       2 # Verificación de T05b (backlog) contra el compose. jq no está i
+         nstalado: se usa node para leer el JSON.
+       3 set -u
+       4 BASE=http://localhost:8080/api
+       5 H='Content-Type: application/json'
+       6 T=$(mktemp -d)
+       7 field() { node -e "let s='';process.stdin.on('data',d=>s+=d).on(
+         'end',()=>{const o=JSON.parse(s);console.log($1)})"; }
+       8 PSQL() { docker compose exec -T db psql -U salalibre -d salalibr
+     … +57 lines (~4 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Los siete CA cumplen contra PostgreSQL. Ahora la ráfaga de R-01: reservas
+  simultáneas del mismo día mientras se crea el cierre, más cierres y borrados
+  simultáneos de la misma fecha.
+
+● Write(C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a87329
+       d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05b-burst.mjs)
+  ⎿  Wrote 57 lines to
+     C:\Users\WALTER~1.MAR\AppData\Local\Temp\claude\ba10201136d3e818\9a873
+     29d-d11a-4494-b6f1-aa82957025dc\scratchpad\t05b-burst.mjs
+       1 // Ráfaga contra el compose (T05b, R-01): N reservas de un mismo
+          día + el cierre de ese día, todas a la vez; luego
+       2 // N cierres simultáneos de la misma fecha y N DELETE simultáneo
+         s del mismo cierre. Al final no deja cierres y las
+       3 // reservas creadas quedan canceladas (historial).
+       4 const BASE = 'http://localhost:8080/api';
+       5 const H = { 'Content-Type': 'application/json' };
+       6 const N = Number(process.argv[2] ?? 20);
+       7 const DAY = process.argv[3]; // AAAA-MM-DD, un día hábil futuro
+       8 
+     … +49 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● R-01 se cumple: las reservas previas al cierre quedaron canceladas y las
+  posteriores recibieron 422, sin ningún "level":50 en el log. Ahora redacto la
+  documentación. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(docs\tareas\T05b.md)
+  ⎿  Wrote 165 lines to docs\tareas\T05b.md
+       1 # T05b · Módulo de cierres (ADMIN)
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha |
+       8 | Inicio – fin | 2026-11-15 21:02 – FIN · estimado: M |
+       9 | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (p
+     … +157 lines (~13 KB) (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && node -e "
+      const fs=require('fs');const p='docs/02-backlog.md';let
+      s=fs.readFileSync(p,'utf8');…)
+  ⎿  M  docs/02-backlog.md
+     M  docs/03-bitacora.md
+     A  docs/tareas/T05b.md
+     … +19 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      64  | 6 | T04 | Módulo de salas (repositorio + service + controller
+          , solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tar
+          eas/T04.md) |
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hec
+          ha | [T05](tareas/T05.md) |
+      66  | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+          vación con cancelación en cascada, reset de contraseña | T05, T
+          03a | M | No | Hecha | [T05a](tareas/T05a.md) |
+      67 -| 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+         -lan reservas | T05 | M | No | Pendiente | |                    
+      67 +| 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+         +lan reservas | T05 | M | No | En revisión | [T05b](tareas/T05b.
+         +md) |                                                          
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | P
+          endiente | |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Pendiente | |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Pendiente | |
+     ...
+      487  | Dependencias | T05 |
+      488  | Estimación | M |
+      489  | Seguridad / auditoría | Roles: `GET` autenticado; `POST` y `
+           DELETE` solo ADMIN. Auditoría: `CLOSURE_CREATED`, `CLOSURE_DEL
+           ETED` y `BOOKING_CANCELLED` por cada reserva cancelada, que se
+            conectan en T06a. OWASP A01; A04: lock por fecha |
+      490 -| Estado | Pendiente |                                        
+      490 +| Estado | En revisión |                                      
+      491  
+      492  **Alcance (archivos o módulos):**
+      493  - `src/api/src/modules/closures/**` (controller, service, dto,
+            repositorio de interfaz + Prisma).
+
+● Commit ea4b375, hora real 21:07. Completo T05b.md con esa hora y el hash, y
+  agrego la fila de fin.
+
+● Update(docs\tareas\T05b.md)
+  ⎿  Added 1 line, removed 1 line
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha |
+       8 -| Inicio – fin | 2026-11-15 21:02 – FIN · estimado: M |        
+       8 +| Inicio – fin | 2026-11-15 21:02 – 21:07 (5 min) · estimado: M
+         + |                                                             
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | ver la fila de fin en `docs/03-bitacora.md` (códi
+          go y documentación) + commit de registro del hash |
+      11  | Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, D-31, D-32,
+           S-04, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lock
+           por fecha), F-07 · P-11 (integración en T06) · R-01 · backlog 
+          T05b |
+
+● Update(docs\tareas\T05b.md)  ⎿  Added 1 line, removed 1 line
+       7  | Estado | Hecha |
+       8  | Inicio – fin | 2026-11-15 21:02 – 21:07 (5 min) · estimado: M
+           |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10 -| Commit(s) | ver la fila de fin en `docs/03-bitacora.md` (códi
+         -go y documentación) + commit de registro del hash |            
+      10 +| Commit(s) | `ea4b375` (código y documentación) + commit de re
+         +gistro del hash |                                              
+      11  | Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, D-31, D-32,
+           S-04, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lock
+           por fecha), F-07 · P-11 (integración en T06) · R-01 · backlog 
+          T05b |
+      12  
+      13  ## 1. Objetivo
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && echo "$NOW" && printf '%s\n' "| B-87 | $NOW | Agente
+      | 3-Ejecutar |…)
+  ⎿  2026-11-15 21:08
+     | B-87 | 2026-11-15 21:08 | Agente | 3-Ejecutar | AGENTE | Fin de T05b
+      (Módulo
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      88  | B-84 | 2026-11-15 20:59 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05a pasa a Hecha en el resumen y en la fic
+          ha de 02-backlog.md, tras la revisión de B-83; se incluye la se
+          cción 8 de docs/tareas/T05a.md escrita por la persona | T05a He
+          cha. Pendiente la observación de la revisión: actualizar CLAUDE
+          .md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+          tareas/T05a.md §8, B-83 |
+      89  | B-85 | 2026-11-15 21:00 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05a, B-8
+          3), CLAUDE.md (Dependencias) agrega la subsección «Usuarios y c
+          ancelación en cascada fijados en T05a»: `UsersAdminModule` apar
+          te para evitar el ciclo con `BookingsModule` (sin `forwardRef`)
+          ; `UsersService` como API de usuarios; `BookingsService.cancelF
+          utureByUser(ctx, …)` y su análogo para T05b; claves de lock con
+           `lockKeys`; `BCRYPT_ROUNDS` en el dominio de usuarios y hash f
+          uera de la transacción; repositorios en memoria que ignoran `un
+          defined` (B-80); escribir archivos con Write o Edit (backticks 
+          en Bash); decisión pendiente sobre que un ADMIN se quite el rol
+          ; datos de prueba que quedaron en la base | Solo documentación;
+           sin cambios de código | CLAUDE.md, docs/tareas/T05a.md §6 y §7
+          , B-80, B-83 |
+      90  | B-86 | 2026-11-15 21:02 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T05b (Módulo de cierres ADMIN): DoR comprobada, dependenc
+          ia T05 en Hecha | En curso | docs/02-backlog.md T05b |
+      91 +| B-87 | 2026-11-15 21:08 | Agente | 3-Ejecutar | AGENTE | Fin 
+         +de T05b (Módulo de cierres ADMIN): módulo `closures` con domini
+         +o puro (`date` como fecha de calendario en `BUSINESS_TZ`), `Clo
+         +suresRepository` + Prisma (`P2002` → 409 `CLOSURE_EXISTS`), `GE
+         +T /closures` autenticado y `POST`/`DELETE` solo ADMIN; crear: 4
+         +22 `CLOSURE_IN_PAST` → lock `date:` → INSERT → `BookingsService
+         +.cancelConfirmedByDate(ctx, …)` en la misma transacción; elimin
+         +ar: 404 → 422 → lock `date:` → DELETE, sin restaurar reservas. 
+         +CA1 a CA7 en verde con 18 pruebas nuevas (130 en total), lint y
+         + `tsc` sin errores, compose healthy; contra PostgreSQL, ráfagas
+         + de 20 y 40 reservas del día + su cierre → toda reserva creada 
+         +quedó cancelada y el resto `DAY_CLOSED`, cierres simultáneos 1 
+         +× 201 y el resto 409, 0 errores 500 y 0 `"level":50` | T05b En 
+         +revisión. Commit `ea4b375`. Desvíos: `isDateClosed` se queda en
+         + reservas (evita el ciclo con cierres), `cancelConfirmedBetween
+         +(ctx, from, to, …)` en el repositorio, `DELETE` también toma el
+         + lock por fecha. Ambigüedades: sin límite hacia adelante para l
+         +a fecha de un cierre, `reason` sin recortar | docs/tareas/T05b.
+         +md, commit ea4b375, B-86 |                                     
+
+● La fila de fin quedó con la hora real 21:08, un minuto después de la que puse
+  en el documento. Igualo T05b.md a la hora de la fila.
+
+● Update(docs\tareas\T05b.md)
+  ⎿  Added 1 line, removed 1 line
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha |
+       8 -| Inicio – fin | 2026-11-15 21:02 – 21:07 (5 min) · estimado: M
+         - |                                                             
+       8 +| Inicio – fin | 2026-11-15 21:02 – 21:08 (6 min) · estimado: M
+         + |                                                             
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | `ea4b375` (código y documentación) + commit de re
+          gistro del hash |
+      11  | Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, D-31, D-32,
+           S-04, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lock
+           por fecha), F-07 · P-11 (integración en T06) · R-01 · backlog 
+          T05b |
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● T05b está terminada y queda En revisión. Los días cerrados ya funcionan en la
+  API y cumplen los siete criterios de aceptación, en las pruebas y contra
+  PostgreSQL en el compose.
+
+  Qué hace ahora la API:
+  - GET /closures lo ve cualquier usuario autenticado: los cierres de hoy en
+    adelante, ordenados por fecha. POST y DELETE son solo para ADMIN; un
+    empleado recibe 403.
+  - Crear un cierre con fecha de hoy o pasada da 422 CLOSURE_IN_PAST, y con una
+    fecha ya cerrada da 409. Si es válido, en una sola transacción se registra
+    el cierre y se cancelan las reservas confirmadas de ese día (todas las
+    salas, día completo en la hora de Honduras). Responde cuántas canceló
+    (cancelledBookings).
+  - Eliminar un cierre solo se permite si su fecha es posterior a hoy; si no,
+    da 422. No restaura las reservas canceladas.
+  - Reservar en un día cerrado da 422 DAY_CLOSED.
+
+  Verificación:
+  - 18 pruebas nuevas; la suite completa pasa (130). Lint y tsc sin errores; los
+    tres servicios del compose quedan healthy.
+  - Probé la carrera de R-01 contra PostgreSQL con 20 y con 40 reservas
+    simultáneas del mismo día mientras se creaba su cierre. Toda reserva que
+    entró antes quedó cancelada; las demás recibieron DAY_CLOSED.
+  - Cierres simultáneos de una misma fecha dieron un 201 y el resto 409;
+    borrados simultáneos de un mismo cierre, un 204 y el resto 404. Sin errores
+    500 ni errores en el log.
+  - Para probar el 422 al borrar un cierre de hoy o pasado inserté dos filas a
+    mano con psql, porque la API no deja crearlas, y las borré al final del
+    mismo script. La base queda sin cierres.
+
+  Desvíos:
+  - La comprobación de "día cerrado" al reservar sigue en el módulo de reservas,
+    en vez de pasar al de cierres como sugería CLAUDE.md. El módulo de cierres
+    ya depende del de reservas, y al revés se crearía una dependencia circular.
+  - La firma de la cancelación cambió: el repositorio recibe el rango horario
+    del día (cancelConfirmedBetween(ctx, from, to, …)) y el service la fecha
+    (cancelConfirmedByDate(ctx, date, …)), con el contexto de la transacción
+    primero.
+  - Eliminar un cierre también toma el bloqueo por fecha, aunque el spec solo lo
+    pide al crear, para que ninguna reserva de ese día se cruce con el borrado.
+  - La hora de fin de T05b.md quedó al principio un minuto antes que la de la
+    bitácora; la igualé a 21:08 en un commit aparte.
+
+  Ambigüedades, resueltas de forma conservadora:
+  - No limité cuán lejos en el futuro puede ser un cierre, porque el spec no lo
+    dice.
+  - El motivo no se recorta (regla de T04); si son solo espacios, da 400.
+  - El cierre de hoy aparece en la lista, pero no se puede crear ni eliminar.
+
+  Los commits son ea4b375 (código y documentación), 25eb82d (fin en bitácora) y
+  acecfdc (ajuste de hora). El detalle y la salida real están en
+  docs/tareas/T05b.md. Quedo a la espera de tu revisión.
+
+✻ Brewed for 6m 49s · done 21:08
+
+❯ /bitacora T05b revisada, cumple la DoD                                        
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-8 && printf
+      '%s\n' "| B-88 | $…)
+  ⎿  | B-87 |
+     | B-88 | 2026-11-15 21:10 | Yo | 3-Ejecutar | REVISIÓN | T05b revisada
+     , cumple la DoD | aprobada | T05b |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      89  | B-85 | 2026-11-15 21:00 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05a, B-8
+          3), CLAUDE.md (Dependencias) agrega la subsección «Usuarios y c
+          ancelación en cascada fijados en T05a»: `UsersAdminModule` apar
+          te para evitar el ciclo con `BookingsModule` (sin `forwardRef`)
+          ; `UsersService` como API de usuarios; `BookingsService.cancelF
+          utureByUser(ctx, …)` y su análogo para T05b; claves de lock con
+           `lockKeys`; `BCRYPT_ROUNDS` en el dominio de usuarios y hash f
+          uera de la transacción; repositorios en memoria que ignoran `un
+          defined` (B-80); escribir archivos con Write o Edit (backticks 
+          en Bash); decisión pendiente sobre que un ADMIN se quite el rol
+          ; datos de prueba que quedaron en la base | Solo documentación;
+           sin cambios de código | CLAUDE.md, docs/tareas/T05a.md §6 y §7
+          , B-80, B-83 |
+      90  | B-86 | 2026-11-15 21:02 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T05b (Módulo de cierres ADMIN): DoR comprobada, dependenc
+          ia T05 en Hecha | En curso | docs/02-backlog.md T05b |
+      91  | B-87 | 2026-11-15 21:08 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T05b (Módulo de cierres ADMIN): módulo `closures` con domini
+          o puro (`date` como fecha de calendario en `BUSINESS_TZ`), `Clo
+          suresRepository` + Prisma (`P2002` → 409 `CLOSURE_EXISTS`), `GE
+          T /closures` autenticado y `POST`/`DELETE` solo ADMIN; crear: 4
+          22 `CLOSURE_IN_PAST` → lock `date:` → INSERT → `BookingsService
+          .cancelConfirmedByDate(ctx, …)` en la misma transacción; elimin
+          ar: 404 → 422 → lock `date:` → DELETE, sin restaurar reservas. 
+          CA1 a CA7 en verde con 18 pruebas nuevas (130 en total), lint y
+           `tsc` sin errores, compose healthy; contra PostgreSQL, ráfagas
+           de 20 y 40 reservas del día + su cierre → toda reserva creada 
+          quedó cancelada y el resto `DAY_CLOSED`, cierres simultáneos 1 
+          × 201 y el resto 409, 0 errores 500 y 0 `"level":50` | T05b En 
+          revisión. Commit `ea4b375`. Desvíos: `isDateClosed` se queda en
+           reservas (evita el ciclo con cierres), `cancelConfirmedBetween
+          (ctx, from, to, …)` en el repositorio, `DELETE` también toma el
+           lock por fecha. Ambigüedades: sin límite hacia adelante para l
+          a fecha de un cierre, `reason` sin recortar | docs/tareas/T05b.
+          md, commit ea4b375, B-86 |
+      92 +| B-88 | 2026-11-15 21:10 | Yo | 3-Ejecutar | REVISIÓN | T05b r
+         +evisada, cumple la DoD | aprobada | T05b |                     
+
+● Fila agregada: | B-88 | 2026-11-15 21:10 | Yo | 3-Ejecutar | REVISIÓN | T05b 
+  revisada, cumple la DoD | aprobada | T05b |
+
+  La primera palabra de tu texto ("T05b") no es un tipo válido. Usé REVISIÓN,
+  igual que en B-76 y B-83.
+
+✻ Sautéed for 5s · done 21:10
+
+❯ Pasa T05b a Hecha en el backlog y haz commit                                  
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && git status
+      --short && git diff docs/tareas/T05b.md | grep "^[-+]" | grep -v
+      "^+++\|^---" && node -e "…)
+  ⎿   M docs/03-bitacora.md
+      M docs/tareas/T05b.md
+     ?? docs/sesiones/2026-11-15-152204-local-command-caveatthe-command-bel
+     … +16 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      64  | 6 | T04 | Módulo de salas (repositorio + service + controller
+          , solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tar
+          eas/T04.md) |
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hec
+          ha | [T05](tareas/T05.md) |
+      66  | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+          vación con cancelación en cascada, reset de contraseña | T05, T
+          03a | M | No | Hecha | [T05a](tareas/T05a.md) |
+      67 -| 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+         -lan reservas | T05 | M | No | En revisión | [T05b](tareas/T05b.
+         -md) |                                                          
+      67 +| 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+         +lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) | 
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | P
+          endiente | |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Pendiente | |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Pendiente | |
+     ...
+      487  | Dependencias | T05 |
+      488  | Estimación | M |
+      489  | Seguridad / auditoría | Roles: `GET` autenticado; `POST` y `
+           DELETE` solo ADMIN. Auditoría: `CLOSURE_CREATED`, `CLOSURE_DEL
+           ETED` y `BOOKING_CANCELLED` por cada reserva cancelada, que se
+            conectan en T06a. OWASP A01; A04: lock por fecha |
+      490 -| Estado | En revisión |                                      
+      490 +| Estado | Hecha |                                            
+      491  
+      492  **Alcance (archivos o módulos):**
+      493  - `src/api/src/modules/closures/**` (controller, service, dto,
+            repositorio de interfaz + Prisma).
+  ⎿  Deleted docs\tareas\T05b.md.bak (+0 -165)
+        1 -# T05b · Módulo de cierres (ADMIN)                            
+        2 -                                                              
+        3 -> Documento de **lo que hizo el agente** en esta tarea. Lo esc
+          -ribe el agente al terminar; yo agrego la sección "Revisión".  
+        4 -                                                              
+        5 -| Campo | Valor |                                             
+        6 -|---|---|                                                     
+        7 -| Estado | Hecha |                                            
+        8 -| Inicio – fin | 2026-11-15 21:02 – 21:08 (6 min) · estimado: 
+          -M |                                                           
+        9 -| Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` 
+          -(pendiente de exportar por la persona) |                      
+       10 -| Commit(s) | `ea4b375` (código y documentación) + commit de r
+          -egistro del hash |                                            
+       11 -| Trazabilidad | RN-10, RN-16, RN-21, RN-24 · D-23, D-31, D-32
+          -, S-04, S-05 · spec §7 (`closures`), §8 (`/closures`), §11 (lo
+          -ck por fecha), F-07 · P-11 (integración en T06) · R-01 · backl
+          -og T05b |                                                     
+       12 -                                                              
+       13 -## 1. Objetivo                                                
+       14 -Que RR. HH. registre y elimine días cerrados; crear uno cancel
+          -a las reservas de esa fecha.                                  
+       15 -                                                              
+       16 -## 2. Qué hizo el agente                                      
+       17 -- **Módulo `closures`** con la estructura de `rooms` y `users`
+          -:                                                             
+       18 -  - **Dominio puro** (`domain/closure.ts`): `Closure` con `dat
+          -e` como texto `AAAA-MM-DD` (fecha de calendario en `BUSINESS_T
+          -Z`, no un instante), `CLOSURE_LIMITS` (motivo ≤ 100) e `isAfte
+          -rToday` (RN-24).                                              
+       19 -  - **Repositorio:** interfaz `ClosuresRepository` (token `CLO
+          -SURES_REPOSITORY`) y `PrismaClosuresRepository`. Convierte la 
+          -columna `date` (`@db.Date`, medianoche UTC en Prisma) a y desd
+          -e `AAAA-MM-DD` sin zona. Traduce `P2002` → 409 `CLOSURE_EXISTS
+          -` (índice único `closures_date_key`, sin consulta previa). `de
+          -lete` usa `deleteMany` y devuelve si borró algo.              
+       20 -- **`ClosuresService`:** calcula "hoy" con `Clock` + `BUSINESS
+          -_CONFIG`.                                                     
+       21 -  - `listUpcoming`: cierres con fecha ≥ hoy.                  
+       22 -  - `create`: 422 `CLOSURE_IN_PAST` sin abrir transacción. Lue
+          -go, en una transacción: lock `date:<AAAA-MM-DD>` (`lockKeys.da
+          -te`, el mismo que toma la creación de reservas) → `INSERT` (40
+          -9) → `BookingsService.cancelConfirmedByDate(ctx, …)`. Responde
+          - `{ id, date, reason, cancelledBookings }` y deja en el log `e
+          -vent: closure_created`.                                       
+       23 -  - `delete`: en una transacción, relectura con `ctx` (404) → 
+          -422 `CLOSURE_IN_PAST` → lock `date:` → `DELETE`. Si otra petic
+          -ión ya lo borró, 404. No restaura reservas (S-05).            
+       24 -- **Controller:** `GET /closures` para cualquier usuario auten
+          -ticado; `POST` y `DELETE /closures/:id` con `@Roles('ADMIN')` 
+          -(RN-21).                                                      
+       25 -- **DTO:** `date` con `@Matches(AAAA-MM-DD)` + `@IsISO8601({ s
+          -trict: true })`, como `?date=` de reservas; `reason` con `@Len
+          -gth(1, 100)` + `@NotBlank()`.                                 
+       26 -- **Reservas:**                                               
+       27 -  - `BookingsRepository.cancelConfirmedBetween(ctx, from, to, 
+          -cancelledById, at)`: un solo `updateManyAndReturn` sobre las `
+          -CONFIRMED` de todas las salas con `startAt` en `[from, to)`.  
+       28 -  - `BookingsService.cancelConfirmedByDate(ctx, date, cancelle
+          -dById)`: arma el rango del día local con `startOfLocalDay` (`B
+          -USINESS_TZ`) y toma el instante del `Clock`.                  
+       29 -- **`ClosuresModule`** importa `BookingsModule`; se registra e
+          -n `AppModule`.                                                
+       30 -- **Pruebas** (`test/closures.spec.ts`, 18): CA1 a CA7 por HTT
+          -P con repositorios en memoria y reloj fijo. Incluyen el borde 
+          -del día local (una reserva de 19:00–20:00 local = 01:00Z del d
+          -ía siguiente se cancela con el cierre de su día local) y la in
+          -tegración con `DAY_CLOSED`: el doble de cierres comparte el `S
+          -et` que lee `isDateClosed`. También el orden y el rollback de 
+          -la transacción con dobles, y las capas (incluido que reservas 
+          -no importa cierres).                                          
+       31 -- **Contra PostgreSQL** (compose): los comandos del backlog y 
+          -ráfagas de 20 y 40 reservas del mismo día a la vez que se crea
+          - su cierre, más cierres y `DELETE` simultáneos de una misma fe
+          -cha.                                                          
+       32 -                                                              
+       33 -## 3. Archivos creados o modificados                          
+       34 -| Archivo | Cambio |                                          
+       35 -|---|---|                                                     
+       36 -| `src/api/src/modules/closures/domain/closure.ts` | creado: t
+          -ipos, límites, `isAfterToday`, `toClosure` |                  
+       37 -| `src/api/src/modules/closures/domain/closures.repository.ts`
+          - | creado: interfaz y token |                                 
+       38 -| `src/api/src/modules/closures/infrastructure/prisma-closures
+          -.repository.ts` | creado: Prisma, conversión de `date`, `P2002
+          -` → `CLOSURE_EXISTS` |                                        
+       39 -| `src/api/src/modules/closures/closures.service.ts` | creado:
+          - listar, crear con cascada, eliminar |                        
+       40 -| `src/api/src/modules/closures/closures.controller.ts` | crea
+          -do: `GET`, `POST`, `DELETE /closures/:id` |                   
+     … 125 more lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && NOW=$(date
+      "+%Y-%m-%d %H:%M") && printf '%s\n' "| B-89 | $NOW | Agente | 3-Ejecutar |
+      AGENTE | A pedi…)
+  ⎿  | B-89 | 2026-11-15 21:11 | Agente | 3-E
+     314c41b T05b: revisión aprobada, estado Hecha
+     ?? docs/sesiones/2026-11-15-152204-local-command-caveatthe-command-bel
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      90  | B-86 | 2026-11-15 21:02 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T05b (Módulo de cierres ADMIN): DoR comprobada, dependenc
+          ia T05 en Hecha | En curso | docs/02-backlog.md T05b |
+      91  | B-87 | 2026-11-15 21:08 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T05b (Módulo de cierres ADMIN): módulo `closures` con domini
+          o puro (`date` como fecha de calendario en `BUSINESS_TZ`), `Clo
+          suresRepository` + Prisma (`P2002` → 409 `CLOSURE_EXISTS`), `GE
+          T /closures` autenticado y `POST`/`DELETE` solo ADMIN; crear: 4
+          22 `CLOSURE_IN_PAST` → lock `date:` → INSERT → `BookingsService
+          .cancelConfirmedByDate(ctx, …)` en la misma transacción; elimin
+          ar: 404 → 422 → lock `date:` → DELETE, sin restaurar reservas. 
+          CA1 a CA7 en verde con 18 pruebas nuevas (130 en total), lint y
+           `tsc` sin errores, compose healthy; contra PostgreSQL, ráfagas
+           de 20 y 40 reservas del día + su cierre → toda reserva creada 
+          quedó cancelada y el resto `DAY_CLOSED`, cierres simultáneos 1 
+          × 201 y el resto 409, 0 errores 500 y 0 `"level":50` | T05b En 
+          revisión. Commit `ea4b375`. Desvíos: `isDateClosed` se queda en
+           reservas (evita el ciclo con cierres), `cancelConfirmedBetween
+          (ctx, from, to, …)` en el repositorio, `DELETE` también toma el
+           lock por fecha. Ambigüedades: sin límite hacia adelante para l
+          a fecha de un cierre, `reason` sin recortar | docs/tareas/T05b.
+          md, commit ea4b375, B-86 |
+      92  | B-88 | 2026-11-15 21:10 | Yo | 3-Ejecutar | REVISIÓN | T05b r
+          evisada, cumple la DoD | aprobada | T05b |
+      93 +| B-89 | 2026-11-15 21:11 | Agente | 3-Ejecutar | AGENTE | A pe
+         +dido de la persona, T05b pasa a Hecha en el resumen y en la fic
+         +ha de 02-backlog.md, tras la revisión de B-88; se incluye la se
+         +cción 8 de docs/tareas/T05b.md escrita por la persona | T05b He
+         +cha. Pendiente la observación de la revisión: actualizar CLAUDE
+         +.md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+         +tareas/T05b.md §8, B-88 |                                      
+
+● T05b ya está Hecha en el resumen y en la ficha del backlog. Hice el commit
+  314c41b (T05b: revisión aprobada, estado Hecha).
+
+  El commit incluye la sección 8 que escribiste en docs/tareas/T05b.md, tal como
+  la dejaste. Agregué la fila B-89 a la bitácora y no incluí el T05b.md.bak del
+  editor, que ya no aparece en el repositorio.
+
+  Queda pendiente tu observación de actualizar CLAUDE.md con los desvíos de
+  T05b. Agregaría estos tres puntos:
+  - La comprobación de "día cerrado" al reservar se queda en el módulo de
+    reservas, para no crear una dependencia circular con el de cierres.
+  - La cancelación por fecha usa cancelConfirmedBetween(ctx, from, to, …) en el
+    repositorio y cancelConfirmedByDate(ctx, date, …) en el service.
+  - Eliminar un cierre también toma el bloqueo por fecha.
+
+  ¿Lo hago ahora?
+
+✻ Baked for 16s · done 21:11
+
+❯ Actualiza CLAUDE.md con los desvíos de T05b y haz commit                      
+
+● Update(CLAUDE.md)
+  ⎿  Added 2 lines, removed 2 lines
+      219  - **Locks (spec §11):** siempre en el orden `date:<AAAA-MM-DD 
+           local>` → `user:<uuid>`, para no generar bloqueos
+      220    cruzados. T05b toma solo `date:` y T05a solo `user:`. Despué
+           s del lock por usuario se relee el usuario con `ctx`.
+      221  - **`BookingsService` es la API del módulo de reservas** para 
+           T05a (cancelar al desactivar) y T05b (cancelar al cerrar
+      222 -  un día). Mientras no exista el módulo de cierres, `PrismaBoo
+          -kingsRepository.isDateClosed` lee `closures` directamente     
+      223 -  dentro de la transacción; T05b puede pasarlo a `ClosuresServ
+          -ice`.                                                         
+      222 +  un día). `PrismaBookingsRepository.isDateClosed` lee `closur
+          +es` directamente dentro de la transacción (se queda así       
+      223 +  desde T05b: ver abajo).                                     
+      224  - **Contrato de `Booking`:** `cancelledBy` es `{ id, name }` c
+           omo `owner`; `title` se guarda recortado; las fechas del
+      225    body exigen zona (`Z` o `±hh:mm`), sin zona → 400.
+      226  - **Controles automáticos (no quitarlos ni saltarlos):**
+
+● Update(CLAUDE.md)
+  ⎿  Added 1 line, removed 1 line
+      246  - **Cancelación en cascada:** `BookingsService.cancelFutureByU
+           ser(ctx, userId, cancelledById)` (el `ctx` primero, como
+      247    toda escritura) cancela con un solo `updateManyAndReturn` la
+           s `CONFIRMED` con `startAt > ahora` (`Clock`) y devuelve
+      248    los ids, para auditar cada uno en T06a. Las reservas en curs
+           o no se cancelan. T05b hace lo mismo para los cierres
+      249 -  (`cancelByDate(ctx, …)` o equivalente), dentro de su transac
+          -ción y con el lock `date:` tomado.                            
+      249 +  con `cancelConfirmedByDate(ctx, …)` (ver la subsección de T0
+          +5b).                                                          
+      250  - **Claves de lock:** usar siempre `lockKeys` de `bookings.ser
+           vice.ts` (`lockKeys.user(id)`, `lockKeys.date(d)`), nunca
+      251    escribir el prefijo a mano. Desactivar: `begin → lock user: 
+           → findById(ctx) (404) → 422 CANNOT_DEACTIVATE_SELF →
+      252    UPDATE → cascada → commit`.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(CLAUDE.md)
+  ⎿  Added 22 lines
+      263  - **Datos que dejó la verificación de T05a** en la base del co
+           mpose: `prueba.uno@salalibre.local` (activo, contraseña
+      264    `Nueva12345`) y usuarios `rafaga.*` desactivados. No hay `DE
+           LETE` de usuarios: en verificaciones nuevas, usar correos
+      265    únicos (por ejemplo con un sufijo de tiempo).
+      266 +                                                              
+      267 +### Cierres fijados en T05b (ver `docs/tareas/T05b.md` §6 y §7
+          +)                                                             
+      268 +- **Dependencias entre módulos:** `ClosuresModule` importa `Bo
+          +okingsModule` (cascada, RN-16); el módulo de reservas         
+      269 +  **no** importa el de cierres. RN-10 (`DAY_CLOSED`) la sigue 
+          +resolviendo `BookingsRepository.isDateClosed` dentro de la    
+      270 +  transacción de la reserva; no pasarla a `ClosuresService` (s
+          +ería un ciclo). `test/closures.spec.ts` lo comprueba.         
+      271 +- **Fechas de cierre:** `Closure.date` es texto `AAAA-MM-DD` (
+          +día de calendario en `BUSINESS_TZ`), nunca un instante.       
+      272 +  `PrismaClosuresRepository` convierte la columna `@db.Date` c
+          +on `new Date(\`${date}T00:00:00.000Z\`)` y                    
+      273 +  `toISOString().slice(0, 10)`. "Hoy" = `localDate(clock.now()
+          +, config.timeZone)`; "posterior a hoy" compara las fechas     
+      274 +  como texto (`isAfterToday`). `GET` muestra fecha ≥ hoy; crea
+          +r y eliminar exigen fecha > hoy (RN-24, D-31).                
+      275 +- **Cancelación por fecha:** `BookingsService.cancelConfirmedB
+          +yDate(ctx, date, cancelledById)` arma el rango UTC del día    
+      276 +  local con `startOfLocalDay` y llama a `BookingsRepository.ca
+          +ncelConfirmedBetween(ctx, from, to, cancelledById, at)`       
+      277 +  (un solo `updateManyAndReturn`, todas las salas). Devuelve l
+          +os ids, para auditar cada uno en T06a.                        
+      278 +- **Orden en la transacción:**                                
+      279 +  - Crear: `422 CLOSURE_IN_PAST` (sin abrir transacción) → `be
+          +gin → lock date: → INSERT (409 por P2002) → cascada → commit`.
+      280 +  - Eliminar: `begin → findById(ctx) (404) → 422 → lock date: 
+          +→ DELETE (deleteMany; 0 filas → 404) → commit`. Eliminar      
+      281 +    también toma el lock `date:` para serializarse con las res
+          +ervas de ese día. No restaura reservas (S-05).                
+      282 +- **Pruebas de cierres:** `InMemoryClosuresRepository` recibe 
+          +el mismo `Set` que `InMemoryBookingsRepository.closedDates`,  
+      283 +  para que un cierre creado por la API dé `DAY_CLOSED` al rese
+          +rvar, como en la base.                                        
+      284 +- **Verificación manual de cierres de hoy o pasados:** la API 
+          +no los deja crear. Para probar el 422 de `DELETE` se          
+      285 +  insertan con `psql` dentro del script de verificación y se b
+          +orran al final del mismo script; anotarlo en                  
+      286 +  `docs/tareas/Txx.md` como paso manual. Al terminar una verif
+          +icación, no dejar cierres futuros en la base: bloquean las    
+      287 +  reservas de esos días en las tareas siguientes.             
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && grep -n 'new
+      Date(\\`' CLAUDE.md; NOW=$(date "+%Y-%m-%d %H:%M") && printf '%s\n' "|
+      B-90 | $NOW | Age…)
+  ⎿  c0bceab T05b: CLAUDE.md con los desvíos de la tarea
+     ?? docs/sesiones/2026-11-15-152204-local-command-caveatthe-command-bel
+     ow-was-run-d.txt
+     … +2 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      91  | B-87 | 2026-11-15 21:08 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T05b (Módulo de cierres ADMIN): módulo `closures` con domini
+          o puro (`date` como fecha de calendario en `BUSINESS_TZ`), `Clo
+          suresRepository` + Prisma (`P2002` → 409 `CLOSURE_EXISTS`), `GE
+          T /closures` autenticado y `POST`/`DELETE` solo ADMIN; crear: 4
+          22 `CLOSURE_IN_PAST` → lock `date:` → INSERT → `BookingsService
+          .cancelConfirmedByDate(ctx, …)` en la misma transacción; elimin
+          ar: 404 → 422 → lock `date:` → DELETE, sin restaurar reservas. 
+          CA1 a CA7 en verde con 18 pruebas nuevas (130 en total), lint y
+           `tsc` sin errores, compose healthy; contra PostgreSQL, ráfagas
+           de 20 y 40 reservas del día + su cierre → toda reserva creada 
+          quedó cancelada y el resto `DAY_CLOSED`, cierres simultáneos 1 
+          × 201 y el resto 409, 0 errores 500 y 0 `"level":50` | T05b En 
+          revisión. Commit `ea4b375`. Desvíos: `isDateClosed` se queda en
+           reservas (evita el ciclo con cierres), `cancelConfirmedBetween
+          (ctx, from, to, …)` en el repositorio, `DELETE` también toma el
+           lock por fecha. Ambigüedades: sin límite hacia adelante para l
+          a fecha de un cierre, `reason` sin recortar | docs/tareas/T05b.
+          md, commit ea4b375, B-86 |
+      92  | B-88 | 2026-11-15 21:10 | Yo | 3-Ejecutar | REVISIÓN | T05b r
+          evisada, cumple la DoD | aprobada | T05b |
+      93  | B-89 | 2026-11-15 21:11 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05b pasa a Hecha en el resumen y en la fic
+          ha de 02-backlog.md, tras la revisión de B-88; se incluye la se
+          cción 8 de docs/tareas/T05b.md escrita por la persona | T05b He
+          cha. Pendiente la observación de la revisión: actualizar CLAUDE
+          .md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+          tareas/T05b.md §8, B-88 |
+      94 +| B-90 | 2026-11-15 21:11 | Agente | 3-Ejecutar | CORRECCIÓN | 
+         +A pedido de la persona (observación de la revisión de T05b, B-8
+         +8), CLAUDE.md (Dependencias) agrega la subsección «Cierres fija
+         +dos en T05b»: reservas no importa cierres y RN-10 sigue en `Boo
+         +kingsRepository.isDateClosed` (evita el ciclo); `Closure.date` 
+         +como texto `AAAA-MM-DD` en `BUSINESS_TZ` y su conversión; `canc
+         +elConfirmedByDate`/`cancelConfirmedBetween`; orden de crear y e
+         +liminar en la transacción (eliminar también toma el lock `date:
+         +`); dobles que comparten las fechas cerradas; cierres de hoy o 
+         +pasados con `psql` en la verificación y no dejar cierres futuro
+         +s. Se ajustan dos líneas de las subsecciones de T05 y T05a que 
+         +daban la decisión por pendiente | Solo documentación; sin cambi
+         +os de código | CLAUDE.md, docs/tareas/T05b.md §6 y §7, B-88 |  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● En Markdown la barra invertida no escapa backticks dentro de un bloque de
+  código en línea, así que esa línea se vería rota. La corrijo con un bloque de
+  doble backtick.
+
+● Update(CLAUDE.md)
+  ⎿  Added 1 line, removed 1 line
+      269    **no** importa el de cierres. RN-10 (`DAY_CLOSED`) la sigue 
+           resolviendo `BookingsRepository.isDateClosed` dentro de la
+      270    transacción de la reserva; no pasarla a `ClosuresService` (s
+           ería un ciclo). `test/closures.spec.ts` lo comprueba.
+      271  - **Fechas de cierre:** `Closure.date` es texto `AAAA-MM-DD` (
+           día de calendario en `BUSINESS_TZ`), nunca un instante.
+      272 -  `PrismaClosuresRepository` convierte la columna `@db.Date` c
+          -on `new Date(\`${date}T00:00:00.000Z\`)` y                    
+      272 +  `PrismaClosuresRepository` convierte la columna `@db.Date` c
+          +on `` new Date(`${date}T00:00:00.000Z`) `` y                  
+      273    `toISOString().slice(0, 10)`. "Hoy" = `localDate(clock.now()
+           , config.timeZone)`; "posterior a hoy" compara las fechas
+      274    como texto (`isAfterToday`). `GET` muestra fecha ≥ hoy; crea
+           r y eliminar exigen fecha > hoy (RN-24, D-31).
+      275  - **Cancelación por fecha:** `BookingsService.cancelConfirmedB
+           yDate(ctx, date, cancelledById)` arma el rango UTC del día
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Agregué a CLAUDE.md los desvíos de T05b en una nueva subsección «Cierres
+  fijados en T05b» e hice el commit c0bceab. Es solo documentación, sin cambios
+  de código.
+
+  La subsección deja fijado esto:
+  - Sin dependencia circular: el módulo de cierres usa el de reservas, pero no
+    al revés. La comprobación de "día cerrado" al reservar se queda en el módulo
+    de reservas; una prueba lo verifica.
+  - Fechas de cierre: son días de calendario AAAA-MM-DD en la zona de Honduras,
+    nunca instantes. "Hoy" sale del reloj de la app; la lista muestra desde hoy
+    y crear o eliminar exige una fecha posterior a hoy.
+  - Cancelación por fecha: cómo se cancelan las reservas del día y qué devuelve:
+    los ids, para la auditoría de T06a.
+  - Orden de cada operación: al crear, el 422 de fecha va antes de abrir la
+    transacción. Eliminar también toma el bloqueo por fecha.
+  - Pruebas: el doble de cierres comparte las fechas cerradas con el de
+    reservas.
+  - Verificación manual: los cierres de hoy o pasados se insertan con psql y se
+    borran en el mismo script. No hay que dejar cierres futuros en la base,
+    porque bloquean las reservas de esos días.
+
+  También corregí dos líneas de las subsecciones de T05 y T05a que daban por
+  pendiente esta decisión.
+
+  En un segundo commit, 0343c22, arreglé un fragmento de código de la nueva
+  subsección que no se veía bien en Markdown.
+
+  Agregué la fila B-90 a la bitácora.
+✻ Cogitated for 40s · done 21:12
