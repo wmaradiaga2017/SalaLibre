@@ -81,6 +81,15 @@ export class InMemoryBookingsRepository implements BookingsRepository {
     return { ...b };
   }
 
+  async cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string, at: Date): Promise<string[]> {
+    assertTx(ctx);
+    const future = this.bookings.filter((b) => b.userId === userId && b.status === 'CONFIRMED' && b.startAt > at);
+    for (const b of future) {
+      Object.assign(b, { status: 'CANCELLED', cancelledAt: at, cancelledById, cancelledByName: this.userName(cancelledById) });
+    }
+    return future.map((b) => b.id);
+  }
+
   private sorted(list: BookingRecord[]): BookingRecord[] {
     return list
       .map((b) => ({ ...b }))

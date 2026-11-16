@@ -20,6 +20,11 @@ export interface BookingsRepository {
    * devuelve `null` si ya no lo estaba (otra petición la canceló antes).
    */
   cancel(ctx: TransactionContext, id: string, cancelledById: string, at: Date): Promise<BookingRecord | null>;
+  /**
+   * RN-15: cancela en un solo UPDATE las reservas `CONFIRMED` del usuario con `startAt > at` (las pasadas y las que
+   * ya empezaron no cambian). Devuelve los ids cancelados, para auditar cada uno en T06a.
+   */
+  cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string, at: Date): Promise<string[]>;
 }
 
 export const BOOKINGS_REPOSITORY = Symbol('BOOKINGS_REPOSITORY');

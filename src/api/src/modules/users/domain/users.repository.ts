@@ -1,7 +1,11 @@
 import type { TransactionContext } from '../../../common/transaction/transaction-runner';
-import type { UserWithCredentials } from './user';
+import type { NewUser, PublicUser, UserChanges, UserWithCredentials } from './user';
 
-/** Repositorio de usuarios (interfaz). La implementación Prisma vive en `infrastructure/`. */
+/**
+ * Repositorio de usuarios (interfaz). La implementación Prisma vive en `infrastructure/`.
+ * `create` lanza `AppError('EMAIL_TAKEN')` si el correo ya existe (RN-23, lo garantiza el índice único de la base);
+ * `update` lanza `AppError('NOT_FOUND')` si el id no existe.
+ */
 export interface UsersRepository {
   findByEmail(email: string): Promise<UserWithCredentials | null>;
   /**
@@ -9,7 +13,11 @@ export interface UsersRepository {
    * debe pasar el `ctx`: si usa otra conexión del pool, muchas transacciones esperando un lock lo agotan (B-74).
    */
   findById(id: string, ctx?: TransactionContext): Promise<UserWithCredentials | null>;
-  /** Escritura: siempre dentro de `TransactionRunner.run` (CLAUDE.md, escrituras). */
+  /** Todos los usuarios, activos e inactivos, ordenados por `name`. */
+  findAll(): Promise<PublicUser[]>;
+  /** Escrituras: siempre dentro de `TransactionRunner.run` (CLAUDE.md, escrituras). */
+  create(ctx: TransactionContext, user: NewUser): Promise<PublicUser>;
+  update(ctx: TransactionContext, id: string, changes: UserChanges): Promise<PublicUser>;
   updatePasswordHash(ctx: TransactionContext, id: string, passwordHash: string): Promise<void>;
 }
 

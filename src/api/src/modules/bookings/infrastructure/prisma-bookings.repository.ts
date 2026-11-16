@@ -111,4 +111,13 @@ export class PrismaBookingsRepository implements BookingsRepository {
     const row = await tx.booking.findUniqueOrThrow({ where: { id }, select: SELECT });
     return toRecord(row);
   }
+
+  async cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string, at: Date): Promise<string[]> {
+    const rows = await prismaTx(ctx).booking.updateManyAndReturn({
+      where: { userId, status: 'CONFIRMED', startAt: { gt: at } },
+      data: { status: 'CANCELLED', cancelledAt: at, cancelledById },
+      select: { id: true },
+    });
+    return rows.map((r) => r.id);
+  }
 }

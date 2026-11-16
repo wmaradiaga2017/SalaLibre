@@ -3,7 +3,11 @@ import { BUSINESS_CONFIG, type BusinessConfig } from '../../common/config/busine
 import { AppError } from '../../common/errors/app-error';
 import { CLOCK, type Clock } from '../../common/time/clock';
 import { addDays, localDate, startOfLocalDay } from '../../common/time/zoned-time';
-import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
+import {
+  TRANSACTION_RUNNER,
+  type TransactionContext,
+  type TransactionRunner,
+} from '../../common/transaction/transaction-runner';
 import { RoomsService } from '../rooms/rooms.service';
 import { UsersService } from '../users/users.service';
 import { toBookingView, type BookingView, type Viewer } from './domain/booking';
@@ -112,5 +116,16 @@ export class BookingsService {
       return result;
     });
     return toBookingView(cancelled, viewer);
+  }
+
+  /**
+   * RN-15 (D-16): cancela las reservas futuras de un usuario que se desactiva. La llama el módulo de usuarios dentro
+   * de su transacción, después de tomar el lock `user:<uuid>` (spec §11), así ninguna reserva nueva de ese usuario
+   * puede colarse. "Futuras" = `startAt` posterior a ahora (`Clock`). Devuelve los ids cancelados.
+   */
+  async cancelFutureByUser(ctx: TransactionContext, userId: string, cancelledById: string): Promise<string[]> {
+    const ids = await this.bookings.cancelFutureByUser(ctx, userId, cancelledById, this.clock.now());
+    // T06a agrega aquí la auditoría BOOKING_CANCELLED por cada id, dentro de la misma transacción.
+    return ids;
   }
 }

@@ -5,7 +5,7 @@ import { PinoLogger } from 'nestjs-pino';
 import type { SessionResolver, SessionRole, SessionUser } from '../../common/auth/session';
 import { AppError } from '../../common/errors/app-error';
 import { TRANSACTION_RUNNER, type TransactionRunner } from '../../common/transaction/transaction-runner';
-import { toPublicUser, type PublicUser } from '../users/domain/user';
+import { BCRYPT_ROUNDS, toPublicUser, type PublicUser } from '../users/domain/user';
 import { UsersService } from '../users/users.service';
 
 /** Payload del JWT: solo `sub` y `role` (spec §11). `iat` y `exp` los agrega la librería. */
@@ -19,9 +19,6 @@ interface JwtPayload {
 const DUMMY_HASH = hashSync('salalibre-dummy-password', 10);
 
 const INVALID_CREDENTIALS_MESSAGE = 'Correo o contraseña incorrectos.';
-
-/** Costo de bcryptjs para los hashes nuevos; el mismo que usa el seed. */
-const BCRYPT_ROUNDS = 10;
 
 export interface LoginResult {
   user: PublicUser;
