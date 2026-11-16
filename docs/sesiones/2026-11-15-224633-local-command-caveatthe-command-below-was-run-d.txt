@@ -1,0 +1,2999 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+❯ /clear                                                                        
+
+❯ /ejecutar-tarea T06a                                                          
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● Ya comprobé la DoR de T06a (dependencia T06 en Hecha, todos los campos
+  presentes) y leí spec/decisiones. Ahora reviso el código existente antes de
+  registrar el inicio.
+
+  Ran 6 shell commands (ctrl+o to expand)
+
+● Ya tengo el contexto del código (servicios con marcas "T06a agrega aquí…").
+  Registro el inicio en la bitácora.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && grep -n
+      "Inicio de T06 " docs/03-bitacora.md | head -2; printf '%s\n' '| B-98 |
+      2026-11-15 22:05 | Ag…)
+  ⎿  95:| B-91 | 2026-11-15 21:14 | Agente | 3-Ejecutar | AGENTE | Inicio d
+     e T06 (Pruebas de integración, concurrencia y matriz RBAC): DoR compro
+     bada, dependencias T05a y T05b en Hecha | En curso | docs/02-backlog.m
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+       99  | B-95 | 2026-11-15 21:42 | Yo | 3-Ejecutar | REVISIÓN | T06 r
+           evisada, cumple la DoD | — | — |
+      100  | B-96 | 2026-11-15 21:44 | Agente | 3-Ejecutar | AGENTE | A p
+           edido de la persona, T06 pasa a Hecha en el resumen y en la fi
+           cha de 02-backlog.md, tras la revisión de B-95; se incluye la 
+           sección 8 de docs/tareas/T06.md escrita por la persona | T06 H
+           echa. Pendiente la observación de la revisión: actualizar CLAU
+           DE.md con los desvíos, si se requiere | docs/02-backlog.md, do
+           cs/tareas/T06.md §8, B-95 |
+      101  | B-97 | 2026-11-15 21:44 | Agente | 3-Ejecutar | CORRECCIÓN |
+            A pedido de la persona (observación de la revisión de T06, B-
+           95), CLAUDE.md (Dependencias) agrega la subsección «Pruebas de
+            integración fijadas en T06»: comando y código de salida de `a
+           pi-test`; etapa `test` del Dockerfile con `COPY --chown` (sin 
+           `chown -R`, B-92); base propia `salalibre_test` en el servidor
+            `db` con `run.sh` que solo acepta esa base; archivos `*.int-s
+           pec.ts` fuera de las unitarias; helpers de `int-app.ts` y limp
+           ieza; estados imposibles insertados con Prisma; toda ruta nuev
+           a entra en la matriz RBAC y T06a agrega `POST /audit-logs/sear
+           ch`; carreras por invariante. Se ajustan dos líneas de T02a y 
+           T05 que hablaban de verificar contra PostgreSQL con scripts de
+            un solo uso | Solo documentación; sin cambios de código | CLA
+           UDE.md, docs/tareas/T06.md §6 y §7, B-92, B-95 |
+      102 +| B-98 | 2026-11-15 22:05 | Agente | 3-Ejecutar | AGENTE | Ini
+          +cio de T06a (Auditoría: `AuditService` transaccional en todas 
+          +las escrituras + `POST /audit-logs/search`). DoR comprobada: o
+          +bjetivo, trazabilidad, alcance, fuera de alcance, CA1–CA7, seg
+          +uridad, verificación y estimación M presentes; dependencia T06
+          + en Hecha | En curso | docs/02-backlog.md T06a |              
+
+● Plan: el contexto de petición se resuelve con AsyncLocalStorage y un
+  interceptor; luego viene el módulo de auditoría con su repositorio y servicio,
+  después conectar las 10 acciones y cerrar con pruebas y verificación. 
+  · summary
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Empiezo a construir: contexto de petición en common/.
+
+● Write(src\api\src\common\request-context\request-context.ts)
+  ⎿  Wrote 24 lines to
+     src\api\src\common\request-context\request-context.ts
+       1 import { AsyncLocalStorage } from 'node:async_hooks';
+       2 
+       3 /**
+       4  * Datos de la petición en curso que necesita la auditoría (T06a
+         , D-05): el request ID y el usuario de la sesión.
+       5  * Los fija `RequestContextInterceptor` (después de los guards) 
+         y los lee `AuditService`, así los services no tienen
+       6  * que pasarlos a mano en cada escritura. No depende de Nest.
+       7  */
+       8 export interface RequestContext {
+     … +16 lines (ctrl+o to expand)
+
+● Write(src\api\src\common\request-context\request-context.interceptor.ts)
+  ⎿  Wrote 24 lines to
+     src\api\src\common\request-context\request-context.interceptor.ts
+       1 import { CallHandler, ExecutionContext, Injectable, NestIntercep
+         tor } from '@nestjs/common';
+       2 import type { Request } from 'express';
+       3 import { Observable } from 'rxjs';
+       4 import { runWithRequestContext } from './request-context';
+       5 
+       6 /**
+       7  * Fija el contexto de la petición (request ID y usuario de la s
+         esión) para el handler y todo lo que este llame.
+       8  * Es un interceptor y no un middleware porque corre después de 
+     … +17 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      p='src/common/common.module.ts'…)
+  ⎿  2:import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core'
+     ;
+     3-import { LoggerModule } from 'nestjs-pino';
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\common\common.module.ts (+6 -2)
+       1  import { DynamicModule, Global, Module } from '@nestjs/common';
+       2 -import { APP_FILTER, APP_PIPE } from '@nestjs/core';           
+       2 +import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/
+         +core';                                                         
+       3  import { LoggerModule } from 'nestjs-pino';
+       4  import type { DestinationStream } from 'pino';
+       5  import { BUSINESS_CONFIG, loadBusinessConfig } from './config/b
+          usiness-config';
+       6  import { HttpExceptionFilter } from './errors/http-exception.fi
+          lter';
+       7  import { loggerOptions } from './logging/logger.options';
+       8 +import { RequestContextInterceptor } from './request-context/re
+         +quest-context.interceptor';                                    
+       9  import { CLOCK, SystemClock } from './time/clock';
+      10  import { createValidationPipe } from './validation/validation.p
+          ipe';
+      11  
+     ...
+      15  }
+      16  
+      17  /**
+      17 - * Plataforma transversal: logger pino, filtro de errores y Val
+         -idationPipe globales, configuración de negocio y reloj.        
+      18 + * Plataforma transversal: logger pino, filtro de errores, Vali
+         +dationPipe y contexto de petición globales,                    
+      19 + * configuración de negocio y reloj.                           
+      20   * No depende de la base.
+      21   */
+      22  @Global()
+     ...
+      29        providers: [
+      30          { provide: APP_FILTER, useClass: HttpExceptionFilter },
+      31          { provide: APP_PIPE, useFactory: createValidationPipe }
+          ,
+      32 +        // Request ID y usuario de la sesión para la auditoría 
+         +(T06a); corre después de los guards.                           
+      33 +        { provide: APP_INTERCEPTOR, useClass: RequestContextInt
+         +erceptor },                                                    
+      34          // Parámetros de spec §5 (se validan al arrancar) y rel
+          oj inyectable.
+      35          { provide: BUSINESS_CONFIG, useFactory: () => loadBusin
+          essConfig() },
+      36          { provide: CLOCK, useClass: SystemClock },
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora el dominio del módulo de auditoría.
+
+● Write(src\api\src\modules\audit\domain\audit.ts)
+  ⎿  Wrote 94 lines to src\api\src\modules\audit\domain\audit.ts
+       1 /** Acciones auditadas (spec §7, enum `AuditAction`). El login n
+         o se audita (S-02). */
+       2 export const AUDIT_ACTIONS = [
+       3   'BOOKING_CREATED',
+       4   'BOOKING_CANCELLED',
+       5   'ROOM_CREATED',
+       6   'ROOM_UPDATED',
+       7   'USER_CREATED',
+       8   'USER_UPDATED',
+       9   'USER_PASSWORD_RESET',
+     … +85 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\audit\domain\audit.repository.ts)
+  ⎿  Wrote 15 lines to src\api\src\modules\audit\domain\audit.repository.ts
+       1 import type { TransactionContext } from '../../../common/transac
+         tion/transaction-runner';
+       2 import type { AuditItem, AuditQuery, AuditRecord } from './audit
+         ';
+       3 
+       4 /**
+       5  * Repositorio de auditoría (interfaz). La implementación Prisma
+          vive en `infrastructure/`. Solo inserta y consulta:
+       6  * `audit_logs` es inmutable (D-05) y el trigger de la base rech
+         aza cualquier `UPDATE` o `DELETE`.
+     … +9 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(src\api\src\modules\audit\infrastructure\prisma-audit.repository.ts)
+  ⎿  Wrote 59 lines to
+     src\api\src\modules\audit\infrastructure\prisma-audit.repository.ts
+       1 import { Injectable } from '@nestjs/common';
+       2 import { prismaTx } from '../../../common/transaction/prisma-tra
+         nsaction-runner';
+       3 import type { TransactionContext } from '../../../common/transac
+         tion/transaction-runner';
+       4 import type { Prisma } from '../../../generated/prisma/client';
+       5 import { PrismaService } from '../../../prisma/prisma.service';
+       6 import type { AuditItem, AuditQuery, AuditRecord } from '../doma
+         in/audit';
+       7 import type { AuditRepository } from '../domain/audit.repository
+     … +53 lines (~2 KB) (ctrl+o to expand)
+
+● Write(src\api\src\modules\audit\audit.service.ts)
+  ⎿  Wrote 70 lines to src\api\src\modules\audit\audit.service.ts
+       1 import { Inject, Injectable } from '@nestjs/common';
+       2 import { BUSINESS_CONFIG, type BusinessConfig } from '../../comm
+         on/config/business-config';
+       3 import { currentRequestContext } from '../../common/request-cont
+         ext/request-context';
+       4 import { addDays, startOfLocalDay } from '../../common/time/zone
+         d-time';
+       5 import type { TransactionContext } from '../../common/transactio
+         n/transaction-runner';
+       6 import { AUDIT_PAGE, secretKeys, type AuditAction, type AuditEnt
+     … +65 lines (~3 KB) (ctrl+o to expand)
+
+● Write(src\api\src\modules\audit\dto\audit-search.dto.ts)
+  ⎿  Wrote 45 lines to src\api\src\modules\audit\dto\audit-search.dto.ts
+       1 import { ApiPropertyOptional } from '@nestjs/swagger';
+       2 import { IsIn, IsInt, IsISO8601, IsString, Matches, Max, Min } f
+         rom 'class-validator';
+       3 import { OptionalNotNull } from '../../../common/validation/deco
+         rators';
+       4 import { AUDIT_ACTIONS, AUDIT_PAGE, type AuditAction } from '../
+         domain/audit';
+       5 
+       6 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+       7 
+     … +38 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\audit\audit.controller.ts)
+  ⎿  Wrote 23 lines to src\api\src\modules\audit\audit.controller.ts
+       1 import { Body, Controller, HttpCode, Post } from '@nestjs/common
+         ';
+       2 import { ApiTags } from '@nestjs/swagger';
+       3 import { Roles } from '../../common/auth/decorators';
+       4 import { AuditService } from './audit.service';
+       5 import type { AuditPage } from './domain/audit';
+       6 import { AuditSearchDto } from './dto/audit-search.dto';
+       7 
+       8 /**
+       9  * F-08 · Consulta de auditoría, solo ADMIN (RN-21, RN-25). Es u
+     … +15 lines (ctrl+o to expand)
+
+● Write(src\api\src\modules\audit\audit.module.ts)
+  ⎿  Wrote 16 lines to src\api\src\modules\audit\audit.module.ts
+       1 import { Module } from '@nestjs/common';
+       2 import { AuditController } from './audit.controller';
+       3 import { AuditService } from './audit.service';
+       4 import { AUDIT_REPOSITORY } from './domain/audit.repository';
+       5 import { PrismaAuditRepository } from './infrastructure/prisma-a
+         udit.repository';
+       6 
+       7 /**
+       8  * Auditoría (O4, D-05, D-24). No importa ningún módulo de negoc
+         io, así cualquiera puede importarlo sin crear ciclos.
+     … +8 lines (ctrl+o to expand)
+
+● Módulo de auditoría creado. Ahora lo conecto en salas, reservas, usuarios,
+  auth y cierres.
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      import re…)
+  ⎿  13:export interface BookingRecord {
+     17:  userId: string;
+     31:  userId: string;
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\bookings\bookings.module.ts (+2 -1)
+      1  import { Module } from '@nestjs/common';
+      2 +import { AuditModule } from '../audit/audit.module';            
+      3  import { RoomsModule } from '../rooms/rooms.module';
+      4  import { UsersModule } from '../users/users.module';
+      5  import { BookingsController } from './bookings.controller';
+     ...
+       8  import { PrismaBookingsRepository } from './infrastructure/pris
+          ma-bookings.repository';
+       9  
+      10  @Module({
+      10 -  imports: [RoomsModule, UsersModule],                         
+      11 +  imports: [RoomsModule, UsersModule, AuditModule],            
+      12    controllers: [BookingsController],
+      13    providers: [BookingsService, { provide: BOOKINGS_REPOSITORY, 
+          useClass: PrismaBookingsRepository }],
+      14    exports: [BookingsService],
+  ⎿  Updated src\api\src\modules\bookings\bookings.service.ts (+30 -4)
+       8    type TransactionContext,
+       9    type TransactionRunner,
+      10  } from '../../common/transaction/transaction-runner';
+      11 +import { AuditService } from '../audit/audit.service';         
+      12  import { RoomsService } from '../rooms/rooms.service';
+      13  import { UsersService } from '../users/users.service';
+      14  import { toBookingView, type BookingView, type Viewer } from '.
+          /domain/booking';
+     ...
+      40      @Inject(CLOCK) private readonly clock: Clock,
+      41      private readonly rooms: RoomsService,
+      42      private readonly users: UsersService,
+      43 +    private readonly audit: AuditService,                      
+      44    ) {}
+      45  
+      46    /** `GET /bookings?date=`: reservas `CONFIRMED` del día local
+           `date`, de todas las salas, con RN-17. */
+     ...
+       93          startAt: input.startAt,
+       94          endAt: input.endAt,
+       95        });
+       94 -      // T06a agrega aquí la auditoría BOOKING_CREATED, dentro
+          - de la misma transacción.                                     
+       96 +      await this.audit.record(ctx, {                          
+       97 +        action: 'BOOKING_CREATED',                            
+       98 +        entity: 'booking',                                    
+       99 +        entityId: booking.id,                                 
+      100 +        data: {                                               
+      101 +          roomId: booking.roomId,                             
+      102 +          startAt: booking.startAt.toISOString(),             
+      103 +          endAt: booking.endAt.toISOString(),                 
+      104 +          attendees: booking.attendees,                       
+      105 +        },                                                    
+      106 +      });                                                     
+      107        return booking;
+      108      });
+      109      return toBookingView(created, viewer);
+     ...
+      124          // Otra petición la canceló entre la lectura y el UPDA
+           TE.
+      125          throw new AppError('BOOKING_ALREADY_CANCELLED', 'La re
+           serva ya estaba cancelada.');
+      126        }
+      115 -      // T06a agrega aquí la auditoría BOOKING_CANCELLED, dent
+          -ro de la misma transacción.                                   
+      127 +      // F-04: si cancela un ADMIN una reserva ajena, el actor
+          + es el ADMIN y `ownerId` el dueño.                            
+      128 +      await this.audit.record(ctx, {                          
+      129 +        action: 'BOOKING_CANCELLED',                          
+      130 +        entity: 'booking',                                    
+     … 30 more lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\rooms\rooms.module.ts (+2 -0)
+       1  import { Module } from '@nestjs/common';
+       2 +import { AuditModule } from '../audit/audit.module';           
+       3  import { ROOMS_REPOSITORY } from './domain/rooms.repository';
+       4  import { PrismaRoomsRepository } from './infrastructure/prisma-
+          rooms.repository';
+       5  import { RoomsController } from './rooms.controller';
+       6  import { RoomsService } from './rooms.service';
+       7  
+       8  @Module({
+       9 +  imports: [AuditModule],                                      
+      10    controllers: [RoomsController],
+      11    providers: [RoomsService, { provide: ROOMS_REPOSITORY, useCla
+          ss: PrismaRoomsRepository }],
+      12    exports: [RoomsService],
+  ⎿  Updated src\api\src\modules\rooms\rooms.service.ts (+11 -2)
+      1  import { Inject, Injectable } from '@nestjs/common';
+      2  import { AppError } from '../../common/errors/app-error';
+      3  import { TRANSACTION_RUNNER, type TransactionRunner } from '../.
+         ./common/transaction/transaction-runner';
+      4 +import { AuditService } from '../audit/audit.service';          
+      5 +import { definedFields } from '../audit/domain/audit';          
+      6  import { canSeeInactiveRooms, toRoom, type NewRoom, type Room, t
+         ype RoomChanges, type RoomViewerRole } from './domain/room';
+      7  import { ROOMS_REPOSITORY, type RoomsRepository } from './domain
+         /rooms.repository';
+      8  
+     ...
+      12    constructor(
+      13      @Inject(ROOMS_REPOSITORY) private readonly rooms: RoomsRepo
+          sitory,
+      14      @Inject(TRANSACTION_RUNNER) private readonly tx: Transactio
+          nRunner,
+      15 +    private readonly audit: AuditService,                      
+      16    ) {}
+      17  
+      18    /** A01: el filtro por rol vive aquí, no en la UI. */
+     ...
+      29    async create(room: NewRoom): Promise<Room> {
+      30      return this.tx.run(async (ctx) => {
+      31        const created = await this.rooms.create(ctx, room);
+      29 -      // T06a agrega aquí la auditoría ROOM_CREATED, dentro de 
+         -la misma transacción.                                          
+      32 +      await this.audit.record(ctx, {                           
+      33 +        action: 'ROOM_CREATED',                                
+      34 +        entity: 'room',                                        
+      35 +        entityId: created.id,                                  
+      36 +        data: { name: created.name, capacity: created.capacity,
+         + location: created.location, equipment: created.equipment },   
+      37 +      });                                                      
+      38        return toRoom(created);
+      39      });
+      40    }
+     ...
+      46          throw new AppError('NOT_FOUND', 'La sala no existe.');
+      47        }
+      48        const updated = await this.rooms.update(ctx, id, changes)
+          ;
+      41 -      // T06a agrega aquí la auditoría ROOM_UPDATED, dentro de 
+         -la misma transacción.                                          
+      49 +      // Solo los campos enviados en el PATCH (los ausentes lle
+         +gan como undefined, B-80).                                     
+      50 +      await this.audit.record(ctx, { action: 'ROOM_UPDATED', en
+         +tity: 'room', entityId: id, data: { changes: definedFields(chan
+         +ges) } });                                                     
+      51        return toRoom(updated);
+      52      });
+      53    }
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      def edit(p, pairs):…)
+  ⎿  33:  constructor(
+     34-    private readonly users: UsersService,
+     35-    private readonly jwt: JwtService,
+     … +7 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\auth\auth.module.ts (+2 -0)
+       4  import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard'
+          ;
+       5  import { RolesGuard } from '../../common/auth/roles.guard';
+       6  import { SESSION_RESOLVER } from '../../common/auth/session';
+       7 +import { AuditModule } from '../audit/audit.module';           
+       8  import { UsersModule } from '../users/users.module';
+       9  import { AuthController } from './auth.controller';
+      10  import { AuthService } from './auth.service';
+     ...
+      20  @Module({
+      21    imports: [
+      22      UsersModule,
+      23 +    AuditModule,                                               
+      24      JwtModule.registerAsync({
+      25        useFactory: () => ({
+      26          secret: requireEnv('JWT_SECRET'),
+  ⎿  Updated src\api\src\modules\auth\auth.service.ts (+2 -1)
+       5  import type { SessionResolver, SessionRole, SessionUser } from 
+          '../../common/auth/session';
+       6  import { AppError } from '../../common/errors/app-error';
+       7  import { TRANSACTION_RUNNER, type TransactionRunner } from '../
+          ../common/transaction/transaction-runner';
+       8 +import { AuditService } from '../audit/audit.service';         
+       9  import { BCRYPT_ROUNDS, toPublicUser, type PublicUser } from '.
+          ./users/domain/user';
+      10  import { UsersService } from '../users/users.service';
+      11  
+     ...
+      72          throw new AppError('INVALID_CURRENT_PASSWORD', 'La cont
+          raseña actual no es correcta.');
+      73        }
+      74        await this.users.updatePasswordHash(ctx, user.id, await h
+          ash(newPassword, BCRYPT_ROUNDS));
+      74 -      // T06a agrega aquí la auditoría USER_PASSWORD_CHANGED, d
+         -entro de la misma transacción.                                 
+      75 +      await this.audit.record(ctx, { action: 'USER_PASSWORD_CHA
+         +NGED', entity: 'user', entityId: user.id }); // sin datos      
+      76      });
+      77      this.logger.info({ event: 'password_change', result: 'ok', 
+          userId }, 'contraseña cambiada');
+      78    }
+  ⎿  Updated src\api\src\modules\closures\closures.module.ts (+2 -1)
+      1  import { Module } from '@nestjs/common';
+      2 +import { AuditModule } from '../audit/audit.module';            
+      3  import { BookingsModule } from '../bookings/bookings.module';
+      4  import { ClosuresController } from './closures.controller';
+      5  import { ClosuresService } from './closures.service';
+     ...
+      11   * (`DAY_CLOSED`) la consulta `BookingsRepository.isDateClosed`
+           dentro de su transacción, para no crear un ciclo.
+      12   */
+      13  @Module({
+      13 -  imports: [BookingsModule],                                   
+      14 +  imports: [BookingsModule, AuditModule],                      
+      15    controllers: [ClosuresController],
+      16    providers: [ClosuresService, { provide: CLOSURES_REPOSITORY, 
+          useClass: PrismaClosuresRepository }],
+      17    exports: [ClosuresService],
+  ⎿  Updated src\api\src\modules\closures\closures.service.ts (+15 -2)
+       5  import { CLOCK, type Clock } from '../../common/time/clock';
+       6  import { localDate } from '../../common/time/zoned-time';
+       7  import { TRANSACTION_RUNNER, type TransactionRunner } from '../
+          ../common/transaction/transaction-runner';
+       8 +import { AuditService } from '../audit/audit.service';         
+       9  import { BookingsService, lockKeys } from '../bookings/bookings
+          .service';
+      10  import { isAfterToday, toClosure, type Closure, type CreatedClo
+          sure } from './domain/closure';
+      11  import { CLOSURES_REPOSITORY, type ClosuresRepository } from '.
+          /domain/closures.repository';
+     ...
+      23      @Inject(CLOCK) private readonly clock: Clock,
+      24      private readonly bookings: BookingsService,
+      25      private readonly logger: PinoLogger,
+      26 +    private readonly audit: AuditService,                      
+      27    ) {
+      28      this.logger.setContext(ClosuresService.name);
+      29    }
+     ...
+      51      const result = await this.tx.run(async (ctx) => {
+      52        await ctx.advisoryLock(lockKeys.date(date));
+      53        const closure = await this.closures.create(ctx, { date, r
+          eason, createdById: actorId });
+      52 -      // T06a agrega aquí la auditoría CLOSURE_CREATED, dentro 
+         -de la misma transacción.                                       
+      54 +      // RN-16: la cascada audita una fila BOOKING_CANCELLED po
+         +r reserva (BookingsService).                                   
+      55        const cancelled = await this.bookings.cancelConfirmedByDa
+          te(ctx, date, actorId);
+      56 +      await this.audit.record(ctx, {                           
+      57 +        action: 'CLOSURE_CREATED',                             
+      58 +        entity: 'closure',                                     
+      59 +        entityId: closure.id,                                  
+      60 +        data: { date, reason, cancelledBookings: cancelled.leng
+         +th },                                                          
+      61 +      });                                                      
+      62        return { ...toClosure(closure), cancelledBookings: cancel
+          led.length };
+      63      });
+      64      this.logger.info(
+     ...
+      85        if (!(await this.closures.delete(ctx, id))) {
+      86          throw new AppError('NOT_FOUND', NOT_FOUND_MESSAGE); // 
+          otra petición lo eliminó entre la lectura y el DELETE
+      87        }
+      80 -      // T06a agrega aquí la auditoría CLOSURE_DELETED, dentro 
+         -de la misma transacción.                                       
+      88 +      await this.audit.record(ctx, {                           
+      89 +        action: 'CLOSURE_DELETED',                             
+      90 +        entity: 'closure',                                     
+      91 +        entityId: id,                                          
+      92 +        data: { date: closure.date, reason: closure.reason },  
+      93 +      });                                                      
+      94      });
+     … 2 more lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\modules\users\users-admin.module.ts (+2 -1)
+      1  import { Module } from '@nestjs/common';
+      2 +import { AuditModule } from '../audit/audit.module';            
+      3  import { BookingsModule } from '../bookings/bookings.module';
+      4  import { UsersController } from './users.controller';
+      5  import { UsersAdminService } from './users-admin.service';
+     ...
+      10   * `UsersModule` (relectura del usuario al reservar) y la desac
+          tivación necesita `BookingsService` (RN-15).
+      11   */
+      12  @Module({
+      12 -  imports: [UsersModule, BookingsModule],                      
+      13 +  imports: [UsersModule, BookingsModule, AuditModule],         
+      14    controllers: [UsersController],
+      15    providers: [UsersAdminService],
+      16  })
+  ⎿  … 1 more file changed
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      p='src/modules/auth/auth.service.ts'…)
+  ⎿  npm notice run salalibre-api@0.1.0 npx
+     npm notice run tsc --noEmit -p tsconfig.json
+     test/bookings-service.spec.ts(89,19): error TS2554: Expected 7 argumen
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated src\api\src\app.module.ts (+2 -0)
+      2  import { CommonModule } from './common/common.module';
+      3  import { TransactionModule } from './common/transaction/transact
+         ion.module';
+      4  import { HealthModule } from './health/health.module';
+      5 +import { AuditModule } from './modules/audit/audit.module';     
+      6  import { AuthModule } from './modules/auth/auth.module';
+      7  import { BookingsModule } from './modules/bookings/bookings.modu
+         le';
+      8  import { ClosuresModule } from './modules/closures/closures.modu
+         le';
+     ...
+      23      BookingsModule,
+      24      UsersAdminModule,
+      25      ClosuresModule,
+      26 +    AuditModule,                                               
+      27    ],
+      28  })
+      29  export class AppModule {}
+  ⎿  Updated src\api\src\modules\auth\auth.service.ts (+1 -0)
+      35      private readonly jwt: JwtService,
+      36      private readonly logger: PinoLogger,
+      37      @Inject(TRANSACTION_RUNNER) private readonly tx: Transactio
+          nRunner,
+      38 +    private readonly audit: AuditService,                      
+      39    ) {
+      40      this.logger.setContext(AuthService.name);
+      41    }
+
+● Código de producción compila. Ajusto las pruebas existentes que construyen
+  services a mano y agrego el repositorio en memoria.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      def edit(p, pairs):…)
+  ⎿  1:import type { INestApplication } from '@nestjs/common';
+     2:import { readdirSync, readFileSync } from 'node:fs';
+     3:import { join } from 'node:path';
+     … +49 lines (ctrl+o to expand)
+  ⎿  Updated src\api\test\bookings-service.spec.ts (+13 -2)
+      1  import { loadBusinessConfig } from '../src/common/config/busines
+         s-config';
+      2  import { AppError } from '../src/common/errors/app-error';
+      3  import type { TransactionContext, TransactionRunner } from '../s
+         rc/common/transaction/transaction-runner';
+      4 +import type { AuditService } from '../src/modules/audit/audit.se
+        +rvice';                                                         
+      5  import { BookingsService } from '../src/modules/bookings/booking
+         s.service';
+      6  import type { BookingRecord, NewBooking } from '../src/modules/b
+         ookings/domain/booking';
+      7  import type { BookingsRepository } from '../src/modules/bookings
+         /domain/bookings.repository';
+     ...
+       87      },
+       88    } as unknown as UsersService;
+       89  
+       89 -  const service = new BookingsService(repo, tx, loadBusinessCo
+          -nfig({}), { now: () => NOW }, rooms, users);                  
+       90 +  // T06a: la auditoría va dentro de la transacción y con su c
+          +tx.                                                           
+       91 +  const audit = {                                             
+       92 +    record: async (c: TransactionContext, e: { action: string 
+          +}) => {                                                       
+       93 +      events.push(`audit ${e.action}${c === ctx ? '' : ' (sin 
+          +ctx)'}`);                                                     
+       94 +    },                                                        
+       95 +    recordMany: async (c: TransactionContext, list: { action: 
+          +string }[]) => {                                              
+       96 +      for (const e of list) events.push(`audit ${e.action}${c 
+          +=== ctx ? '' : ' (sin ctx)'}`);                               
+       97 +    },                                                        
+       98 +  } as unknown as AuditService;                               
+       99 +  const service = new BookingsService(repo, tx, loadBusinessCo
+          +nfig({}), { now: () => NOW }, rooms, users, audit);           
+      100    return { service, events };
+      101  }
+      102  
+     ...
+      126        'user',
+      127        'isDateClosed 2026-11-17',
+      128        'create',
+      129 +      'audit BOOKING_CREATED',                                
+      130        'end',
+      131      ]);
+      132    });
+     ...
+      167      const { service, events } = setup({ cancelReturnsNull: tru
+           e });
+      168  
+      169      expect(await codeOf(service.cancel(EMPLOYEE, 'booking-1'))
+           ).toBe('BOOKING_ALREADY_CANCELLED');
+      159 -    expect(events).toEqual(['findById', 'begin', 'cancel', 'en
+          -d']);                                                         
+      170 +    expect(events).toEqual(['findById', 'begin', 'cancel', 'au
+          +dit BOOKING_CANCELLED', 'end']);                              
+      171    });
+      172  });
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      def edit(p, pairs):…)
+  ⎿  test/closures.spec.ts:301:    const ctx: TransactionContext = {
+     test/users.spec.ts:353:    const ctx: TransactionContext = {
+  ⎿  Updated src\api\test\closures.spec.ts (+9 -1)
+       4  import { loadBusinessConfig } from '../src/common/config/busine
+          ss-config';
+       5  import { CLOCK } from '../src/common/time/clock';
+       6  import type { TransactionContext, TransactionRunner } from '../
+          src/common/transaction/transaction-runner';
+       7 +import type { AuditService } from '../src/modules/audit/audit.s
+         +ervice';                                                       
+       8  import type { BookingsService } from '../src/modules/bookings/b
+          ookings.service';
+       9  import type { BookingRecord } from '../src/modules/bookings/dom
+          ain/booking';
+      10  import { BOOKINGS_REPOSITORY } from '../src/modules/bookings/do
+          main/bookings.repository';
+     ...
+      336      } as unknown as BookingsService;
+      337      const logger = { setContext: () => undefined, info: () => 
+           undefined };
+      338      const config = loadBusinessConfig({});
+      338 -    const service = new ClosuresService(repo, tx, config, { no
+          -w: () => NOW }, bookings, logger as never);                   
+      339 +    // T06a: la auditoría va dentro de la transacción y con su
+          + ctx.                                                         
+      340 +    const audit = {                                           
+      341 +      record: async (c: TransactionContext, e: { action: strin
+          +g }) => {                                                     
+      342 +        events.push(`audit ${e.action}${c === ctx ? '' : ' (si
+          +n ctx)'}`);                                                   
+      343 +      },                                                      
+      344 +    } as unknown as AuditService;                             
+      345 +    const service = new ClosuresService(repo, tx, config, { no
+          +w: () => NOW }, bookings, logger as never, audit);            
+      346      return { service, events };
+      347    }
+      348  
+     ...
+      357        `lock date:${DATE}`,
+      358        'create',
+      359        `cancelConfirmedByDate ${DATE} por ${ADMIN_ID}`,
+      360 +      'audit CLOSURE_CREATED',                                
+      361        'commit',
+      362      ]);
+      363    });
+  ⎿  Updated src\api\test\users.spec.ts (+9 -1)
+      3  import { join } from 'node:path';
+      4  import { CLOCK } from '../src/common/time/clock';
+      5  import type { TransactionContext, TransactionRunner } from '../s
+         rc/common/transaction/transaction-runner';
+      6 +import type { AuditService } from '../src/modules/audit/audit.se
+        +rvice';                                                         
+      7  import type { BookingsService } from '../src/modules/bookings/bo
+         okings.service';
+      8  import type { BookingRecord } from '../src/modules/bookings/doma
+         in/booking';
+      9  import { BOOKINGS_REPOSITORY } from '../src/modules/bookings/dom
+         ain/bookings.repository';
+     ...
+      396        },
+      397      } as unknown as BookingsService;
+      398      const logger = { setContext: () => undefined, info: () => 
+           undefined };
+      398 -    const service = new UsersAdminService(users, bookings, log
+          -ger as never, tx);                                            
+      399 +    // T06a: la auditoría va dentro de la transacción y con su
+          + ctx.                                                         
+      400 +    const audit = {                                           
+      401 +      record: async (c: TransactionContext, e: { action: strin
+          +g }) => {                                                     
+      402 +        events.push(`audit ${e.action}${c === ctx ? '' : ' (si
+          +n ctx)'}`);                                                   
+      403 +      },                                                      
+      404 +    } as unknown as AuditService;                             
+      405 +    const service = new UsersAdminService(users, bookings, log
+          +ger as never, tx, audit);                                     
+      406      return { service, events };
+      407    }
+      408  
+     ...
+      417        'findById',
+      418        'update',
+      419        `cancelFutureByUser ${TARGET} por ${ACTOR}`,
+      420 +      'audit USER_UPDATED',                                   
+      421        'commit',
+      422      ]);
+      423    });
+
+● Write(src\api\test\support\in-memory-audit.repository.ts)
+  ⎿  Wrote 46 lines to src\api\test\support\in-memory-audit.repository.ts
+      1 import { randomUUID } from 'node:crypto';
+      2 import type { TransactionContext } from '../../src/common/transac
+        tion/transaction-runner';
+      3 import type { AuditItem, AuditQuery, AuditRecord } from '../../sr
+        c/modules/audit/domain/audit';
+      4 import type { AuditRepository } from '../../src/modules/audit/dom
+        ain/audit.repository';
+      5 
+      6 export interface StoredAuditRow extends AuditRecord {
+      7   id: string;
+     … +39 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      p='test/support/auth-app.ts'…)
+  ⎿      > 457 |     expect(foreign.filter((i) => !/\/[a-z-]+\.(service|mod
+     ule)$/.test(i))).toEqual([]);
+               |
+     … +37 lines (ctrl+o to expand)
+  ⎿  Updated src\api\test\support\auth-app.ts (+7 -1)
+       6  import { configureApp } from '../../src/common/configure-app';
+       7  import { TRANSACTION_RUNNER } from '../../src/common/transactio
+          n/transaction-runner';
+       8  import { TransactionModule } from '../../src/common/transaction
+          /transaction.module';
+       9 +import { AUDIT_REPOSITORY } from '../../src/modules/audit/domai
+         +n/audit.repository';                                           
+      10  import { AuthModule } from '../../src/modules/auth/auth.module'
+          ;
+      11  import { USERS_REPOSITORY } from '../../src/modules/users/domai
+          n/users.repository';
+      12  import { AuthTestController } from './auth-test.controller';
+      13 +import { InMemoryAuditRepository } from './in-memory-audit.repo
+         +sitory';                                                       
+      14  import { InMemoryTransactionRunner, type InMemoryUsersRepositor
+          y } from './in-memory-users.repository';
+      15  
+      16  /** Utilidades compartidas por las pruebas HTTP (auth y módulos
+           de negocio), sin base de datos. */
+     ...
+      45  export interface CreateAppOptions {
+      46    logStream?: Writable;
+      47    runner?: InMemoryTransactionRunner;
+      48 +  /** Repositorio de auditoría en memoria (T06a); por defecto, 
+         +uno nuevo. */                                                  
+      49 +  audit?: InMemoryAuditRepository;                             
+      50    /** Módulos de negocio adicionales (por ejemplo `RoomsModule`
+          ). */
+      51    modules?: Type[];
+      52    /** Reemplazos de providers por token (repositorios en memori
+          a). */
+     ...
+      66      .overrideProvider(USERS_REPOSITORY)
+      67      .useValue(repo)
+      68      .overrideProvider(TRANSACTION_RUNNER)
+      65 -    .useValue(options.runner ?? new InMemoryTransactionRunner()
+         -);                                                             
+      69 +    .useValue(options.runner ?? new InMemoryTransactionRunner()
+         +)                                                              
+      70 +    .overrideProvider(AUDIT_REPOSITORY)                        
+      71 +    .useValue(options.audit ?? new InMemoryAuditRepository()); 
+      72    for (const { token, value } of options.overrides ?? []) {
+      73      builder = builder.overrideProvider(token).useValue(value);
+      74    }
+  ⎿  (timeout 5m)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Corrigiendo las pruebas unitarias que fallan tras conectar la auditoría.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      def edit(p, pairs):…)
+  ⎿  Updated src\api\src\modules\audit\audit.service.ts (+2 -2)
+      3  import { currentRequestContext } from '../../common/request-cont
+         ext/request-context';
+      4  import { addDays, startOfLocalDay } from '../../common/time/zone
+         d-time';
+      5  import type { TransactionContext } from '../../common/transactio
+         n/transaction-runner';
+      6 -import { AUDIT_PAGE, secretKeys, type AuditAction, type AuditEnt
+        -ry, type AuditPage, type AuditRecord } from './domain/audit';   
+      6 +import { AUDIT_PAGE, compactData, secretKeys, type AuditAction, 
+        +type AuditEntry, type AuditPage, type AuditRecord } from './doma
+        +in/audit';                                                      
+      7  import { AUDIT_REPOSITORY, type AuditRepository } from './domain
+         /audit.repository';
+      8  
+      9  export interface AuditSearchInput {
+     ...
+      43        throw new Error('Auditoría sin contexto de petición: falt
+          a el request ID o el usuario de la sesión');
+      44      }
+      45      const records: AuditRecord[] = entries.map((e) => {
+      46 -      const data = e.data ?? {};                               
+      46 +      const data = compactData(e.data ?? {});                  
+      47        const secrets = secretKeys(data);
+      48        if (secrets.length > 0) {
+      49          throw new Error(`La auditoría no puede guardar secretos
+           (${secrets.join(', ')})`);
+  ⎿  Updated src\api\src\modules\audit\domain\audit.ts (+16 -4)
+      20  export type AuditValue = string | number | boolean | null | Aud
+          itValue[] | { [key: string]: AuditValue };
+      21  export type AuditData = Record<string, AuditValue>;
+      22  
+      23 +/**                                                            
+      24 + * Datos que reciben `record` y `recordMany`. Admite campos `un
+         +defined` (un `PATCH` parcial los trae así, B-80): se           
+      25 + * quitan antes de guardar con `compactData`, así solo queda lo
+         + que cambió.                                                   
+      26 + */                                                            
+      27 +export type AuditDataInput = { [key: string]: AuditValue | Audi
+         +tDataInput | undefined };                                      
+      28 +                                                               
+      29  /** Lo que cada operación de negocio registra. El actor y el re
+          quest ID los agrega `AuditService`. */
+      30  export interface AuditEntry {
+      31    action: AuditAction;
+      32    entity: AuditEntity;
+      33    entityId: string;
+      28 -  data?: AuditData;                                            
+      34 +  data?: AuditDataInput;                                       
+      35  }
+      36  
+      37  /** Fila completa que se inserta en `audit_logs`. */
+     ...
+       94    });
+       95  }
+       96  
+       91 -/** Quita los campos `undefined` (un `PATCH` parcial los trae 
+          -así, B-80), para guardar solo lo que cambió. */               
+       92 -export function definedFields<T extends object>(changes: T): A
+          -uditData {                                                    
+       93 -  return Object.fromEntries(Object.entries(changes).filter(([,
+          - v]) => v !== undefined)) as AuditData;                       
+       97 +/** Quita los campos `undefined`, también en objetos anidados 
+          +(B-80). */                                                    
+       98 +export function compactData(data: AuditDataInput): AuditData {
+       99 +  const result: AuditData = {};                               
+      100 +  for (const [key, value] of Object.entries(data)) {          
+      101 +    if (value === undefined) continue;                        
+      102 +    const isObject = value !== null && typeof value === 'objec
+          +t' && !Array.isArray(value);                                  
+      103 +    result[key] = isObject ? compactData(value as AuditDataInp
+          +ut) : (value as AuditValue);                                  
+      104 +  }                                                           
+      105 +  return result;                                              
+      106  }
+  ⎿  Updated src\api\src\modules\rooms\rooms.service.ts (+2 -3)
+      2  import { AppError } from '../../common/errors/app-error';
+      3  import { TRANSACTION_RUNNER, type TransactionRunner } from '../.
+         ./common/transaction/transaction-runner';
+      4  import { AuditService } from '../audit/audit.service';
+      5 -import { definedFields } from '../audit/domain/audit';          
+      5  import { canSeeInactiveRooms, toRoom, type NewRoom, type Room, t
+         ype RoomChanges, type RoomViewerRole } from './domain/room';
+      6  import { ROOMS_REPOSITORY, type RoomsRepository } from './domain
+         /rooms.repository';
+      7  
+     ...
+      45          throw new AppError('NOT_FOUND', 'La sala no existe.');
+      46        }
+      47        const updated = await this.rooms.update(ctx, id, changes)
+          ;
+      49 -      // Solo los campos enviados en el PATCH (los ausentes lle
+         -gan como undefined, B-80).                                     
+      50 -      await this.audit.record(ctx, { action: 'ROOM_UPDATED', en
+         -tity: 'room', entityId: id, data: { changes: definedFields(chan
+         -ges) } });                                                     
+      48 +      // Solo los campos enviados en el PATCH: AuditService qui
+         +ta los ausentes (undefined, B-80).                             
+      49 +      await this.audit.record(ctx, { action: 'ROOM_UPDATED', en
+         +tity: 'room', entityId: id, data: { changes: { ...changes } } }
+         +);                                                             
+      50        return toRoom(updated);
+      51      });
+      52    }
+  ⎿  Updated src\api\src\modules\users\users-admin.service.ts (+1 -2)
+       4  import { AppError } from '../../common/errors/app-error';
+       5  import { TRANSACTION_RUNNER, type TransactionRunner } from '../
+          ../common/transaction/transaction-runner';
+       6  import { AuditService } from '../audit/audit.service';
+       7 -import { definedFields } from '../audit/domain/audit';         
+       7  import { BookingsService, lockKeys } from '../bookings/bookings
+          .service';
+       8  import {
+       9    BCRYPT_ROUNDS,
+     ...
+      86          action: 'USER_UPDATED',
+      87          entity: 'user',
+      88          entityId: id,
+      90 -        data: { changes: definedFields(changes), cancelledBooki
+         -ngs: cancelledIds.length },                                    
+      89 +        data: { changes: { ...changes }, cancelledBookings: can
+         +celledIds.length },                                            
+      90        });
+      91        return { user: updated, cancelled: cancelledIds.length };
+      92      });
+  ⎿  Updated src\api\test\bookings-service.spec.ts (+7 -0)
+      167      const { service, events } = setup({ cancelReturnsNull: tru
+           e });
+      168  
+      169      expect(await codeOf(service.cancel(EMPLOYEE, 'booking-1'))
+           ).toBe('BOOKING_ALREADY_CANCELLED');
+      170 +    expect(events).toEqual(['findById', 'begin', 'cancel', 'en
+          +d']);                                                         
+      171 +  });                                                         
+      172 +                                                              
+      173 +  it('D-05 · al cancelar, la auditoría BOOKING_CANCELLED va de
+          +ntro de la transacción, con su ctx y después del UPDATE', asyn
+          +c () => {                                                     
+      174 +    const { service, events } = setup();                      
+      175 +                                                              
+      176 +    await service.cancel(EMPLOYEE, 'booking-1');              
+      177      expect(events).toEqual(['findById', 'begin', 'cancel', 'au
+           dit BOOKING_CANCELLED', 'end']);
+      178    });
+      179  });
+
+● Ahora las pruebas unitarias del módulo de auditoría. Veo cómo arma la app
+  rooms.spec.ts.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(src\api\test\audit.spec.ts)
+  ⎿  Wrote 302 lines to src\api\test\audit.spec.ts
+       1 import type { INestApplication } from '@nestjs/common';
+       2 import { readdirSync, readFileSync } from 'node:fs';
+       3 import { join } from 'node:path';
+       4 import { loadBusinessConfig } from '../src/common/config/busines
+         s-config';
+       5 import { runWithRequestContext } from '../src/common/request-con
+         text/request-context';
+       6 import type { TransactionContext } from '../src/common/transacti
+         on/transaction-runner';
+       7 import { AuditModule } from '../src/modules/audit/audit.module';
+     … +295 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Las 28 pruebas de auditoría pasan (el contexto de petición llega hasta la
+  transacción). Corro toda la suite unitaria y el lint.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Unitarias 159/159 y lint limpio. Sigo con la suite de integración (P-12, P-15,
+  CA1–CA4) y la matriz RBAC.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/api" && python
+      - <<'EOF'
+      def edit(p, pairs):…)
+  ⎿  15:const ADMIN_ROUTES: Route[] = [
+     32:const AUTHENTICATED_ROUTES: Route[] = [
+     60:  it.each(ADMIN_ROUTES.map((r) => [label(r), r] as const))('RN-21 ·
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated src\api\test\integration\rbac.int-spec.ts (+1 -3)
+      25    { method: 'POST', path: `/users/${MISSING}/reset-password`, b
+          ody: { newPassword: 'Rbac123456' } },
+      26    { method: 'POST', path: '/closures', body: { date: nextBusine
+          ssDay(), reason: 'RBAC' } },
+      27    { method: 'DELETE', path: `/closures/${MISSING}` },
+      28 +  { method: 'POST', path: '/audit-logs/search', body: { page: 1
+         +, pageSize: 20 } },                                            
+      29  ];
+      30  
+      31  /** Rutas de cualquier usuario autenticado. */
+     ...
+      93      expect(res.status).toBe(404);
+      94      expect((await api.request('GET', '/users', { cookie: admin 
+          })).status).toBe(200);
+      95    });
+      95 -                                                               
+      96 -  // `POST /audit-logs/search` aún no existe: la crea T06a, que
+         - debe agregarla a ADMIN_ROUTES (403 y 401).                    
+      97 -  it.todo('RN-21 · POST /audit-logs/search → 403 para EMPLOYEE 
+         -y 401 sin cookie (T06a)');                                     
+      96  });
+  ⎿  Updated src\api\test\integration\support\int-app.ts (+6 -1)
+      107      await this.prisma.closure.deleteMany({});
+      108    }
+      109  
+      110 -  request(method: string, path: string, options: { cookie?: st
+          -ring; body?: unknown } = {}): Promise<Response> {             
+      110 +  request(                                                    
+      111 +    method: string,                                           
+      112 +    path: string,                                             
+      113 +    options: { cookie?: string; body?: unknown; requestId?: st
+          +ring } = {},                                                  
+      114 +  ): Promise<Response> {                                      
+      115      const headers: Record<string, string> = {};
+      116 +    if (options.requestId) headers['X-Request-Id'] = options.r
+          +equestId; // T06a: para buscar las filas de auditoría         
+      117      if (options.cookie) headers.Cookie = options.cookie;
+      118      if (options.body !== undefined) headers['Content-Type'] = 
+           'application/json';
+      119      return fetch(`${this.baseUrl}${path}`, {
+
+● Write(src\api\test\integration\audit.int-spec.ts)
+  ⎿  Wrote 401 lines to src\api\test\integration\audit.int-spec.ts
+       1 import {
+       2   IntegrationApp,
+       3   SEED,
+       4   TEST_PASSWORD,
+       5   at,
+       6   body,
+       7   nextBusinessDay,
+       8   statusCount,
+       9   today,
+      10   unique,
+     … +391 lines (ctrl+o to expand)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Compila y el lint está limpio. Corro la suite de integración en Docker
+  (incluye la reconstrucción de la imagen de pruebas).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Integración 78/78 al primer intento. Reviso que no haya errores "level":50 en
+  el log y levanto el compose.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Compose sano. Ahora la verificación manual con curl contra el sistema
+  levantado.
+  Ran 1 shell command (ctrl+o to expand)
+
+● Verificación manual correcta. Capturo las salidas para el documento y leo la
+  plantilla.
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Todo verificado. Obtengo la hora de fin y escribo la documentación.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(docs\tareas\T06a.md)
+  ⎿  Wrote 231 lines to docs\tareas\T06a.md
+       1 # T06a · Auditoría transaccional y consulta paginada
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | En revisión |
+       8 | Inicio – fin | 2026-11-15 22:05 – 22:18 (13 min) · estimado: M
+          |
+     … +223 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && python -
+      <<'EOF'
+      p='docs/tareas/T06a.md'…)
+  ⎿  2026-11-15 22:19
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      66  | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+          vación con cancelación en cascada, reset de contraseña | T05, T
+          03a | M | No | Hecha | [T05a](tareas/T05a.md) |
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69 -| 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+         -las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+         - Pendiente | |                                                 
+      69 +| 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+         +las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+         + En revisión | [T06a](tareas/T06a.md) |                        
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Pendiente | |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+          iente | |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+     ...
+      574  | Dependencias | T06 |
+      575  | Estimación | M |
+      576  | Seguridad / auditoría | Roles: consulta solo ADMIN. Auditorí
+           a: es la propia tarea; genera las 10 `AuditAction` de spec §7.
+            `data` nunca contiene contraseñas, hashes, cookies ni tokens.
+            OWASP A09 |
+      577 -| Estado | Pendiente |                                        
+      577 +| Estado | En revisión |                                      
+      578  
+      579  **Alcance (archivos o módulos):**
+      580  - `src/api/src/modules/audit/**`: `AuditService.record(ctx, { 
+           action, entity, entityId, data })`, controller de `POST /audit
+           -logs/search`, dto, repositorio de interfaz + Prisma (`COUNT` 
+           + `LIMIT/OFFSET`).
+  ⎿  Updated docs\tareas\T06a.md (+1 -1)
+      214  - **`AuditPage.items` no incluye `data`**: el spec §8 lo defin
+           e sin `data` y la pantalla de T10c no lo muestra; se
+      215    respeta el spec. `data` queda en la base.
+      216  - **Contenido de `data`**: el spec solo dice qué no puede cont
+           ener. Se eligió lo mínimo para entender la operación
+      217 -  (tabla de §2). `BOOKING_CREATED` no guarda el `title` (D-20 
+          -lo trata como dato sensible). `BOOKING_CANCELLED` guarda      
+      217 +  (tabla de §2). `BOOKING_CREATED` no guarda el `title` (mínim
+          +o de datos: el ADMIN lo ve en la propia reserva). `BOOKING_CAN
+          +CELLED` guarda                                                
+      218    la causa (`MANUAL`, `USER_DEACTIVATED`, `DAY_CLOSED`) para d
+           istinguir las cascadas.
+      219  - **`PATCH` sin cambios** (`{}` o con los mismos valores): igu
+           al inserta 1 fila `ROOM_UPDATED`/`USER_UPDATED` con
+      220    `changes` vacío o igual, porque CA1 y O4 piden una fila por 
+           escritura. Opción conservadora: auditar de más.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/|
+      Inicio – fin | 2026-11-15 22:05 – 22:18 (13 min) · estimado: M |/| Inicio
+      – fin | 2026-11…)
+  ⎿  8:| Inicio – fin | 2026-11-15 22:05 – 22:19 (14 min) · estimado: M |
+     M  docs/02-backlog.md
+     M  docs/03-bitacora.md
+     … +33 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      100  | B-96 | 2026-11-15 21:44 | Agente | 3-Ejecutar | AGENTE | A p
+           edido de la persona, T06 pasa a Hecha en el resumen y en la fi
+           cha de 02-backlog.md, tras la revisión de B-95; se incluye la 
+           sección 8 de docs/tareas/T06.md escrita por la persona | T06 H
+           echa. Pendiente la observación de la revisión: actualizar CLAU
+           DE.md con los desvíos, si se requiere | docs/02-backlog.md, do
+           cs/tareas/T06.md §8, B-95 |
+      101  | B-97 | 2026-11-15 21:44 | Agente | 3-Ejecutar | CORRECCIÓN |
+            A pedido de la persona (observación de la revisión de T06, B-
+           95), CLAUDE.md (Dependencias) agrega la subsección «Pruebas de
+            integración fijadas en T06»: comando y código de salida de `a
+           pi-test`; etapa `test` del Dockerfile con `COPY --chown` (sin 
+           `chown -R`, B-92); base propia `salalibre_test` en el servidor
+            `db` con `run.sh` que solo acepta esa base; archivos `*.int-s
+           pec.ts` fuera de las unitarias; helpers de `int-app.ts` y limp
+           ieza; estados imposibles insertados con Prisma; toda ruta nuev
+           a entra en la matriz RBAC y T06a agrega `POST /audit-logs/sear
+           ch`; carreras por invariante. Se ajustan dos líneas de T02a y 
+           T05 que hablaban de verificar contra PostgreSQL con scripts de
+            un solo uso | Solo documentación; sin cambios de código | CLA
+           UDE.md, docs/tareas/T06.md §6 y §7, B-92, B-95 |
+      102  | B-98 | 2026-11-15 22:05 | Agente | 3-Ejecutar | AGENTE | Ini
+           cio de T06a (Auditoría: `AuditService` transaccional en todas 
+           las escrituras + `POST /audit-logs/search`). DoR comprobada: o
+           bjetivo, trazabilidad, alcance, fuera de alcance, CA1–CA7, seg
+           uridad, verificación y estimación M presentes; dependencia T06
+            en Hecha | En curso | docs/02-backlog.md T06a |
+      103 +| B-99 | 2026-11-15 22:19 | Agente | 3-Ejecutar | ERROR | T06a
+          +: la primera corrida de las unitarias tras conectar la auditor
+          +ía falló (57 fallos informados). Causas reales: (1) la prueba 
+          +de capas de `users` detectó que `users-admin.service.ts` impor
+          +taba `audit/domain/audit` (CLAUDE.md: de otro módulo solo su s
+          +ervice); (2) una expectativa de orden editada en la prueba equ
+          +ivocada de `bookings-service.spec.ts`. Se movió la limpieza de
+          + campos `undefined` dentro de `AuditService` y se corrigió la 
+          +prueba. El resto de fallos de esa corrida no se reprodujo y no
+          + se investigó | Corridas siguientes: 159/159 unitarias | docs/
+          +tareas/T06a.md §6 |                                           
+      104 +| B-100 | 2026-11-15 22:19 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T06a (Auditoría transaccional y consulta paginada): módul
+          +o `audit` (dominio puro, `AuditRepository` + Prisma con `COUNT
+          +` + `LIMIT/OFFSET`, `AuditService.record/recordMany`, `POST /a
+          +udit-logs/search` solo ADMIN, sin `GET`); actor y request ID p
+          +or `AsyncLocalStorage` fijado en un interceptor global de `com
+          +mon/` (falla cerrado si faltan); las 10 `AuditAction` conectad
+          +as dentro de su transacción, con una fila `BOOKING_CANCELLED` 
+          +por reserva en las cascadas RN-15 y RN-16; `data` sin secretos
+          + (se rechazan claves de contraseña, hash, token, cookie). 159 
+          +unitarias (28 nuevas), 78 de integración (14 nuevas + la ruta 
+          +en la matriz RBAC, sin `it.todo`), lint de api y web sin error
+          +es, compose healthy, curl 200/403/400/404/401 y 0 filas sin `r
+          +equest_id` | T06a En revisión. Commit: ver la fila siguiente. 
+          +Desvíos: contexto de petición con `AsyncLocalStorage`; `record
+          +Many`. Ambigüedades: `AuditPage` sin `data`, contenido de `dat
+          +a`, PATCH sin cambios se audita, tope de `page`, `from` > `to`
+          + → total 0 | docs/tareas/T06a.md, B-98, B-99 |                
+  ⎿  Updated docs\tareas\T06a.md (+1 -1)
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | En revisión |
+       8 -| Inicio – fin | 2026-11-15 22:05 – 22:18 (13 min) · estimado: 
+         -M |                                                            
+       8 +| Inicio – fin | 2026-11-15 22:05 – 22:19 (14 min) · estimado: 
+         +M |                                                            
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | ver la fila de la bitácora que registra el hash (
+          posterior a B-100) |
+      11  | Trazabilidad | O4 · RN-15, RN-16, RN-21, RN-25 · D-05, D-24, 
+          S-02 · spec §7 (`audit_logs`), §8 (`POST /api/audit-logs/search
+          `, `AuditPage`), F-08 · P-12, P-15 · backlog T06a |
+
+● Registro el hash en la bitácora y en el documento de la tarea (mismo patrón
+  que T06).
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && D=$(date
+      "+%Y-%m-%d %H:%M") && echo "$D" && sed -i 's/| Commit(s) | ver la fila de
+      la bitácora que re…)
+  ⎿  2026-11-15 22:20
+     10:| Commit(s) | `ae72b59` (código y documentación) + commit de regist
+     ro del hash |
+     … +9 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      102  | B-98 | 2026-11-15 22:05 | Agente | 3-Ejecutar | AGENTE | Ini
+           cio de T06a (Auditoría: `AuditService` transaccional en todas 
+           las escrituras + `POST /audit-logs/search`). DoR comprobada: o
+           bjetivo, trazabilidad, alcance, fuera de alcance, CA1–CA7, seg
+           uridad, verificación y estimación M presentes; dependencia T06
+            en Hecha | En curso | docs/02-backlog.md T06a |
+      103  | B-99 | 2026-11-15 22:19 | Agente | 3-Ejecutar | ERROR | T06a
+           : la primera corrida de las unitarias tras conectar la auditor
+           ía falló (57 fallos informados). Causas reales: (1) la prueba 
+           de capas de `users` detectó que `users-admin.service.ts` impor
+           taba `audit/domain/audit` (CLAUDE.md: de otro módulo solo su s
+           ervice); (2) una expectativa de orden editada en la prueba equ
+           ivocada de `bookings-service.spec.ts`. Se movió la limpieza de
+            campos `undefined` dentro de `AuditService` y se corrigió la 
+           prueba. El resto de fallos de esa corrida no se reprodujo y no
+            se investigó | Corridas siguientes: 159/159 unitarias | docs/
+           tareas/T06a.md §6 |
+      104  | B-100 | 2026-11-15 22:19 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T06a (Auditoría transaccional y consulta paginada): módul
+           o `audit` (dominio puro, `AuditRepository` + Prisma con `COUNT
+           ` + `LIMIT/OFFSET`, `AuditService.record/recordMany`, `POST /a
+           udit-logs/search` solo ADMIN, sin `GET`); actor y request ID p
+           or `AsyncLocalStorage` fijado en un interceptor global de `com
+           mon/` (falla cerrado si faltan); las 10 `AuditAction` conectad
+           as dentro de su transacción, con una fila `BOOKING_CANCELLED` 
+           por reserva en las cascadas RN-15 y RN-16; `data` sin secretos
+            (se rechazan claves de contraseña, hash, token, cookie). 159 
+           unitarias (28 nuevas), 78 de integración (14 nuevas + la ruta 
+           en la matriz RBAC, sin `it.todo`), lint de api y web sin error
+           es, compose healthy, curl 200/403/400/404/401 y 0 filas sin `r
+           equest_id` | T06a En revisión. Commit: ver la fila siguiente. 
+           Desvíos: contexto de petición con `AsyncLocalStorage`; `record
+           Many`. Ambigüedades: `AuditPage` sin `data`, contenido de `dat
+           a`, PATCH sin cambios se audita, tope de `page`, `from` > `to`
+            → total 0 | docs/tareas/T06a.md, B-98, B-99 |
+      105 +| B-101 | 2026-11-15 22:20 | Agente | 3-Ejecutar | AGENTE | Re
+          +gistro del hash del commit de T06a (fila B-100) | Commit `ae72
+          +b59` (código y documentación de T06a) | B-100, docs/tareas/T06
+          +a.md |                                                        
+  ⎿  Updated docs\tareas\T06a.md (+1 -1)
+       7  | Estado | En revisión |
+       8  | Inicio – fin | 2026-11-15 22:05 – 22:19 (14 min) · estimado: 
+          M |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10 -| Commit(s) | ver la fila de la bitácora que registra el hash (
+         -posterior a B-100) |                                           
+      10 +| Commit(s) | `ae72b59` (código y documentación) + commit de re
+         +gistro del hash |                                              
+      11  | Trazabilidad | O4 · RN-15, RN-16, RN-21, RN-25 · D-05, D-24, 
+          S-02 · spec §7 (`audit_logs`), §8 (`POST /api/audit-logs/search
+          `, `AuditPage`), F-08 · P-12, P-15 · backlog T06a |
+      12  
+      13  ## 1. Objetivo
+
+● T06a está implementada, verificada y en estado En revisión. Queda esperando tu
+  revisión.
+
+  Lo que se hizo
+  - Módulo audit con la misma estructura de capas que los demás. Expone POST 
+    /api/audit-logs/search, solo para ADMIN y sin GET. Pagina en la base (cuenta
+    el total y luego toma la página), ordena por createdAt de más reciente a
+    más antigua y filtra por from/to (días en BUSINESS_TZ, ambos incluidos) y
+    por action.
+  - Las 10 AuditAction se registran dentro de la transacción de cada escritura.
+    Las cancelaciones en cascada (RN-15 y RN-16) dejan una fila
+    BOOKING_CANCELLED por reserva. Lo que guarda data en cada acción está en una
+    tabla en docs/tareas/T06a.md §2.
+  - Datos sin secretos: si data trae algo con nombre de contraseña, hash, token
+    o cookie, la escritura falla y se deshace. Lo mismo pasa si falta el request
+    ID o el usuario de la sesión.
+  - Pruebas:
+    - Unitarias: 159 pasan, 28 son nuevas.
+    - Integración (api-test): 78 pasan, 14 son nuevas. Cubren P-12, P-15,
+      CA2–CA4 y 20 reservas simultáneas que dejan una sola fila BOOKING_CREATED.
+    - La ruta nueva entró en la matriz de roles y se quitó el it.todo pendiente
+      de T06.
+  - npm run lint de api y web sin errores, docker compose up -d --build levanta
+    todo sano, y los curl de la tarea dan 200/403/400/404/401. No hay filas sin
+    request_id.
+
+  Desvíos
+  - Usuario y request ID salen del contexto de la petición (AsyncLocalStorage),
+    no se pasan como parámetro. Así record(ctx, { action, entity, entityId, data
+    }) queda con la firma del backlog. Ese contexto lo fija un interceptor
+    global en common/. No lo puse en el middleware del request ID porque ahí el
+    contexto se pierde al leer el cuerpo de la petición.
+  - Agregué recordMany para que cada cascada inserte todas sus filas de una vez.
+  - No hay dependencias nuevas.
+  - Error registrado (B-99): la primera corrida completa de las unitarias
+    informó 57 fallos. Encontré y corregí 2 causas reales: un import prohibido
+    entre módulos, que detectó la propia prueba de capas, y una expectativa que
+    edité en la prueba equivocada. Las corridas siguientes pasaron 159/159. El
+    resto de esos fallos no se repitió y no investigué de dónde venían.
+
+  Ambigüedades, resueltas de forma conservadora (§7)
+  - La respuesta de la búsqueda no incluye data, porque el spec la define así.
+  - BOOKING_CREATED no guarda el título. Las cancelaciones guardan la causa:
+    MANUAL, USER_DEACTIVATED o DAY_CLOSED.
+  - Un PATCH sin cambios igual deja su fila, porque se pide una fila por
+    escritura.
+  - page tiene un tope de 21 474 836: sin él, una página enorme da error 500 en
+    lugar de 400.
+  - Si from es posterior a to, responde 200 con total: 0.
+
+  La verificación manual dejó una fila ROOM_UPDATED (verif-t06a-1) en la base de
+  desarrollo. Es un PATCH de una sala con su misma capacidad, así que no cambió
+  ningún dato. Esa fila no se puede borrar porque audit_logs es inmutable.
+
+  Commits: ae72b59 (código y documentación) y 4a61223 (hash registrado en la
+  bitácora). El archivo docs/sesiones/2026-11-15-220046-…txt ya estaba sin
+  versionar y no lo toqué.
+
+✻ Brewed for 15m 38s · done 22:20
+
+❯ /bitacora T06a revisada, cumple la DoD                                        
+
+● User answered Claude's questions:
+  ⎿  · Tu texto «T06a revisada, cumple la DoD» empieza con «T06a», que no es un 
+     tipo válido de la bitácora. ¿Qué tipo le pongo a la fila? (La fila B-95, 
+     con el mismo texto para T06, se registró como REVISIÓN.) → REVISIÓN 
+     (Recommended)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && D=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-12 && echo "|
+      B-102 | $D | Yo |…)
+  ⎿  | B-101 | 20
+     | B-102 | 2026-11-15 22:27 | Yo | 3-Ejecutar | REVISIÓN | T06a revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      103  | B-99 | 2026-11-15 22:19 | Agente | 3-Ejecutar | ERROR | T06a
+           : la primera corrida de las unitarias tras conectar la auditor
+           ía falló (57 fallos informados). Causas reales: (1) la prueba 
+           de capas de `users` detectó que `users-admin.service.ts` impor
+           taba `audit/domain/audit` (CLAUDE.md: de otro módulo solo su s
+           ervice); (2) una expectativa de orden editada en la prueba equ
+           ivocada de `bookings-service.spec.ts`. Se movió la limpieza de
+            campos `undefined` dentro de `AuditService` y se corrigió la 
+           prueba. El resto de fallos de esa corrida no se reprodujo y no
+            se investigó | Corridas siguientes: 159/159 unitarias | docs/
+           tareas/T06a.md §6 |
+      104  | B-100 | 2026-11-15 22:19 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T06a (Auditoría transaccional y consulta paginada): módul
+           o `audit` (dominio puro, `AuditRepository` + Prisma con `COUNT
+           ` + `LIMIT/OFFSET`, `AuditService.record/recordMany`, `POST /a
+           udit-logs/search` solo ADMIN, sin `GET`); actor y request ID p
+           or `AsyncLocalStorage` fijado en un interceptor global de `com
+           mon/` (falla cerrado si faltan); las 10 `AuditAction` conectad
+           as dentro de su transacción, con una fila `BOOKING_CANCELLED` 
+           por reserva en las cascadas RN-15 y RN-16; `data` sin secretos
+            (se rechazan claves de contraseña, hash, token, cookie). 159 
+           unitarias (28 nuevas), 78 de integración (14 nuevas + la ruta 
+           en la matriz RBAC, sin `it.todo`), lint de api y web sin error
+           es, compose healthy, curl 200/403/400/404/401 y 0 filas sin `r
+           equest_id` | T06a En revisión. Commit: ver la fila siguiente. 
+           Desvíos: contexto de petición con `AsyncLocalStorage`; `record
+           Many`. Ambigüedades: `AuditPage` sin `data`, contenido de `dat
+           a`, PATCH sin cambios se audita, tope de `page`, `from` > `to`
+            → total 0 | docs/tareas/T06a.md, B-98, B-99 |
+      105  | B-101 | 2026-11-15 22:20 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T06a (fila B-100) | Commit `ae72
+           b59` (código y documentación de T06a) | B-100, docs/tareas/T06
+           a.md |
+      106 +| B-102 | 2026-11-15 22:27 | Yo | 3-Ejecutar | REVISIÓN | T06a
+          + revisada, cumple la DoD | — | — |                            
+
+● Agregué esta fila al final de docs/03-bitacora.md. No hice commit; entra en el
+  próximo commit de la tarea:
+
+  | B-102 | 2026-11-15 22:27 | Yo | 3-Ejecutar | REVISIÓN | T06a revisada, 
+  cumple la DoD | — | — |
+
+✻ Brewed for 16s · done 22:27
+
+❯ Pasa T06a a Hecha en el backlog y haz commit                                  
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && python -
+      <<'EOF'
+      p='docs/02-backlog.md'…)
+  ⎿   docs/02-backlog.md  | 4 ++--
+      docs/03-bitacora.md | 2 ++
+      docs/tareas/T06a.md | 8 ++++----
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      66  | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+          vación con cancelación en cascada, reset de contraseña | T05, T
+          03a | M | No | Hecha | [T05a](tareas/T05a.md) |
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69 -| 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+         -las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+         - En revisión | [T06a](tareas/T06a.md) |                        
+      69 +| 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+         +las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+         + Hecha | [T06a](tareas/T06a.md) |                              
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Pendiente | |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+          iente | |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+     ...
+      574  | Dependencias | T06 |
+      575  | Estimación | M |
+      576  | Seguridad / auditoría | Roles: consulta solo ADMIN. Auditorí
+           a: es la propia tarea; genera las 10 `AuditAction` de spec §7.
+            `data` nunca contiene contraseñas, hashes, cookies ni tokens.
+            OWASP A09 |
+      577 -| Estado | En revisión |                                      
+      577 +| Estado | Hecha |                                            
+      578  
+      579  **Alcance (archivos o módulos):**
+      580  - `src/api/src/modules/audit/**`: `AuditService.record(ctx, { 
+           action, entity, entityId, data })`, controller de `POST /audit
+           -logs/search`, dto, repositorio de interfaz + Prisma (`COUNT` 
+           + `LIMIT/OFFSET`).
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      104  | B-100 | 2026-11-15 22:19 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T06a (Auditoría transaccional y consulta paginada): módul
+           o `audit` (dominio puro, `AuditRepository` + Prisma con `COUNT
+           ` + `LIMIT/OFFSET`, `AuditService.record/recordMany`, `POST /a
+           udit-logs/search` solo ADMIN, sin `GET`); actor y request ID p
+           or `AsyncLocalStorage` fijado en un interceptor global de `com
+           mon/` (falla cerrado si faltan); las 10 `AuditAction` conectad
+           as dentro de su transacción, con una fila `BOOKING_CANCELLED` 
+           por reserva en las cascadas RN-15 y RN-16; `data` sin secretos
+            (se rechazan claves de contraseña, hash, token, cookie). 159 
+           unitarias (28 nuevas), 78 de integración (14 nuevas + la ruta 
+           en la matriz RBAC, sin `it.todo`), lint de api y web sin error
+           es, compose healthy, curl 200/403/400/404/401 y 0 filas sin `r
+           equest_id` | T06a En revisión. Commit: ver la fila siguiente. 
+           Desvíos: contexto de petición con `AsyncLocalStorage`; `record
+           Many`. Ambigüedades: `AuditPage` sin `data`, contenido de `dat
+           a`, PATCH sin cambios se audita, tope de `page`, `from` > `to`
+            → total 0 | docs/tareas/T06a.md, B-98, B-99 |
+      105  | B-101 | 2026-11-15 22:20 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T06a (fila B-100) | Commit `ae72
+           b59` (código y documentación de T06a) | B-100, docs/tareas/T06
+           a.md |
+      106  | B-102 | 2026-11-15 22:27 | Yo | 3-Ejecutar | REVISIÓN | T06a
+            revisada, cumple la DoD | — | — |
+      107 +| B-103 | 2026-11-15 22:27 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T06a pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-102 | T06a Hecha
+          + | docs/02-backlog.md, B-102 |                                
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● T06a ya figura como Hecha en docs/02-backlog.md, en la tabla de resumen y en
+  su ficha. Agregué la fila B-103 a la bitácora.
+
+  - 31496bf — T06a: revisión aprobada y estado Hecha (backlog y bitácora).
+  - 0b9c7bc — tu sección 8 (Revisión) de docs/tareas/T06a.md. Ese cambio estaba
+    sin commit, así que lo hice aparte, como con T06.
+
+  Quedan dos archivos sin versionar que no toqué: la exportación de sesión en
+  docs/sesiones/ y un docs/tareas/T06a.md.bak del editor. No los incluí en
+  ningún commit.
+
+  En tu revisión pediste actualizar CLAUDE.md con los desvíos de T06a. Todavía
+  no lo hice: ¿agrego la subsección «Auditoría fijada en T06a», como hicimos con
+  T06?
+
+✻ Worked for 19s · done 22:28
+
+❯ Sí, actualiza CLAUDE.md con los desvíos de T06a                               
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && python -
+      <<'EOF'
+      p='CLAUDE.md'…)
+  ⎿  e64e0c0 T06a: CLAUDE.md con los desvíos de la tarea
+     ?? docs/sesiones/2026-11-15-220046-local-command-caveatthe-command-bel
+     ow-was-run-d.txt
+     ?? docs/tareas/T06a.md.bak
+  ⎿  Updated CLAUDE.md (+28 -3)
+      306  - **Estados imposibles por la API** (reserva ya empezada, cier
+           re de hoy o pasado) se insertan con `api.prisma` en la
+      307    base de pruebas, no con `psql`.
+      308  - **Matriz RBAC (`rbac.int-spec.ts`):** toda ruta nueva se agr
+           ega a `ADMIN_ROUTES` o a `AUTHENTICATED_ROUTES`, con un body
+      309 -  válido para que el 403 no se confunda con un 400. **T06a** d
+          -ebe agregar `POST /audit-logs/search` a `ADMIN_ROUTES` y      
+      310 -  quitar el `it.todo` (hoy la ruta no existe y responde 404 an
+          -tes de los guards).                                           
+      309 +  válido para que el 403 no se confunda con un 400. `POST /aud
+          +it-logs/search` ya está en `ADMIN_ROUTES` (T06a).             
+      310  - **Carreras (R-01, R-02):** se comprueba el invariante final 
+           (ninguna `CONFIRMED` y toda reserva creada cancelada), no
+      311    un orden concreto de las peticiones.
+      313 -- **Nombres:** `it('RN-xx · P-xx · …')`. Las escrituras nuevas
+          - (T06a) agregan aquí sus casos de integración (P-12, P-15).   
+      312 +- **Nombres:** `it('RN-xx · P-xx · …')`. Toda escritura nueva 
+          +agrega aquí su caso de integración, incluida su fila de       
+      313 +  auditoría (como `audit.int-spec.ts`, P-12 y P-15).          
+      314 +                                                              
+      315 +### Auditoría fijada en T06a (ver `docs/tareas/T06a.md` §2, §6
+          + y §7)                                                        
+      316 +- **Toda escritura de negocio audita dentro de su `Transaction
+          +Runner.run`:** `await this.audit.record(ctx, { action,        
+      317 +  entity, entityId, data })` (o `recordMany` para varias filas
+          + en un solo `INSERT`). El módulo importa `AuditModule` y      
+      318 +  usa solo `AuditService`; nunca archivos internos de `modules
+          +/audit/` (lo comprueba `test/audit.spec.ts`).                 
+      319 +  `AuditModule` no importa ningún módulo de negocio, así cualq
+          +uiera lo importa sin ciclos.                                  
+      320 +- **Actor y request ID no se pasan a mano:** salen del context
+          +o de petición (`AsyncLocalStorage`,                           
+      321 +  `common/request-context/`), que fija `RequestContextIntercep
+          +tor` (global, `APP_INTERCEPTOR` en `CommonModule`) después    
+      322 +  de los guards. No moverlo a un middleware previo al body par
+          +ser: ahí el contexto se pierde. Si falta el request ID o      
+      323 +  el usuario, `record` lanza y la escritura entera se revierte
+          + (falla cerrado).                                             
+      324 +- **`data`:** solo lo mínimo para entender la operación (tabla
+          + de `docs/tareas/T06a.md` §2). `AuditService` rechaza         
+      325 +  claves que contengan `password`, `hash`, `token`, `cookie` o
+          + `secret`, a cualquier profundidad, y quita los campos        
+      326 +  `undefined` (un `PATCH` parcial guarda solo `changes` con lo
+          + enviado). Un `PATCH` sin cambios igual deja su fila.         
+      327 +- **Cascadas (RN-15, RN-16):** las audita `BookingsService` co
+          +n una fila `BOOKING_CANCELLED` por reserva y                  
+      328 +  `data.cause` (`MANUAL`, `USER_DEACTIVATED`, `DAY_CLOSED`); e
+          +l actor es el ADMIN que desactiva o cierra el día.            
+      329 +- **Consulta (`POST /audit-logs/search`, D-24):** `COUNT` + `s
+          +kip/take` con los mismos filtros, orden `createdAt` desc y    
+      330 +  `id` desc como desempate (las filas de una transacción compa
+          +rten `created_at`). `from`/`to` se convierten con             
+      331 +  `startOfLocalDay` en `BUSINESS_TZ` (`to` + 1 día, excluido).
+          + `AuditPage.items` no incluye `data` (spec §8). `page`        
+      332 +  tiene tope `AUDIT_PAGE.pageMax` (21 474 836) para que un `OF
+          +FSET` fuera de rango dé 400 y no 500. Sin `GET`.              
+      333 +- **Pruebas:** `createApp` reemplaza `AUDIT_REPOSITORY` por `I
+          +nMemoryAuditRepository` (opción `audit`), que no emula el     
+      334 +  rollback: CA2 se prueba en integración. Los dobles de `Audit
+          +Service` en las pruebas de orden registran                    
+      335 +  `audit <ACCIÓN>` para comprobar que va antes del commit y co
+          +n el `ctx`. En integración, `api.request(…, { requestId })`   
+      336 +  envía `X-Request-Id` para encontrar las filas de una petició
+          +n.                                                            
+      337 +- **`audit_logs` no se limpia entre pruebas** (el trigger lo i
+          +mpide): comparar por `requestId` o por diferencia de          
+      338 +  `COUNT`, nunca por un total fijo. Las verificaciones manuale
+          +s dejan filas permanentes en la base de desarrollo.           
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      105  | B-101 | 2026-11-15 22:20 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T06a (fila B-100) | Commit `ae72
+           b59` (código y documentación de T06a) | B-100, docs/tareas/T06
+           a.md |
+      106  | B-102 | 2026-11-15 22:27 | Yo | 3-Ejecutar | REVISIÓN | T06a
+            revisada, cumple la DoD | — | — |
+      107  | B-103 | 2026-11-15 22:27 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T06a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-102 | T06a Hecha
+            | docs/02-backlog.md, B-102 |
+      108 +| B-104 | 2026-11-15 22:28 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T06a, 
+          +B-102), CLAUDE.md (Dependencias) agrega la subsección «Auditor
+          +ía fijada en T06a»: `record`/`recordMany` dentro de la transac
+          +ción con el `ctx`; actor y request ID por `AsyncLocalStorage` 
+          +con `RequestContextInterceptor` (falla cerrado); reglas de `da
+          +ta` (sin secretos, sin `undefined`, PATCH sin cambios se audit
+          +a); cascadas con `cause`; consulta con desempate por id, `from
+          +`/`to` en `BUSINESS_TZ`, sin `data` y tope de `page`; pruebas 
+          +con `InMemoryAuditRepository` y `requestId` en integración; `a
+          +udit_logs` no se limpia. Se actualizan las dos líneas de T06 q
+          +ue dejaban pendiente la ruta de auditoría | Solo documentación
+          +; sin cambios de código | CLAUDE.md, docs/tareas/T06a.md §6 y 
+          +§7, B-102 |                                                   
+
+● Actualicé CLAUDE.md con los desvíos de T06a, agregué la fila B-104
+  (CORRECCIÓN) a la bitácora e hice el commit e64e0c0.
+
+  Agregué la subsección «Auditoría fijada en T06a» al final de "Dependencias".
+  Deja fijado esto para las próximas tareas:
+  - Cómo se audita: toda escritura llama a this.audit.record(ctx, …) (o a
+    recordMany) dentro de su transacción. Los módulos usan solo AuditService,
+    nunca archivos internos de modules/audit/.
+  - Usuario y request ID: no se pasan a mano; los toma un interceptor global en
+    common/ y vienen del contexto de la petición. No hay que moverlo a un
+    middleware, porque ahí el contexto se pierde. Si falta alguno de los dos, la
+    escritura se deshace entera.
+  - Qué guarda data:
+    - Nada con nombre de contraseña, hash, token, cookie o secret.
+    - En un PATCH, solo los campos enviados.
+    - Un PATCH sin cambios igual deja su fila.
+  - Cancelaciones en cascada: una fila BOOKING_CANCELLED por reserva, con la
+    causa (MANUAL, USER_DEACTIVATED o DAY_CLOSED). El actor es el ADMIN que
+    desactiva o cierra el día.
+  - Consulta: el orden se desempata por id, from/to se calculan en BUSINESS_TZ,
+    la respuesta no incluye data, page tiene tope y no hay GET.
+  - Pruebas:
+    - El repositorio en memoria no simula el rollback; eso se prueba en
+      integración.
+    - En integración se manda X-Request-Id para encontrar las filas de cada
+      petición.
+    - audit_logs no se limpia entre pruebas: se compara por request ID o por
+      diferencia de conteo, nunca por un total fijo.
+
+  También corregí dos líneas de la subsección de T06 que daban por pendiente la
+  ruta de auditoría en la matriz de roles y en las pruebas de integración.
+
+  Siguen sin versionar y sin tocar docs/sesiones/2026-11-15-220046-…txt y
+  docs/tareas/T06a.md.bak (copia del editor). Si quieres, borro el .bak.
+
+✻ Brewed for 33s · done 22:28
+
+❯ haz commit de docs/sesiones/2026-11-15-220046-…txt                            
+  Ran 1 shell command (ctrl+o to expand)
+
+● Hice el commit 7519b17 («Sesión exportada del 2026-11-15 22:00 (T06)»), con
+  solo el archivo docs/sesiones/2026-11-15-220046-…txt.
+
+  En el mensaje del commit le puse T06 porque el archivo se exportó a las 22:00,
+  antes de que empezara T06a (22:05).
+
+  No agregué fila a la bitácora: el commit de sesiones anterior (b23c0c5)
+  tampoco tiene una. El árbol de trabajo quedó limpio; el
+  docs/tareas/T06a.md.bak ya no está, así que ya no hace falta borrarlo.
+
+✻ Churned for 11s · done 22:29
+
+❯ /ejecutar-tarea T07a                                                          
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● DoR completa y T01 está Hecha. Leo DESIGN.md, el spec §9/§11 y el estado
+  actual de src/web.
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● Contexto leído. Registro el inicio.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && D=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-10 && echo "|
+      B-105 | $D | Agent…)
+  ⎿  | B-104 |
+     2026-11-15 22:30
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      106  | B-102 | 2026-11-15 22:27 | Yo | 3-Ejecutar | REVISIÓN | T06a
+            revisada, cumple la DoD | — | — |
+      107  | B-103 | 2026-11-15 22:27 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T06a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-102 | T06a Hecha
+            | docs/02-backlog.md, B-102 |
+      108  | B-104 | 2026-11-15 22:28 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T06a, 
+           B-102), CLAUDE.md (Dependencias) agrega la subsección «Auditor
+           ía fijada en T06a»: `record`/`recordMany` dentro de la transac
+           ción con el `ctx`; actor y request ID por `AsyncLocalStorage` 
+           con `RequestContextInterceptor` (falla cerrado); reglas de `da
+           ta` (sin secretos, sin `undefined`, PATCH sin cambios se audit
+           a); cascadas con `cause`; consulta con desempate por id, `from
+           `/`to` en `BUSINESS_TZ`, sin `data` y tope de `page`; pruebas 
+           con `InMemoryAuditRepository` y `requestId` en integración; `a
+           udit_logs` no se limpia. Se actualizan las dos líneas de T06 q
+           ue dejaban pendiente la ruta de auditoría | Solo documentación
+           ; sin cambios de código | CLAUDE.md, docs/tareas/T06a.md §6 y 
+           §7, B-102 |
+      109 +| B-105 | 2026-11-15 22:30 | Agente | 3-Ejecutar | AGENTE | In
+          +icio de T07a (Sistema visual base). DoR comprobada: objetivo, 
+          +trazabilidad, alcance, fuera de alcance, CA1–CA7, seguridad, v
+          +erificación y estimación M presentes; dependencia T01 en Hecha
+          + | En curso | docs/02-backlog.md T07a |                       
+
+● Plan listo: tokens de diseño en index.css (sin paleta por defecto de
+  Tailwind), Inter y lucide-react fijados, los 16 componentes de shared/ui/,
+  logo y favicon, y después verificación completa y documentación. · summary
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && npm
+      install --save-exact @fontsource-variable/inter@5.3.0 lucide-react@1.73.0
+      2>&1 | tail -4…)
+  ⎿  To address all issues (including breaking changes), run:
+       npm audit fix --force
+     … +16 lines (ctrl+o to expand)
+  ⎿  Updated src\web\package-lock.json (+28 -2)
+       8        "name": "salalibre-web",
+       9        "version": "0.1.0",
+      10        "dependencies": {
+      11 +        "@fontsource-variable/inter": "5.3.0",                 
+      12 +        "lucide-react": "1.73.0",                              
+      13          "react": "19.3.1",
+      14          "react-dom": "19.3.1"
+      15        },
+     ...
+      459          "node": "^20.19.0 || ^22.13.0 || >=24"
+      460        }
+      461      },
+      462 +    "node_modules/@fontsource-variable/inter": {              
+      463 +      "version": "5.3.0",                                     
+      464 +      "resolved": "https://registry.npmjs.org/@fontsource-vari
+          +able/inter/-/inter-5.3.0.tgz",                                
+      465 +      "integrity": "sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er
+          +8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==",       
+      466 +      "license": "OFL-1.1",                                   
+      467 +      "funding": {                                            
+      468 +        "url": "https://github.com/sponsors/ayuhito"          
+      469 +      }                                                       
+      470 +    },                                                        
+      471      "node_modules/@humanfs/core": {
+      472        "version": "0.19.2",
+      473        "resolved": "https://registry.npmjs.org/@humanfs/core/-/
+           core-0.19.2.tgz",
+     ...
+      1342        "version": "19.3.0",
+      1343        "resolved": "https://registry.npmjs.org/@types/react/-/
+            react-19.3.0.tgz",
+      1344        "integrity": "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7
+            ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==",
+      1334 -      "dev": true,                                           
+      1345 +      "devOptional": true,                                   
+      1346        "license": "MIT",
+      1347        "dependencies": {
+      1348          "csstype": "^3.2.2"
+     ...
+      1818        "version": "3.2.3",
+      1819        "resolved": "https://registry.npmjs.org/csstype/-/cssty
+            pe-3.2.3.tgz",
+      1820        "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3U
+            VJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
+      1810 -      "dev": true,                                           
+      1821 +      "devOptional": true,                                   
+      1822        "license": "MIT"
+      1823      },
+      1824      "node_modules/debug": {
+     ...
+      2695          "yallist": "^3.0.2"
+     … 20 more lines (ctrl+o to expand)
+  ⎿  Updated src\web\package.json (+2 -0)
+      13      "lint": "eslint ."
+      14    },
+      15    "dependencies": {
+      16 +    "@fontsource-variable/inter": "5.3.0",                     
+      17 +    "lucide-react": "1.73.0",                                  
+      18      "react": "19.3.1",
+      19      "react-dom": "19.3.1"
+      20    },
+  ⎿  (timeout 5m)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● La alerta de npm audit es previa (minimatch en typescript-eslint, solo
+  desarrollo); no viene de los paquetes nuevos. La anoto y sigo con los tokens.
+
+● Write(src\web\src\index.css)
+  ⎿  Added 169 lines
+        1 +/*                                                            
+        2 + * T07a · Tokens de docs/diseño/DESIGN.md (D-28: solo guía vis
+          +ual). Tailwind 4 se configura en CSS con @theme               
+        3 + * (no hay tailwind.config.*). Se quita la paleta por defecto 
+          +de Tailwind: en los componentes solo existen estos colores    
+        4 + * (CLAUDE.md: "solo se usan los tokens del diseño, sin colore
+          +s sueltos").                                                  
+        5 + */                                                           
+        6  @import 'tailwindcss';
+        7 +                                                              
+        8 +@theme {                                                      
+        9 +  /* Sin la paleta por defecto (blue-500, slate-200…): solo lo
+          +s tokens de abajo. */                                         
+       10 +  --color-*: initial;                                         
+       11 +                                                              
+       12 +  /* Colores (DESIGN.md, frontmatter) */                      
+       13 +  --color-surface: #f8f9ff;                                   
+       14 +  --color-surface-dim: #cbdbf5;                               
+       15 +  --color-surface-bright: #f8f9ff;                            
+       16 +  --color-surface-container-lowest: #ffffff;                  
+       17 +  --color-surface-container-low: #eff4ff;                     
+       18 +  --color-surface-container: #e5eeff;                         
+       19 +  --color-surface-container-high: #dce9ff;                    
+       20 +  --color-surface-container-highest: #d3e4fe;                 
+       21 +  --color-on-surface: #0b1c30;                                
+       22 +  --color-on-surface-variant: #434655;                        
+       23 +  --color-inverse-surface: #213145;                           
+       24 +  --color-inverse-on-surface: #eaf1ff;                        
+       25 +  --color-outline: #747686;                                   
+       26 +  --color-outline-variant: #c4c5d7;                           
+       27 +  --color-surface-tint: #2151da;                              
+       28 +  --color-primary: #0037b0;                                   
+       29 +  --color-on-primary: #ffffff;                                
+       30 +  --color-primary-container: #1d4ed8;                         
+       31 +  --color-on-primary-container: #cad3ff;                      
+       32 +  --color-inverse-primary: #b7c4ff;                           
+       33 +  --color-secondary: #565e74;                                 
+       34 +  --color-on-secondary: #ffffff;                              
+       35 +  --color-secondary-container: #dae2fd;                       
+       36 +  --color-on-secondary-container: #5c647a;                    
+       37 +  --color-tertiary: #004f35;                                  
+       38 +  --color-on-tertiary: #ffffff;                               
+       39 +  --color-tertiary-container: #006a48;                        
+       40 +  --color-on-tertiary-container: #60eeb1;                     
+       41 +  --color-error: #ba1a1a;                                     
+       42 +  --color-on-error: #ffffff;                                  
+       43 +  --color-error-container: #ffdad6;                           
+       44 +  --color-on-error-container: #93000a;                        
+       45 +  --color-primary-fixed: #dce1ff;                             
+       46 +  --color-primary-fixed-dim: #b7c4ff;                         
+       47 +  --color-on-primary-fixed: #001551;                          
+       48 +  --color-on-primary-fixed-variant: #0039b5;                  
+       49 +  --color-secondary-fixed: #dae2fd;                           
+       50 +  --color-secondary-fixed-dim: #bec6e0;                       
+       51 +  --color-on-secondary-fixed: #131b2e;                        
+       52 +  --color-on-secondary-fixed-variant: #3f465c;                
+       53 +  --color-tertiary-fixed: #6ffbbe;                            
+       54 +  --color-tertiary-fixed-dim: #4edea3;                        
+       55 +  --color-on-tertiary-fixed: #002113;                         
+       56 +  --color-on-tertiary-fixed-variant: #005236;                 
+       57 +  --color-background: #f8f9ff;                                
+       58 +  --color-on-background: #0b1c30;                             
+       59 +  --color-surface-variant: #d3e4fe;                           
+       60 +                                                              
+       61 +  /* Base neutra y acentos de "Colores › Arquitectura base" y 
+          +"Elevación" */                                                
+       62 +  --color-canvas: #f8fafc; /* capa base, fondo de la app */   
+       63 +  --color-mist: #f1f5f9; /* columnas secundarias y cuadrícula 
+          +*/                                                            
+       64 +  --color-divider: #e2e8f0; /* divisiones estructurales */    
+       65 +  --color-ink: #0f172a; /* titulares críticos */              
+       66 +  --color-interactive: #2563eb; /* contorno de hover en franja
+          +s libres */                                                   
+       67 +  --color-scrim: rgb(15 23 42 / 0.4); /* velo de los modales *
+          +/                                                             
+       68 +                                                              
+       69 +  /* Insignias de estado (DESIGN.md, Componentes 2): fondo, te
+          +xto, borde y color sólido del punto */                        
+       70 +  --color-available-container: #ecfdf5;                       
+       71 +  --color-on-available-container: #065f46;                    
+       72 +  --color-available-outline: #a7f3d0;                         
+       73 +  --color-available: #10b981;                                 
+       74 +  --color-busy-container: #fef2f2;                            
+       75 +  --color-on-busy-container: #991b1b;                         
+       76 +  --color-busy-outline: #fecaca;                              
+       77 +  --color-busy: #ef4444;                                      
+       78 +  --color-maintenance-container: #f1f5f9;                     
+       79 +  --color-on-maintenance-container: #475569;                  
+       80 +  --color-maintenance-outline: #cbd5e1;                       
+       81 +  --color-maintenance: #64748b;                               
+       82 +                                                              
+       83 +  /* Tipografía: Inter empaquetada en local (@fontsource-varia
+          +ble/inter) */                                                 
+       84 +  --font-sans: 'Inter Variable', 'Segoe UI', Roboto, Helvetica
+          +, Arial, sans-serif;                                          
+       85 +                                                              
+       86 +  --text-headline-xl: 32px;                                   
+       87 +  --text-headline-xl--line-height: 40px;                      
+       88 +  --text-headline-xl--letter-spacing: -0.02em;                
+       89 +  --text-headline-xl--font-weight: 600;                       
+       90 +  --text-headline-lg: 24px;                                   
+       91 +  --text-headline-lg--line-height: 32px;                      
+       92 +  --text-headline-lg--letter-spacing: -0.015em;               
+       93 +  --text-headline-lg--font-weight: 600;                       
+       94 +  --text-headline-md: 20px;                                   
+       95 +  --text-headline-md--line-height: 28px;                      
+       96 +  --text-headline-md--letter-spacing: -0.01em;                
+       97 +  --text-headline-md--font-weight: 600;                       
+       98 +  --text-headline-sm: 16px;                                   
+       99 +  --text-headline-sm--line-height: 24px;                      
+      100 +  --text-headline-sm--letter-spacing: -0.005em;               
+      101 +  --text-headline-sm--font-weight: 600;                       
+      102 +  --text-body-lg: 16px;                                       
+      103 +  --text-body-lg--line-height: 24px;                          
+      104 +  --text-body-md: 14px;                                       
+      105 +  --text-body-md--line-height: 20px;                          
+      106 +  --text-body-sm: 13px;                                       
+      107 +  --text-body-sm--line-height: 18px;                          
+      108 +  --text-label-md: 13px;                                      
+      109 +  --text-label-md--line-height: 16px;                         
+      110 +  --text-label-md--font-weight: 500;                          
+      111 +  --text-label-sm: 12px;                                      
+      112 +  --text-label-sm--line-height: 16px;                         
+      113 +  --text-label-sm--font-weight: 500;                          
+      114 +  --text-label-xs: 11px;                                      
+      115 +  --text-label-xs--line-height: 14px;                         
+      116 +  --text-label-xs--letter-spacing: 0.02em;                    
+      117 +  --text-label-xs--font-weight: 600;                          
+      118 +  --text-code-sm: 12px;                                       
+      119 +  --text-code-sm--line-height: 16px;                          
+      120 +  --text-code-sm--font-weight: 500;                           
+      121 +                                                              
+      122 +  /* Formas: 4 px microcomponentes (rounded-base), 8 px conten
+          +edores (rounded-lg), círculo (rounded-full) */                
+      123 +  --radius-base: 4px;                                         
+      124 +  --radius-lg: 8px;                                           
+      125 +                                                              
+      126 +  /* Espaciado con nombre (DESIGN.md); la escala numérica de T
+          +ailwind sigue disponible */                                   
+      127 +  --spacing-gutter: 1rem;                                     
+      128 +  --spacing-gutter-dense: 0.5rem;                             
+      129 +  --spacing-margin: 1.5rem;                                   
+      130 +  --spacing-margin-compact: 1rem;                             
+      131 +  --spacing-space-xs: 0.25rem;                                
+      132 +  --spacing-space-sm: 0.5rem;                                 
+      133 +  --spacing-space-md: 0.75rem;                                
+      134 +  --spacing-space-lg: 1.25rem;                                
+      135 +  --spacing-space-xl: 2rem;                                   
+      136 +                                                              
+      137 +  /* Anchos de modal: 480 px (reserva y confirmación) y 640 px
+          + (formularios de administración) */                           
+      138 +  --container-modal-sm: 480px;                                
+      139 +  --container-modal-md: 640px;                                
+      140 +                                                              
+      141 +  /* Elevación */                                             
+      142 +  --shadow-elevated: 0 1px 3px 0 rgb(15 23 42 / 0.05), 0 1px 2
+          +px -1px rgb(15 23 42 / 0.05);                                 
+      143 +  --shadow-modal: 0 20px 25px -5px rgb(15 23 42 / 0.1), 0 8px 
+          +10px -6px rgb(15 23 42 / 0.1);                                
+      144 +}                                                             
+      145 +                                                              
+      146 +/* Cifras tabulares para horas, capacidades y contadores (DESI
+          +GN.md, Tipografía). */                                        
+      147 +@utility tnum {                                               
+      148 +  font-feature-settings: 'tnum' 1;                            
+      149 +  font-variant-numeric: tabular-nums;                         
+      150 +}                                                             
+      151 +                                                              
+      152 +@layer base {                                                 
+      153 +  html {                                                      
+      154 +    font-family: var(--font-sans);                            
+      155 +    color: var(--color-on-surface);                           
+      156 +    background-color: var(--color-canvas);                    
+      157 +    -webkit-font-smoothing: antialiased;                      
+      158 +  }                                                           
+      159 +                                                              
+      160 +  body {                                                      
+      161 +    font-size: var(--text-body-md);                           
+      162 +    line-height: var(--text-body-md--line-height);            
+      163 +  }                                                           
+      164 +                                                              
+      165 +  /* Foco visible en todo elemento enfocable con teclado (spec
+          + §11). */                                                     
+      166 +  :focus-visible {                                            
+      167 +    outline: 2px solid var(--color-primary-container);        
+      168 +    outline-offset: 2px;                                      
+      169 +  }                                                           
+      170 +}                                                             
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && mkdir
+      -p public src/shared/ui && cp ../../docs/diseño/img/logo.svg
+      public/logo.svg && cp ../.…)
+  ⎿  {
+       "compilerOptions": {
+         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+     … +55 lines (ctrl+o to expand)
+  ⎿  Created src\web\public\logo-icon.svg (+12 -0)
+       1 +<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" rol
+         +e="img" aria-label="Sala Libre">                               
+       2 +  <rect width="64" height="64" rx="15" fill="#1F4FD8"/>        
+       3 +  <!-- franjas de tiempo -->                                   
+       4 +  <rect x="13" y="13" width="11" height="24.5" rx="3" fill="#FF
+         +FFFF"/>                                                        
+       5 +  <rect x="13" y="40" width="11" height="11" rx="3" fill="#FFFF
+         +FF" fill-opacity="0.3"/>                                       
+       6 +  <rect x="26.5" y="13" width="11" height="11" rx="3" fill="#FF
+         +FFFF" fill-opacity="0.3"/>                                     
+       7 +  <rect x="26.5" y="26.5" width="11" height="11" rx="3" fill="#
+         +FFFFFF" fill-opacity="0.3"/>                                   
+       8 +  <rect x="26.5" y="40" width="11" height="11" rx="3" fill="#FF
+         +FFFF" fill-opacity="0.3"/>                                     
+       9 +  <rect x="40" y="13" width="11" height="11" rx="3" fill="#FFFF
+         +FF" fill-opacity="0.3"/>                                       
+      10 +  <!-- hueco libre -->                                         
+      11 +  <rect x="40" y="26.5" width="11" height="24.5" rx="3" fill="#
+         +2EE6B0"/>                                                      
+      12 +</svg>                                                         
+  ⎿  Created src\web\public\logo.svg (+11 -0)
+       1 +<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" ro
+         +le="img" aria-label="Sala Libre">                              
+       2 +  <rect width="64" height="64" rx="15" fill="#1F4FD8"/>        
+       3 +  <rect x="13" y="13" width="11" height="24.5" rx="3" fill="#FF
+         +FFFF"/>                                                        
+       4 +  <rect x="13" y="40" width="11" height="11" rx="3" fill="#FFFF
+         +FF" fill-opacity="0.3"/>                                       
+       5 +  <rect x="26.5" y="13" width="11" height="11" rx="3" fill="#FF
+         +FFFF" fill-opacity="0.3"/>                                     
+       6 +  <rect x="26.5" y="26.5" width="11" height="11" rx="3" fill="#
+         +FFFFFF" fill-opacity="0.3"/>                                   
+       7 +  <rect x="26.5" y="40" width="11" height="11" rx="3" fill="#FF
+         +FFFF" fill-opacity="0.3"/>                                     
+       8 +  <rect x="40" y="13" width="11" height="11" rx="3" fill="#FFFF
+         +FF" fill-opacity="0.3"/>                                       
+       9 +  <rect x="40" y="26.5" width="11" height="24.5" rx="3" fill="#
+         +2EE6B0"/>                                                      
+      10 +  <text x="80" y="43" font-family="Inter, 'Segoe UI', Roboto, H
+         +elvetica, Arial, sans-serif" font-size="32" font-weight="700" f
+         +ill="#14213D">Sala <tspan fill="#1F4FD8">Libre</tspan></text>  
+      11 +</svg>                                                         
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && cat
+      .dockerignore && python - <<'EOF'
+      p='index.html'…)
+  ⎿  node_modules
+     dist
+     coverage
+     … +4 lines (ctrl+o to expand)
+  ⎿  Updated src\web\index.html (+1 -0)
+      3    <head>
+      4      <meta charset="UTF-8" />
+      5      <meta name="viewport" content="width=device-width, initial-s
+         cale=1.0" />
+      6 +    <link rel="icon" type="image/svg+xml" href="/logo-icon.svg" 
+        +/>                                                              
+      7      <title>SalaLibre</title>
+      8    </head>
+      9    <body>
+
+● Ahora los componentes de shared/ui/.
+
+● Write(src\web\src\shared\ui\cn.ts)
+  ⎿  Wrote 4 lines to src\web\src\shared\ui\cn.ts
+      1 /** Une clases de Tailwind e ignora los valores vacíos (sin depen
+        dencias). */
+      2 export function cn(...classes: (string | false | null | undefined
+        )[]): string {
+      3   return classes.filter(Boolean).join(' ');
+      4 }
+
+● Write(src\web\src\shared\ui\Spinner.tsx)
+  ⎿  Wrote 24 lines to src\web\src\shared\ui\Spinner.tsx
+      1 import { LoaderCircle } from 'lucide-react';
+      2 import { cn } from './cn';
+      3 
+      4 interface SpinnerProps {
+      5   /** Texto para lectores de pantalla. */
+      6   label?: string;
+      7   size?: number;
+      8   className?: string;
+      9 }
+     … +15 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Button.tsx)
+  ⎿  Wrote 60 lines to src\web\src\shared\ui\Button.tsx
+       1 import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react
+         ';
+       2 import { cn } from './cn';
+       3 import { Spinner } from './Spinner';
+       4 
+       5 export type ButtonVariant = 'primary' | 'secondary' | 'danger' |
+          'ghost';
+       6 
+       7 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonEle
+         ment> {
+     … +53 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Field.tsx)
+  ⎿  Wrote 55 lines to src\web\src\shared\ui\Field.tsx
+      1 import { useId, type ReactNode } from 'react';
+      2 import { cn } from './cn';
+      3 
+      4 /** Atributos que `Field` entrega al control para asociarlo con s
+        u etiqueta, ayuda y error. */
+      5 export interface FieldControlProps {
+      6   id: string;
+      7   'aria-describedby'?: string;
+      8   'aria-invalid'?: true;
+      9 }
+     … +46 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Input.tsx)
+  ⎿  Wrote 46 lines to src\web\src\shared\ui\Input.tsx
+       1 import type { InputHTMLAttributes, Ref, SelectHTMLAttributes } f
+         rom 'react';
+       2 import { cn } from './cn';
+       3 
+       4 /** Estilo común de los controles de formulario: 4 px de radio, 
+         borde `outline-variant`, error en rojo. */
+       5 const CONTROL =
+       6   'h-10 w-full rounded-base border border-outline-variant bg-sur
+         face-container-lowest px-space-md text-body-md ' +
+       7   'text-on-surface placeholder:text-outline transition-colors ho
+     … +40 lines (~1 KB) (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\CheckboxGroup.tsx)
+  ⎿  Wrote 79 lines to src\web\src\shared\ui\CheckboxGroup.tsx
+      1 import { Check } from 'lucide-react';
+      2 import { useId, type ReactNode } from 'react';
+      3 import { cn } from './cn';
+      4 
+      5 export interface CheckboxOption {
+      6   value: string;
+      7   label: string;
+      8   icon?: ReactNode;
+      9 }
+     … +70 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Badge.tsx)
+  ⎿  Wrote 48 lines to src\web\src\shared\ui\Badge.tsx
+      1 import type { ReactNode } from 'react';
+      2 import { cn } from './cn';
+      3 
+      4 /**
+      5  * Tonos de DESIGN.md (Componentes 2). En el MVP: `available` (Di
+        sponible, Confirmada, Activo), `busy` (Ocupada),
+      6  * `maintenance` (Cancelada, Inactivo, día cerrado, sala inactiva
+        ) y `primary` (píldora neutra, p. ej. tipo de acción).
+      7  * Qué tono lleva cada estado lo decide la pantalla.
+      8  */
+     … +40 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Modal.tsx)
+  ⎿  Wrote 131 lines to src\web\src\shared\ui\Modal.tsx
+       1 import { X } from 'lucide-react';
+       2 import { useEffect, useId, useRef, type ReactNode } from 'react'
+         ;
+       3 import { createPortal } from 'react-dom';
+       4 import { cn } from './cn';
+       5 
+       6 const FOCUSABLE =
+       7   'a[href], button:not([disabled]), input:not([disabled]), selec
+         t:not([disabled]), textarea:not([disabled]), [tabindex]:not([tab
+         index="-1"])';
+     … +124 lines (ctrl+o to expand)
+● Write(src\web\src\shared\ui\ConfirmDialog.tsx)
+  ⎿  Wrote 53 lines to src\web\src\shared\ui\ConfirmDialog.tsx
+       1 import type { ReactNode } from 'react';
+       2 import { Button } from './Button';
+       3 import { Modal } from './Modal';
+       4 
+       5 interface ConfirmDialogProps {
+       6   open: boolean;
+       7   title: string;
+       8   /** Texto de la consecuencia (DESIGN.md, Componentes 6): p. ej
+         . "Se cancelarán 3 reservas de ese día". */
+       9   children: ReactNode;
+     … +44 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Table.tsx)
+  ⎿  Wrote 68 lines to src\web\src\shared\ui\Table.tsx
+       1 import type { ReactNode } from 'react';
+       2 import { cn } from './cn';
+       3 
+       4 export interface Column<T> {
+       5   key: string;
+       6   header: string;
+       7   render: (row: T) => ReactNode;
+       8   /** Acciones a la derecha (DESIGN.md, Componentes 6). */
+       9   align?: 'left' | 'right';
+      10   /** Fechas, horas y cifras con dígitos tabulares. */
+     … +58 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\States.tsx)
+  ⎿  Wrote 59 lines to src\web\src\shared\ui\States.tsx
+       1 import { CircleAlert, Inbox, RotateCw } from 'lucide-react';
+       2 import type { ReactNode } from 'react';
+       3 import { Button } from './Button';
+       4 import { cn } from './cn';
+       5 
+       6 interface EmptyStateProps {
+       7   /** Texto específico de la pantalla (spec §9): "No tienes rese
+         rvas próximas", "Sin registros para estos filtros"… */
+       8   title: string;
+       9   description?: string;
+     … +50 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Banner.tsx)
+  ⎿  Wrote 55 lines to src\web\src\shared\ui\Banner.tsx
+      1 import { CalendarOff, CircleAlert, CircleCheck, Info } from 'luci
+        de-react';
+      2 import type { ReactNode } from 'react';
+      3 import { cn } from './cn';
+      4 
+      5 /**
+      6  * `success` y `error`: resultado del servidor en un formulario (
+        p. ej. el 409, con su `requestId`); `maintenance`:
+      7  * día cerrado sobre la agenda (DESIGN.md, Componentes 7); `info`
+        : avisos neutros.
+     … +48 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Avatar.tsx)
+  ⎿  Wrote 39 lines to src\web\src\shared\ui\Avatar.tsx
+       1 import { cn } from './cn';
+       2 
+       3 /** Iniciales de un nombre: primera letra de las dos primeras pa
+         labras ("Empleado Uno" → "EU"). */
+       4 export function initials(name: string): string {
+       5   const words = name.trim().split(/\s+/).filter(Boolean);
+       6   return words
+       7     .slice(0, 2)
+       8     .map((w) => w[0]?.toLocaleUpperCase('es') ?? '')
+       9     .join('');
+     … +30 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria
+      Digital/SalaLibre/src/web/src/shared/ui" && python - <<'EOF'
+      p='Avatar.tsx'…)
+  ⎿  /** Iniciales de un nombre: primera letra de las dos primeras palabras
+      ("Empleado Uno" → "EU"). */
+     export function initials(name: string): string {
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\shared\ui\Avatar.tsx (+1 -9)
+       1  import { cn } from './cn';
+       2 -                                                               
+       3 -/** Iniciales de un nombre: primera letra de las dos primeras p
+         -alabras ("Empleado Uno" → "EU"). */                            
+       4 -export function initials(name: string): string {               
+       5 -  const words = name.trim().split(/\s+/).filter(Boolean);      
+       6 -  return words                                                 
+       7 -    .slice(0, 2)                                               
+       8 -    .map((w) => w[0]?.toLocaleUpperCase('es') ?? '')           
+       9 -    .join('');                                                 
+      10 -}                                                              
+       2 +import { initials } from './initials';                         
+       3  
+       4  const SIZES = { xs: 'size-[18px] text-[9px]', sm: 'size-6 text-
+          label-xs', md: 'size-8 text-label-sm' };
+       5  
+  ⎿  Created src\web\src\shared\ui\initials.ts (+8 -0)
+      1 +/** Iniciales de un nombre: primera letra de las dos primeras pa
+        +labras ("Empleado Uno" → "EU"). */                              
+      2 +export function initials(name: string): string {                
+      3 +  const words = name.trim().split(/\s+/).filter(Boolean);       
+      4 +  return words                                                  
+      5 +    .slice(0, 2)                                                
+      6 +    .map((w) => w[0]?.toLocaleUpperCase('es') ?? '')            
+      7 +    .join('');                                                  
+      8 +}                                                               
+
+● Write(src\web\src\shared\ui\toast-context.ts)
+  ⎿  Wrote 25 lines to src\web\src\shared\ui\toast-context.ts
+       1 import { createContext, useContext } from 'react';
+       2 
+       3 export type ToastTone = 'success' | 'error' | 'info';
+       4 
+       5 export interface ToastInput {
+       6   tone?: ToastTone;
+       7   message: string;
+       8   /** Request ID de un error del API (D-06). */
+       9   requestId?: string;
+      10 }
+     … +15 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\Toast.tsx)
+  ⎿  Wrote 99 lines to src\web\src\shared\ui\Toast.tsx
+       1 import { CircleAlert, CircleCheck, Info, X } from 'lucide-react'
+         ;
+       2 import { useCallback, useEffect, useMemo, useRef, useState, type
+          ReactNode } from 'react';
+       3 import { cn } from './cn';
+       4 import { ToastContext, type ToastInput, type ToastTone } from '.
+         /toast-context';
+       5 
+       6 /** Duración en pantalla. Los errores duran más para poder copia
+         r el `requestId`. */
+     … +93 lines (ctrl+o to expand)
+
+● Write(src\web\src\shared\ui\index.ts)
+  ⎿  Wrote 17 lines to src\web\src\shared\ui\index.ts
+       1 /** Componentes base de la interfaz (T07a). Las pantallas import
+         an desde `shared/ui`, no desde cada archivo. */
+       2 export { Avatar } from './Avatar';
+       3 export { Badge, type BadgeTone } from './Badge';
+       4 export { Banner, type BannerTone } from './Banner';
+       5 export { Button, type ButtonVariant } from './Button';
+       6 export { CheckboxGroup, type CheckboxOption } from './CheckboxGr
+         oup';
+       7 export { cn } from './cn';
+       8 export { ConfirmDialog } from './ConfirmDialog';
+     … +9 lines (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && python
+      - <<'EOF'
+      p='src/main.tsx'…)
+  ⎿  ✓ 17 modules transformed.
+     rendering chunks...
+     computing gzip size...
+     … +15 lines (ctrl+o to expand)
+  ⎿  Updated src\web\src\main.tsx (+2 -0)
+      1  import { StrictMode } from 'react';
+      2  import { createRoot } from 'react-dom/client';
+      3 +// Inter empaquetada en local (T07a): sin fuentes remotas (OWASP
+        + A08).                                                          
+      4 +import '@fontsource-variable/inter';                            
+      5  import { App } from './App.tsx';
+      6  import './index.css';
+      7  
+  ⎿  (timeout 5m)
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Lint y build limpios, sin colores sueltos ni recursos externos. Ahora calculo
+  el contraste AA de las insignias (CA6).
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● El placeholder (outline, 4,49:1) queda justo bajo AA; lo cambio a
+  on-surface-variant (9,35:1). Luego pruebo CA3 en el navegador con una página
+  temporal.
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && sed -i
+      "s/placeholder:text-outline/placeholder:text-on-surface-variant/"
+      src/shared/ui/Input.…)
+  ⎿  7:  'text-on-surface placeholder:text-on-surface-variant transition-co
+     lors hover:border-outline ' +
+  ⎿  Updated src\web\src\App.tsx (+31 -5)
+       1 -// T01: página placeholder. Los tokens y componentes visuales l
+         -legan en T07a; las rutas, en T07.                              
+       2 -export function App() {                                        
+       1 +// TEMPORAL (verificación de CA3 de T07a): se restaura antes de
+         +l commit.                                                      
+       2 +import { useState } from 'react';                              
+       3 +import { Badge, Button, ConfirmDialog, Field, Input, Modal, Toa
+         +stProvider, useToast } from './shared/ui';                     
+       4 +                                                               
+       5 +function Demo() {                                              
+       6 +  const [open, setOpen] = useState(false);                     
+       7 +  const [confirm, setConfirm] = useState(false);               
+       8 +  const toast = useToast();                                    
+       9    return (
+       4 -    <main>                                                     
+       5 -      <h1>SalaLibre</h1>                                       
+       6 -      <p>Esqueleto en construcción.</p>                        
+      10 +    <main className="flex flex-col gap-gutter p-margin">       
+      11 +      <Button id="open-modal" onClick={() => setOpen(true)}>Abr
+         +ir modal</Button>                                              
+      12 +      <Button id="open-confirm" variant="danger" onClick={() =>
+         + setConfirm(true)}>Confirmar</Button>                          
+      13 +      <Button loading>Cargando</Button>                        
+      14 +      <Button disabled variant="secondary">Deshabilitado</Butto
+         +n>                                                             
+      15 +      <Button variant="ghost" onClick={() => toast.show({ tone:
+         + 'error', message: 'Falló', requestId: 'abc-123' })}>Toast</But
+         +ton>                                                           
+      16 +      <Field label="Título" error="Escribe un título">{(p) => <
+         +Input {...p} placeholder="tu@ejemplo.com" />}</Field>          
+      17 +      <p className="tnum">09:00 - 10:30</p>                    
+      18 +      <Badge tone="available" dot>Activo</Badge>               
+      19 +      <Modal open={open} onClose={() => setOpen(false)} title="
+         +Nueva reserva" footer={<Button onClick={() => setOpen(false)}>G
+         +uardar</Button>}>                                              
+      20 +        <Field label="Asistentes">{(p) => <Input {...p} id={p.i
+         +d} />}</Field>                                                 
+      21 +      </Modal>                                                 
+      22 +      <ConfirmDialog open={confirm} title="Cancelar reserva" co
+         +nfirmLabel="Cancelar reserva" onConfirm={() => setConfirm(false
+         +)} onCancel={() => setConfirm(false)}>                         
+      23 +        La reserva quedará cancelada.                          
+      24 +      </ConfirmDialog>                                         
+      25      </main>
+      26    );
+      27  }
+      28 +                                                               
+      29 +export function App() {                                        
+      30 +  return (                                                     
+      31 +    <ToastProvider>                                            
+      32 +      <Demo />                                                 
+      33 +    </ToastProvider>                                           
+      34 +  );                                                           
+      35 +}                                                              
+  ⎿  Updated src\web\src\shared\ui\Input.tsx (+1 -1)
+       4  /** Estilo común de los controles de formulario: 4 px de radio,
+           borde `outline-variant`, error en rojo. */
+       5  const CONTROL =
+       6    'h-10 w-full rounded-base border border-outline-variant bg-su
+          rface-container-lowest px-space-md text-body-md ' +
+       7 -  'text-on-surface placeholder:text-outline transition-colors h
+         -over:border-outline ' +                                        
+       7 +  'text-on-surface placeholder:text-on-surface-variant transiti
+         +on-colors hover:border-outline ' +                             
+       8    'focus-visible:border-primary-container focus-visible:outline
+          -2 focus-visible:outline-offset-0 ' +
+       9    'focus-visible:outline-primary-container disabled:cursor-not-
+          allowed disabled:bg-mist disabled:opacity-70 ' +
+      10    'aria-invalid:border-error';
+
+  Called claude-in-chrome 3 times, ran 1 shell command (ctrl+o to expand)
+
+● CA3 comprobado en el navegador. Echo un vistazo visual rápido con el modal
+  abierto.
+
+  Called claude-in-chrome 2 times (ctrl+o to expand)
+
+● Se ve correcto. Cierro la pestaña, detengo Vite y restauro App.tsx.
+
+  Called claude-in-chrome (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre/src/web" && cp
+      "$CLAUDE_JOB_DIR/tmp/App.tsx.orig" src/App.tsx && git -C ../.. diff --stat
+      -- src/web/src/…)
+  ⎿  CORRECTO: el proceso con PID 27528 (proceso secundario de PID 32196)
+     ha sido terminado.
+  ⎿  Updated src\web\src\App.tsx (+5 -31)
+       1 -// TEMPORAL (verificación de CA3 de T07a): se restaura antes de
+         -l commit.                                                      
+       2 -import { useState } from 'react';                              
+       3 -import { Badge, Button, ConfirmDialog, Field, Input, Modal, Toa
+         -stProvider, useToast } from './shared/ui';                     
+       4 -                                                               
+       5 -function Demo() {                                              
+       6 -  const [open, setOpen] = useState(false);                     
+       7 -  const [confirm, setConfirm] = useState(false);               
+       8 -  const toast = useToast();                                    
+       9 -  return (                                                     
+      10 -    <main className="flex flex-col gap-gutter p-margin">       
+      11 -      <Button id="open-modal" onClick={() => setOpen(true)}>Abr
+         -ir modal</Button>                                              
+      12 -      <Button id="open-confirm" variant="danger" onClick={() =>
+         - setConfirm(true)}>Confirmar</Button>                          
+      13 -      <Button loading>Cargando</Button>                        
+      14 -      <Button disabled variant="secondary">Deshabilitado</Butto
+         -n>                                                             
+      15 -      <Button variant="ghost" onClick={() => toast.show({ tone:
+         - 'error', message: 'Falló', requestId: 'abc-123' })}>Toast</But
+         -ton>                                                           
+      16 -      <Field label="Título" error="Escribe un título">{(p) => <
+         -Input {...p} placeholder="tu@ejemplo.com" />}</Field>          
+      17 -      <p className="tnum">09:00 - 10:30</p>                    
+      18 -      <Badge tone="available" dot>Activo</Badge>               
+      19 -      <Modal open={open} onClose={() => setOpen(false)} title="
+         -Nueva reserva" footer={<Button onClick={() => setOpen(false)}>G
+         -uardar</Button>}>                                              
+      20 -        <Field label="Asistentes">{(p) => <Input {...p} id={p.i
+         -d} />}</Field>                                                 
+      21 -      </Modal>                                                 
+      22 -      <ConfirmDialog open={confirm} title="Cancelar reserva" co
+         -nfirmLabel="Cancelar reserva" onConfirm={() => setConfirm(false
+         -)} onCancel={() => setConfirm(false)}>                         
+      23 -        La reserva quedará cancelada.                          
+      24 -      </ConfirmDialog>                                         
+      25 -    </main>                                                    
+      26 -  );                                                           
+      27 -}                                                              
+      28 -                                                               
+       1 +// T01: página placeholder. Los tokens y componentes visuales l
+         +legan en T07a; las rutas, en T07.                              
+       2  export function App() {
+       3    return (
+      31 -    <ToastProvider>                                            
+      32 -      <Demo />                                                 
+      33 -    </ToastProvider>                                           
+       4 +    <main>                                                     
+       5 +      <h1>SalaLibre</h1>                                       
+       6 +      <p>Esqueleto en construcción.</p>                        
+       7 +    </main>                                                    
+       8    );
+       9  }
+
+● Background command "Start Vite dev server for temporary check" failed with
+exit code 1
+
+● Vite detenido (el "exit 1" es por haberlo terminado yo). Corro la verificación
+  final de la tarea.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Todo verificado. Escribo la documentación.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(docs\tareas\T07a.md)
+  ⎿  Wrote 174 lines to docs\tareas\T07a.md
+       1 # T07a · Sistema visual base
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | En revisión |
+       8 | Inicio – fin | 2026-11-15 22:30 – 22:41 (11 min) · estimado: M
+          |
+     … +166 lines (ctrl+o to expand)
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && grep -n "S-09"
+      docs/01-spec.md | head -2; D=$(date "+%Y-%m-%d %H:%M"); python - "$D"
+      <<'EOF'
+      import s…)
+  ⎿  501:| S-09 | Sin pruebas automáticas de frontend en el MVP. | El stack
+      solo declara Jest para la API; el frontend se verifica con el humo P-
+     18 y los flujos de §6. |
+     … +26 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70 -| 12 | T07a | Sistema visual base (tokens, componentes de `shar
+         -ed/ui`) | T01 | M | No | Pendiente | |                         
+      70 +| 12 | T07a | Sistema visual base (tokens, componentes de `shar
+         +ed/ui`) | T01 | M | No | En revisión | [T07a](tareas/T07a.md) |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+          iente | |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+     ...
+      617  | Dependencias | T01 |
+      618  | Estimación | M |
+      619  | Seguridad / auditoría | Roles: no aplica. Auditoría: no apli
+           ca. Sin recursos externos (CDN, fuentes ni imágenes remotas), 
+           lo que reduce la superficie de la cadena de suministro (OWASP 
+           A08) |
+      620 -| Estado | Pendiente |                                        
+      620 +| Estado | En revisión |                                      
+      621  
+      622  **Alcance (archivos o módulos):**
+      623  - `src/web/tailwind.config.*` y estilos globales con los token
+           s de `DESIGN.md` (colores, radios, espaciado, tipografía, util
+           idad de cifras tabulares).
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      107  | B-103 | 2026-11-15 22:27 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T06a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-102 | T06a Hecha
+            | docs/02-backlog.md, B-102 |
+      108  | B-104 | 2026-11-15 22:28 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T06a, 
+           B-102), CLAUDE.md (Dependencias) agrega la subsección «Auditor
+           ía fijada en T06a»: `record`/`recordMany` dentro de la transac
+           ción con el `ctx`; actor y request ID por `AsyncLocalStorage` 
+           con `RequestContextInterceptor` (falla cerrado); reglas de `da
+           ta` (sin secretos, sin `undefined`, PATCH sin cambios se audit
+           a); cascadas con `cause`; consulta con desempate por id, `from
+           `/`to` en `BUSINESS_TZ`, sin `data` y tope de `page`; pruebas 
+           con `InMemoryAuditRepository` y `requestId` en integración; `a
+           udit_logs` no se limpia. Se actualizan las dos líneas de T06 q
+           ue dejaban pendiente la ruta de auditoría | Solo documentación
+           ; sin cambios de código | CLAUDE.md, docs/tareas/T06a.md §6 y 
+           §7, B-102 |
+      109  | B-105 | 2026-11-15 22:30 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07a (Sistema visual base). DoR comprobada: objetivo, 
+           trazabilidad, alcance, fuera de alcance, CA1–CA7, seguridad, v
+           erificación y estimación M presentes; dependencia T01 en Hecha
+            | En curso | docs/02-backlog.md T07a |
+      110 +| B-106 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Fi
+          +n de T07a (Sistema visual base): tokens de DESIGN.md en `src/w
+          +eb/src/index.css` con `@theme` de Tailwind 4 (colores, insigni
+          +as, tipografía, radios 4/8 px y círculo, espaciado, modales 48
+          +0/640, sombras, utilidad `tnum`) y sin la paleta por defecto d
+          +e Tailwind; Inter (`@fontsource-variable/inter` 5.3.0) e icono
+          +s (`lucide-react` 1.73.0) locales; 16 componentes en `shared/u
+          +i` (Button, Input, Select, Field, CheckboxGroup, Badge, Modal,
+          + ConfirmDialog, Table, Spinner, Skeleton, EmptyState, ErrorSta
+          +te, Toast, Avatar, Banner); logo y favicon en `public/`. Lint 
+          +y build sin errores, grep sin recursos externos, `/logo.svg` 2
+          +00, insignias ≥ 6,92:1 (AA), CA3 comprobado en el navegador co
+          +n una página temporal que no se versiona; compose healthy | T0
+          +7a En revisión. Commit: ver la fila siguiente. Desvíos: sin `t
+          +ailwind.config.*` (Tailwind 4), paleta por defecto quitada, lu
+          +cide en lugar de Material Symbols, placeholder con `on-surface
+          +-variant` (`outline` daba 4,49:1). Ambigüedades: tokens que DE
+          +SIGN.md da solo en texto, tono de cada estado, avatar de 18 px
+          + con iniciales de 9 px | docs/tareas/T07a.md, B-105 |         
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && D=$(date
+      "+%Y-%m-%d %H:%M") && sed -i 's/| Commit(s) | ver la fila de la bitácora
+      que registra el has…)
+  ⎿  1
+     d9b74a3 T07a: registro del hash del commit en bitácora
+     b5df650 T07a: Sistema visual base (tokens, componentes de shared/ui)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      108  | B-104 | 2026-11-15 22:28 | Agente | 3-Ejecutar | CORRECCIÓN 
+           | A pedido de la persona (observación de la revisión de T06a, 
+           B-102), CLAUDE.md (Dependencias) agrega la subsección «Auditor
+           ía fijada en T06a»: `record`/`recordMany` dentro de la transac
+           ción con el `ctx`; actor y request ID por `AsyncLocalStorage` 
+           con `RequestContextInterceptor` (falla cerrado); reglas de `da
+           ta` (sin secretos, sin `undefined`, PATCH sin cambios se audit
+           a); cascadas con `cause`; consulta con desempate por id, `from
+           `/`to` en `BUSINESS_TZ`, sin `data` y tope de `page`; pruebas 
+           con `InMemoryAuditRepository` y `requestId` en integración; `a
+           udit_logs` no se limpia. Se actualizan las dos líneas de T06 q
+           ue dejaban pendiente la ruta de auditoría | Solo documentación
+           ; sin cambios de código | CLAUDE.md, docs/tareas/T06a.md §6 y 
+           §7, B-102 |
+      109  | B-105 | 2026-11-15 22:30 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07a (Sistema visual base). DoR comprobada: objetivo, 
+           trazabilidad, alcance, fuera de alcance, CA1–CA7, seguridad, v
+           erificación y estimación M presentes; dependencia T01 en Hecha
+            | En curso | docs/02-backlog.md T07a |
+      110  | B-106 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07a (Sistema visual base): tokens de DESIGN.md en `src/w
+           eb/src/index.css` con `@theme` de Tailwind 4 (colores, insigni
+           as, tipografía, radios 4/8 px y círculo, espaciado, modales 48
+           0/640, sombras, utilidad `tnum`) y sin la paleta por defecto d
+           e Tailwind; Inter (`@fontsource-variable/inter` 5.3.0) e icono
+           s (`lucide-react` 1.73.0) locales; 16 componentes en `shared/u
+           i` (Button, Input, Select, Field, CheckboxGroup, Badge, Modal,
+            ConfirmDialog, Table, Spinner, Skeleton, EmptyState, ErrorSta
+           te, Toast, Avatar, Banner); logo y favicon en `public/`. Lint 
+           y build sin errores, grep sin recursos externos, `/logo.svg` 2
+           00, insignias ≥ 6,92:1 (AA), CA3 comprobado en el navegador co
+           n una página temporal que no se versiona; compose healthy | T0
+           7a En revisión. Commit: ver la fila siguiente. Desvíos: sin `t
+           ailwind.config.*` (Tailwind 4), paleta por defecto quitada, lu
+           cide en lugar de Material Symbols, placeholder con `on-surface
+           -variant` (`outline` daba 4,49:1). Ambigüedades: tokens que DE
+           SIGN.md da solo en texto, tono de cada estado, avatar de 18 px
+            con iniciales de 9 px | docs/tareas/T07a.md, B-105 |
+      111 +| B-107 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Re
+          +gistro del hash del commit de T07a (fila B-106) | Commit `b5df
+          +650` (código y documentación de T07a) | B-106, docs/tareas/T07
+          +a.md |                                                        
+  ⎿  Updated docs\tareas\T07a.md (+1 -1)
+       7  | Estado | En revisión |
+       8  | Inicio – fin | 2026-11-15 22:30 – 22:41 (11 min) · estimado: 
+          M |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10 -| Commit(s) | ver la fila de la bitácora que registra el hash (
+         -posterior a la fila "Fin de T07a") |                           
+      10 +| Commit(s) | `b5df650` (código y documentación) + commit de re
+         +gistro del hash |                                              
+      11  | Trazabilidad | D-01, D-28 · spec §9 (estados de pantalla), §1
+          1 (accesibilidad) · `docs/diseño/DESIGN.md` (Colores, Tipografí
+          a, Formas, Diseño y espaciado, Elevación, Componentes 2, 6 y 7)
+           · backlog T07a |
+      12  
+      13  ## 1. Objetivo
+
+● T07a está terminada y en estado En revisión; me detengo hasta tu revisión.
+
+  Lo que se hizo
+  - Tokens del diseño en Tailwind: todos los colores de DESIGN.md (incluidos los
+    de las insignias), tipografía, radios de 4 px, 8 px y círculo, espaciado,
+    anchos de modal de 480 y 640 px, sombras y la utilidad tnum para cifras
+    tabulares. Están en src/web/src/index.css.
+  - Sin colores sueltos posibles: quité la paleta por defecto de Tailwind, así
+    que en los componentes solo existen los colores del diseño.
+  - Inter e iconos locales: @fontsource-variable/inter 5.3.0 y lucide-react
+    1.73.0, con versión exacta. El motivo de cada uno está en
+    docs/tareas/T07a.md.
+  - 16 componentes en src/web/src/shared/ui/: botón, campo de texto, lista
+    desplegable, campo con etiqueta y error, selección de equipamiento,
+    insignia, modal, diálogo de confirmación, tabla, indicadores de carga,
+    estado vacío, estado de error con requestId y "Reintentar", avisos breves
+    (toast), avatar con iniciales y banner.
+  - Logo y favicon copiados a src/web/public/ y servidos por la propia app.
+
+  Verificación
+  - El lint y el build terminan sin errores.
+  - El grep de la tarea no encuentra recursos externos y /logo.svg responde 200.
+  - Todas las insignias cumplen el contraste AA (6,92:1 o más); la tabla con
+    cada par está en el documento.
+  - CA3 lo comprobé en el navegador con una página temporal que no quedó en el
+    repositorio:
+    - El botón se deshabilita y muestra el spinner mientras carga.
+    - El error del campo queda asociado con aria-describedby.
+    - El modal se cierra con Escape, no deja salir el foco con Tab y lo devuelve
+      al botón que lo abrió.
+  - El web no tiene pruebas automáticas (supuesto S-09 del spec), así que ese
+    comportamiento no tiene prueba que lo repita.
+
+  Desvíos
+  - No hay tailwind.config.*: el alcance lo nombra, pero Tailwind 4 (fijado en
+    T01) se configura en el CSS, así que los tokens están en index.css.
+  - Iconos de Lucide en vez de Material Symbols: los de los prototipos se cargan
+    desde un CDN.
+  - Color del texto de ejemplo en los campos: el outline de DESIGN.md daba
+    4,49:1 sobre blanco, justo debajo de AA. Usé on-surface-variant, que da
+    9,35:1.
+  - Alerta previa de npm audit: es moderada, viene de minimatch dentro de
+    typescript-eslint (solo desarrollo) y no la causan los paquetes nuevos. No
+    la toqué.
+
+  Ambigüedades
+  - Algunos colores (#F8FAFC, #F1F5F9, #E2E8F0, el velo de los modales y los de
+    las insignias) DESIGN.md solo los menciona en el texto. Los registré como
+    tokens con nombre.
+  - Qué tono lleva cada estado (por ejemplo, Cancelada o Inactivo) lo decide
+    cada pantalla. La insignia solo ofrece los tonos y sugiere un uso.
+  - El avatar de 18 px de la agenda lleva iniciales de 9 px, debajo del mínimo
+    de 11 px. Lo acepté como metadato, que es la excepción que permite
+    DESIGN.md.
+
+  Commits: b5df650 (código y documentación) y d9b74a3 (hash registrado en la
+  bitácora).
+
+✻ Cooked for 12m 53s · done 22:42
+
+❯ /bitacora T07a revisada, cumple la DoD                                        
+
+● User answered Claude's questions:
+  ⎿  · Tu texto «T07a revisada, cumple la DoD» empieza con «T07a», que no es un 
+     tipo válido de la bitácora. ¿Qué tipo le pongo a la fila? (Para T06a, con 
+     el mismo texto, elegiste REVISIÓN.) → REVISIÓN (Recommended)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && tail -1
+      docs/03-bitacora.md | cut -c1-10 && D=$(date "+%Y-%m-%d %H:%M") && echo "|
+      B-108 | $D | Yo |…)
+  ⎿  | B-107 |
+     | B-108 | 2026-11-15 22:44 | Yo | 3-Ejecutar | REVISIÓN | T07a revisad
+     a, cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      109  | B-105 | 2026-11-15 22:30 | Agente | 3-Ejecutar | AGENTE | In
+           icio de T07a (Sistema visual base). DoR comprobada: objetivo, 
+           trazabilidad, alcance, fuera de alcance, CA1–CA7, seguridad, v
+           erificación y estimación M presentes; dependencia T01 en Hecha
+            | En curso | docs/02-backlog.md T07a |
+      110  | B-106 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07a (Sistema visual base): tokens de DESIGN.md en `src/w
+           eb/src/index.css` con `@theme` de Tailwind 4 (colores, insigni
+           as, tipografía, radios 4/8 px y círculo, espaciado, modales 48
+           0/640, sombras, utilidad `tnum`) y sin la paleta por defecto d
+           e Tailwind; Inter (`@fontsource-variable/inter` 5.3.0) e icono
+           s (`lucide-react` 1.73.0) locales; 16 componentes en `shared/u
+           i` (Button, Input, Select, Field, CheckboxGroup, Badge, Modal,
+            ConfirmDialog, Table, Spinner, Skeleton, EmptyState, ErrorSta
+           te, Toast, Avatar, Banner); logo y favicon en `public/`. Lint 
+           y build sin errores, grep sin recursos externos, `/logo.svg` 2
+           00, insignias ≥ 6,92:1 (AA), CA3 comprobado en el navegador co
+           n una página temporal que no se versiona; compose healthy | T0
+           7a En revisión. Commit: ver la fila siguiente. Desvíos: sin `t
+           ailwind.config.*` (Tailwind 4), paleta por defecto quitada, lu
+           cide en lugar de Material Symbols, placeholder con `on-surface
+           -variant` (`outline` daba 4,49:1). Ambigüedades: tokens que DE
+           SIGN.md da solo en texto, tono de cada estado, avatar de 18 px
+            con iniciales de 9 px | docs/tareas/T07a.md, B-105 |
+      111  | B-107 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07a (fila B-106) | Commit `b5df
+           650` (código y documentación de T07a) | B-106, docs/tareas/T07
+           a.md |
+      112 +| B-108 | 2026-11-15 22:44 | Yo | 3-Ejecutar | REVISIÓN | T07a
+          + revisada, cumple la DoD | — | — |                            
+
+● Agregué la fila al final de docs/03-bitacora.md. No hice commit; entra en el
+  próximo commit de la tarea:
+
+  | B-108 | 2026-11-15 22:44 | Yo | 3-Ejecutar | REVISIÓN | T07a revisada, 
+  cumple la DoD | — | — |
+
+✻ Cogitated for 13s · done 22:44
+
+❯ Pasa T07a a Hecha en el backlog y haz commit                                  
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && git status
+      --short && git diff --stat docs/tareas/T07a.md && python - <<'EOF'
+      p='docs/02-backlog.md'…)
+  ⎿   M docs/03-bitacora.md
+      M docs/tareas/T07a.md
+      docs/tareas/T07a.md | 8 ++++----
+     … +16 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
+      68  | 10 | T06 | Pruebas de integración: infraestructura `api-test`
+          , choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+          echa | [T06](tareas/T06.md) |
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Hecha | [T06a](tareas/T06a.md) |
+      70 -| 12 | T07a | Sistema visual base (tokens, componentes de `shar
+         -ed/ui`) | T01 | M | No | En revisión | [T07a](tareas/T07a.md) |
+      70 +| 12 | T07a | Sistema visual base (tokens, componentes de `shar
+         +ed/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |      
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+          iente | |
+      72  | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S |
+           No | Pendiente | |
+      73  | 15 | T07c | Login: composición visual de la imagen y personaj
+          es animados | T07a, T07 | L | **Sí** | Pendiente | |
+     ...
+      617  | Dependencias | T01 |
+      618  | Estimación | M |
+      619  | Seguridad / auditoría | Roles: no aplica. Auditoría: no apli
+           ca. Sin recursos externos (CDN, fuentes ni imágenes remotas), 
+           lo que reduce la superficie de la cadena de suministro (OWASP 
+           A08) |
+      620 -| Estado | En revisión |                                      
+      620 +| Estado | Hecha |                                            
+      621  
+      622  **Alcance (archivos o módulos):**
+      623  - `src/web/tailwind.config.*` y estilos globales con los token
+           s de `DESIGN.md` (colores, radios, espaciado, tipografía, util
+           idad de cifras tabulares).
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      110  | B-106 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Fi
+           n de T07a (Sistema visual base): tokens de DESIGN.md en `src/w
+           eb/src/index.css` con `@theme` de Tailwind 4 (colores, insigni
+           as, tipografía, radios 4/8 px y círculo, espaciado, modales 48
+           0/640, sombras, utilidad `tnum`) y sin la paleta por defecto d
+           e Tailwind; Inter (`@fontsource-variable/inter` 5.3.0) e icono
+           s (`lucide-react` 1.73.0) locales; 16 componentes en `shared/u
+           i` (Button, Input, Select, Field, CheckboxGroup, Badge, Modal,
+            ConfirmDialog, Table, Spinner, Skeleton, EmptyState, ErrorSta
+           te, Toast, Avatar, Banner); logo y favicon en `public/`. Lint 
+           y build sin errores, grep sin recursos externos, `/logo.svg` 2
+           00, insignias ≥ 6,92:1 (AA), CA3 comprobado en el navegador co
+           n una página temporal que no se versiona; compose healthy | T0
+           7a En revisión. Commit: ver la fila siguiente. Desvíos: sin `t
+           ailwind.config.*` (Tailwind 4), paleta por defecto quitada, lu
+           cide en lugar de Material Symbols, placeholder con `on-surface
+           -variant` (`outline` daba 4,49:1). Ambigüedades: tokens que DE
+           SIGN.md da solo en texto, tono de cada estado, avatar de 18 px
+            con iniciales de 9 px | docs/tareas/T07a.md, B-105 |
+      111  | B-107 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07a (fila B-106) | Commit `b5df
+           650` (código y documentación de T07a) | B-106, docs/tareas/T07
+           a.md |
+      112  | B-108 | 2026-11-15 22:44 | Yo | 3-Ejecutar | REVISIÓN | T07a
+            revisada, cumple la DoD | — | — |
+      113 +| B-109 | 2026-11-15 22:45 | Agente | 3-Ejecutar | AGENTE | A 
+          +pedido de la persona, T07a pasa a Hecha en el resumen y en la 
+          +ficha de 02-backlog.md, tras la revisión de B-108 | T07a Hecha
+          + | docs/02-backlog.md, B-108 |                                
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● T07a ya figura como Hecha en docs/02-backlog.md, en la tabla de resumen y en
+  su ficha, e hice el commit cafaf55. Agregué la fila B-109 a la bitácora.
+
+  Ese commit incluye también tu sección 8 (Revisión) de docs/tareas/T07a.md, que
+  estaba sin commit. Esta vez la metí en el mismo commit, no en uno aparte como
+  con T06a. El árbol de trabajo quedó limpio.
+
+  En tu revisión pediste actualizar CLAUDE.md con los desvíos de T07a. Todavía
+  no lo hice: ¿agrego la subsección «Sistema visual fijado en T07a»?
+
+✻ Sautéed for 13s · done 22:45
+
+❯ Sí, actualiza CLAUDE.md con los desvíos de T07a                               
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      CLAUDE.md <<'EOF'…)
+  ⎿  bd36c7d T07a: CLAUDE.md con los desvíos de la tarea
+  ⎿  Updated CLAUDE.md (+29 -0)
+      336    envía `X-Request-Id` para encontrar las filas de una petició
+           n.
+      337  - **`audit_logs` no se limpia entre pruebas** (el trigger lo i
+           mpide): comparar por `requestId` o por diferencia de
+      338    `COUNT`, nunca por un total fijo. Las verificaciones manuale
+           s dejan filas permanentes en la base de desarrollo.
+      339 +                                                              
+      340 +### Sistema visual fijado en T07a (ver `docs/tareas/T07a.md` §
+          +2, §6 y §7)                                                   
+      341 +- **Sin `tailwind.config.*`:** Tailwind 4 (`@tailwindcss/vite`
+          +) se configura en CSS. Todos los tokens viven en el           
+      342 +  `@theme` de `src/web/src/index.css`; un token nuevo se agreg
+          +a ahí, con su nombre y su origen en `DESIGN.md`.              
+      343 +- **La paleta por defecto de Tailwind está quitada** (`--color
+          +-*: initial`): `bg-blue-500`, `text-slate-600`,               
+      344 +  `bg-white` o `text-black` no existen. Usar los tokens (`bg-p
+          +rimary-container`, `text-on-surface`,                         
+      345 +  `bg-surface-container-lowest`…) y los nombres agregados para
+          + lo que `DESIGN.md` da solo en texto: `canvas`, `mist`,       
+      346 +  `divider`, `ink`, `interactive`, `scrim`, y los tonos de ins
+          +ignia `available-*`, `busy-*`, `maintenance-*`.               
+      347 +  No volver a activar la paleta ni escribir hex, `rgb()` o col
+          +ores arbitrarios (`bg-[#…]`) en componentes.                  
+      348 +- **Formas y medidas:** `rounded-base` (4 px, controles e insi
+          +gnias), `rounded-lg` (8 px, contenedores y modales),          
+      349 +  `rounded-full` (avatares y píldoras); tipografía con `text-h
+          +eadline-*`, `text-body-*`, `text-label-*`, `text-code-sm`     
+      350 +  (ya traen alto de línea, espaciado y peso); espaciado con no
+          +mbre (`gutter`, `margin`, `space-*`); modales                 
+      351 +  `max-w-modal-sm` (480 px) y `max-w-modal-md` (640 px); sombr
+          +as `shadow-elevated` y `shadow-modal`. Horas, fechas y        
+      352 +  capacidades siempre con la utilidad `tnum`.                 
+      353 +- **Fuente e iconos locales:** Inter con `@fontsource-variable
+          +/inter` (importada en `main.tsx`, familia                     
+      354 +  `'Inter Variable'`) e iconos con `lucide-react` (no Material
+          + Symbols). Nunca fuentes, iconos, imágenes ni scripts         
+      355 +  por CDN o URL externa; los iconos van con `aria-hidden="true
+          +"` y el estado siempre lleva texto.                           
+      356 +- **Componentes base en `src/web/src/shared/ui/`**, importados
+          + desde `shared/ui` (el `index.ts`): las pantallas los         
+      357 +  reutilizan en lugar de repetir estilos. Formularios con `Fie
+          +ld` (render prop que entrega `id`, `aria-describedby` y       
+      358 +  `aria-invalid` al control), diálogos con `Modal`/`ConfirmDia
+          +log` (nunca `alert()` ni `confirm()`), avisos con             
+      359 +  `useToast()` dentro de `ToastProvider` (lo monta T07), error
+          +es del API con `ErrorState` o `Banner` y su `requestId`.      
+      360 +  `Badge` solo ofrece tonos: cada pantalla decide el tono de c
+          +ada estado.                                                   
+      361 +- **Contraste AA:** el texto de ejemplo de los campos usa `on-
+          +surface-variant`, no `outline` (4,49:1 sobre blanco).         
+      362 +  Al combinar un token de texto con uno de fondo que no esté e
+          +n la tabla de `docs/tareas/T07a.md` §2, medir el              
+      363 +  contraste y anotarlo en el documento de la tarea.           
+      364 +- **Sin pruebas automáticas de frontend (S-09):** el comportam
+          +iento accesible (foco, Escape, `aria-*`) se comprueba en      
+      365 +  el navegador. Si se usa una página temporal de demostración,
+          + se borra antes del commit (no hay página de demo             
+      366 +  permanente). En `react-refresh`, los hooks y helpers van en 
+          +archivos aparte de los componentes (como                      
+      367 +  `toast-context.ts` e `initials.ts`) para que el lint no dé a
+          +visos.                                                        
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      111  | B-107 | 2026-11-15 22:42 | Agente | 3-Ejecutar | AGENTE | Re
+           gistro del hash del commit de T07a (fila B-106) | Commit `b5df
+           650` (código y documentación de T07a) | B-106, docs/tareas/T07
+           a.md |
+      112  | B-108 | 2026-11-15 22:44 | Yo | 3-Ejecutar | REVISIÓN | T07a
+            revisada, cumple la DoD | — | — |
+      113  | B-109 | 2026-11-15 22:45 | Agente | 3-Ejecutar | AGENTE | A 
+           pedido de la persona, T07a pasa a Hecha en el resumen y en la 
+           ficha de 02-backlog.md, tras la revisión de B-108 | T07a Hecha
+            | docs/02-backlog.md, B-108 |
+      114 +| B-110 | 2026-11-15 22:46 | Agente | 3-Ejecutar | CORRECCIÓN 
+          +| A pedido de la persona (observación de la revisión de T07a, 
+          +B-108), CLAUDE.md (Dependencias) agrega la subsección «Sistema
+          + visual fijado en T07a»: tokens en el `@theme` de `index.css` 
+          +sin `tailwind.config.*`; paleta por defecto de Tailwind quitad
+          +a y nombres de los tokens agregados; formas, tipografía, espac
+          +iado, modales, sombras y `tnum`; Inter y lucide-react locales,
+          + sin CDN; uso de los componentes de `shared/ui`; placeholder c
+          +on `on-surface-variant` y medición de contraste de combinacion
+          +es nuevas; verificación en navegador sin página de demo perman
+          +ente | Solo documentación; sin cambios de código | CLAUDE.md, 
+          +docs/tareas/T07a.md §6 y §7, B-108 |                          
+
+● Actualicé CLAUDE.md con los desvíos de T07a, agregué la fila B-110
+  (CORRECCIÓN) a la bitácora e hice el commit bd36c7d. El árbol de trabajo quedó
+  limpio.
+
+  Agregué la subsección «Sistema visual fijado en T07a» al final de
+  "Dependencias". Deja fijado esto para las tareas de pantallas:
+  - Dónde están los tokens: no hay tailwind.config.*. Todos los tokens están en
+    el @theme de src/web/src/index.css, y uno nuevo se agrega ahí.
+  - Colores:
+    - Sin la paleta por defecto de Tailwind: bg-white o bg-blue-500 no existen.
+    - Solo se usan los tokens del diseño y los nombres agregados (canvas, mist,
+      divider, ink, scrim, available-*…).
+    - Nada de hex, rgb() ni bg-[#…] en los componentes.
+  - Formas y medidas:
+    - Radios: rounded-base 4 px, rounded-lg 8 px, rounded-full.
+    - Clases de tipografía y espaciado con nombre.
+    - Modales de 480 y 640 px.
+    - tnum siempre en horas, fechas y capacidades.
+  - Fuente e iconos locales: Inter (@fontsource-variable/inter) y lucide-react,
+    nunca por CDN. Ningún estado se comunica solo con un icono o un color:
+    siempre lleva texto.
+  - Componentes base: las pantallas los reutilizan desde shared/ui:
+    - Formularios con Field.
+    - Diálogos con Modal o ConfirmDialog, nunca alert() ni confirm().
+    - Avisos con useToast(); el ToastProvider lo monta T07.
+    - Errores del API con su requestId.
+    - El tono de cada insignia lo decide cada pantalla.
+  - Contraste AA: el texto de ejemplo de los campos usa on-surface-variant. Si
+    una pantalla combina un color de texto y uno de fondo que no están en la
+    tabla de docs/tareas/T07a.md §2, se mide el contraste y se anota.
+  - Verificación sin pruebas automáticas (S-09): el comportamiento accesible se
+    comprueba en el navegador. Una página de demostración temporal se borra
+    antes del commit. Los hooks y funciones auxiliares van en archivos aparte de
+    los componentes, para que el lint no dé avisos.
+
+✻ Brewed for 32s · done 22:46
