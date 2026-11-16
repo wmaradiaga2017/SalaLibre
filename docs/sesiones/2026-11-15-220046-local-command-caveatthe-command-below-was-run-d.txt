@@ -1,0 +1,971 @@
+ ▐▛███▛█   Claude Code v2.1.325
+▝▜██████▀  Opus 5.5 · Claude Pro
+ ▝▝   ▝▝   E:\Proyectos\Personal\Ingenieria Digital\SalaLibre
+
+
+❯ /clear                                                                        
+
+❯ /ejecutar-tarea T06                                                           
+
+  Ran 5 shell commands (ctrl+o to expand)
+
+● Comprobé la DoR de T06: tiene todos los campos y sus dependencias (T05a y
+  T05b) están Hechas. Ahora registro el inicio en la bitácora y reviso cómo
+  están armadas las pruebas actuales.
+
+  Ran 3 shell commands (ctrl+o to expand)
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && printf '%s\n'
+      '| B-91 | 2026-11-15 21:14 | Agente | 3-Ejecutar | AGENTE | Inicio de T06
+      (Pruebas de i…)
+  ⎿  ntación; sin cambios de código | CLAUDE.md, docs/tareas/T05b.md §6 y §
+     7, B-88 |
+     | B-91 | 2026-11-15 21:14 | Agente | 3-Ejecutar | AGENTE | Inicio de T
+     … +3 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      92  | B-88 | 2026-11-15 21:10 | Yo | 3-Ejecutar | REVISIÓN | T05b r
+          evisada, cumple la DoD | aprobada | T05b |
+      93  | B-89 | 2026-11-15 21:11 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05b pasa a Hecha en el resumen y en la fic
+          ha de 02-backlog.md, tras la revisión de B-88; se incluye la se
+          cción 8 de docs/tareas/T05b.md escrita por la persona | T05b He
+          cha. Pendiente la observación de la revisión: actualizar CLAUDE
+          .md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+          tareas/T05b.md §8, B-88 |
+      94  | B-90 | 2026-11-15 21:11 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05b, B-8
+          8), CLAUDE.md (Dependencias) agrega la subsección «Cierres fija
+          dos en T05b»: reservas no importa cierres y RN-10 sigue en `Boo
+          kingsRepository.isDateClosed` (evita el ciclo); `Closure.date` 
+          como texto `AAAA-MM-DD` en `BUSINESS_TZ` y su conversión; `canc
+          elConfirmedByDate`/`cancelConfirmedBetween`; orden de crear y e
+          liminar en la transacción (eliminar también toma el lock `date:
+          `); dobles que comparten las fechas cerradas; cierres de hoy o 
+          pasados con `psql` en la verificación y no dejar cierres futuro
+          s. Se ajustan dos líneas de las subsecciones de T05 y T05a que 
+          daban la decisión por pendiente | Solo documentación; sin cambi
+          os de código | CLAUDE.md, docs/tareas/T05b.md §6 y §7, B-88 |
+      95 +| B-91 | 2026-11-15 21:14 | Agente | 3-Ejecutar | AGENTE | Inic
+         +io de T06 (Pruebas de integración, concurrencia y matriz RBAC):
+         + DoR comprobada, dependencias T05a y T05b en Hecha | En curso |
+         + docs/02-backlog.md T06 |                                      
+
+● Plan para T06 armado: una etapa de pruebas en el Dockerfile con un script de
+  integración, un servicio api-test aislado en el perfil test, soporte de
+  pruebas con base salalibre_test, los casos P-01 a P-17 con R-01 y R-02 y la
+  matriz RBAC, y un script test:int separado de las unitarias. Lo siguiente es
+  verificar las dos corridas, levantar con up -d y correr unitarias y lint. 
+  · summary
+
+  Ran 2 shell commands (ctrl+o to expand)
+
+● Escribo la infraestructura (Dockerfile, compose, script de arranque,
+  configuración de Jest).
+
+● Update(src\api\Dockerfile)
+  ⎿  Added 8 lines
+      14  COPY package.json package-lock.json ./
+      15  RUN npm ci --omit=dev
+      16  
+      17 +# Etapa de pruebas de integración (T06, S-08): parte de `build`
+         + (dependencias de desarrollo y cliente generado) y             
+      18 +# agrega las pruebas. Solo la usa el servicio `api-test` del pe
+         +rfil `test`; la imagen de `api` no la construye.               
+      19 +FROM build AS test                                             
+      20 +COPY test ./test                                               
+      21 +RUN chown -R node:node /app                                    
+      22 +USER node                                                      
+      23 +CMD ["sh", "test/integration/run.sh"]                          
+      24 +                                                               
+      25  # Etapa 3: imagen final, sin root
+      26  FROM node:24-alpine AS runtime
+      27  ENV NODE_ENV=production
+
+● Write(src\api\test\integration\run.sh)
+  ⎿  Wrote 21 lines to src\api\test\integration\run.sh
+       1 #!/bin/sh
+       2 # Arranque de `api-test` (T06, S-08): base de pruebas limpia → m
+         igraciones → seed → suite de integración.
+       3 # `migrate reset` borra y recrea solo la base de DATABASE_URL (s
+         alalibre_test), nunca la de desarrollo.
+       4 set -e
+       5 
+       6 case "$DATABASE_URL" in
+       7   */salalibre_test|*/salalibre_test\?*) ;;
+       8   *)
+     … +13 lines (ctrl+o to expand)
+
+● Write(src\api\test\integration\jest.config.json)
+  ⎿  Wrote 14 lines to src\api\test\integration\jest.config.json
+       1 {
+       2   "testEnvironment": "node",
+       3   "rootDir": "../..",
+       4   "roots": ["<rootDir>/test/integration"],
+       5   "testRegex": ".*\\.int-spec\\.ts$",
+       6   "moduleNameMapper": {
+       7     "^(\\.{1,2}/.*)\\.js$": "$1"
+       8   },
+       9   "transform": {
+      10     "^.+\\.ts$": "ts-jest"
+     … +4 lines (ctrl+o to expand)
+
+● Update(src\api\package.json)
+  ⎿  Added 2 lines, removed 1 line
+      11      "build": "prisma generate && tsc -p tsconfig.build.json && 
+          tsc -p tsconfig.seed.json",
+      12      "start": "node dist/main.js",
+      13      "lint": "eslint .",
+      14 -    "test": "node --experimental-vm-modules --no-warnings=Exper
+         -imentalWarning node_modules/jest/bin/jest.js"                  
+      14 +    "test": "node --experimental-vm-modules --no-warnings=Exper
+         +imentalWarning node_modules/jest/bin/jest.js",                 
+      15 +    "test:int": "node --experimental-vm-modules --no-warnings=E
+         +xperimentalWarning node_modules/jest/bin/jest.js --config test/
+         +integration/jest.config.json --runInBand"                      
+      16    },
+      17    "dependencies": {
+      18      "@nestjs/common": "12.5.0",
+
+● Update(docker-compose.yml)
+  ⎿  Added 26 lines
+      60        timeout: 5s
+      61        retries: 12
+      62  
+      63 +  # Pruebas de integración contra PostgreSQL real (T06, S-08). 
+         +Solo con `--profile test`; `docker compose up` no lo           
+      64 +  # arranca. Usa la base propia `salalibre_test` en el mismo se
+         +rvidor `db` (red interna, sin puertos publicados) y la         
+      65 +  # recrea en cada corrida.                                    
+      66 +  api-test:                                                    
+      67 +    profiles: ["test"]                                         
+      68 +    build:                                                     
+      69 +      context: ./src/api                                       
+      70 +      target: test                                             
+      71 +    environment:                                               
+      72 +      NODE_ENV: test                                           
+      73 +      DATABASE_URL: ${TEST_DATABASE_URL:-postgresql://salalibre
+         +:salalibre@db:5432/salalibre_test}                             
+      74 +      BUSINESS_TZ: ${BUSINESS_TZ:-America/Tegucigalpa}         
+      75 +      BUSINESS_OPEN_TIME: ${BUSINESS_OPEN_TIME:-07:00}         
+      76 +      BUSINESS_CLOSE_TIME: ${BUSINESS_CLOSE_TIME:-20:00}       
+      77 +      BOOKING_SLOT_MINUTES: ${BOOKING_SLOT_MINUTES:-15}        
+      78 +      BOOKING_MIN_MINUTES: ${BOOKING_MIN_MINUTES:-15}          
+      79 +      BOOKING_MAX_MINUTES: ${BOOKING_MAX_MINUTES:-240}         
+      80 +      BOOKING_MAX_DAYS_AHEAD: ${BOOKING_MAX_DAYS_AHEAD:-30}    
+      81 +      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}                    
+      82 +      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me}            
+      83 +      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Admin12345}  
+      84 +      SEED_USER_PASSWORD: ${SEED_USER_PASSWORD:-Empleado12345} 
+      85 +    depends_on:                                                
+      86 +      db:                                                      
+      87 +        condition: service_healthy                             
+      88 +                                                               
+      89  volumes:
+      90    db-data:
+
+● Ahora el soporte compartido de las pruebas de integración.
+
+● Write(src\api\test\integration\support\int-app.ts)
+  ⎿  Wrote 197 lines to src\api\test\integration\support\int-app.ts
+       1 import type { INestApplication } from '@nestjs/common';
+       2 import { Test } from '@nestjs/testing';
+       3 import { randomUUID } from 'node:crypto';
+       4 import { AppModule } from '../../../src/app.module';
+       5 import { loadBusinessConfig } from '../../../src/common/config/b
+         usiness-config';
+       6 import { configureApp } from '../../../src/common/configure-app'
+         ;
+       7 import { addDays, localDate, startOfLocalDay } from '../../../sr
+         c/common/time/zoned-time';
+     … +190 lines (ctrl+o to expand)
+
+● Ahora los casos. Primero choques (P-01 a P-04):
+
+● Write(src\api\test\integration\bookings-conflicts.int-spec.ts)
+  ⎿  Wrote 82 lines to
+     src\api\test\integration\bookings-conflicts.int-spec.ts
+       1 import { IntegrationApp, SEED, at, body, nextBusinessDay, status
+         Count, type BookingBody, type RoomBody } from './support/int-app
+         ';
+       2 
+       3 // T06 · P-01 a P-04: el riesgo central (RN-01) contra PostgreSQ
+         L real; lo garantiza `bookings_no_overlap` (D-04).
+       4 describe('Integración · choques de reserva (RN-01)', () => {
+       5   let api: IntegrationApp;
+       6   let admin: string;
+       7   let emp1: string;
+     … +75 lines (ctrl+o to expand)
+
+● Write(src\api\test\integration\bookings-rules.int-spec.ts)
+  ⎿  Wrote 142 lines to src\api\test\integration\bookings-rules.int-spec.ts
+      1 import {
+      2   IntegrationApp,
+      3   SEED,
+      4   body,
+      5   nextBusinessDay,
+      6   type BookingBody,
+      7   type RoomBody,
+      8   type UserBody,
+      9 } from './support/int-app';
+     … +133 lines (ctrl+o to expand)
+
+● Write(src\api\test\integration\users-deactivation.int-spec.ts)
+  ⎿  Wrote 84 lines to
+     src\api\test\integration\users-deactivation.int-spec.ts
+       1 import { IntegrationApp, SEED, at, body, nextBusinessDay, type B
+         ookingBody, type RoomBody } from './support/int-app';
+       2 
+       3 // T06 · P-10 (RN-14, RN-15) y carrera R-02 (lock por `userId`, 
+         spec §11) contra PostgreSQL real.
+       4 describe('Integración · desactivar usuario (RN-14, RN-15)', () =
+         > {
+       5   let api: IntegrationApp;
+       6   let admin: string;
+       7   let room: RoomBody;
+     … +77 lines (ctrl+o to expand)
+
+● Update(src\api\test\integration\users-deactivation.int-spec.ts)
+  ⎿  Removed 1 line
+      79      // Toda reserva que llegó a crearse quedó cancelada por la 
+          cascada.
+      80      const created = bookings.filter((r) => r.status === 201).le
+          ngth;
+      81      expect(await api.prisma.booking.count({ where: { userId: us
+          er.id, status: 'CANCELLED' } })).toBe(created);
+      82 -    expect(at(day, '08:00') < at(day, '18:00')).toBe(true);    
+      82    });
+      83  });
+
+● Update(src\api\test\integration\users-deactivation.int-spec.ts)
+  ⎿  Added 1 line, removed 1 line
+      1 -import { IntegrationApp, SEED, at, body, nextBusinessDay, type B
+        -ookingBody, type RoomBody } from './support/int-app';           
+      1 +import { IntegrationApp, SEED, body, nextBusinessDay, type Booki
+        +ngBody, type RoomBody } from './support/int-app';               
+      2  
+      3  // T06 · P-10 (RN-14, RN-15) y carrera R-02 (lock por `userId`, 
+         spec §11) contra PostgreSQL real.
+      4  describe('Integración · desactivar usuario (RN-14, RN-15)', () =
+         > {
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Bien: 401 es lo esperado. Ahora cierres (P-11 + R-01):
+
+● Write(src\api\test\integration\closures.int-spec.ts)  ⎿  Wrote 110 lines to src\api\test\integration\closures.int-spec.ts
+      1 import { addDays } from '../../src/common/time/zoned-time';
+      2 import { IntegrationApp, SEED, at, body, nextBusinessDay, today, 
+        type BookingBody, type RoomBody } from './support/int-app';
+      3 
+      4 interface ClosureBody {
+      5   id: string;
+      6   date: string;
+      7   reason: string;
+      8   cancelledBookings?: number;
+      9 }
+     … +101 lines (ctrl+o to expand)
+
+● Matriz RBAC (P-14):
+
+● Write(src\api\test\integration\rbac.int-spec.ts)
+  ⎿  Wrote 98 lines to src\api\test\integration\rbac.int-spec.ts
+       1 import { IntegrationApp, SEED, body, nextBusinessDay } from './s
+         upport/int-app';
+       2 
+       3 // T06 · P-14 (RN-21, D-03): matriz de roles de cada ruta del sp
+         ec §8 contra la app completa y PostgreSQL real.
+       4 // Los ids son UUID que no existen: el 401 y el 403 se deciden a
+         ntes de buscar el recurso (D-32), así que la matriz no
+       5 // toca datos. El body es válido para no confundir un 403 con un
+          400 del ValidationPipe.
+       6 const MISSING = '00000000-0000-4000-8000-000000000000';
+     … +92 lines (ctrl+o to expand)
+
+● Validación y formato de errores (P-16, P-17):
+
+● Write(src\api\test\integration\errors.int-spec.ts)
+  ⎿  Wrote 143 lines to src\api\test\integration\errors.int-spec.ts
+       1 import { IntegrationApp, SEED, TEST_PASSWORD, body, nextBusiness
+         Day, unique, type RoomBody } from './support/int-app';
+       2 
+       3 // T06 · P-16 (RN-18, RN-22, RN-23) y P-17 (D-06) contra la app 
+         completa y PostgreSQL real.
+       4 describe('Integración · validaciones y formato de error', () => 
+         {
+       5   let api: IntegrationApp;
+       6   let admin: string;
+       7   let emp1: string;
+     … +136 lines (ctrl+o to expand)
+
+● Compruebo tipos y lint en local antes de construir la imagen:
+
+  Read 1 file, ran 4 shell commands (ctrl+o to expand)
+
+● Mientras termina la primera construcción (va lenta, probablemente por el chown
+  -R sobre node_modules), lo cambio a COPY --chown, que no recorre todo /app:
+
+● Update(src\api\Dockerfile)
+  ⎿  Added 1 line, removed 2 lines
+      17  # Etapa de pruebas de integración (T06, S-08): parte de `build`
+           (dependencias de desarrollo y cliente generado) y
+      18  # agrega las pruebas. Solo la usa el servicio `api-test` del pe
+          rfil `test`; la imagen de `api` no la construye.
+      19  FROM build AS test
+      20 -COPY test ./test                                               
+      21 -RUN chown -R node:node /app                                    
+      20 +COPY --chown=node:node test ./test                             
+      21  USER node
+      22  CMD ["sh", "test/integration/run.sh"]
+      23  
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Las unitarias siguen en 130/130. Espero el resultado de la primera corrida de
+  api-test.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Sigo esperando a que termine la construcción de la imagen de pruebas; me
+  avisarán cuando arranque el contenedor api-test o cuando termine el compose.
+
+✻ Churned for 15m 53s · done 21:30
+
+● Background command "until docker ps --format '{{.Names}}' | grep -q api-test
+|| ! ps -W | grep -q docker-compose; do sleep 5; done; docker ps --format
+'{{.Names}} {{.Status}}' | grep api-test || echo "compose terminó"" completed
+(exit code 0)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Migró y sembró la base salalibre_test; ya corre la suite. Espero el final.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Me avisarán cuando termine el contenedor de pruebas.
+
+✻ Cooked for 15s · done 21:31
+
+● Background command "cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" &&
+docker compose --profile test run --rm --build api-test 2>&1 | tail -80"
+completed (exit code 0)
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+● 57 de 58 pruebas pasan a la primera; el único fallo es del test, que usa a@b.c
+  y recibe un 400 de @IsEmail(). Lo corrijo con un correo válido y después
+  compruebo que una corrida fallida devuelve un código distinto de 0. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Background command "while docker ps --format '{{.Names}}' | grep -q api-test;
+do sleep 5; done; echo fin" completed (exit code 0)
+
+● Con fallos sale con código 1 (y la imagen con COPY --chown se construyó
+  rápido). Corrijo la prueba:
+
+● Update(src\api\test\integration\errors.int-spec.ts)
+  ⎿  Added 1 line, removed 1 line
+       94        ['400 cuerpo inválido', 400, () => api.request('POST', '
+           /bookings', { cookie: emp1, body: { roomId: 'x' } })],
+       95        ['400 campo no permitido', 400, () => api.request('PATCH
+           ', '/auth/password', { cookie: emp1, body: { x: 1 } })],
+       96        ['401 sin sesión', 401, () => api.request('GET', '/auth/
+           me')],
+       97 -      ['401 credenciales', 401, () => api.request('POST', '/au
+          -th/login', { body: { email: 'a@b.c', password: 'x' } })],     
+       97 +      ['401 credenciales', 401, () => api.request('POST', '/au
+          +th/login', { body: { email: SEED.emp1.email, password: 'x' } }
+          +)],                                                           
+       98        ['403 rol', 403, () => api.request('GET', '/users', { co
+           okie: emp1 })],
+       99        [
+      100          '404 recurso',
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Dos corridas seguidas terminaron con código 0 y el mismo resultado. Ahora
+  activo verbose en la integración para que cada prueba aparezca con su regla, y
+  luego corro la verificación completa. · summary
+
+● Update(src\api\test\integration\jest.config.json)
+  ⎿  Added 2 lines, removed 1 line
+      10      "^.+\\.ts$": "ts-jest"
+      11    },
+      12    "moduleFileExtensions": ["ts", "js", "json"],
+      13 -  "testTimeout": 60000                                         
+      13 +  "testTimeout": 60000,                                        
+      14 +  "verbose": true                                              
+      15  }
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Ahora el resto de la verificación (CA9, unitarias, lint, nombres de prueba) y
+  que la base de desarrollo no se tocó:
+
+  Ran 1 shell command (ctrl+o to expand)
+● Todo pasa en verde: las pruebas y el lint están limpios y la base de
+  desarrollo sigue intacta. Ahora escribo la documentación. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Write(docs\tareas\T06.md)
+  ⎿  Wrote 237 lines to docs\tareas\T06.md
+       1 # T06 · Pruebas de integración, concurrencia y matriz RBAC
+       2 
+       3 > Documento de **lo que hizo el agente** en esta tarea. Lo escri
+         be el agente al terminar; yo agrego la sección "Revisión".
+       4 
+       5 | Campo | Valor |
+       6 |---|---|
+       7 | Estado | Hecha |
+       8 | Inicio – fin | 2026-11-15 21:14 – 21:35 (21 min) · estimado: L
+          |
+     … +229 lines (ctrl+o to expand)
+
+● Actualizo el backlog y hago el commit (agregando los archivos por ruta):
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^|
+      10 | T06 | \(.*\) | L | No | Pendiente | |$/| 10 | T06 | \1 | L | No | En
+      revisión | [T0…)
+  ⎿   docs/02-backlog.md | 4 ++--
+      1 file changed, 2 insertions(+), 2 deletions(-)
+     -| 10 | T06 | Pruebas de integración: infraestructura `api-test`, choq
+     … +6 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hec
+          ha | [T05](tareas/T05.md) |
+      66  | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+          vación con cancelación en cascada, reset de contraseña | T05, T
+          03a | M | No | Hecha | [T05a](tareas/T05a.md) |
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
+      68 -| 10 | T06 | Pruebas de integración: infraestructura `api-test`
+         -, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | P
+         -endiente | |                                                   
+      68 +| 10 | T06 | Pruebas de integración: infraestructura `api-test`
+         +, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | E
+         +n revisión | [T06](tareas/T06.md) |                            
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Pendiente | |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Pendiente | |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+          iente | |
+     ...
+      532  | Dependencias | T05a, T05b |
+      533  | Estimación | L |
+      534  | Seguridad / auditoría | Roles: no aplica (son pruebas). Audi
+           toría: no aplica (P-12 y P-15 van en T06a). Cubre OWASP A01 (m
+           atriz de roles) y A04 (concurrencia) |
+      535 -| Estado | Pendiente |                                        
+      535 +| Estado | En revisión |                                      
+      536  
+      537  **Alcance (archivos o módulos):**
+      538  - `docker-compose.yml`: servicio `api-test` en el perfil `test
+           ` (S-08), en la red interna, con su propia base de pruebas; `d
+           ocker compose up` normal no lo arranca.
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Update(docs\tareas\T06.md)
+  ⎿  Added 1 line, removed 1 line
+       5  | Campo | Valor |
+       6  |---|---|
+       7  | Estado | Hecha |
+       8 -| Inicio – fin | 2026-11-15 21:14 – 21:35 (21 min) · estimado: 
+         -L |                                                            
+       8 +| Inicio – fin | 2026-11-15 21:14 – 21:37 (23 min) · estimado: 
+         +L |                                                            
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10  | Commit(s) | Ver la fila «Fin de T06» de `docs/03-bitacora.md`
+           (código y documentación) + commit de registro del hash |
+      11  | Trazabilidad | O1 · RN-01, RN-07 a RN-11, RN-13 a RN-17, RN-2
+          1 a RN-24 · D-04, D-06, D-27, S-08 · spec §12 · P-01 a P-04, P-
+          08, P-09 (integración), P-10, P-11, P-13, P-14, P-16, P-17 · R-
+          01, R-02 · backlog T06 |
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && cat >>
+      docs/03-bitacora.md <<'EOF'
+      | B-92 | 2026-11-15 21:37 | Agente | 3-Ejecutar | ERROR | T06: la…)
+  ⎿  M  docker-compose.yml
+     M  docs/02-backlog.md
+     M  docs/03-bitacora.md
+     … +19 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+      93  | B-89 | 2026-11-15 21:11 | Agente | 3-Ejecutar | AGENTE | A pe
+          dido de la persona, T05b pasa a Hecha en el resumen y en la fic
+          ha de 02-backlog.md, tras la revisión de B-88; se incluye la se
+          cción 8 de docs/tareas/T05b.md escrita por la persona | T05b He
+          cha. Pendiente la observación de la revisión: actualizar CLAUDE
+          .md con los desvíos, si se requiere | docs/02-backlog.md, docs/
+          tareas/T05b.md §8, B-88 |
+      94  | B-90 | 2026-11-15 21:11 | Agente | 3-Ejecutar | CORRECCIÓN | 
+          A pedido de la persona (observación de la revisión de T05b, B-8
+          8), CLAUDE.md (Dependencias) agrega la subsección «Cierres fija
+          dos en T05b»: reservas no importa cierres y RN-10 sigue en `Boo
+          kingsRepository.isDateClosed` (evita el ciclo); `Closure.date` 
+          como texto `AAAA-MM-DD` en `BUSINESS_TZ` y su conversión; `canc
+          elConfirmedByDate`/`cancelConfirmedBetween`; orden de crear y e
+          liminar en la transacción (eliminar también toma el lock `date:
+          `); dobles que comparten las fechas cerradas; cierres de hoy o 
+          pasados con `psql` en la verificación y no dejar cierres futuro
+          s. Se ajustan dos líneas de las subsecciones de T05 y T05a que 
+          daban la decisión por pendiente | Solo documentación; sin cambi
+          os de código | CLAUDE.md, docs/tareas/T05b.md §6 y §7, B-88 |
+      95  | B-91 | 2026-11-15 21:14 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T06 (Pruebas de integración, concurrencia y matriz RBAC):
+           DoR comprobada, dependencias T05a y T05b en Hecha | En curso |
+           docs/02-backlog.md T06 |
+      96 +| B-92 | 2026-11-15 21:37 | Agente | 3-Ejecutar | ERROR | T06: 
+         +la primera corrida de `api-test` dio 57/58: en P-17 el caso «40
+         +1 credenciales» usaba el correo `a@b.c`, que no pasa `@IsEmail(
+         +)` y respondía 400 antes de llegar al login (error de la prueba
+         +, no del código). Además, la etapa `test` del Dockerfile con `c
+         +hown -R node:node /app` tardó más de 10 min en construirse | Co
+         +rreo válido del seed y `COPY --chown=node:node test ./test`; la
+         + corrida con el fallo confirmó que `api-test` sale con código 1
+         +; después, 3 corridas seguidas con código 0 y 58/58 + 1 pendien
+         +te | docs/tareas/T06.md §6, B-91 |                             
+      97 +| B-93 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Fin 
+         +de T06 (Pruebas de integración, concurrencia y matriz RBAC): se
+         +rvicio `api-test` en el perfil `test` (etapa `test` del Dockerf
+         +ile) con base propia `salalibre_test` en el servidor `db`; `run
+         +.sh` (solo acepta `salalibre_test`) → `migrate reset` → seed → 
+         +`npm run test:int`; `AppModule` real contra PostgreSQL. 58 prue
+         +bas en 6 archivos: P-01 (20 simultáneas → 1 × 201 y 19 × 409, 1
+         + `CONFIRMED`) a P-04, P-08, P-09, P-10 + R-02, P-11 + R-01, P-1
+         +3, matriz P-14 (8 rutas ADMIN → 403, 17 rutas → 401), P-16 y P-
+         +17. Dos corridas seguidas con el mismo resultado, `up -d` no ar
+         +ranca `api-test`, 130 unitarias, lint de api y web sin errores,
+         + compose healthy; sin cambios en `src/api/src` | T06 En revisió
+         +n. Commit: ver la fila siguiente. Desvíos: base de pruebas en e
+         +l mismo servidor `db`, reservas en curso y cierres pasados inse
+         +rtados con Prisma. Ambigüedad: `POST /audit-logs/search` aún no
+         + existe y queda como `it.todo`; T06a debe agregarla a la matriz
+         + | docs/tareas/T06.md, B-91, B-92 |                            
+
+● Registro el hash en la bitácora y en T06.md (en una fila nueva, porque las
+  filas no se editan):
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && T=$(date
+      "+%Y-%m-%d %H:%M") && echo "| B-94 | $T | Agente | 3-Ejecutar | AGENTE |
+      Registro del hash d…)
+  ⎿  10:| Commit(s) | `12be38e` (código y documentación) + commit de regist
+     ro del hash |
+     024276e T06: registro del hash del commit en bitácora
+     … +5 lines (ctrl+o to expand)
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      95  | B-91 | 2026-11-15 21:14 | Agente | 3-Ejecutar | AGENTE | Inic
+          io de T06 (Pruebas de integración, concurrencia y matriz RBAC):
+           DoR comprobada, dependencias T05a y T05b en Hecha | En curso |
+           docs/02-backlog.md T06 |
+      96  | B-92 | 2026-11-15 21:37 | Agente | 3-Ejecutar | ERROR | T06: 
+          la primera corrida de `api-test` dio 57/58: en P-17 el caso «40
+          1 credenciales» usaba el correo `a@b.c`, que no pasa `@IsEmail(
+          )` y respondía 400 antes de llegar al login (error de la prueba
+          , no del código). Además, la etapa `test` del Dockerfile con `c
+          hown -R node:node /app` tardó más de 10 min en construirse | Co
+          rreo válido del seed y `COPY --chown=node:node test ./test`; la
+           corrida con el fallo confirmó que `api-test` sale con código 1
+          ; después, 3 corridas seguidas con código 0 y 58/58 + 1 pendien
+          te | docs/tareas/T06.md §6, B-91 |
+      97  | B-93 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T06 (Pruebas de integración, concurrencia y matriz RBAC): se
+          rvicio `api-test` en el perfil `test` (etapa `test` del Dockerf
+          ile) con base propia `salalibre_test` en el servidor `db`; `run
+          .sh` (solo acepta `salalibre_test`) → `migrate reset` → seed → 
+          `npm run test:int`; `AppModule` real contra PostgreSQL. 58 prue
+          bas en 6 archivos: P-01 (20 simultáneas → 1 × 201 y 19 × 409, 1
+           `CONFIRMED`) a P-04, P-08, P-09, P-10 + R-02, P-11 + R-01, P-1
+          3, matriz P-14 (8 rutas ADMIN → 403, 17 rutas → 401), P-16 y P-
+          17. Dos corridas seguidas con el mismo resultado, `up -d` no ar
+          ranca `api-test`, 130 unitarias, lint de api y web sin errores,
+           compose healthy; sin cambios en `src/api/src` | T06 En revisió
+          n. Commit: ver la fila siguiente. Desvíos: base de pruebas en e
+          l mismo servidor `db`, reservas en curso y cierres pasados inse
+          rtados con Prisma. Ambigüedad: `POST /audit-logs/search` aún no
+           existe y queda como `it.todo`; T06a debe agregarla a la matriz
+           | docs/tareas/T06.md, B-91, B-92 |
+      98 +| B-94 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Regi
+         +stro del hash del commit de T06 (fila B-93) | Commit `12be38e` 
+         +(código y documentación de T06) | B-93, docs/tareas/T06.md |   
+  ⎿  Updated docs\tareas\T06.md (+1 -1)
+       7  | Estado | Hecha |
+       8  | Inicio – fin | 2026-11-15 21:14 – 21:37 (23 min) · estimado: 
+          L |
+       9  | Agente / sesión | Claude Code (Opus 5.5) · `docs/sesiones/` (
+          pendiente de exportar por la persona) |
+      10 -| Commit(s) | Ver la fila «Fin de T06» de `docs/03-bitacora.md`
+         - (código y documentación) + commit de registro del hash |      
+      10 +| Commit(s) | `12be38e` (código y documentación) + commit de re
+         +gistro del hash |                                              
+      11  | Trazabilidad | O1 · RN-01, RN-07 a RN-11, RN-13 a RN-17, RN-2
+          1 a RN-24 · D-04, D-06, D-27, S-08 · spec §12 · P-01 a P-04, P-
+          08, P-09 (integración), P-10, P-11, P-13, P-14, P-16, P-17 · R-
+          01, R-02 · backlog T06 |
+      12  
+      13  ## 1. Objetivo
+
+● T06 está terminada y en estado En revisión. La suite de integración corre
+  contra PostgreSQL real y pasa: 58 pruebas en verde y 1 pendiente, en tres
+  corridas seguidas con código 0 y el mismo resultado. No hizo falta tocar el
+  código de la API (src/api/src).
+
+  Qué hice
+  - Servicio api-test en el perfil test del compose. Recrea su base
+    salalibre_test (migraciones y seed) y corre npm run test:int sobre la app
+    completa. docker compose up -d no lo arranca (CA9).
+  - Choques (P-01): 20 reservas simultáneas al mismo hueco dan 1 × 201 y 19 ×
+    409 BOOKING_CONFLICT, y en la base queda 1 sola CONFIRMED. Una segunda
+    ráfaga de 20 a huecos distintos termina sin ningún 500 con el pool por
+    defecto (10 conexiones).
+  - Carreras: desactivar un usuario en paralelo a 10 reservas suyas (R-02), o
+    crear un cierre en paralelo a 10 reservas de ese día (R-01), no deja ninguna
+    reserva CONFIRMED.
+  - Matriz de roles (P-14): las 8 rutas de ADMIN dan 403 a un EMPLOYEE, y 17
+    rutas dan 401 sin cookie. Solo login y health son públicas.
+  - Resto de casos: P-02 a P-04, P-08, P-09, P-10, P-11, P-13, P-16 y P-17,
+    todos con la regla en el nombre (RN-xx · P-xx · …).
+  - Las 130 unitarias siguen pasando, el lint de api y web no da errores y el
+    compose queda healthy.
+
+  Desvíos
+  - La base de pruebas vive en el mismo servidor db, con nombre propio
+    (salalibre_test), en lugar de un segundo PostgreSQL. run.sh se niega a
+    correr si la URL no apunta a salalibre_test, así que la base de desarrollo
+    nunca se toca.
+  - La reserva "ya empezada" y los cierres de hoy o pasados no se pueden crear
+    por la API, así que la prueba los inserta directamente en la base de
+    pruebas.
+  - La primera corrida tuvo 1 fallo, de la prueba y no del código (un correo que
+    no pasaba la validación). Sirvió para comprobar que api-test sale con
+    código 1 si algo falla. Quedó registrado en B-92, junto con una construcción
+    de la imagen de más de 10 minutos que corregí.
+
+  Ambigüedades
+  - POST /audit-logs/search: CA7 la pide en la matriz de roles, pero la ruta
+    todavía no existe. Hoy responde 404, no 403 ni 401, así que quedó como
+    prueba pendiente (it.todo). T06a, que crea la ruta, debe agregarla a la
+    matriz.
+  - Orden en las carreras R-01 y R-02: las pruebas no fijan en qué orden se
+    resuelven las peticiones. Comprueban que el resultado final es correcto en
+    cualquier orden.
+
+  Para cuando la revises
+  - CLAUDE.md todavía dice que, antes de T06, las pruebas contra PostgreSQL se
+    hacen con scripts de un solo uso. Ahora existe api-test, así que esa línea
+    se puede actualizar si lo pides.
+  - Los commits son 12be38e (código y documentación) y 024276e (hash en la
+    bitácora). El detalle está en docs/tareas/T06.md y en las filas B-91 a B-94
+    de la bitácora.
+
+  Para correr la suite: docker compose --profile test run --rm api-test
+
+✻ Baked for 5m 53s · done 21:37
+
+❯ /bitacora REVISIÓN, T06 revisada, cumple la DoD                               
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && T=$(date
+      "+%Y-%m-%d %H:%M") && tail -1 docs/03-bitacora.md | cut -c1-12 && echo "|
+      B-95 | $T | Yo | 3…)
+  ⎿  | B-94 | 202
+     | B-95 | 2026-11-15 21:42 | Yo | 3-Ejecutar | REVISIÓN | T06 revisada,
+      cumple la DoD | — | — |
+  ⎿  Updated docs\03-bitacora.md (+1 -0)
+      96  | B-92 | 2026-11-15 21:37 | Agente | 3-Ejecutar | ERROR | T06: 
+          la primera corrida de `api-test` dio 57/58: en P-17 el caso «40
+          1 credenciales» usaba el correo `a@b.c`, que no pasa `@IsEmail(
+          )` y respondía 400 antes de llegar al login (error de la prueba
+          , no del código). Además, la etapa `test` del Dockerfile con `c
+          hown -R node:node /app` tardó más de 10 min en construirse | Co
+          rreo válido del seed y `COPY --chown=node:node test ./test`; la
+           corrida con el fallo confirmó que `api-test` sale con código 1
+          ; después, 3 corridas seguidas con código 0 y 58/58 + 1 pendien
+          te | docs/tareas/T06.md §6, B-91 |
+      97  | B-93 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Fin 
+          de T06 (Pruebas de integración, concurrencia y matriz RBAC): se
+          rvicio `api-test` en el perfil `test` (etapa `test` del Dockerf
+          ile) con base propia `salalibre_test` en el servidor `db`; `run
+          .sh` (solo acepta `salalibre_test`) → `migrate reset` → seed → 
+          `npm run test:int`; `AppModule` real contra PostgreSQL. 58 prue
+          bas en 6 archivos: P-01 (20 simultáneas → 1 × 201 y 19 × 409, 1
+           `CONFIRMED`) a P-04, P-08, P-09, P-10 + R-02, P-11 + R-01, P-1
+          3, matriz P-14 (8 rutas ADMIN → 403, 17 rutas → 401), P-16 y P-
+          17. Dos corridas seguidas con el mismo resultado, `up -d` no ar
+          ranca `api-test`, 130 unitarias, lint de api y web sin errores,
+           compose healthy; sin cambios en `src/api/src` | T06 En revisió
+          n. Commit: ver la fila siguiente. Desvíos: base de pruebas en e
+          l mismo servidor `db`, reservas en curso y cierres pasados inse
+          rtados con Prisma. Ambigüedad: `POST /audit-logs/search` aún no
+           existe y queda como `it.todo`; T06a debe agregarla a la matriz
+           | docs/tareas/T06.md, B-91, B-92 |
+      98  | B-94 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Regi
+          stro del hash del commit de T06 (fila B-93) | Commit `12be38e` 
+          (código y documentación de T06) | B-93, docs/tareas/T06.md |
+      99 +| B-95 | 2026-11-15 21:42 | Yo | 3-Ejecutar | REVISIÓN | T06 re
+         +visada, cumple la DoD | — | — |                                
+
+● Agregué esta fila al final de docs/03-bitacora.md:
+
+  | B-95 | 2026-11-15 21:42 | Yo | 3-Ejecutar | REVISIÓN | T06 revisada, cumple 
+  la DoD | — | — |
+
+  Resultado y Ref. quedaron en — porque el texto no traía esos campos. No hice
+  commit.
+
+✻ Sautéed for 9s · done 21:42
+
+❯ Actualiza CLAUDE.md con los desvíos de T06, cambia a hecha T06 y haz commit   
+
+  Read 1 file, ran 2 shell commands (ctrl+o to expand)
+
+● Update(CLAUDE.md)
+  ⎿  Added 3 lines, removed 2 lines
+      134    y cierres) y `user:<uuid>` (reservas y desactivación de usua
+           rio).
+      135  - **Pruebas HTTP con el `fetch` nativo de Node 24** (sin `supe
+           rtest`), levantando la app en `127.0.0.1` y puerto 0.
+      136    Las pruebas de plataforma viven en `src/api/test/` con contr
+           oladores de prueba fuera del código de producción.
+      137 -- **Pruebas contra PostgreSQL real** antes de T06: con un scri
+          -pt de un solo uso ejecutado en el contenedor                  
+      138 -  (`docker compose exec -T api node -`), fuera del repositorio
+          - y con la salida pegada en `docs/tareas/Txx.md`.              
+      137 +- **Pruebas contra PostgreSQL real:** desde T06 van en la suit
+          +e de integración (`api-test`, ver la subsección de T06).      
+      138 +  El script de un solo uso en el contenedor (`docker compose e
+          +xec -T api node -`) queda solo para comprobaciones            
+      139 +  manuales puntuales, con la salida pegada en `docs/tareas/Txx
+          +.md`.                                                         
+      140  - **Swagger en `/api/docs`** lo sirve Express fuera del router
+            de Nest, así que el guard global no lo cubre. Por decisión
+      141    de la persona (D-33), **solo se monta fuera de producción** 
+           (`NODE_ENV !== 'production'`); en el compose responde 404 (T03
+           , CA8).
+      142  
+
+● Update(CLAUDE.md)
+  ⎿  Added 1 line, removed 1 line
+      230      `WITHOUT_DB` con su motivo.
+      231    - Las pruebas con repositorios en memoria **no detectan** pr
+           oblemas de pool, locks ni concurrencia: toda escritura
+      232      nueva se verifica también contra PostgreSQL con una ráfaga
+            de peticiones simultáneas (20 o más) y se revisa que el
+      233 -    log no tenga errores `"level":50`.                        
+      233 +    log no tenga errores `"level":50`. Desde T06, esa ráfaga s
+          +e agrega como caso de la suite de integración.                
+      234  - **Pruebas de reservas:** `test/support/in-memory-bookings.re
+           pository.ts` emula `bookings_no_overlap` lanzando el error
+      235    con la forma real de Prisma (`exclusionViolation()`); `test/
+           bookings-service.spec.ts` comprueba con dobles el orden
+      236    `begin → lock date → lock user → lecturas con ctx → INSERT →
+            end`.
+
+● Update(CLAUDE.md)
+  ⎿  Added 25 lines
+      286    insertan con `psql` dentro del script de verificación y se b
+           orran al final del mismo script; anotarlo en
+      287    `docs/tareas/Txx.md` como paso manual. Al terminar una verif
+           icación, no dejar cierres futuros en la base: bloquean las
+      288    reservas de esos días en las tareas siguientes.
+      289 +                                                              
+      290 +### Pruebas de integración fijadas en T06 (ver `docs/tareas/T0
+          +6.md` §6 y §7)                                                
+      291 +- **Comando:** `docker compose --profile test run --rm api-tes
+          +t` (S-08). Sale con código 0 si todo pasa y 1 si algo         
+      292 +  falla. `docker compose up` no arranca `api-test`.           
+      293 +- **Infraestructura:** etapa `test` de `src/api/Dockerfile` (p
+          +arte de `build` y agrega `test/` con                          
+      294 +  `COPY --chown=node:node`; **no** usar `chown -R` sobre `/app
+          +`, tardó más de 10 min, B-92). El servicio `api-test` no      
+      295 +  publica puertos y depende de `db` (`service_healthy`).      
+      296 +- **Base de pruebas propia, `salalibre_test`, en el mismo serv
+          +idor `db`** (no hay un segundo PostgreSQL). `test/integration/
+          +run.sh`                                                       
+      297 +  se niega a correr si `DATABASE_URL` no apunta a `salalibre_t
+          +est`; luego `prisma migrate reset --force` → seed →           
+      298 +  `npm run test:int`. La base se recrea en cada corrida: la de
+          + desarrollo (`salalibre`) nunca se toca.                      
+      299 +- **Estructura:** archivos `src/api/test/integration/*.int-spe
+          +c.ts` con `test/integration/jest.config.json` (`--runInBand`, 
+      300 +  `verbose`). `npm test` (unitarias, `*.spec.ts`) no los recog
+          +e: no renombrar a `.spec.ts`. No hay dobles: se levanta       
+      301 +  `AppModule` completo con `IntegrationApp.start()` (`test/int
+          +egration/support/int-app.ts`).                                
+      302 +- **Helpers de `int-app.ts`:** `login`, `createUser`, `createR
+          +oom` (nombres y correos únicos con `unique()`), `book`,       
+      303 +  `cancel`, `confirmedIn`, `statusCount`; `nextBusinessDay(off
+          +set)` y `at(fecha, 'HH:MM')` en `BUSINESS_TZ`, calculados     
+      304 +  desde "ahora" (nunca fechas fijas). `reset()` borra `booking
+          +s` y `closures` antes de cada prueba; usuarios y salas        
+      305 +  quedan. `audit_logs` no se borra (el trigger lo impide).    
+      306 +- **Estados imposibles por la API** (reserva ya empezada, cier
+          +re de hoy o pasado) se insertan con `api.prisma` en la        
+      307 +  base de pruebas, no con `psql`.                             
+      308 +- **Matriz RBAC (`rbac.int-spec.ts`):** toda ruta nueva se agr
+          +ega a `ADMIN_ROUTES` o a `AUTHENTICATED_ROUTES`, con un body  
+      309 +  válido para que el 403 no se confunda con un 400. **T06a** d
+          +ebe agregar `POST /audit-logs/search` a `ADMIN_ROUTES` y      
+      310 +  quitar el `it.todo` (hoy la ruta no existe y responde 404 an
+          +tes de los guards).                                           
+      311 +- **Carreras (R-01, R-02):** se comprueba el invariante final 
+          +(ninguna `CONFIRMED` y toda reserva creada cancelada), no     
+      312 +  un orden concreto de las peticiones.                        
+      313 +- **Nombres:** `it('RN-xx · P-xx · …')`. Las escrituras nuevas
+          + (T06a) agregan aquí sus casos de integración (P-12, P-15).   
+
+● Ahora T06 pasa a Hecha en el backlog, agrego las filas de bitácora (como en
+  T05b: B-89 y B-90) y hago el commit:
+
+● Bash(cd "E:/Proyectos/Personal/Ingenieria Digital/SalaLibre" && sed -i 's/^\(|
+      10 | T06 | .* | L | No | \)En revisión\( | \[T06\](tareas\/T06.md)
+      |\)$/\1Hecha\2/' do…)
+  ⎿  -| 10 | T06 | Pruebas de integración: infraestructura `api-test`, choq
+     ues, concurrencia y matriz RBAC | T05a, T05b | L | No | En revisión |
+     [T06](tareas/T06.md) |
+     … +15 lines (ctrl+o to expand)
+  ⎿  Updated docs\02-backlog.md (+2 -2)
+      65  | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `Booki
+          ngPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hec
+          ha | [T05](tareas/T05.md) |
+      66  | 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desacti
+          vación con cancelación en cascada, reset de contraseña | T05, T
+          03a | M | No | Hecha | [T05a](tareas/T05a.md) |
+      67  | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cance
+          lan reservas | T05 | M | No | Hecha | [T05b](tareas/T05b.md) |
+      68 -| 10 | T06 | Pruebas de integración: infraestructura `api-test`
+         -, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | E
+         -n revisión | [T06](tareas/T06.md) |                            
+      68 +| 10 | T06 | Pruebas de integración: infraestructura `api-test`
+         +, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | H
+         +echa | [T06](tareas/T06.md) |                                  
+      69  | 11 | T06a | Auditoría: `AuditService` transaccional en todas 
+          las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** |
+           Pendiente | |
+      70  | 12 | T07a | Sistema visual base (tokens, componentes de `shar
+          ed/ui`) | T01 | M | No | Pendiente | |
+      71  | 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`)
+          , layout y rutas protegidas por rol | T03, T07a | M | No | Pend
+          iente | |
+     ...
+      532  | Dependencias | T05a, T05b |
+      533  | Estimación | L |
+      534  | Seguridad / auditoría | Roles: no aplica (son pruebas). Audi
+           toría: no aplica (P-12 y P-15 van en T06a). Cubre OWASP A01 (m
+           atriz de roles) y A04 (concurrencia) |
+      535 -| Estado | En revisión |                                      
+      535 +| Estado | Hecha |                                            
+      536  
+      537  **Alcance (archivos o módulos):**
+      538  - `docker-compose.yml`: servicio `api-test` en el perfil `test
+           ` (S-08), en la red interna, con su propia base de pruebas; `d
+           ocker compose up` normal no lo arranca.
+  ⎿  Updated docs\03-bitacora.md (+2 -0)
+       97  | B-93 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Fin
+            de T06 (Pruebas de integración, concurrencia y matriz RBAC): 
+           servicio `api-test` en el perfil `test` (etapa `test` del Dock
+           erfile) con base propia `salalibre_test` en el servidor `db`; 
+           `run.sh` (solo acepta `salalibre_test`) → `migrate reset` → se
+           ed → `npm run test:int`; `AppModule` real contra PostgreSQL. 5
+           8 pruebas en 6 archivos: P-01 (20 simultáneas → 1 × 201 y 19 ×
+            409, 1 `CONFIRMED`) a P-04, P-08, P-09, P-10 + R-02, P-11 + R
+           -01, P-13, matriz P-14 (8 rutas ADMIN → 403, 17 rutas → 401), 
+           P-16 y P-17. Dos corridas seguidas con el mismo resultado, `up
+            -d` no arranca `api-test`, 130 unitarias, lint de api y web s
+           in errores, compose healthy; sin cambios en `src/api/src` | T0
+           6 En revisión. Commit: ver la fila siguiente. Desvíos: base de
+            pruebas en el mismo servidor `db`, reservas en curso y cierre
+           s pasados insertados con Prisma. Ambigüedad: `POST /audit-logs
+           /search` aún no existe y queda como `it.todo`; T06a debe agreg
+           arla a la matriz | docs/tareas/T06.md, B-91, B-92 |
+       98  | B-94 | 2026-11-15 21:37 | Agente | 3-Ejecutar | AGENTE | Reg
+           istro del hash del commit de T06 (fila B-93) | Commit `12be38e
+           ` (código y documentación de T06) | B-93, docs/tareas/T06.md |
+       99  | B-95 | 2026-11-15 21:42 | Yo | 3-Ejecutar | REVISIÓN | T06 r
+           evisada, cumple la DoD | — | — |
+      100 +| B-96 | 2026-11-15 21:44 | Agente | 3-Ejecutar | AGENTE | A p
+          +edido de la persona, T06 pasa a Hecha en el resumen y en la fi
+          +cha de 02-backlog.md, tras la revisión de B-95; se incluye la 
+          +sección 8 de docs/tareas/T06.md escrita por la persona | T06 H
+          +echa. Pendiente la observación de la revisión: actualizar CLAU
+          +DE.md con los desvíos, si se requiere | docs/02-backlog.md, do
+          +cs/tareas/T06.md §8, B-95 |                                   
+      101 +| B-97 | 2026-11-15 21:44 | Agente | 3-Ejecutar | CORRECCIÓN |
+          + A pedido de la persona (observación de la revisión de T06, B-
+          +95), CLAUDE.md (Dependencias) agrega la subsección «Pruebas de
+          + integración fijadas en T06»: comando y código de salida de `a
+          +pi-test`; etapa `test` del Dockerfile con `COPY --chown` (sin 
+          +`chown -R`, B-92); base propia `salalibre_test` en el servidor
+          + `db` con `run.sh` que solo acepta esa base; archivos `*.int-s
+          +pec.ts` fuera de las unitarias; helpers de `int-app.ts` y limp
+          +ieza; estados imposibles insertados con Prisma; toda ruta nuev
+          +a entra en la matriz RBAC y T06a agrega `POST /audit-logs/sear
+          +ch`; carreras por invariante. Se ajustan dos líneas de T02a y 
+          +T05 que hablaban de verificar contra PostgreSQL con scripts de
+          + un solo uso | Solo documentación; sin cambios de código | CLA
+          +UDE.md, docs/tareas/T06.md §6 y §7, B-92, B-95 |              
+
+● T06 quedó en Hecha y CLAUDE.md ya tiene sus desvíos. Todo va en el commit
+  3644be2.
+
+  Cambios en CLAUDE.md
+  - Subsección nueva, «Pruebas de integración fijadas en T06»:
+    - cómo se corre api-test y con qué código sale (0 si todo pasa, 1 si algo
+      falla);
+    - la etapa test del Dockerfile con COPY --chown (sin chown -R, que tardaba
+      más de 10 minutos);
+    - la base propia salalibre_test, que run.sh exige para que la de desarrollo
+      nunca se toque;
+    - los archivos *.int-spec.ts, que no deben renombrarse a .spec.ts para no
+      mezclarse con las unitarias;
+    - las funciones de apoyo y la limpieza entre pruebas;
+    - los estados que la API no permite crear, que se insertan con Prisma;
+    - las carreras, que se comprueban por el resultado final.
+  - Matriz de roles: toda ruta nueva se agrega a la matriz. La subsección deja
+    anotado que T06a debe agregar POST /audit-logs/search y quitar el it.todo.
+  - Dos líneas ajustadas (en las subsecciones de T02a y T05): las pruebas contra
+    PostgreSQL ya no se hacen con scripts de un solo uso, sino en la suite de
+    integración.
+
+  Backlog y bitácora
+  - T06 pasa a Hecha en el resumen y en la ficha de docs/02-backlog.md.
+  - En la bitácora agregué B-96 (paso a Hecha) y B-97 (cambios en CLAUDE.md).
+    B-95, tu fila de revisión, entra también en este commit.
+
+  En el mismo commit van dos cambios tuyos: la sección 8 de docs/tareas/T06.md y
+  la corrección de una errata («ctualizar» → «Actualiza») en la sección 8 de
+  docs/tareas/T05b.md.
+
+  Las tres sesiones de docs/sesiones/ siguen sin versionar, como estaban.
+
+✻ Baked for 50s · done 21:44
+
+❯ sube las 3 sesiones en un commit                                              
+
+  Ran 3 shell commands (ctrl+o to expand)
+● Las sesiones cubren T02–T03, T03a–T05 y T05a–T05b, no T05, T05a, T05b como
+  decía el mensaje. Como el commit es local y acabo de crearlo, voy a corregir
+  el mensaje con --amend. · summary
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● Las 3 sesiones quedaron en el commit b23c0c5 y ya no hay nada pendiente en el
+  árbol de trabajo.
+
+  El commit se llamaba antes cedcbe9. Su mensaje decía que las sesiones eran de
+  T05, T05a y T05b, pero eso lo había deducido de la hora sin abrir los
+  archivos, y estaba mal. Al revisarlos, cada una cubre:
+  - 152204: T02, T02a y T03
+  - 204403: T03a, T04 y T05
+  - 211253: T05a y T05b
+
+  Corregí el mensaje con --amend, por eso cambió el hash. No hay problema porque
+  el commit todavía no se había subido a ningún remoto.
+
+  Falta exportar la sesión de T06, que es esta.
+
+✻ Cooked for 41s · done 21:59
