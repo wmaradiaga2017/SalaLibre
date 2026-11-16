@@ -63,7 +63,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 5 | T03a | Cambio de contraseña propio (`PATCH /auth/password`) | T03 | S | No | Hecha | [T03a](tareas/T03a.md) |
 | 6 | T04 | Módulo de salas (repositorio + service + controller, solo ADMIN para escritura) | T03 | M | No | Hecha | [T04](tareas/T04.md) |
 | 7 | T05 | Módulo de reservas: dominio (RN-02 a RN-13), `BookingPolicy`, repositorio, locks, 23P01 → 409 | T04 | L | No | Hecha | [T05](tareas/T05.md) |
-| 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | En revisión | [T05a](tareas/T05a.md) |
+| 8 | T05a | Módulo de usuarios (ADMIN): alta, edición, desactivación con cancelación en cascada, reset de contraseña | T05, T03a | M | No | Hecha | [T05a](tareas/T05a.md) |
 | 9 | T05b | Módulo de cierres (ADMIN): días cerrados que cancelan reservas | T05 | M | No | Pendiente | |
 | 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | Pendiente | |
 | 11 | T06a | Auditoría: `AuditService` transaccional en todas las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** | Pendiente | |
@@ -437,7 +437,7 @@ curl -s -b /tmp/emp1.txt -X POST $BASE/bookings/$B/cancel | jq -r .status       
 | Dependencias | T05, T03a |
 | Estimación | M |
 | Seguridad / auditoría | Roles: solo ADMIN. Auditoría: `USER_CREATED`, `USER_UPDATED`, `USER_PASSWORD_RESET` y `BOOKING_CANCELLED` por cada reserva cancelada en cascada, que se conectan en T06a. OWASP A01: 403 a `EMPLOYEE`; A02: nunca se devuelve `password_hash`; A04: lock por `userId` |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/api/src/modules/users/**` (controller, service, dto), ampliando `UsersRepository` con `findAll`, `create`, `update`.
