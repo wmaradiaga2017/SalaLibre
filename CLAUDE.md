@@ -596,3 +596,32 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - Decidido en T11 (B-174): el enlace "Auditoría" del ADMIN se mantiene y `/admin/audit` muestra `PlaceholderPage` con
   un aviso (`Banner` `info`) de que la sección se recortó y la auditoría se sigue registrando. No quitarlo ni cambiarlo
   sin que la persona lo pida.
+
+### Cierre y clon limpio fijados en T11 (ver `docs/tareas/T11.md` §6 y §7; B-172, B-174)
+- **`README.md` es la instrucción única** para levantar el proyecto (`docker compose up --build`, sin `.env` ni pasos
+  previos). Si cambia el arranque, los puertos, las credenciales del seed o los comandos de prueba, se actualiza el README
+  en la misma tarea.
+- **`pretest` en `src/api/package.json` (`prisma generate`):** el cliente Prisma (`src/api/src/generated/`) no se
+  versiona y las unitarias lo importan; sin el `pretest`, `npm --prefix src/api test` falla en un clon limpio (9 de 14
+  suites, B-172). No quitarlo. En un clon nuevo, antes de las unitarias va `npm --prefix src/api ci` (requiere Node 24
+  en la máquina; la integración solo requiere Docker).
+- **Verificar un clon limpio:** `git clone .` en una carpeta del scratchpad (nunca dentro del repositorio), después de
+  `docker compose down -v`, y construir con `docker compose build --no-cache`: `up --build` reutiliza la caché y no
+  prueba nada (28 s contra 6 min). Al reiniciar `api`, esperar a `healthy` con
+  `docker inspect -f '{{.State.Health.Status}}' salalibre-api-1`, no con `sleep`.
+- **El compose tiene `name: salalibre`:** un clon en otra carpeta usa los mismos contenedores y el mismo volumen
+  (`salalibre_db-data`) que la copia de trabajo. `down -v` en cualquiera de los dos borra la base de desarrollo; al
+  terminar, bajar el clon (`docker compose down`) y volver a levantar desde la copia de trabajo.
+- **npm 12 en la máquina bloquea los scripts de instalación** de `prisma` y `@prisma/engines` (`npm warn
+  install-scripts`); no afecta, porque `prisma generate` funciona igual y la imagen usa el npm de `node:24-alpine`. No
+  aprobar scripts con `npm install-scripts approve` sin que lo pida la persona.
+- **Fallo intermitente sin causa confirmada (B-172):** una corrida de `npm --prefix src/api test` en la copia de trabajo
+  dio 2 suites y 33 pruebas fallidas y no se repitió en 6 corridas más. Si vuelve a pasar, guardar la salida completa
+  (`> archivo.log 2>&1`) antes de repetir, para registrar la suite y el error en la bitácora.
+- **Estado de los documentos de tareas:** cuando una tarea pasa a Hecha en `docs/02-backlog.md`, se cambia también el
+  campo "Estado" del encabezado de su `docs/tareas/Txx.md` (B-174: varios habían quedado en "En revisión").
+- **Rutas de los comandos:** siempre `src/api` y `src/web` (`npm --prefix src/api …`), como el spec §12 corregido (B-174).
+- **Archivos de la persona fuera de los commits del agente:** `docs/04-cierre.md` (lo redacta la persona), las sesiones
+  exportadas de `docs/sesiones/` y los `.bak` del editor, salvo que la persona pida incluirlos.
+- **Datos de la base de desarrollo tras T11:** se recreó desde el seed con `down -v` (ya no están los datos de las
+  verificaciones de T05a a T10b). Quedan "Sala Humo T11 …" **inactiva** y la reserva "Humo T11" de empleado1 cancelada.
