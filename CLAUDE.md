@@ -235,3 +235,31 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
   `begin → lock date → lock user → lecturas con ctx → INSERT → end`.
 - **Verificación manual:** no usar `tee /dev/stderr` para capturar ids (mezcla la salida); usar un script que imprima en
   orden y que al final cancele las reservas creadas (las canceladas quedan como historial).
+
+### Usuarios y cancelación en cascada fijados en T05a (ver `docs/tareas/T05a.md` §6 y §7; B-80)
+- **Rutas `/users` en `UsersAdminModule`** (`modules/users/users-admin.module.ts`, con `UsersController` y
+  `UsersAdminService`), separado de `UsersModule`: `BookingsModule` importa `UsersModule` y la desactivación necesita
+  `BookingsService`, así que juntarlos crearía un ciclo. **No usar `forwardRef`.** Si un módulo nuevo (T05b, T06a)
+  necesita un service que a su vez depende del suyo, se resuelve igual: un módulo aparte que importa a ambos.
+- **`UsersModule` sigue siendo la API de usuarios** para otros módulos: `UsersService` (`findById(id, ctx?)`, `findAll`,
+  `create(ctx, …)`, `update(ctx, …)`, `updatePasswordHash(ctx, …)`). `UsersService.create` normaliza el correo (RN-23).
+- **Cancelación en cascada:** `BookingsService.cancelFutureByUser(ctx, userId, cancelledById)` (el `ctx` primero, como
+  toda escritura) cancela con un solo `updateManyAndReturn` las `CONFIRMED` con `startAt > ahora` (`Clock`) y devuelve
+  los ids, para auditar cada uno en T06a. Las reservas en curso no se cancelan. T05b hace lo mismo para los cierres
+  (`cancelByDate(ctx, …)` o equivalente), dentro de su transacción y con el lock `date:` tomado.
+- **Claves de lock:** usar siempre `lockKeys` de `bookings.service.ts` (`lockKeys.user(id)`, `lockKeys.date(d)`), nunca
+  escribir el prefijo a mano. Desactivar: `begin → lock user: → findById(ctx) (404) → 422 CANNOT_DEACTIVATE_SELF →
+  UPDATE → cascada → commit`.
+- **`BCRYPT_ROUNDS` (10) vive en `modules/users/domain/user.ts`** y lo usan auth (cambio) y usuarios (alta y reset). El
+  hash se calcula **fuera** de la transacción, para no retener la conexión mientras bcrypt trabaja.
+- **Lecturas públicas sin hash (A02):** `PrismaUsersRepository` usa el `select` `PUBLIC` en todo lo que no sea
+  `findByEmail`/`findById`; `test/users.spec.ts` lo comprueba.
+- **Repositorios en memoria:** en un `update`, ignorar los campos `undefined` como hace Prisma. Los DTOs definen los
+  campos opcionales ausentes como `undefined` (`target: es2023`) y `{ ...body }` los trae; aplicarlos borra datos (B-80).
+- **Escribir archivos:** con Write o Edit, no con `node -e "…"` dentro de Bash. Bash interpreta los backticks dentro
+  de comillas dobles y borra el texto entre ellos (pasó en T05a; se corrigió antes del commit).
+- **Pendiente de decisión de la persona:** un ADMIN puede quitarse el rol de ADMIN (solo se prohíbe desactivarse, RN-26).
+  No agregar una regla nueva sin que lo diga el spec.
+- **Datos que dejó la verificación de T05a** en la base del compose: `prueba.uno@salalibre.local` (activo, contraseña
+  `Nueva12345`) y usuarios `rafaga.*` desactivados. No hay `DELETE` de usuarios: en verificaciones nuevas, usar correos
+  únicos (por ejemplo con un sufijo de tiempo).
