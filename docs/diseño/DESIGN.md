@@ -197,7 +197,8 @@ Referencia: `docs/diseño/stitch/login/` (solo la imagen, sin `code.html`). En e
   - Una fila con el enlace "¿Olvidaste tu contraseña?" a la derecha (azul, `body-sm`).
   - Botón primario de ancho completo y 46 px, `#1D4ED8`, texto blanco semibold "Iniciar sesión" con un icono de flecha diagonal.
   - Pie de la columna, separado por una línea fina: "Reserva de salas" a la izquierda y "© AAAA SalaLibre" a la derecha (`body-sm`, gris), con el año actual.
-- **Móvil:** el bloque visual pasa a una cabecera compacta (logo y la ilustración reducida) y el formulario va debajo, sin desplazamiento horizontal ni superposiciones.
+- **Alto de la ventana:** al 100 % de zoom, la tarjeta completa cabe en la ventana sin desplazamiento. Su alto se ajusta entre 480 y 812 px (el alto de la ventana menos el margen), y la ilustración ocupa el espacio que queda en la columna izquierda: en ventanas bajas (por ejemplo, 1366×607) los personajes se ven más pequeños, sin deformarse y apoyados en la base. Logo, textos, formulario y pies no se recortan. (Ajuste de la revisión de T07c, B-127.)
+- **Móvil y tableta (menos de 1024 px):** el bloque visual pasa a una cabecera compacta (logo y la ilustración reducida; sin titular, párrafo ni pie verde) y el formulario va debajo, sin desplazamiento horizontal ni superposiciones. Las dos columnas aparecen desde 1024 px.
 
 ### Ilustración: cuatro personajes geométricos
 Se dibujan en SVG propio, sin archivos gráficos externos. Los colores son orientativos; la imagen manda.

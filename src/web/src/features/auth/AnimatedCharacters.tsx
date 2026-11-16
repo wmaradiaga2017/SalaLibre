@@ -74,6 +74,8 @@ export function AnimatedCharacters({ focus, passwordVisible, submitStatus, class
     <svg
       ref={svgRef}
       viewBox="0 0 470 360"
+      // Se ajusta al alto disponible sin deformarse y con la base de los personajes abajo.
+      preserveAspectRatio="xMidYMax meet"
       aria-hidden="true"
       focusable="false"
       data-pose={pose}
