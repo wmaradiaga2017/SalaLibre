@@ -68,7 +68,7 @@ D=$(date -u -d 'next monday' +%F)   # 16:00Z–17:00Z = 10:00–11:00 en America
 | 10 | T06 | Pruebas de integración: infraestructura `api-test`, choques, concurrencia y matriz RBAC | T05a, T05b | L | No | Hecha | [T06](tareas/T06.md) |
 | 11 | T06a | Auditoría: `AuditService` transaccional en todas las escrituras + `POST /audit-logs/search` | T06 | M | **Sí** | Hecha | [T06a](tareas/T06a.md) |
 | 12 | T07a | Sistema visual base (tokens, componentes de `shared/ui`) | T01 | M | No | Hecha | [T07a](tareas/T07a.md) |
-| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layout y rutas protegidas por rol | T03, T07a | M | No | En revisión | [T07](tareas/T07.md) |
+| 13 | T07 | Frontend: `apiClient`, auth (login, logout, `/me`), layout y rutas protegidas por rol | T03, T07a | M | No | Hecha | [T07](tareas/T07.md) |
 | 14 | T07b | Mi cuenta: cambio de contraseña | T03a, T07 | S | No | Pendiente | |
 | 15 | T07c | Login: composición visual de la imagen y personajes animados | T07a, T07 | L | **Sí** | Pendiente | |
 | 16 | T08 | Agenda del día: grilla salas × bloques de 15 min, selector de día, filtros, cierres | T05b, T07 | L | No | Pendiente | |
@@ -657,7 +657,7 @@ docker compose up -d --build web && curl -s -o /dev/null -w "%{http_code}\n" loc
 | Dependencias | T03, T07a |
 | Estimación | M |
 | Seguridad / auditoría | Roles: público (`/login`), autenticado y ADMIN (`/admin/*`). Auditoría: no aplica. OWASP A01: la UI no sustituye a la API (que igual responde 403); A07: mensaje de login genérico; sin tokens en JavaScript |
-| Estado | En revisión |
+| Estado | Hecha |
 
 **Alcance (archivos o módulos):**
 - `src/web/src/shared/apiClient.ts`: `fetch` con `credentials: 'include'`, lectura del formato `{ error: { code, message, requestId } }`, `ApiError`, y todo 401 limpia la sesión y lleva a `/login`.
