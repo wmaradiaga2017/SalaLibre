@@ -455,3 +455,21 @@ App interna de gestion de reservas de salas de reunión (80 personas, 5 salas, R
 - **Verificar "hoy" en fin de semana o fuera de horario:** se reemplaza `Date` en la página (clase que devuelve un
   instante fijo sin argumentos) y se espera el tick de `useNow` (≤ 60 s); anotarlo como paso manual en `docs/tareas/Txx.md`.
   No usar esperas largas dentro de una sola llamada de `javascript_tool` (vence a los 45 s).
+
+### Formulario de reserva fijado en T08a (ver `docs/tareas/T08a.md` §6 y §7; B-141)
+- **Sin doble envío:** `isPending` de TanStack Query **no alcanza** con `handleSubmit` de React Hook Form, que valida de
+  forma asíncrona (tres clics seguidos mandaron 3 `POST`, B-141). Todo formulario que crea algo usa un candado síncrono
+  (`useRef`) tomado en el `onSubmit` antes de validar y soltado en `onInvalid` y en `onSettled` de la mutación, como
+  `BookingFormModal`. Además, botón con `loading` y modal con `dismissible={!isPending}`.
+- **Errores de la API en un solo mapa por formulario** (`features/bookings/booking-errors.ts`): código → mensaje en
+  español y, si corresponde, campo. Con campo → `setError(campo, …, { shouldFocus: true })`; sin campo o desconocido →
+  `Banner` con el `requestId`. El 409 `BOOKING_CONFLICT` usa el texto del spec ("Ese horario acaba de ocuparse.").
+- **Mensajes y validaciones con las constantes** de `agenda-config.ts` y `booking-form.ts` (horario, días de
+  anticipación, duraciones), nunca con "07:00", "30 días" o "4 horas" escritos a mano.
+- **`useCreateBooking`** invalida `agendaKeys.bookings` al crear y ante un 409; ante `DAY_CLOSED` también
+  `agendaKeys.closures` y ante `ROOM_INACTIVE` `agendaKeys.rooms`. T09 sigue el mismo criterio al cancelar.
+- **Fechas al API** con `zonedInstant(fecha, minutos).toISOString()` (UTC con `Z`), nunca armando el texto a mano.
+- **Verificar errores que la pantalla no deja provocar** (422 que los selectores ya evitan): en la página se reemplaza
+  `window.fetch` para que ese `POST` responda el cuerpo de error real (`{ error: { code, message, requestId } }`) y se
+  comprueba dónde aparece el mensaje; aparte, se confirma por `curl` que la API devuelve el código. Anotarlo como paso
+  manual en `docs/tareas/Txx.md`. Contar los `POST` con un contenedor de `fetch` para comprobar el doble envío.
